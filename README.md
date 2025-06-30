@@ -1,40 +1,15 @@
-# RRZE Plugin Blueprint
+# RRZE Answers
 
-**RRZE Plugin Blueprint** is a modern, modular starter framework for building custom WordPress plugins with best practices in mind. It provides a robust foundation with PSR-4 autoloading, advanced options and settings management, block support, internationalization (i18n) for both PHP and JavaScript, and system requirements checks—so you can focus on your plugin’s unique features.
+**RRZE Answers** is a plugin that offers you FAQ, glossaries and synonyms. You can receive these from other websites within the FAU network and the plugin keeps them up to date by an automatical sychronization.
+The plugins comes with Shortcode, block and a widget.
 
 ---
 
 ## Key Features
 
-- **PSR-4 Autoloading**  
-  All PHP classes under the `RRZE\PluginBlueprint` namespace are autoloaded from the `includes/` directory.
+- **awesome**  
+  This feature is what you've always dreamt of.
 
-- **Activation & Deactivation Hooks**  
-  Easily add setup or cleanup routines using the provided `activation()` and `deactivation()` methods.
-
-- **System Requirements Check**  
-  The plugin checks for minimum WordPress and PHP versions before initializing, displaying admin notices if requirements are not met.
-
-- **Singleton Initialization**  
-  Access the main plugin instance anywhere via the `plugin()` and `main()` helper functions.
-
-- **Centralized Defaults**  
-  The `Defaults` class manages all plugin default values, which can be filtered and reused throughout your code.
-
-- **Advanced Settings API Integration**  
-  The `Settings` class lets you easily create settings pages, sections, and fields with validation and sanitization.  
-  👉 [See the Settings class README](includes/Common/Settings/README.md)
-
-- **Custom Post Types & Taxonomies**  
-  Generic `CPT` and `Taxonomy` classes make it easy to register custom post types and taxonomies.
-
-- **Shortcode Registration**  
-  A generic `Shortcode` class allows for quick and clean shortcode registration.
-
-- **Gutenberg Block Support**  
-  Example: Includes a structure for both static and dynamic blocks, each with their own build process and assets.  
-  👉 [Static Block README](blocks/block-static/README.md)  
-  👉 [Dynamic Block README](blocks/block-dynamic/README.md)
 
 - **Internationalization (i18n) for PHP and JS**  
   All user-facing strings are translatable. The build process and scripts support extracting and generating `.pot`, `.po`, `.mo`, and `.json` files for both PHP and JS translations.
@@ -44,7 +19,7 @@
 ## Directory Structure
 
 ```
-rrze-plugin-blueprint/
+rrze-answers/
 │
 ├── blocks/
 │   ├── block-dynamic/
@@ -67,9 +42,9 @@ rrze-plugin-blueprint/
 │       ├── Settings/
 │       └── Shortcode/
 ├── languages/
-│   └── rrze-plugin-blueprint.pot
+│   └── rrze-answers.pot
 ├── package.json
-├── rrze-plugin-blueprint.php
+├── rrze-answers.php
 ├── README.md
 ├── readme.txt
 ├── build-plugin.js

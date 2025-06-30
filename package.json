@@ -1,6 +1,6 @@
 {
   "name": "rrze-plugin-blueprint",
-  "version": "1.1.0",
+  "version": "0.0.1",
   "description": "A blueprint for creating WordPress plugins with blocks and other components.",
   "author": "RRZE Webteam",
   "license": "GPL-2.0-or-later",
