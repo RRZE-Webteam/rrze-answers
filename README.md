@@ -1,122 +1,146 @@
-# RRZE Answers
+[![Aktuelle Version](https://img.shields.io/github/package-json/v/rrze-webteam/rrze-faq/main?label=Version)](https://github.com/RRZE-Webteam/rrze-faq)
+[![Release Version](https://img.shields.io/github/v/release/rrze-webteam/rrze-faq?label=Release+Version)](https://github.com/rrze-webteam/rrze-faq/releases/)
+[![GitHub License](https://img.shields.io/github/license/rrze-webteam/rrze-faq)](https://github.com/RRZE-Webteam/rrze-faq)
+[![GitHub issues](https://img.shields.io/github/issues/RRZE-Webteam/rrze-faq)](https://github.com/RRZE-Webteam/rrze-faq/issues)
+# RRZE FAQ
 
-**RRZE Answers** is a plugin that offers you FAQ, glossaries and synonyms. You can receive these from other websites within the FAU network and the plugin keeps them up to date by an automatical sychronization.
-The plugins comes with Shortcode, block and a widget.
+Plugin for creating FAQs and synchronizing them with other FAU websites. Usable as a shortcode, block, or widget.
 
----
+## General Information
 
-## Key Features
+The plugin can be used to create FAQs and to synchronize FAQs from websites within the FAU network.  
+You can filter by categories and tags.  
+The layout can be configured to display an A–Z index, categories or tags as links, or as a tag cloud.  
+Categories and tags are grouped into accordions. It is also possible to output individual FAQs directly.
 
-- **awesome**  
-  This feature is what you've always dreamt of.
+A widget is also available. You can configure the display duration and whether to show a specific or a random FAQ from a selected category.
 
+## Using the Shortcode
 
-- **Internationalization (i18n) for PHP and JS**  
-  All user-facing strings are translatable. The build process and scripts support extracting and generating `.pot`, `.po`, `.mo`, and `.json` files for both PHP and JS translations.
-
----
-
-## Directory Structure
-
-```
-rrze-answers/
-│
-├── blocks/
-│   ├── block-dynamic/
-│   │   ├── README.md
-│   │   └── src/
-│   └── block-static/
-│       ├── README.md
-│       └── src/
-├── build/
-│   └── blocks/
-│       ├── block-dynamic/
-│       └── block-static/
-├── includes/
-│   ├── Defaults.php
-│   ├── Main.php
-│   └── Common/
-│       ├── Blocks/
-│       ├── CPT/
-│       ├── Plugin/
-│       ├── Settings/
-│       └── Shortcode/
-├── languages/
-│   └── rrze-answers.pot
-├── package.json
-├── rrze-answers.php
-├── README.md
-├── readme.txt
-├── build-plugin.js
-├── webpack.config.js
+```html
+[faq id="456, 123"]
+[faq category="category-1, category-2"]
+[faq tag="tag-1, tag-2"]
+[faq category="category-1" tag="tag-1, tag-2"]
+[faq category="category-1" domain="domain-1, domain-2"]
 ```
 
----
+## All Shortcode Attributes
 
-## Development Workflow
+```html
+[faq 
+glossary=".."
+category=".."
+tag=".."
+domain=".."
+id=".."
+hide=".."
+show=".."
+class=".."
+sort=".."
+order=".."
+hstart=".."
+]
+```
 
-1. **Install dependencies:**
-   ```sh
-   npm install
-   ```
+All attributes are optional.
 
-2. **Build all blocks:**
-   ```sh
-   npm run build
-   ```
-   Each block will have its own build directory with compiled assets and static files.
+## Explanation and Values for Shortcode Attributes
 
-3. **Internationalization:**
-   - Extract PHP and JS strings:
-     ```sh
-     wp i18n make-pot . languages/rrze-plugin-blueprint.pot --domain=rrze-plugin-blueprint --exclude=node_modules,vendor,build
-     ```
-   - Generate JS translation JSON files:
-     ```sh
-     wp i18n make-json languages/rrze-plugin-blueprint-LOCALE.po --no-purge
-     ```
+All attributes are optional.
 
----
+**glossary**: Defines how the FAQ items are grouped. Possible values are `"category"` or `"tag"`.  
+If omitted, no grouping is applied. You can also define the visual style of the glossary:  
+- `"a-z"`: Alphabetical index (default)  
+- `"tabs"`: Glossary terms as tabs  
+- `"tagcloud"`: Terms shown with font size proportional to their frequency
 
-## Customization
+**category**: Specifies the categories for which matching FAQs should be displayed.  
+Multiple categories can be listed using their slugs (as found under `FAQ → Categories`) and separated by commas.  
+You can also filter by data source:  
+Example: `category="rrze:general, info"` filters for the "general" category from the "rrze" source and any "info" category regardless of source.
 
-- **Register a new block:**  
-  Add a folder under `blocks/`, create a `src/` and `block.json`, and add a build script in `package.json`.
+**tag**: Specifies the tags for which matching FAQs should be shown.  
+Use the tag slugs from `FAQ → Tags`, separated by commas.  
+Filtering by source is also possible:  
+Example: `tag="rrze:keyword1, keyword2"` filters for "keyword1" from source "rrze", and "keyword2" from any source.
 
-- **Override default values:**  
-  Edit `Defaults.php` or use the `rrze_plugin_blueprint_defaults` filter.
+**domain**: Filters FAQs by their data source.  
+Multiple domains can be listed, separated by commas.
 
-- **Change the PHP namespace:**  
-  You can update the PHP namespace throughout the plugin by running:
-  ```sh
-  npm run update:namespace
-  ```
-  This will replace the namespace in all PHP files (except in the `build/` directory).
+**id**: Outputs one or more specific FAQs by ID.  
+You can find the ID in the admin panel under `FAQ → All FAQs` or in the "Insert into pages/posts" box when editing an FAQ.  
+The output order follows the order of the IDs listed.
 
-- **Change the text domain**
-  You can update the text domain throughout the plugin by running:
-  ```sh
-  npm run update:textdomain
-  ```
-  This will replace the textdomain in all PHP and JS files (except in the `build/` directory).
+**hide**: Controls which default elements should be hidden.  
+- `"accordion"`: Shows FAQs as plain question/answer instead of collapsible panels  
+- `"title"`: Hides the FAQ question  
+- `"glossary"`: Disables the glossary display  
+Default: accordion view is enabled
 
-- **Change the plugin slug**
-  You can update the plugin slug throughout the plugin by running:
-  ```sh
-  npm run update:slug
-  ```
-  This will replace the plugin slug in all PHP and JS files (except in the `build/` directory).
+**masonry**:  
+- `"true"`: Displays FAQs in a grid (masonry) layout  
+- `"false"`: Displays FAQs in the default stacked layout  
+By default, the grid layout is disabled.
 
-  Note: Don’t forget to change the plugin directory and file names accordingly.
+**class**: Allows you to set the color of the left border of the accordion.  
+Possible values: `"fau"` (default), or faculty identifiers like `"med"`, `"nat"`, `"rw"`, `"phil"`, or `"tf"`.  
+You can also add additional CSS classes separated by spaces.
 
----
+**sort**: Controls sorting of the output.  
+- `"title"`: Sort alphabetically by title (default)  
+- `"id"`: Sort by FAQ ID  
+- `"sortfield"`: Sort using the custom field defined per FAQ, then by title
 
-## Internationalization
+**order**: Determines the sort direction.  
+- `"asc"`: Ascending (default)  
+- `"desc"`: Descending
 
-- All strings use the `rrze-plugin-blueprint` text domain.
-- Translation files (`.pot`, `.po`, `.mo`, `.json`) are in the `languages/` directory.
-- JS translations are loaded using `wp_set_script_translations()`.
+**hstart**: Defines the heading level for the first title.  
+Default is `2`, which renders headings as `<h2>`.
 
----
+## Examples
 
-Clone, customize, and start building professional WordPress plugins with RRZE Plugin Blueprint!
+```html
+[faq glossary="tag tagcloud"]
+[faq category="slug-of-category"]
+[faq category="category" tag="Tag1, Tag2"]
+[faq id="456, 987, 123" hide="glossary"]
+[faq glossary="category tabs" tag="Tag1" show="expand-all-link" order="desc"]
+```
+
+## FAQs from Other Domains
+
+External domains must be added under  
+**Settings → RRZE FAQ → "Domains" tab**.  
+Synchronization is carried out via the **"Synchronization"** tab.
+
+## Using the Widget
+
+In `/wp-admin/widgets.php`, the widget is available as **"FAQ Widget"**.  
+You can configure:
+
+- Display duration
+- A specific or a random FAQ from a category
+
+## Using the REST API (v2)
+
+**Examples:**
+
+- All FAQs:  
+  https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/faq
+
+- Filtered by tag:  
+  https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/faq?filter[faq_tag]=Matrix
+
+- Multiple tags:  
+  https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/faq?filter[faq_tag]=Matrix%2BAccounts
+
+- Category:  
+  https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/faq?filter[faq_category]=Dienste
+
+- Category + tag:  
+  https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/faq?filter[faq_category]=Dienste&filter[faq_tag]=Sprache
+
+- Pagination:  
+  https://developer.wordpress.org/rest-api/using-the-rest-api/pagination/
