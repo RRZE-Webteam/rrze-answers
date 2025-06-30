@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\PluginBlueprint;
+namespace RRZE\Answers;
 
-use function RRZE\PluginBlueprint\plugin;
+use function RRZE\Answers\plugin;
 
 defined('ABSPATH') || exit;
 
@@ -11,7 +11,7 @@ defined('ABSPATH') || exit;
  *
  * Holds and provides access to plugin-wide default values.
  *
- * @package RRZE\PluginBlueprint
+ * @package RRZE\Answers
  */
 class Defaults
 {
@@ -46,11 +46,11 @@ class Defaults
             ],
             'settings' => [
                 'option_name'       => 'rrze_plugin_blueprint_settings',
-                'menu_title'        => __('Plugin Blueprint', 'rrze-plugin-blueprint'),
-                'page_title'        => __('RRZE Plugin Blueprint Settings', 'rrze-plugin-blueprint'),
+                'menu_title'        => __('Plugin Blueprint', 'rrze-answers'),
+                'page_title'        => __('RRZE Plugin Blueprint Settings', 'rrze-answers'),
                 'capability'        => 'manage_options',
                 'checkbox_option'   => false,
-                'text_placeholder'  => __('Enter your text here...', 'rrze-plugin-blueprint'),
+                'text_placeholder'  => __('Enter your text here...', 'rrze-answers'),
                 'select_default'    => 'none',
             ]
             // Add more defaults as needed

@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\PluginBlueprint\Common\Shortcode;
+namespace RRZE\Answers\Common\Shortcode;
 
 defined('ABSPATH') || exit;
 

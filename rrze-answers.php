@@ -15,10 +15,10 @@ Requires at least:  6.8
 Requires PHP:       8.2
 */
 
-namespace RRZE\PluginBlueprint;
+namespace RRZE\Answers;
 
-use RRZE\PluginBlueprint\Main;
-use RRZE\PluginBlueprint\Common\Plugin\Plugin;
+use RRZE\Answers\Main;
+use RRZE\Answers\Common\Plugin\Plugin;
 
 // Prevent direct access to the file.
 // This line ensures that the file is only executed within the context of WordPress.
@@ -186,14 +186,14 @@ function loaded()
                 if (! $wpCompatibe) {
                     $error = sprintf(
                         /* translators: 1: Server WordPress version number, 2: Required WordPress version number. */
-                        __('The server is running WordPress version %1$s. The plugin requires at least WordPress version %2$s.', 'rrze-plugin-blueprint'),
+                        __('The server is running WordPress version %1$s. The plugin requires at least WordPress version %2$s.', 'rrze-answers'),
                         wp_get_wp_version(),
                         plugin()->getRequiresWP()
                     );
                 } elseif (! $phpCompatible) {
                     $error = sprintf(
                         /* translators: 1: Server PHP version number, 2: Required PHP version number. */
-                        __('The server is running PHP version %1$s. The plugin requires at least PHP version %2$s.', 'rrze-plugin-blueprint'),
+                        __('The server is running PHP version %1$s. The plugin requires at least PHP version %2$s.', 'rrze-answers'),
                         PHP_VERSION,
                         plugin()->getRequiresPHP()
                     );
@@ -205,7 +205,7 @@ function loaded()
                     printf(
                         '<div class="notice notice-error"><p>' .
                             /* translators: 1: The plugin name, 2: The error string. */
-                            esc_html__('Plugins: %1$s: %2$s', 'rrze-plugin-blueprint') .
+                            esc_html__('Plugins: %1$s: %2$s', 'rrze-answers') .
                             '</p></div>',
                         $pluginName,
                         $error

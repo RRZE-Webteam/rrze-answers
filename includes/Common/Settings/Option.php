@@ -1,12 +1,12 @@
 <?php
 
-namespace RRZE\PluginBlueprint\Common\Settings;
+namespace RRZE\Answers\Common\Settings;
 
 defined('ABSPATH') || exit;
 
-use RRZE\PluginBlueprint\Common\Settings\Section;
+use RRZE\Answers\Common\Settings\Section;
 
-use RRZE\PluginBlueprint\Common\Settings\Options\{
+use RRZE\Answers\Common\Settings\Options\{
     Checkbox,
     CheckboxMultiple,
     Password,

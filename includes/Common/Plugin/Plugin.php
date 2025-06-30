@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\PluginBlueprint\Common\Plugin;
+namespace RRZE\Answers\Common\Plugin;
 
 defined('ABSPATH') || exit;
 
@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
  * It also includes methods for setting and getting plugin data, such as the name, version,
  * required WordPress version, and required PHP version.
  * 
- * @package RRZE\PluginBlueprint
+ * @package RRZE\Answers
  * @since 1.0.0
  */
 class Plugin

@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\PluginBlueprint\Common\Settings;
+namespace RRZE\Answers\Common\Settings;
 
-use RRZE\PluginBlueprint\Common\Settings\{
+use RRZE\Answers\Common\Settings\{
     Builder,
     Error,
     Flash,
@@ -22,7 +22,7 @@ defined('ABSPATH') || exit;
  * It allows for the creation and management of settings, tabs, sections, and options.
  * It also handles saving settings, rendering the settings page, and managing errors and flash messages.
  *
- * @package RRZE\PluginBlueprint\Common\Settings
+ * @package RRZE\Answers\Common\Settings
  */
 class Settings
 {
@@ -403,7 +403,7 @@ class Settings
     public function addSection($title, $args = [])
     {
         if (empty($this->tabs)) {
-            $tab = $this->addTab(__('Unnamed tab', 'rrze-plugin-blueprint'));
+            $tab = $this->addTab(__('Unnamed tab', 'rrze-answers'));
         } else {
             $tab = end($this->tabs);
         }
@@ -559,7 +559,7 @@ class Settings
         }
 
         if (!current_user_can($this->capability)) {
-            wp_die(__('You do not have enough permissions to do that.', 'rrze-plugin-blueprint'));
+            wp_die(__('You do not have enough permissions to do that.', 'rrze-answers'));
         }
 
         $currentOptions = $this->getOptions();
@@ -584,7 +584,7 @@ class Settings
 
         $this->updateOptions($newOptions);
 
-        $this->flash->set('success', __('Settings saved.', 'rrze-plugin-blueprint'));
+        $this->flash->set('success', __('Settings saved.', 'rrze-answers'));
     }
 
     /**

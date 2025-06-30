@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\PluginBlueprint\Common\Settings;
+namespace RRZE\Answers\Common\Settings;
 
 defined('ABSPATH') || exit;
 ?>

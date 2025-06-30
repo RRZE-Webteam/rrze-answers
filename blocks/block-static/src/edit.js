@@ -34,7 +34,7 @@ export default function Edit() {
 		<p { ...useBlockProps() }>
 			{ __(
 				'Block with Static Rendering – hello from the editor!',
-				'rrze-plugin-blueprint'
+				'rrze-answers'
 			) }
 		</p>
 	);

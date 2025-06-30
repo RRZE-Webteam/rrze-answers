@@ -1,10 +1,10 @@
 <?php
 
-namespace RRZE\PluginBlueprint;
+namespace RRZE\Answers;
 
-use RRZE\PluginBlueprint\Defaults;
+use RRZE\Answers\Defaults;
 
-use RRZE\PluginBlueprint\Common\{
+use RRZE\Answers\Common\{
     Settings\Settings,
     CPT\CPT,
     CPT\Taxonomy,
@@ -20,7 +20,7 @@ defined('ABSPATH') || exit;
  * This class serves as the entry point for the plugin.
  * It can be extended to include additional functionality or components as needed.
  * 
- * @package RRZE\PluginBlueprint
+ * @package RRZE\Answers
  * @since 1.0.0
  */
 class Main
@@ -103,8 +103,8 @@ class Main
         // This can be extended or modified as needed.
         $this->cpt = new CPT($this->defaults->get('cpt')['name'], [
             'labels' => [
-                'name' => __('Books', 'rrze-plugin-blueprint'),
-                'singular_name' => __('Book', 'rrze-plugin-blueprint')
+                'name' => __('Books', 'rrze-answers'),
+                'singular_name' => __('Book', 'rrze-answers')
             ],
             'public' => true,
             'has_archive' => true,
@@ -126,8 +126,8 @@ class Main
             $this->defaults->get('cpt')['name'],
             [
                 'labels' => [
-                    'name' => __('Genres', 'rrze-plugin-blueprint'),
-                    'singular_name' => __('Genre', 'rrze-plugin-blueprint'),
+                    'name' => __('Genres', 'rrze-answers'),
+                    'singular_name' => __('Genre', 'rrze-answers'),
                 ],
                 'public' => true,
                 'hierarchical' => true,
@@ -149,7 +149,7 @@ class Main
         // Example of registering a shortcode.
         $this->shortcode = new Shortcode('example_shortcode', function ($atts, $content = null) {
             $atts = shortcode_atts([
-                'title' => __('Default Title', 'rrze-plugin-blueprint'),
+                'title' => __('Default Title', 'rrze-answers'),
             ], $atts, 'example_shortcode');
 
             return '<div class="rrze-plugin-blueprint-example-shortcode">' . esc_html($atts['title']) . '</div>';
@@ -195,32 +195,32 @@ class Main
             ->setMenuPosition(6)
             ->setMenuParentSlug('options-general.php');
 
-        $sectionGeneral = $this->settings->addSection(__('General', 'rrze-plugin-blueprint'));
+        $sectionGeneral = $this->settings->addSection(__('General', 'rrze-answers'));
 
         $sectionGeneral->addOption('checkbox', [
             'name' => 'checkbox_option',
-            'label' => __('Checkbox Option', 'rrze-plugin-blueprint'),
-            'description' => __('Check this option to enable the feature.', 'rrze-plugin-blueprint'),
+            'label' => __('Checkbox Option', 'rrze-answers'),
+            'description' => __('Check this option to enable the feature.', 'rrze-answers'),
             'default' => $this->defaults->get('settings')['checkbox_option'],
         ]);
 
         $sectionGeneral->addOption('text', [
             'name' => 'text_option',
-            'label' => __('Text Option', 'rrze-plugin-blueprint'),
-            'description' => __('Enter some text.', 'rrze-plugin-blueprint'),
+            'label' => __('Text Option', 'rrze-answers'),
+            'description' => __('Enter some text.', 'rrze-answers'),
             'default' => $this->defaults->get('settings')['text_placeholder'],
             'sanitize' => 'sanitize_text_field'
         ]);
 
         $sectionGeneral->addOption('text', [
             'name' => 'slug_option',
-            'label' => __('Slug Option', 'rrze-plugin-blueprint'),
-            'description' => __('Enter a slug.', 'rrze-plugin-blueprint'),
+            'label' => __('Slug Option', 'rrze-answers'),
+            'description' => __('Enter a slug.', 'rrze-answers'),
             'default' => '',
             'sanitize' => 'sanitize_title',
             'validate' => [
                 [
-                    'feedback' => __('The slug can have between 4 and 32 alphanumeric characters.', 'rrze-plugin-blueprint'),
+                    'feedback' => __('The slug can have between 4 and 32 alphanumeric characters.', 'rrze-answers'),
                     'callback' => fn($value) => mb_strlen(sanitize_title($value)) >= 4 && mb_strlen(sanitize_title($value)) <= 32
                 ]
             ]
@@ -228,19 +228,19 @@ class Main
 
         $sectionGeneral->addOption('select', [
             'name' => 'select_option',
-            'label' => __('Select Option', 'rrze-plugin-blueprint'),
-            'description' => __('Select an option from the dropdown.', 'rrze-plugin-blueprint'),
+            'label' => __('Select Option', 'rrze-answers'),
+            'description' => __('Select an option from the dropdown.', 'rrze-answers'),
             'options' => [
-                'none'  => __('None', 'rrze-plugin-blueprint'),
-                'one'   => __('One', 'rrze-plugin-blueprint'),
-                'two'   => __('Two', 'rrze-plugin-blueprint'),
-                'three' => __('Three', 'rrze-plugin-blueprint')
+                'none'  => __('None', 'rrze-answers'),
+                'one'   => __('One', 'rrze-answers'),
+                'two'   => __('Two', 'rrze-answers'),
+                'three' => __('Three', 'rrze-answers')
             ],
             'default' => $this->defaults->get('settings')['select_default'],
             'sanitize' => 'sanitize_text_field',
             'validate' => [
                 [
-                    'feedback' => __('Please select a valid option.', 'rrze-plugin-blueprint'),
+                    'feedback' => __('Please select a valid option.', 'rrze-answers'),
                     'callback' => fn($value) => in_array($value, ['none', 'one', 'two', 'three'], true)
                 ]
             ]

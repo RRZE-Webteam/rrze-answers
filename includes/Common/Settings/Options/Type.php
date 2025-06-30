@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\PluginBlueprint\Common\Settings\Options;
+namespace RRZE\Answers\Common\Settings\Options;
 
-use RRZE\PluginBlueprint\Common\Settings\{
+use RRZE\Answers\Common\Settings\{
     Section,
     Template
 };
@@ -15,7 +15,7 @@ defined('ABSPATH') || exit;
  * This class serves as a base for different types of options, providing common
  * functionality such as rendering, sanitization, and validation.
  *
- * @package RRZE\PluginBlueprint\Common\Settings\Options
+ * @package RRZE\Answers\Common\Settings\Options
  */
 abstract class Type
 {
