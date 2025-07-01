@@ -17,7 +17,7 @@ Requires PHP:       8.2
 
 namespace RRZE\Answers;
 
-use RRZE\Answers\Main;
+use RRZE\Answers\Common\Main;
 use RRZE\Answers\Common\Plugin\Plugin;
 
 // Prevent direct access to the file.

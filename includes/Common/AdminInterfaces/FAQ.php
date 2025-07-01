@@ -12,7 +12,7 @@ use RRZE\Answers\Tools;
 /**
  * Layout settings for "faq"
  */
-class Layout
+class FAQ
 {
     private $cpt = [];
 
