@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\FAQ;
+namespace RRZE\Answers\Common\Shortcode;
 
 defined('ABSPATH') || exit;
 
@@ -8,10 +8,7 @@ use RRZE\Answers\Config;
 use RRZE\Answers\Tools;
 
 
-/**
- * Shortcode
- */
-class Shortcode
+class FAQ
 {
 
     /**
@@ -29,8 +26,8 @@ class Shortcode
 
         $this->settings = Config::getShortcodeSettings();
         $this->pluginname = $this->settings['block']['blockname'];
-        // add_shortcode( 'fau_glossar', [ $this, 'shortcodeOutput' ]); // BK 2020-06-05 Shortcode [fau_glossar ...] is moved to its own plugin rrze-glossary, because for historical reasons incompatible code exists in FAU institutions, which was not known when rrze-faq was rebuilt
-        // add_shortcode( 'glossary', [ $this, 'shortcodeOutput' ]); // BK 2020-06-05 Shortcode [glossary ...] is outsourced to its own plugin rrze-glossary, because for historical reasons incompatible code exists in FAU facilities, which was not known when rrze-faq was rebuilt
+        // add_shortcode( 'fau_glossar', [ $this, 'shortcodeOutput' ]); // BK 2020-06-05 Shortcode [fau_glossar ...] is moved to its own plugin rrze-glossary, because for historical reasons incompatible code exists in FAU institutions, which was not known when rrze-answers was rebuilt
+        // add_shortcode( 'glossary', [ $this, 'shortcodeOutput' ]); // BK 2020-06-05 Shortcode [glossary ...] is outsourced to its own plugin rrze-glossary, because for historical reasons incompatible code exists in FAU facilities, which was not known when rrze-answers was rebuilt
 
         add_shortcode('faq', [$this, 'shortcodeOutput']);
         add_action('admin_head', [$this, 'setMCEConfig']);
@@ -140,7 +137,7 @@ class Shortcode
      * @param bool $gutenberg Whether Gutenberg is used
      * @param int $hstart HTML heading level
      * @param string $style Inline styles for the accordion
-     * @param bool $masonry Whether tiles should be displayed (fake masonry - see https://github.com/RRZE-Webteam/rrze-faq/issues/105#issuecomment-2873361435 )
+     * @param bool $masonry Whether tiles should be displayed (fake masonry - see https://github.com/RRZE-Webteam/rrze-answers/issues/105#issuecomment-2873361435 )
      * @param string $expand_all_link Attribute for “expand all” link
      * @param bool $hide_accordion Whether the accordion should be suppressed
      * @param bool $hide_title Whether the title should be suppressed
@@ -439,7 +436,7 @@ class Shortcode
      */
     public function shortcodeOutput($atts, $content = null, $shortcode_tag = '')
     {
-        // Workaround - see: https://github.com/RRZE-Webteam/rrze-faq/issues/132#issuecomment-2839668060
+        // Workaround - see: https://github.com/RRZE-Webteam/rrze-answers/issues/132#issuecomment-2839668060
         if (($skip = Tools::preventGutenbergDoubleBracketBug($shortcode_tag)) !== false) {
             return $skip;
         }
@@ -491,7 +488,7 @@ class Shortcode
         $postID = get_the_ID();
         $headerID = (new Tools())->getHeaderID($postID);
 
-        wp_enqueue_style('rrze-faq-css');
+        wp_enqueue_style('rrze-answers-css');
 
         $content = Tools::renderFAQWrapper($postID, $content, $headerID, $masonry, $color, $additional_class);
 

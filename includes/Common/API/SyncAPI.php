@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\FAQ;
+namespace RRZE\Answers\Common\API;
 
 defined('ABSPATH') || exit;
 
@@ -9,7 +9,7 @@ define('ENDPOINT', 'wp-json/wp/v2/faq');
 use RRZE\Answers\Config;
 
 
-class API
+class SyncAPI
 {
     private $aAllCats = array();
     private $cpt = [];
@@ -29,17 +29,17 @@ class API
             $cleanShortname = strtolower(preg_replace('/[^A-Za-z0-9]/', '', $shortname));
 
             if (in_array($cleanUrl, $domains)) {
-                $aRet['ret'] = $url . __(' is already in use.', 'rrze-faq');
+                $aRet['ret'] = $url . __(' is already in use.', 'rrze-answers');
                 return $aRet;
             } elseif (array_key_exists($cleanShortname, $domains)) {
-                $aRet['ret'] = $cleanShortname . __(' is already in use.', 'rrze-faq');
+                $aRet['ret'] = $cleanShortname . __(' is already in use.', 'rrze-answers');
                 return $aRet;
             } else {
                 $request = $this->remoteGet($cleanUrl . ENDPOINT . '?per_page=1');
                 $status_code = wp_remote_retrieve_response_code($request);
 
                 if ($status_code != '200') {
-                    $aRet['ret'] = $cleanUrl . __(' is not valid.', 'rrze-faq');
+                    $aRet['ret'] = $cleanUrl . __(' is not valid.', 'rrze-answers');
                     return $aRet;
                 } else {
                     $content = json_decode(wp_remote_retrieve_body($request), true);
@@ -47,7 +47,7 @@ class API
                     if ($content) {
                         $cleanUrl = substr($content[0]['link'], 0, strpos($content[0]['link'], '/faq')) . '/';
                     } else {
-                        $aRet['ret'] = $cleanUrl . __(' is not valid.', 'rrze-faq');
+                        $aRet['ret'] = $cleanUrl . __(' is not valid.', 'rrze-answers');
                         return $aRet;
                     }
                 }
@@ -57,7 +57,7 @@ class API
             $aRet['ret'] = array('cleanShortname' => $cleanShortname, 'cleanUrl' => $cleanUrl);
             return $aRet;
         } catch (CustomException $e) {
-            return new \WP_Error('setDomain_error', __('Error in setDomain().', 'rrze-faq'));
+            return new \WP_Error('setDomain_error', __('Error in setDomain().', 'rrze-answers'));
         }
     }
 
@@ -69,7 +69,7 @@ class API
     public function getDomains()
     {
         $domains = array();
-        $options = get_option('rrze-faq');
+        $options = get_option('rrze-answers');
         if (isset($options['registeredDomains'])) {
             foreach ($options['registeredDomains'] as $shortname => $url) {
                 $domains[$shortname] = $url;
@@ -117,7 +117,7 @@ class API
             } while (($status_code == 200) && (!empty($entries)));
             return $aRet;
         } catch (CustomException $e) {
-            return new \WP_Error('getTaxonomies_error', __('Error in getTaxonomies().', 'rrze-faq'));
+            return new \WP_Error('getTaxonomies_error', __('Error in getTaxonomies().', 'rrze-answers'));
         }
     }
 
@@ -148,7 +148,7 @@ class API
                 wp_delete_term($ID, $field);
             }
         } catch (CustomException $e) {
-            return new \WP_Error('deleteTaxonomies_error', __('Error in deleteTaxonomies().', 'rrze-faq'));
+            return new \WP_Error('deleteTaxonomies_error', __('Error in deleteTaxonomies().', 'rrze-answers'));
         }
     }
 
@@ -184,7 +184,7 @@ class API
                 }
             }
         } catch (CustomException $e) {
-            return new \WP_Error('setCategories_error', __('Error in setCategories().', 'rrze-faq'));
+            return new \WP_Error('setCategories_error', __('Error in setCategories().', 'rrze-answers'));
         }
     }
 
@@ -228,7 +228,7 @@ class API
                 }
             }
         } catch (CustomException $e) {
-            return new \WP_Error('sortCats_error', __('Error in sortCats().', 'rrze-faq'));
+            return new \WP_Error('sortCats_error', __('Error in sortCats().', 'rrze-answers'));
         }
     }
 
@@ -333,7 +333,7 @@ class API
             }
             return $txt;
         } catch (CustomException $e) {
-            return new \WP_Error('absoluteUrl_error', __('Error in absoluteUrl().', 'rrze-faq'));
+            return new \WP_Error('absoluteUrl_error', __('Error in absoluteUrl().', 'rrze-answers'));
         }
     }
 
@@ -383,7 +383,7 @@ class API
 
             return $faqs;
         } catch (CustomException $e) {
-            return new \WP_Error('getFAQ_error', __('Error in getFAQ().', 'rrze-faq'));
+            return new \WP_Error('getFAQ_error', __('Error in getFAQ().', 'rrze-answers'));
         }
     }
 
@@ -403,7 +403,7 @@ class API
                 }
             }
         } catch (CustomException $e) {
-            return new \WP_Error('setTags_error', __('Error in setTags().', 'rrze-faq'));
+            return new \WP_Error('setTags_error', __('Error in setTags().', 'rrze-answers'));
         }
     }
 
@@ -422,7 +422,7 @@ class API
             }
             return $aRet;
         } catch (CustomException $e) {
-            return new \WP_Error('getFAQRemoteIDs_error', __('Error in getFAQRemoteIDs().', 'rrze-faq'));
+            return new \WP_Error('getFAQRemoteIDs_error', __('Error in getFAQRemoteIDs().', 'rrze-answers'));
         }
     }
 
@@ -518,7 +518,7 @@ class API
                 'URLhasSlider' => $aURLhasSlider,
             );
         } catch (CustomException $e) {
-            return new \WP_Error('setFAQ_error', __('Error in setFAQ().', 'rrze-faq'));
+            return new \WP_Error('setFAQ_error', __('Error in setFAQ().', 'rrze-answers'));
         }
     }
 
@@ -544,7 +544,7 @@ class API
                 return wp_remote_get($url, $args);
             }
         } catch (CustomException $e) {
-            return new \WP_Error('remoteGet_error', __('Error in remoteGet().', 'rrze-faq'));
+            return new \WP_Error('remoteGet_error', __('Error in remoteGet().', 'rrze-answers'));
         }
     }
 }

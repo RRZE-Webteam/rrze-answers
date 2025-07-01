@@ -1,5 +1,5 @@
 <?php
-namespace RRZE\FAQ;
+namespace RRZE\Answers\Common;
 
 defined('ABSPATH') || exit;
 
@@ -9,6 +9,6 @@ class CustomException extends \Exception
     {
         parent::__construct($message, $code, $previous);
 
-        do_action('rrze.log.error', ['plugin' => 'rrze-faq', 'wp-error' => $message]);
+        do_action('rrze.log.error', ['plugin' => 'rrze-answers', 'wp-error' => $message]);
     }
 }

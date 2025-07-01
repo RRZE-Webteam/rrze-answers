@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\FAQ;
+namespace RRZE\Answers\Common;
 
 defined('ABSPATH') || exit;
 
@@ -56,7 +56,7 @@ class Tools
 
     public static function renderFAQWrapper(?int $postID = null, string &$content, string &$headerID, bool &$masonry, string &$color, string &$additional_class): string
     {
-        $classes = 'rrze-faq';
+        $classes = 'rrze-answers';
 
         if ($masonry) {
             $classes .= ' faq-masonry';

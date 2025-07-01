@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RRZE FAQ\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/rrze-faq\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/rrze-answers\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -13,7 +13,7 @@ msgstr ""
 "X-Generator: Poedit 3.5\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
-"X-Poedit-WPHeader: rrze-faq.php\n"
+"X-Poedit-WPHeader: rrze-answers.php\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -21,29 +21,29 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-1: node_modules\n"
 
 #. Plugin Name of the plugin
-#: rrze-faq.php
+#: rrze-answers.php
 #: config/config.php:53
 #: config/config.php:54
 msgid "RRZE FAQ"
 msgstr "RRZE FAQ"
 
 #. Plugin URI of the plugin
-#: rrze-faq.php
-msgid "https://gitlab.rrze.fau.de/rrze-webteam/rrze-faq"
-msgstr "https://gitlab.rrze.fau.de/rrze-webteam/rrze-faq"
+#: rrze-answers.php
+msgid "https://gitlab.rrze.fau.de/rrze-webteam/rrze-answers"
+msgstr "https://gitlab.rrze.fau.de/rrze-webteam/rrze-answers"
 
 #. Description of the plugin
-#: rrze-faq.php
+#: rrze-answers.php
 msgid "Plugin, um FAQ zu erstellen und aus dem FAU-Netzwerk zu synchronisieren. Verwendbar als Shortcode, Block oder Widget."
 msgstr "Plugin, um FAQ zu erstellen und aus dem FAU-Netzwerk zu synchronisieren. Verwendbar als Shortcode, Block oder Widget."
 
 #. Author of the plugin
-#: rrze-faq.php
+#: rrze-answers.php
 msgid "RRZE Webteam"
 msgstr "RRZE Webteam"
 
 #. Author URI of the plugin
-#: rrze-faq.php
+#: rrze-answers.php
 msgid "https://blogs.fau.de/webworking/"
 msgstr "https://blogs.fau.de/webworking/"
 

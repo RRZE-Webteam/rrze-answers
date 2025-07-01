@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\FAQ;
+namespace RRZE\Answers\Common\API;
 
 defined('ABSPATH') || exit;
 

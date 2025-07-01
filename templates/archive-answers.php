@@ -11,7 +11,7 @@
 get_header();
 ?>
 
-<main id="main" class="site-main rrze-faq archive">
+<main id="main" class="site-main rrze-answers archive">
     <div id="content"><div class="content-container">
         <h2>FAQ</h2>
         <ul>

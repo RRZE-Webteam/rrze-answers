@@ -1,11 +1,11 @@
 <?php
 
-namespace RRZE\FAQ;
+namespace RRZE\Answers\Common\AdminInterfaces\FAQ;
 
 defined('ABSPATH') || exit;
 
 use RRZE\Answers\Config;
-use RRZE\Answers\API;
+use RRZE\Answers\API\SyncAPI\SyncAPI;
 use RRZE\Answers\Tools;
 
 
@@ -93,7 +93,7 @@ class Layout
 
         $output = '<input type="hidden" name="source" id="source" value="' . esc_attr(get_post_meta($meta_id->ID, 'source', true)) . '">';
         $output .= '<input type="text" name="sortfield" id="sortfield" class="sortfield" value="' . esc_attr(get_post_meta($meta_id->ID, 'sortfield', true)) . '">';
-        $output .= '<p class="description">' . __('Criterion for sorting the output of the shortcode', 'rrze-faq') . '</p>';
+        $output .= '<p class="description">' . __('Criterion for sorting the output of the shortcode', 'rrze-answers') . '</p>';
         echo wp_kses_post($output);
     }
 
@@ -101,7 +101,7 @@ class Layout
     {
         $output = '<input type="hidden" name="source" id="source" value="' . esc_attr(get_post_meta($meta_id->ID, 'source', true)) . '">';
         $output .= '<input type="text" name="anchorfield" id="anchorfield" class="anchorfield" value="' . esc_attr(get_post_meta($meta_id->ID, 'anchorfield', true)) . '">';
-        $output .= '<p class="description">' . __('Anchor field (optional) to define jump marks when displayed in accordions ', 'rrze-faq') . '</p>';
+        $output .= '<p class="description">' . __('Anchor field (optional) to define jump marks when displayed in accordions ', 'rrze-answers') . '</p>';
         echo wp_kses_post($output);
     }
 
@@ -109,7 +109,7 @@ class Layout
     public function langboxCallback($meta_id)
     {
         $output = '<input type="text" name="lang" id="lang" class="lang" value="' . esc_attr(get_post_meta($meta_id->ID, 'lang', true)) . '">';
-        $output .= '<p class="description">' . __('Language of this FAQ', 'rrze-faq') . '</p>';
+        $output .= '<p class="description">' . __('Language of this FAQ', 'rrze-answers') . '</p>';
         echo wp_kses_post($output);
     }
 
@@ -135,10 +135,10 @@ class Layout
         }
 
         if ($post->ID > 0) {
-            $ret .= '<h3 class="hndle">' . __('Single entries', 'rrze-faq') . ':</h3><p>[faq id="' . $post->ID . '"]</p>';
-            $ret .= ($category ? '<h3 class="hndle">' . __('Accordion with category', 'rrze-faq') . ':</h3><p>[faq category="' . $category . '"]</p><p>' . __('If there is more than one category listed, use at least one of them.', 'rrze-faq') . '</p>' : '');
-            $ret .= ($tag ? '<h3 class="hndle">' . __('Accordion with tag', 'rrze-faq') . ':</h3><p>[faq tag="' . $tag . '"]</p><p>' . __('If there is more than one tag listed, use at least one of them.', 'rrze-faq') . '</p>' : '');
-            $ret .= '<h3 class="hndle">' . __('Accordion with all entries', 'rrze-faq') . ':</h3><p>[faq]</p>';
+            $ret .= '<h3 class="hndle">' . __('Single entries', 'rrze-answers') . ':</h3><p>[faq id="' . $post->ID . '"]</p>';
+            $ret .= ($category ? '<h3 class="hndle">' . __('Accordion with category', 'rrze-answers') . ':</h3><p>[faq category="' . $category . '"]</p><p>' . __('If there is more than one category listed, use at least one of them.', 'rrze-answers') . '</p>' : '');
+            $ret .= ($tag ? '<h3 class="hndle">' . __('Accordion with tag', 'rrze-answers') . ':</h3><p>[faq tag="' . $tag . '"]</p><p>' . __('If there is more than one tag listed, use at least one of them.', 'rrze-answers') . '</p>' : '');
+            $ret .= '<h3 class="hndle">' . __('Accordion with all entries', 'rrze-answers') . ':</h3><p>[faq]</p>';
         }
         echo wp_kses_post($ret);
     }
@@ -147,7 +147,7 @@ class Layout
     {
         $screen = get_current_screen();
         if ($screen->post_type == $this->cpt['faq']) {
-            $title = __('Enter question here', 'rrze-faq');
+            $title = __('Enter question here', 'rrze-answers');
         }
         return $title;
     }
@@ -166,7 +166,7 @@ class Layout
             if (get_post_type($post_id) === $this->cpt['faq']) {
                 $source = get_post_meta($post_id, 'source', true);
                 if ($source && $source !== 'website') {
-                    $api = new API();
+                    $api = new SyncAPI();
                     $domains = $api->getDomains();
                     $remoteID = get_post_meta($post_id, 'remoteID', true);
                     $link = esc_url($domains[$source] . 'wp-admin/post.php?post=' . $remoteID . '&action=edit');
@@ -180,9 +180,9 @@ class Layout
                         'read_only_content_box',
                         sprintf(
                             '%1$s. <a href="%2$s" target="_blank">%3$s</a>',
-                            esc_html__('This FAQ cannot be edited because it is synchronized', 'rrze-faq'),
+                            esc_html__('This FAQ cannot be edited because it is synchronized', 'rrze-answers'),
                             $link,
-                            esc_html__('You can edit it at the source', 'rrze-faq')
+                            esc_html__('You can edit it at the source', 'rrze-answers')
                         ),
                         [$this, 'fillContentBox'],
                         $this->cpt['faq'],
@@ -194,25 +194,25 @@ class Layout
 
             add_meta_box(
                 'shortcode_box',
-                __('Integration in pages and posts', 'rrze-faq'),
+                __('Integration in pages and posts', 'rrze-answers'),
                 [$this, 'fillShortcodeBox'],
                 $this->cpt['faq'],
                 'normal'
             );
         }
 
-        add_meta_box('langbox', __('Language', 'rrze-faq'), [$this, 'langboxCallback'], $this->cpt['faq'], 'side');
-        add_meta_box('sortbox', __('Sort', 'rrze-faq'), [$this, 'sortboxCallback'], $this->cpt['faq'], 'side');
-        add_meta_box('anchorbox', __('Anchor', 'rrze-faq'), [$this, 'anchorboxCallback'], $this->cpt['faq'], 'side');
+        add_meta_box('langbox', __('Language', 'rrze-answers'), [$this, 'langboxCallback'], $this->cpt['faq'], 'side');
+        add_meta_box('sortbox', __('Sort', 'rrze-answers'), [$this, 'sortboxCallback'], $this->cpt['faq'], 'side');
+        add_meta_box('anchorbox', __('Anchor', 'rrze-answers'), [$this, 'anchorboxCallback'], $this->cpt['faq'], 'side');
     }
 
     public function addFaqColumns($columns)
     {
-        $columns['lang'] = __('Language', 'rrze-faq');
-        $columns['sortfield'] = __('Sort criterion', 'rrze-faq');
+        $columns['lang'] = __('Language', 'rrze-answers');
+        $columns['sortfield'] = __('Sort criterion', 'rrze-answers');
 
         if ((new Tools())->hasSync()) {
-            $columns['source'] = __('Source', 'rrze-faq');
+            $columns['source'] = __('Source', 'rrze-answers');
         }
 
         return $columns;
@@ -220,13 +220,13 @@ class Layout
 
     public function addFaqSortableColumns($columns)
     {
-        $columns['taxonomy-' . $this->cpt['category']] = __('Category', 'rrze-faq');
-        $columns['taxonomy-' . $this->cpt['tag']] = __('Tag', 'rrze-faq');
-        $columns['lang'] = __('Language', 'rrze-faq');
+        $columns['taxonomy-' . $this->cpt['category']] = __('Category', 'rrze-answers');
+        $columns['taxonomy-' . $this->cpt['tag']] = __('Tag', 'rrze-answers');
+        $columns['lang'] = __('Language', 'rrze-answers');
         $columns['sortfield'] = 'sortfield';
 
         if ((new Tools())->hasSync()) {
-            $columns['source'] = __('Source', 'rrze-faq');
+            $columns['source'] = __('Source', 'rrze-answers');
         }
 
         return $columns;
@@ -286,7 +286,7 @@ class Layout
             echo '';
         } else {
             $output = "<select name='source'>";
-            $output .= '<option value="0">' . __('All Sources', 'rrze-faq') . '</option>';
+            $output .= '<option value="0">' . __('All Sources', 'rrze-answers') . '</option>';
 
             foreach ($sources as $term) {
                 $selected = ($term === $selectedVal) ? 'selected' : '';
@@ -330,10 +330,10 @@ class Layout
 
     public function addTaxColumns($columns)
     {
-        $columns['lang'] = __('Language', 'rrze-faq');
+        $columns['lang'] = __('Language', 'rrze-answers');
 
         if ((new Tools())->hasSync()) {
-            $columns['source'] = __('Source', 'rrze-faq');
+            $columns['source'] = __('Source', 'rrze-answers');
         }
         return $columns;
     }

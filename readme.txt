@@ -28,7 +28,7 @@ Features:
 
 1. Download the plugin.
 2. Unzip the ZIP file.
-3. Upload the `rrze-faq` folder to the `/wp-content/plugins/` directory of your WordPress installation.
+3. Upload the `rrze-answers` folder to the `/wp-content/plugins/` directory of your WordPress installation.
 4. Activate the plugin via the `Plugins` menu in WordPress.
 5. Optional: Configure synchronization domains under `Settings > RRZE FAQ`.
 

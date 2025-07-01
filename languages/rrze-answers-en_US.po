@@ -14,12 +14,12 @@ msgstr ""
 "X-Generator: Loco https://localise.biz/\n"
 "X-Loco-Version: 2.4.0; wp-5.5-alpha-47942\n"
 
-#: rrze-faq.php:91
+#: rrze-answers.php:91
 #, php-format
 msgid "The server is running PHP version %1$s. The Plugin requires at least PHP version %2$s."
 msgstr ""
 
-#: rrze-faq.php:94
+#: rrze-answers.php:94
 #, php-format
 msgid "The server is running WordPress version %1$s. The Plugin requires at least WordPress version %2$s."
 msgstr ""
@@ -525,7 +525,7 @@ msgid "Plugin, um FAQ zu erstellen, aus dem FAU-Netzwerk zu synchronisieren und 
 msgstr ""
 
 #. URI of the plugin
-msgid "https://gitlab.rrze.fau.de/rrze-webteam/rrze-faq"
+msgid "https://gitlab.rrze.fau.de/rrze-webteam/rrze-answers"
 msgstr ""
 
 #. Author of the plugin

@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\FAQ;
+namespace RRZE\Answers;
 
 use function __;
 
@@ -10,7 +10,7 @@ class Config
 {
     public static function getOptionName(): string
     {
-        return 'rrze-faq';
+        return 'rrze-answers';
     }
 
     public static function getConstants(?string $key = null): array|string|null
@@ -22,12 +22,12 @@ class Config
                 'tag' => 'rrze_faq_tag'
             ],
             'langcodes' => [
-                'de' => __('German', 'rrze-faq'),
-                'en' => __('English', 'rrze-faq'),
-                'es' => __('Spanish', 'rrze-faq'),
-                'fr' => __('French', 'rrze-faq'),
-                'ru' => __('Russian', 'rrze-faq'),
-                'zh' => __('Chinese', 'rrze-faq')
+                'de' => __('German', 'rrze-answers'),
+                'en' => __('English', 'rrze-answers'),
+                'es' => __('Spanish', 'rrze-answers'),
+                'fr' => __('French', 'rrze-answers'),
+                'ru' => __('Russian', 'rrze-answers'),
+                'zh' => __('Chinese', 'rrze-answers')
             ],
             'schema' => [
                 'RRZE_SCHEMA_START' => '<div itemscope itemtype="https://schema.org/FAQPage">',
@@ -45,24 +45,24 @@ class Config
     public static function getMenuSettings(): array
     {
         return [
-            'page_title' => __('RRZE FAQ', 'rrze-faq'),
-            'menu_title' => __('RRZE FAQ', 'rrze-faq'),
+            'page_title' => __('RRZE FAQ', 'rrze-answers'),
+            'menu_title' => __('RRZE FAQ', 'rrze-answers'),
             'capability' => 'manage_options',
-            'menu_slug' => 'rrze-faq',
-            'title' => __('RRZE FAQ Settings', 'rrze-faq'),
+            'menu_slug' => 'rrze-answers',
+            'title' => __('RRZE FAQ Settings', 'rrze-answers'),
         ];
     }
 
     public static function getHelpTab(): array
     {
         return [[
-            'id' => 'rrze-faq-help',
-            'content' => ['<p>' . __('Here comes the Context Help content.', 'rrze-faq') . '</p>'],
-            'title' => __('Overview', 'rrze-faq'),
+            'id' => 'rrze-answers-help',
+            'content' => ['<p>' . __('Here comes the Context Help content.', 'rrze-answers') . '</p>'],
+            'title' => __('Overview', 'rrze-answers'),
             'sidebar' => sprintf(
                 '<p><strong>%1$s:</strong></p><p><a href="https://blogs.fau.de/webworking">RRZE Webworking</a></p><p><a href="https://github.com/RRZE Webteam">%2$s</a></p>',
-                __('For more information', 'rrze-faq'),
-                __('RRZE Webteam on Github', 'rrze-faq')
+                __('For more information', 'rrze-answers'),
+                __('RRZE Webteam on Github', 'rrze-answers')
             )
         ]];
     }
@@ -70,10 +70,10 @@ class Config
     public static function getSections(): array
     {
         return [
-            ['id' => 'doms', 'title' => __('Domains', 'rrze-faq')],
-            ['id' => 'faqsync', 'title' => __('Synchronize', 'rrze-faq')],
-            ['id' => 'website', 'title' => __('Website', 'rrze-faq')],
-            ['id' => 'faqlog', 'title' => __('Logfile', 'rrze-faq')]
+            ['id' => 'doms', 'title' => __('Domains', 'rrze-answers')],
+            ['id' => 'faqsync', 'title' => __('Synchronize', 'rrze-answers')],
+            ['id' => 'website', 'title' => __('Website', 'rrze-answers')],
+            ['id' => 'faqlog', 'title' => __('Logfile', 'rrze-answers')]
         ];
     }
 
@@ -85,7 +85,7 @@ class Config
             'post_status' => 'publish'
         ]);
 
-        $options = ['' => __('Default archive', 'rrze-faq')];
+        $options = ['' => __('Default archive', 'rrze-answers')];
         foreach ($pages as $page) {
             $options[get_permalink($page->ID)] = $page->post_title;
         }
@@ -103,43 +103,43 @@ public static function getFields():array
 		'doms' => [
 			[
 				'name' => 'new_name',
-				'label' => __('Short name', 'rrze-faq'),
-				'desc' => __('Enter a short name for this domain.', 'rrze-faq'),
+				'label' => __('Short name', 'rrze-answers'),
+				'desc' => __('Enter a short name for this domain.', 'rrze-answers'),
 				'type' => 'text'
 			],
 			[
 				'name' => 'new_url',
-				'label' => __('URL', 'rrze-faq'),
-				'desc' => __('Enter the domain\'s URL you want to receive FAQ from.', 'rrze-faq'),
+				'label' => __('URL', 'rrze-answers'),
+				'desc' => __('Enter the domain\'s URL you want to receive FAQ from.', 'rrze-answers'),
 				'type' => 'text'
 			]
 		],
 		'faqsync' => [
 			[
 				'name' => 'shortname',
-				'label' => __('Short name', 'rrze-faq'),
-				'desc' => __('Use this name as attribute \'domain\' in shortcode [faq]', 'rrze-faq'),
+				'label' => __('Short name', 'rrze-answers'),
+				'desc' => __('Use this name as attribute \'domain\' in shortcode [faq]', 'rrze-answers'),
 				'type' => 'plaintext',
 				'default' => ''
 			],
 			[
 				'name' => 'url',
-				'label' => __('URL', 'rrze-faq'),
+				'label' => __('URL', 'rrze-answers'),
 				'desc' => '',
 				'type' => 'plaintext',
 				'default' => ''
 			],
 			[
 				'name' => 'categories',
-				'label' => __('Categories', 'rrze-faq'),
-				'desc' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-faq'),
+				'label' => __('Categories', 'rrze-answers'),
+				'desc' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
 				'type' => 'multiselect',
 				'options' => []
 			],
 			[
 				'name' => 'donotsync',
-				'label' => __('Synchronize', 'rrze-faq'),
-				'desc' => __('Do not synchronize', 'rrze-faq'),
+				'label' => __('Synchronize', 'rrze-answers'),
+				'desc' => __('Do not synchronize', 'rrze-answers'),
 				'type' => 'checkbox',
 			],
 			[
@@ -150,25 +150,25 @@ public static function getFields():array
 			],
 			[
 				'name' => 'info',
-				'label' => __('Info', 'rrze-faq'),
-				'desc' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-faq'),
+				'label' => __('Info', 'rrze-answers'),
+				'desc' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-answers'),
 				'type' => 'plaintext',
-				'default' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-faq'),
+				'default' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-answers'),
 			],
 			[
 				'name' => 'autosync',
-				'label' => __('Mode', 'rrze-faq'),
-				'desc' => __('Synchronize automatically', 'rrze-faq'),
+				'label' => __('Mode', 'rrze-answers'),
+				'desc' => __('Synchronize automatically', 'rrze-answers'),
 				'type' => 'checkbox',
 			],
 			[
 				'name' => 'frequency',
-				'label' => __('Frequency', 'rrze-faq'),
+				'label' => __('Frequency', 'rrze-answers'),
 				'desc' => '',
 				'default' => 'daily',
 				'options' => [
-					'daily' => __('daily', 'rrze-faq'),
-					'twicedaily' => __('twicedaily', 'rrze-faq')
+					'daily' => __('daily', 'rrze-answers'),
+					'twicedaily' => __('twicedaily', 'rrze-answers')
 				],
 				'type' => 'select'
 			],
@@ -176,7 +176,7 @@ public static function getFields():array
 		'website' => [
 			[
 				'name' => 'redirect_archivpage_uri',
-				'label' => __('Custom archive page', 'rrze-faq'),
+				'label' => __('Custom archive page', 'rrze-answers'),
 				'desc' => '',
 				'type' => 'select',
                 'options' => self::getPageList(),				
@@ -184,7 +184,7 @@ public static function getFields():array
 			],
 			[
 				'name' => 'custom_faq_slug',
-				'label' => __('Custom FAQ Slug', 'rrze-faq'),
+				'label' => __('Custom FAQ Slug', 'rrze-answers'),
 				'desc' => '',
 				'type' => 'text',
 				'default' => 'faq',
@@ -192,7 +192,7 @@ public static function getFields():array
 			],
 			[
 				'name' => 'custom_faq_category_slug',
-				'label' => __('Custom FAQ Category Slug', 'rrze-faq'),
+				'label' => __('Custom FAQ Category Slug', 'rrze-answers'),
 				'desc' => '',
 				'type' => 'text',
 				'default' => 'faq_category',
@@ -201,7 +201,7 @@ public static function getFields():array
 			],
 			[
 				'name' => 'custom_faq_tag_slug',
-				'label' => __('Custom FAQ Tag Slug', 'rrze-faq'),
+				'label' => __('Custom FAQ Tag Slug', 'rrze-answers'),
 				'desc' => '',
 				'type' => 'text',
 				'default' => 'faq_tag',
@@ -228,7 +228,7 @@ public static function getShortcodeSettings():array
 {
 	$ret = [
 		'block' => [
-			'blocktype' => 'rrze-faq/faq',
+			'blocktype' => 'rrze-answers/faq',
 			'blockname' => 'faq',
 			'title' => 'RRZE FAQ',
 			'category' => 'widgets',
@@ -239,94 +239,94 @@ public static function getShortcodeSettings():array
 			'values' => [
 				[
 					'id' => '',
-					'val' => __('none', 'rrze-faq')
+					'val' => __('none', 'rrze-answers')
 				],
 				[
 					'id' => 'category',
-					'val' => __('Categories', 'rrze-faq')
+					'val' => __('Categories', 'rrze-answers')
 				],
 				[
 					'id' => 'tag',
-					'val' => __('Tags', 'rrze-faq')
+					'val' => __('Tags', 'rrze-answers')
 				]
 			],
 			'default' => '',
 			'field_type' => 'select',
-			'label' => __('Glossary content', 'rrze-faq'),
+			'label' => __('Glossary content', 'rrze-answers'),
 			'type' => 'string'
 		],
 		'glossarystyle' => [
 			'values' => [
 				[
 					'id' => '',
-					'val' => __('-- hidden --', 'rrze-faq')
+					'val' => __('-- hidden --', 'rrze-answers')
 				],
 				[
 					'id' => 'a-z',
-					'val' => __('A - Z', 'rrze-faq')
+					'val' => __('A - Z', 'rrze-answers')
 				],
 				[
 					'id' => 'tagcloud',
-					'val' => __('Tagcloud', 'rrze-faq')
+					'val' => __('Tagcloud', 'rrze-answers')
 				],
 				[
 					'id' => 'tabs',
-					'val' => __('Tabs', 'rrze-faq')
+					'val' => __('Tabs', 'rrze-answers')
 				]
 			],
 			'default' => 'a-z',
 			'field_type' => 'select',
-			'label' => __('Glossary style', 'rrze-faq'),
+			'label' => __('Glossary style', 'rrze-answers'),
 			'type' => 'string'
 		],
 		'category' => [
 			'default' => '',
 			'field_type' => 'text',
-			'label' => __('Categories', 'rrze-faq'),
+			'label' => __('Categories', 'rrze-answers'),
 			'type' => 'text'
 		],
 		'tag' => [
 			'default' => '',
 			'field_type' => 'text',
-			'label' => __('Tags', 'rrze-faq'),
+			'label' => __('Tags', 'rrze-answers'),
 			'type' => 'text'
 		],
 		'domain' => [
 			'default' => '',
 			'field_type' => 'text',
-			'label' => __('Domain', 'rrze-faq'),
+			'label' => __('Domain', 'rrze-answers'),
 			'type' => 'text'
 		],
 		'id' => [
 			'default' => NULL,
 			'field_type' => 'text',
-			'label' => __('FAQ', 'rrze-faq'),
+			'label' => __('FAQ', 'rrze-answers'),
 			'type' => 'number'
 		],
 		'hide_accordion' => [
 			'field_type' => 'toggle',
-			'label' => __('Hide accordeon', 'rrze-faq'),
+			'label' => __('Hide accordeon', 'rrze-answers'),
 			'type' => 'boolean',
 			'default' => FALSE,
 			'checked' => FALSE
 		],
 		'hide_title' => [
 			'field_type' => 'toggle',
-			'label' => __('Hide title', 'rrze-faq'),
+			'label' => __('Hide title', 'rrze-answers'),
 			'type' => 'boolean',
 			'default' => FALSE,
 			'checked' => FALSE
 		],
 		'expand_all_link' => [
 			'field_type' => 'toggle',
-			'label' => __('Show "expand all" button', 'rrze-faq'),
+			'label' => __('Show "expand all" button', 'rrze-answers'),
 			'type' => 'boolean',
 			'default' => FALSE,
 			'checked' => FALSE
 		],
 		'load_open' => [
 			'field_type' => 'toggle',
-			'label' => __('Load website with opened accordeons', 'rrze-faq'),
+			'label' => __('Load website with opened accordeons', 'rrze-answers'),
 			'type' => 'boolean',
 			'default' => FALSE,
 			'checked' => FALSE
@@ -360,14 +360,14 @@ public static function getShortcodeSettings():array
 			],
 			'default' => 'fau',
 			'field_type' => 'select',
-			'label' => __('Color', 'rrze-faq'),
+			'label' => __('Color', 'rrze-answers'),
 			'type' => 'string'
 		],
 		'style' => [
 			'values' => [
 				[
 					'id' => '',
-					'val' => __('none', 'rrze-faq')
+					'val' => __('none', 'rrze-answers')
 				],
 				[
 					'id' => 'light',
@@ -380,12 +380,12 @@ public static function getShortcodeSettings():array
 			],
 			'default' => '',
 			'field_type' => 'select',
-			'label' => __('Style', 'rrze-faq'),
+			'label' => __('Style', 'rrze-answers'),
 			'type' => 'string'
 		],
 		'masonry' => [
 			'field_type' => 'toggle',
-			'label' => __('Grid', 'rrze-faq'),
+			'label' => __('Grid', 'rrze-answers'),
 			'type' => 'boolean',
 			'default' => FALSE,
 			'checked' => FALSE
@@ -393,55 +393,55 @@ public static function getShortcodeSettings():array
 		'additional_class' => [
 			'default' => '',
 			'field_type' => 'text',
-			'label' => __('Additonal CSS-class(es) for sourrounding DIV', 'rrze-faq'),
+			'label' => __('Additonal CSS-class(es) for sourrounding DIV', 'rrze-answers'),
 			'type' => 'text'
 		],
 		'lang' => [
 			'default' => '',
 			'field_type' => 'select',
-			'label' => __('Language', 'rrze-faq'),
+			'label' => __('Language', 'rrze-answers'),
 			'type' => 'string'
 		],
 		'sort' => [
 			'values' => [
 				[
 					'id' => 'title',
-					'val' => __('Title', 'rrze-faq')
+					'val' => __('Title', 'rrze-answers')
 				],
 				[
 					'id' => 'id',
-					'val' => __('ID', 'rrze-faq')
+					'val' => __('ID', 'rrze-answers')
 				],
 				[
 					'id' => 'sortfield',
-					'val' => __('Sort field', 'rrze-faq')
+					'val' => __('Sort field', 'rrze-answers')
 				],
 			],
 			'default' => 'title',
 			'field_type' => 'select',
-			'label' => __('Sort', 'rrze-faq'),
+			'label' => __('Sort', 'rrze-answers'),
 			'type' => 'string'
 		],
 		'order' => [
 			'values' => [
 				[
 					'id' => 'ASC',
-					'val' => __('ASC', 'rrze-faq')
+					'val' => __('ASC', 'rrze-answers')
 				],
 				[
 					'id' => 'DESC',
-					'val' => __('DESC', 'rrze-faq')
+					'val' => __('DESC', 'rrze-answers')
 				],
 			],
 			'default' => 'ASC',
 			'field_type' => 'select',
-			'label' => __('Order', 'rrze-faq'),
+			'label' => __('Order', 'rrze-answers'),
 			'type' => 'string'
 		],
 		'hstart' => [
 			'default' => 2,
 			'field_type' => 'text',
-			'label' => __('Heading level of the first heading', 'rrze-faq'),
+			'label' => __('Heading level of the first heading', 'rrze-answers'),
 			'type' => 'number'
 		],
 	];
@@ -449,7 +449,7 @@ public static function getShortcodeSettings():array
 	$ret['lang']['values'] = [
 		[
 			'id' => '',
-			'val' => __('All languages', 'rrze-faq')
+			'val' => __('All languages', 'rrze-answers')
 		],
 	];
 

@@ -1,7 +1,7 @@
-[![Aktuelle Version](https://img.shields.io/github/package-json/v/rrze-webteam/rrze-faq/main?label=Version)](https://github.com/RRZE-Webteam/rrze-faq)
-[![Release Version](https://img.shields.io/github/v/release/rrze-webteam/rrze-faq?label=Release+Version)](https://github.com/rrze-webteam/rrze-faq/releases/)
-[![GitHub License](https://img.shields.io/github/license/rrze-webteam/rrze-faq)](https://github.com/RRZE-Webteam/rrze-faq)
-[![GitHub issues](https://img.shields.io/github/issues/RRZE-Webteam/rrze-faq)](https://github.com/RRZE-Webteam/rrze-faq/issues)
+[![Aktuelle Version](https://img.shields.io/github/package-json/v/rrze-webteam/rrze-answers/main?label=Version)](https://github.com/RRZE-Webteam/rrze-answers)
+[![Release Version](https://img.shields.io/github/v/release/rrze-webteam/rrze-answers?label=Release+Version)](https://github.com/rrze-webteam/rrze-answers/releases/)
+[![GitHub License](https://img.shields.io/github/license/rrze-webteam/rrze-answers)](https://github.com/RRZE-Webteam/rrze-answers)
+[![GitHub issues](https://img.shields.io/github/issues/RRZE-Webteam/rrze-answers)](https://github.com/RRZE-Webteam/rrze-answers/issues)
 # RRZE FAQ
 
 Plugin for creating FAQs and synchronizing them with other FAU websites. Usable as a shortcode, block, or widget.

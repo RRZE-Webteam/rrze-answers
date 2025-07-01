@@ -1,11 +1,11 @@
 <?php
 
-namespace RRZE\FAQ;
+namespace RRZE\Answers\Common\CPT;
 
 defined('ABSPATH') || exit;
 use RRZE\Answers\Config;
 
-class CPT
+class FAQ
 {
 
     private $lang = '';
@@ -37,18 +37,18 @@ class CPT
     public function registerFaq()
     {
         $labels = array(
-            'name' => _x('FAQ', 'FAQ, synonym or glossary entries', 'rrze-faq'),
-            'singular_name' => _x('FAQ', 'Single FAQ, synonym or glossary ', 'rrze-faq'),
-            'menu_name' => __('FAQ', 'rrze-faq'),
-            'add_new' => __('Add FAQ', 'rrze-faq'),
-            'add_new_item' => __('Add new FAQ', 'rrze-faq'),
-            'edit_item' => __('Edit FAQ', 'rrze-faq'),
-            'all_items' => __('All FAQ', 'rrze-faq'),
-            'search_items' => __('Search FAQ', 'rrze-faq'),
+            'name' => _x('FAQ', 'FAQ, synonym or glossary entries', 'rrze-answers'),
+            'singular_name' => _x('FAQ', 'Single FAQ, synonym or glossary ', 'rrze-answers'),
+            'menu_name' => __('FAQ', 'rrze-answers'),
+            'add_new' => __('Add FAQ', 'rrze-answers'),
+            'add_new_item' => __('Add new FAQ', 'rrze-answers'),
+            'edit_item' => __('Edit FAQ', 'rrze-answers'),
+            'all_items' => __('All FAQ', 'rrze-answers'),
+            'search_items' => __('Search FAQ', 'rrze-answers'),
         );
 
         // Get the slug from the options; fallback to 'faq' if not set.
-        $options = get_option('rrze-faq');
+        $options = get_option('rrze-answers');
         $slug = !empty($options['website_custom_faq_slug']) ? sanitize_title($options['website_custom_faq_slug']) : 'faq';
 
         $rewrite = array(
@@ -58,8 +58,8 @@ class CPT
             'feeds' => true,
         );
         $args = array(
-            'label' => __('FAQ', 'rrze-faq'),
-            'description' => __('FAQ informations', 'rrze-faq'),
+            'label' => __('FAQ', 'rrze-answers'),
+            'description' => __('FAQ informations', 'rrze-answers'),
             'labels' => $labels,
             'supports' => array('title', 'editor'),
             'hierarchical' => false,
@@ -86,53 +86,53 @@ class CPT
     {
 
         // Get the slug from the options; fallback to 'faq_category' and 'faq_tag' if not set.
-        $options = get_option('rrze-faq');
+        $options = get_option('rrze-answers');
         $slug_category = !empty($options['website_custom_faq_category_slug']) ? sanitize_title($options['website_custom_faq_category_slug']) : 'faq_category';
         $slug_tag = !empty($options['website_custom_faq_tag_slug']) ? sanitize_title($options['website_custom_faq_tag_slug']) : 'faq_tag';
 
         $tax = [
             [
                 'name' => $this->cpt['category'],
-                'label' => 'FAQ ' . __('Categories', 'rrze-faq'),
+                'label' => 'FAQ ' . __('Categories', 'rrze-answers'),
                 'slug' => $slug_category, // Dynamic slug
                 'rest_base' => $this->cpt['category'],
                 'hierarchical' => TRUE,
                 'labels' => array(
-                    'singular_name' => __('Category', 'rrze-faq'),
-                    'add_new' => __('Add new category', 'rrze-faq'),
-                    'add_new_item' => __('Add new category', 'rrze-faq'),
-                    'new_item' => __('New category', 'rrze-faq'),
-                    'view_item' => __('Show category', 'rrze-faq'),
-                    'view_items' => __('Show categories', 'rrze-faq'),
-                    'search_items' => __('Search categories', 'rrze-faq'),
-                    'not_found' => __('No category found', 'rrze-faq'),
-                    'all_items' => __('All categories', 'rrze-faq'),
-                    'separate_items_with_commas' => __('Separate categories with commas', 'rrze-faq'),
-                    'choose_from_most_used' => __('Choose from the most used categories', 'rrze-faq'),
-                    'edit_item' => __('Edit category', 'rrze-faq'),
-                    'update_item' => __('Update category', 'rrze-faq')
+                    'singular_name' => __('Category', 'rrze-answers'),
+                    'add_new' => __('Add new category', 'rrze-answers'),
+                    'add_new_item' => __('Add new category', 'rrze-answers'),
+                    'new_item' => __('New category', 'rrze-answers'),
+                    'view_item' => __('Show category', 'rrze-answers'),
+                    'view_items' => __('Show categories', 'rrze-answers'),
+                    'search_items' => __('Search categories', 'rrze-answers'),
+                    'not_found' => __('No category found', 'rrze-answers'),
+                    'all_items' => __('All categories', 'rrze-answers'),
+                    'separate_items_with_commas' => __('Separate categories with commas', 'rrze-answers'),
+                    'choose_from_most_used' => __('Choose from the most used categories', 'rrze-answers'),
+                    'edit_item' => __('Edit category', 'rrze-answers'),
+                    'update_item' => __('Update category', 'rrze-answers')
                 )
             ],
             [
                 'name' => $this->cpt['tag'],
-                'label' => 'FAQ ' . __('Tags', 'rrze-faq'),
+                'label' => 'FAQ ' . __('Tags', 'rrze-answers'),
                 'slug' => $slug_tag, // dynamic slug
                 'rest_base' => $this->cpt['tag'],
                 'hierarchical' => FALSE,
                 'labels' => array(
-                    'singular_name' => __('Tag', 'rrze-faq'),
-                    'add_new' => __('Add new tag', 'rrze-faq'),
-                    'add_new_item' => __('Add new tag', 'rrze-faq'),
-                    'new_item' => __('New tag', 'rrze-faq'),
-                    'view_item' => __('Show tag', 'rrze-faq'),
-                    'view_items' => __('Show tags', 'rrze-faq'),
-                    'search_items' => __('Search tags', 'rrze-faq'),
-                    'not_found' => __('No tag found', 'rrze-faq'),
-                    'all_items' => __('All tags', 'rrze-faq'),
-                    'separate_items_with_commas' => __('Separate tags with commas', 'rrze-faq'),
-                    'choose_from_most_used' => __('Choose from the most used tags', 'rrze-faq'),
-                    'edit_item' => __('Edit tag', 'rrze-faq'),
-                    'update_item' => __('Update tag', 'rrze-faq')
+                    'singular_name' => __('Tag', 'rrze-answers'),
+                    'add_new' => __('Add new tag', 'rrze-answers'),
+                    'add_new_item' => __('Add new tag', 'rrze-answers'),
+                    'new_item' => __('New tag', 'rrze-answers'),
+                    'view_item' => __('Show tag', 'rrze-answers'),
+                    'view_items' => __('Show tags', 'rrze-answers'),
+                    'search_items' => __('Search tags', 'rrze-answers'),
+                    'not_found' => __('No tag found', 'rrze-answers'),
+                    'all_items' => __('All tags', 'rrze-answers'),
+                    'separate_items_with_commas' => __('Separate tags with commas', 'rrze-answers'),
+                    'choose_from_most_used' => __('Choose from the most used tags', 'rrze-answers'),
+                    'edit_item' => __('Edit tag', 'rrze-answers'),
+                    'update_item' => __('Update tag', 'rrze-answers')
                 )
             ],
         ];
@@ -215,9 +215,9 @@ class CPT
     {
         $pages = get_pages();
         echo '<div class="form-field term-linked-page-wrap">';
-        echo '<label for="linked_page">' . esc_html__('Linked Page', 'rrze-faq') . '</label>';
+        echo '<label for="linked_page">' . esc_html__('Linked Page', 'rrze-answers') . '</label>';
         echo '<select name="linked_page">';
-        echo '<option value="">' . esc_html__('None', 'rrze-faq') . '</option>';
+        echo '<option value="">' . esc_html__('None', 'rrze-answers') . '</option>';
         foreach ($pages as $page) {
             echo '<option value="' . esc_attr($page->ID) . '">' . esc_html($page->post_title) . '</option>';
         }
@@ -232,9 +232,9 @@ class CPT
         $selected = get_term_meta($term->term_id, 'linked_page', true);
 
         echo '<tr class="form-field term-linked-page-wrap">';
-        echo '<th><label for="linked_page">' . esc_html__('Verlinkte Seite', 'rrze-faq') . '</label></th>';
+        echo '<th><label for="linked_page">' . esc_html__('Verlinkte Seite', 'rrze-answers') . '</label></th>';
         echo '<td><select name="linked_page">';
-        echo '<option value="">' . esc_html__('None', 'rrze-faq') . '</option>';
+        echo '<option value="">' . esc_html__('None', 'rrze-answers') . '</option>';
         foreach ($pages as $page) {
             $id = (int) $page->ID;
 

@@ -12,7 +12,7 @@ get_header();
 
 ?>
 
-<main id="main" class="site-main rrze-faq">
+<main id="main" class="site-main rrze-answers">
 
 <?php
 

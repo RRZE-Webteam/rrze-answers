@@ -1,17 +1,17 @@
 <?php
 
-namespace RRZE\FAQ;
+namespace RRZE\Answers\Common;
 
 defined('ABSPATH') || exit;
 
 use RRZE\Answers\Config;
-use RRZE\Answers\API;
-use RRZE\Answers\CPT;
-use RRZE\Answers\Layout;
-use RRZE\Answers\RESTAPI;
-use RRZE\Answers\Settings;
-use RRZE\Answers\Shortcode;
-use RRZE\Answers\Widget;
+use RRZE\Answers\Common\API\RESTAPI;
+use RRZE\Answers\Common\API\SyncAPI;
+use RRZE\Answers\Common\CPT\FAQ as CPTFAQ;
+use RRZE\Answers\Common\AdminInterfaces\FAQ as AdminFAQ;
+use RRZE\Answers\Common\Settings\FAQ as SettingsFAQ;
+use RRZE\Answers\Common\Shortcode\FAQ as ShortcodeFAQ;
+use RRZE\Answers\Common\Widgets\FAQ as WidgetFAQ;
 
 
 /**
@@ -46,8 +46,8 @@ class Main
         add_action('enqueue_block_assets', [$this, 'enqueueScripts']);
 
         // Actions: sync, add domain, delete domain, delete logfile
-        add_action('update_option_rrze-faq', [$this, 'checkSync']);
-        add_filter('pre_update_option_rrze-faq', [$this, 'switchTask'], 10, 1);
+        add_action('update_option_rrze-answers', [$this, 'checkSync']);
+        add_filter('pre_update_option_rrze-answers', [$this, 'switchTask'], 10, 1);
 
         // Register the Custom RRZE Category, if it is not set by another plugin
         add_filter('block_categories_all', [$this, 'my_custom_block_category'], 10, 2);
@@ -81,10 +81,10 @@ class Main
     public function enqueueScripts()
     {
         wp_enqueue_style(
-            'rrze-faq-css',
-            plugins_url('build/css/rrze-faq.css', $this->pluginFile),
+            'rrze-answers-css',
+            plugins_url('build/css/rrze-answers.css', $this->pluginFile),
             [],
-            filemtime(plugin_dir_path($this->pluginFile) . 'build/css/rrze-faq.css')
+            filemtime(plugin_dir_path($this->pluginFile) . 'build/css/rrze-answers.css')
         );        
     }
 
@@ -94,11 +94,11 @@ class Main
      */
     public function switchTask($options)
     {
-        $api = new API();
+        $api = new SyncAPI();
         $domains = $api->getDomains();
 
         // get stored options because they are generated and not defined in config.php
-        $storedOptions = get_option('rrze-faq');
+        $storedOptions = get_option('rrze-answers');
 
         if (is_array($storedOptions) && is_array($options)) {
             $options = array_merge($storedOptions, $options);
@@ -113,7 +113,7 @@ class Main
                     $aRet = $api->setDomain($options['doms_new_name'], $options['doms_new_url'], $domains);
 
                     if ($aRet['status']) {
-                        // url is correct, RRZE-FAQ at given url is in use and shortname is new
+                        // url is correct, rrze-answers at given url is in use and shortname is new
                         $domains[$aRet['ret']['cleanShortname']] = $aRet['ret']['cleanUrl'];
                     } else {
                         add_settings_error('doms_new_url', 'doms_new_error', $aRet['ret'], 'error');
@@ -185,7 +185,7 @@ class Main
     {
         // Remove the use of date_default_timezone_set, as WordPress has its own time zone settings
 
-        $options = get_option('rrze-faq');
+        $options = get_option('rrze-answers');
 
         if ($options['faqsync_autosync'] != 'on') {
             wp_clear_scheduled_hook('rrze_faq_auto_sync');
@@ -208,7 +208,7 @@ class Main
 
         // Use wp_date() instead of date() to correctly take the time zone into account
         $timestamp = wp_next_scheduled('rrze_faq_auto_sync');
-        $message = __('Next automatically synchronization:', 'rrze-faq') . ' ' . wp_date('d.m.Y H:i:s', $timestamp);
+        $message = __('Next automatically synchronization:', 'rrze-answers') . ' ' . wp_date('d.m.Y H:i:s', $timestamp);
         add_settings_error('AutoSyncComplete', 'autosynccomplete', $message, 'updated');
         settings_errors();
     }
@@ -231,7 +231,7 @@ class Main
 
         $custom_category = [
             'slug'  => 'rrze',
-            'title' => __('RRZE', 'rrze-faq'),
+            'title' => __('RRZE', 'rrze-answers'),
         ];
 
         // Add RRZE to the end of the categories array

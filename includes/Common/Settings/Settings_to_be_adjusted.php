@@ -1,11 +1,11 @@
 <?php
 
-namespace RRZE\FAQ;
+namespace RRZE\Answers;
 
 defined('ABSPATH') || exit;
 
 use RRZE\Answers\Config;
-use RRZE\Answers\API;
+use RRZE\Answers\API\SyncAPI;
 
 
 
@@ -107,7 +107,7 @@ class Settings
         add_action('admin_enqueue_scripts', [$this, 'adminEnqueueScripts']);
 
         add_action('init', [$this, 'maybeFlushRewriteRules'], 20);
-        add_action('update_option_rrze-faq', [$this, 'checkSlugChange'], 10, 2);
+        add_action('update_option_rrze-answers', [$this, 'checkSlugChange'], 10, 2);
 
         add_action('template_redirect', [$this, 'maybe_disable_canonical_redirect'], 1);
         add_action('template_redirect', [$this, 'custom_cpt_404_message']);
@@ -325,7 +325,7 @@ class Settings
     protected function setFields()
     {
         $this->settingsFields = Config::getFields();
-        if (isset($_GET['page']) && $_GET['page'] == 'rrze-faq' && isset($_GET['current-tab']) && $_GET['current-tab'] == 'faqsync') {
+        if (isset($_GET['page']) && $_GET['page'] == 'rrze-answers' && isset($_GET['current-tab']) && $_GET['current-tab'] == 'faqsync') {
             // Add Sync fields for each domain
             $this->settingsFields['faqsync'] = $this->setSettingsDomains();
         }
@@ -493,11 +493,11 @@ class Settings
                     $get = '?sync';
                     break;
                 case 'doms':
-                    $btn_label = esc_html__('Add domain', 'rrze-faq');
+                    $btn_label = esc_html__('Add domain', 'rrze-answers');
                     $get = '?doms';
                     break;
                 case 'faqlog':
-                    $btn_label = esc_html__('Delete logfile', 'rrze-faq');
+                    $btn_label = esc_html__('Delete logfile', 'rrze-answers');
                     $get = '?del';
                     break;
             }
@@ -528,20 +528,20 @@ class Settings
 
     public function domainOutput()
     {
-        $api = new API();
+        $api = new SyncAPI();
         $aDomains = $api->getDomains();
 
         if (count($aDomains) > 0) {
             $i = 1;
-            echo '<style> .settings_page_rrze-faq #log .form-table th {width:0;}</style>';
-            echo '<table class="wp-list-table widefat striped"><thead><tr><th colspan="3">' . esc_html__('Domains:', 'rrze-faq') . '</th></tr></thead><tbody>';
+            echo '<style> .settings_page_rrze-answers #log .form-table th {width:0;}</style>';
+            echo '<table class="wp-list-table widefat striped"><thead><tr><th colspan="3">' . esc_html__('Domains:', 'rrze-answers') . '</th></tr></thead><tbody>';
             foreach ($aDomains as $name => $url) {
                 echo '<tr><td><input type="checkbox" name="del_domain_' . esc_attr($i) . '" value="' . esc_url($url) . '"></td><td>' . esc_html($name) . '</td><td>' . esc_url($url) . '</td></tr>';
                 $i++;
             }
             echo '</tbody></table>';
-            echo '<p>' . esc_html__('Please note: "Delete selected domains" will DELETE every FAQ on this website that has been fetched from the selected domains.', 'rrze-faq') . '</p>';
-            submit_button(esc_html__('Delete selected domains', 'rrze-faq'));
+            echo '<p>' . esc_html__('Please note: "Delete selected domains" will DELETE every FAQ on this website that has been fetched from the selected domains.', 'rrze-answers') . '</p>';
+            submit_button(esc_html__('Delete selected domains', 'rrze-answers'));
         }
     }
 
@@ -549,7 +549,7 @@ class Settings
     {
         $i = 1;
         $newFields = array();
-        $api = new API();
+        $api = new SyncAPI();
         $additionalfields = array();
 
         $aDomains = $api->getDomains();
@@ -573,7 +573,7 @@ class Settings
                         break;
                     case 'categories':
                         if (!$aCategories) {
-                            $field['options'][''] = __('no category with source = "website" found', 'rrze-faq');
+                            $field['options'][''] = __('no category with source = "website" found', 'rrze-answers');
                         }
                         foreach ($aCategories as $slug => $name) {
                             $field['options'][$slug] = $name;
@@ -1059,7 +1059,7 @@ class Settings
         $value = esc_attr($this->getOption($args['section'], $args['id'], $args['default']));
         $size = isset($args['size']) && !is_null($args['size']) ? $args['size'] : 'regular';
         $id = $args['section'] . '[' . $args['id'] . ']';
-        $label = isset($args['options']['button_label']) ? $args['options']['button_label'] : __('Choose File', 'rrze-faq');
+        $label = isset($args['options']['button_label']) ? $args['options']['button_label'] : __('Choose File', 'rrze-answers');
 
         $html = sprintf(
             '<input type="text" class="%1$s-text settings-media-url" id="%3$s-%4$s" name="%2$s[%3$s_%4$s]" value="%5$s"/>',
@@ -1147,16 +1147,16 @@ class Settings
         if (file_exists($args['default'])) {
             $lines = file($args['default']);
             if ($lines !== false) {
-                echo '<style> .settings_page_rrze-faq #faqlog .form-table th {width:0;}</style><table class="wp-list-table widefat striped"><tbody>';
+                echo '<style> .settings_page_rrze-answers #faqlog .form-table th {width:0;}</style><table class="wp-list-table widefat striped"><tbody>';
                 foreach ($lines as $line) {
                     echo wp_kses_post('<tr><td>' . $line . '</td></tr>');
                 }
                 echo '</tbody></table>';
             } else {
-                echo esc_html(__('Logfile is empty.', 'rrze-faq'));
+                echo esc_html(__('Logfile is empty.', 'rrze-answers'));
             }
         } else {
-            echo esc_html(__('Logfile is empty.', 'rrze-faq'));
+            echo esc_html(__('Logfile is empty.', 'rrze-answers'));
         }
     }
 

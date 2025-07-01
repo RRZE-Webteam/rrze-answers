@@ -7,7 +7,7 @@
  * @since FAU 1.0
  */
 
-namespace RRZE\FAQ;
+namespace RRZE\Answers;
 
 use RRZE\Answers\Config;
 use RRZE\Answers\Tools;
@@ -31,10 +31,10 @@ $content .= apply_filters('the_content', get_the_content());
 $content .= '<footer><p class="meta-footer">';
 
 if ($cats) {
-    $content .= '<span class="post-meta-categories">' . esc_html__('Categories', 'rrze-faq') . ': ' . wp_kses_post($cats) . '</span> ';
+    $content .= '<span class="post-meta-categories">' . esc_html__('Categories', 'rrze-answers') . ': ' . wp_kses_post($cats) . '</span> ';
 }
 if ($tags) {
-    $content .= '<span class="post-meta-tags">' . esc_html__('Tags', 'rrze-faq') . ': ' . wp_kses_post($tags) . '</span>';
+    $content .= '<span class="post-meta-tags">' . esc_html__('Tags', 'rrze-answers') . ': ' . wp_kses_post($tags) . '</span>';
 }
 
 if (!empty($aLinkedPage)) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\FAQ;
+namespace RRZE\Answers\Common\Widgets;
 
 defined('ABSPATH') || exit;
 
@@ -10,7 +10,7 @@ use RRZE\Answers\Config;
 
 
 // Creating the widget
-class FAQWidget extends \WP_Widget
+class FAQ extends \WP_Widget
 {
     private $cpt = [];
 
@@ -20,8 +20,8 @@ class FAQWidget extends \WP_Widget
 
         parent::__construct(
             'faq_widget',
-            __('FAQ Widget', 'rrze-faq'),
-            array('description' => __('Displays a FAQ', 'rrze-faq'))
+            __('FAQ Widget', 'rrze-answers'),
+            array('description' => __('Displays a FAQ', 'rrze-answers'))
         );
     }
 
@@ -102,7 +102,7 @@ class FAQWidget extends \WP_Widget
         $output = '';
 
         if (!empty($posts)) {
-            $output = "<p><label for='" . esc_attr($this->get_field_id('id')) . "'>" . esc_html(__('Choose a FAQ', 'rrze-faq')) . ":</label> ";
+            $output = "<p><label for='" . esc_attr($this->get_field_id('id')) . "'>" . esc_html(__('Choose a FAQ', 'rrze-answers')) . ":</label> ";
             $output .= "<select id='" . esc_attr($this->get_field_id('id')) . "' name='" . esc_attr($this->get_field_name('id')) . "' class='widefat'>";
             $output .= "<option value='0'>---</option>";
             foreach ($posts as $post) {
@@ -119,11 +119,11 @@ class FAQWidget extends \WP_Widget
     public function displaySelect($selectedID = 0)
     {
         $aOptions = [
-            1 => __('show question and answer', 'rrze-faq'),
-            2 => __('show question and answer opened', 'rrze-faq'),
-            3 => __('hide question', 'rrze-faq'),
+            1 => __('show question and answer', 'rrze-answers'),
+            2 => __('show question and answer opened', 'rrze-answers'),
+            3 => __('hide question', 'rrze-answers'),
         ];
-        $output = "<p><label for='" . esc_attr($this->get_field_id('display')) . "'>" . esc_html(__('Display options:', 'rrze-faq')) . ":</label>";
+        $output = "<p><label for='" . esc_attr($this->get_field_id('display')) . "'>" . esc_html(__('Display options:', 'rrze-answers')) . ":</label>";
         $output .= "<select id='" . esc_attr($this->get_field_id('display')) . "' name='" . esc_attr($this->get_field_name('display')) . "' class='widefat'>";
         foreach ($aOptions as $ID => $txt) {
             $sSelected = selected($selectedID, $ID, false);
@@ -137,8 +137,8 @@ class FAQWidget extends \WP_Widget
     public function dateFields($dates)
     {
         $aFields = [
-            'start' => __('Start', 'rrze-faq'),
-            'end' => __('End', 'rrze-faq'),
+            'start' => __('Start', 'rrze-answers'),
+            'end' => __('End', 'rrze-answers'),
         ];
         $output = '';
         foreach ($aFields as $field => $label) {
@@ -172,7 +172,7 @@ class FAQWidget extends \WP_Widget
             'class' => 'widefat',
         ];
 
-        echo "<p><label for='" . esc_attr($this->get_field_name('catID')) . "'>" . esc_html(__('or choose a Category to display a FAQ randomly', 'rrze-faq')) . ":</label>";
+        echo "<p><label for='" . esc_attr($this->get_field_name('catID')) . "'>" . esc_html(__('or choose a Category to display a FAQ randomly', 'rrze-answers')) . ":</label>";
         wp_dropdown_categories($args);
         echo '</p>';
 

@@ -3,7 +3,7 @@
 Template Name: Part of the Custom Taxonomy Templates
 */
 
-namespace RRZE\FAQ;
+namespace RRZE\Answers;
 
 use RRZE\Answers\Config;
 getConstants;

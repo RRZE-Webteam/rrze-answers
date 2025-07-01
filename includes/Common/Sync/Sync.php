@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\FAQ;
+namespace RRZE\Answers\Common\Sync;
 
-use RRZE\Answers\API;
+use RRZE\Answers\API\SyncAPI;
 
 defined('ABSPATH') || exit;
 
@@ -14,9 +14,9 @@ class Sync
         $tStart = microtime(true);
         $max_exec_time = ini_get('max_execution_time') - 40; // ini_get('max_execution_time') is not the correct value perhaps due to load-balancer or proxy or other fancy things I've no clue of. But this workaround works for now.
         $iCnt = 0;
-        $api = new API();
+        $api = new SyncAPI();
         $domains = $api->getDomains();
-        $options = get_option('rrze-faq');
+        $options = get_option('rrze-answers');
         $allowSettingsError = ($mode == 'manual' ? true : false);
         $syncRan = false;
 
@@ -29,7 +29,7 @@ class Sync
                     $syncRan = true;
 
                     foreach ($aCnt['URLhasSlider'] as $URLhasSlider) {
-                        $error_msg = __('Domain', 'rrze-faq') . ' "' . $shortname . '": ' . __('Synchronization error. This FAQ contains sliders ([gallery]) and cannot be synchronized:', 'rrze-faq') . ' ' . $URLhasSlider;
+                        $error_msg = __('Domain', 'rrze-answers') . ' "' . $shortname . '": ' . __('Synchronization error. This FAQ contains sliders ([gallery]) and cannot be synchronized:', 'rrze-answers') . ' ' . $URLhasSlider;
                         logIt($error_msg . ' | ' . $mode);
 
                         if ($allowSettingsError) {
@@ -37,7 +37,7 @@ class Sync
                         }
                     }
 
-                    $sync_msg = __('Domain', 'rrze-faq') . ' "' . $shortname . '": ' . __('Synchronization completed.', 'rrze-faq') . ' ' . $aCnt['iNew'] . ' ' . __('new', 'rrze-faq') . ', ' . $aCnt['iUpdated'] . ' ' . __('updated', 'rrze-faq') . ' ' . __('and', 'rrze-faq') . ' ' . $aCnt['iDeleted'] . ' ' . __('deleted', 'rrze-faq') . '. ' . __('Required time:', 'rrze-faq') . ' ' . sprintf('%.1f ', microtime(true) - $tStartDetail) . __('seconds', 'rrze-faq');
+                    $sync_msg = __('Domain', 'rrze-answers') . ' "' . $shortname . '": ' . __('Synchronization completed.', 'rrze-answers') . ' ' . $aCnt['iNew'] . ' ' . __('new', 'rrze-answers') . ', ' . $aCnt['iUpdated'] . ' ' . __('updated', 'rrze-answers') . ' ' . __('and', 'rrze-answers') . ' ' . $aCnt['iDeleted'] . ' ' . __('deleted', 'rrze-answers') . '. ' . __('Required time:', 'rrze-answers') . ' ' . sprintf('%.1f ', microtime(true) - $tStartDetail) . __('seconds', 'rrze-answers');
                     logIt($sync_msg . ' | ' . $mode);
 
                     if ($allowSettingsError) {
@@ -48,9 +48,9 @@ class Sync
         }
 
         if ($syncRan) {
-            $sync_msg = __('All synchronizations completed', 'rrze-faq') . '. ' . __('Required time:', 'rrze-faq') . ' ' . sprintf('%.1f ', microtime(true) - $tStart) . __('seconds', 'rrze-faq');
+            $sync_msg = __('All synchronizations completed', 'rrze-answers') . '. ' . __('Required time:', 'rrze-answers') . ' ' . sprintf('%.1f ', microtime(true) - $tStart) . __('seconds', 'rrze-answers');
         } else {
-            $sync_msg = __('Settings updated', 'rrze-faq');
+            $sync_msg = __('Settings updated', 'rrze-answers');
         }
 
         if ($allowSettingsError) {
