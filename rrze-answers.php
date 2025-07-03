@@ -25,6 +25,20 @@ use RRZE\Answers\Common\Plugin\Plugin;
 // If accessed directly, it will exit the script to prevent unauthorized access.
 defined('ABSPATH') || exit;
 
+$s = array(
+    '/^((http|https):\/\/)?(www.)+/i',
+    '/\//',
+    '/[^A-Za-z0-9\-]/',
+);
+$r = array(
+    '',
+    '-',
+    '-',
+);
+
+define('FAQLOGFILE', plugin_dir_path(__FILE__) . 'rrze-faq-' . preg_replace($s, $r, get_bloginfo('url')) . '.log');
+
+
 /**
  * SPL Autoloader (PSR-4).
  * 
