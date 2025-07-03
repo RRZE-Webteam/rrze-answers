@@ -2,12 +2,6 @@
 /* 
 Template Name: Custom Taxonomy faq_category Template
 */
-namespace RRZE\Answers;
-
-use RRZE\Answers\Config;
-getConstants;
-
-$cpt = Config::getConstants('cpt');
 
 get_header();
 
@@ -17,7 +11,7 @@ get_header();
 
 <?php
 
-$taxonomy = $cpt['category'];
+$taxonomy = 'rrze_faq_category';
 include_once('template-parts/faq_taxonomy.php');
 ?>
 </main>

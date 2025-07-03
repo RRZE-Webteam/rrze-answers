@@ -3,12 +3,6 @@
 Template Name: Part of the Custom Taxonomy Templates
 */
 
-namespace RRZE\Answers;
-
-use RRZE\Answers\Config;
-getConstants;
-
-$cpt = Config::getConstants('cpt');
 
 $cat_slug = get_queried_object()->slug;
 $cat_name = get_queried_object()->name;
@@ -21,7 +15,7 @@ $cat_name = get_queried_object()->name;
 echo '<h2>' . esc_html($cat_name) . '</h2>';
 
 $tax_post_args = array(
-    'post_type' => $cpt['faq'],
+    'post_type' => 'rrze_faq_tag',
     'posts_per_page' => 999,
     'order' => 'ASC',
     'tax_query' => array(// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query

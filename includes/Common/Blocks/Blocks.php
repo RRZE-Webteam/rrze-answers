@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\Answers\Common\Blocks;
+namespace RRZE\Answers\Blocks;
 
 defined('ABSPATH') || exit;
 

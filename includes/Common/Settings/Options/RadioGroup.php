@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\Answers\Common\Settings\Options;
+namespace RRZE\Answers\Settings\Options;
 
-use RRZE\Answers\Common\Settings\Options\Type;
+use RRZE\Answers\Settings\Options\Type;
 
 defined('ABSPATH') || exit;
 
@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
  * This class represents a group of radio buttons in the settings section.
  * It extends the Type class and provides a template for rendering the radio group.
  *
- * @package RRZE\Answers\Common\Settings\Options
+ * @package RRZE\Answers\Settings\Options
  */
 class RadioGroup extends Type
 {

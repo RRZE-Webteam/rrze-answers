@@ -39,15 +39,15 @@ class Defaults
      */
     private function load(): array
     {
-        return apply_filters('rrze_plugin_blueprint_defaults', [
+        return apply_filters('rrze_answers_defaults', [
             'cpt' => [
                 'name'          => $this->withPrefix('book'),
                 'taxonomy_name' => $this->withPrefix('genre'),
             ],
             'settings' => [
-                'option_name'       => 'rrze_plugin_blueprint_settings',
-                'menu_title'        => __('Plugin Blueprint', 'rrze-answers'),
-                'page_title'        => __('RRZE Plugin Blueprint Settings', 'rrze-answers'),
+                'option_name'       => 'rrze_answers_settings',
+                'menu_title'        => __('Answers', 'rrze-answers'),
+                'page_title'        => __('RRZE Answers Settings', 'rrze-answers'),
                 'capability'        => 'manage_options',
                 'checkbox_option'   => false,
                 'text_placeholder'  => __('Enter your text here...', 'rrze-answers'),

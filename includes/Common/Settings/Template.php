@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\Answers\Common\Settings;
+namespace RRZE\Answers\Settings;
 
 defined('ABSPATH') || exit;
 
@@ -10,7 +10,7 @@ defined('ABSPATH') || exit;
  * This class provides a method to include templates with variables passed to them.
  * It is used to render the settings pages of the plugin.
  *
- * @package RRZE\Answers\Common\Settings
+ * @package RRZE\Answers\Settings
  */
 class Template
 {
@@ -40,6 +40,6 @@ class Template
 
         include $path;
 
-        echo apply_filters('rrze_plugin_blueprint_settings_template_include', ob_get_clean(), $fileName, $vars);
+        echo apply_filters('rrze_answers_settings_template_include', ob_get_clean(), $fileName, $vars);
     }
 }

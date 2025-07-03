@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\Answers\Common\Settings;
+namespace RRZE\Answers\Settings;
 
 defined('ABSPATH') || exit;
 ?>
@@ -19,7 +19,7 @@ defined('ABSPATH') || exit;
         <?php } ?>
 
         <?php if ($error = $option->hasError()) { ?>
-            <div class="rrze-plugin-blueprint-settings-error"><?php echo $error; ?></div>
+            <div class="rrze-answers-settings-error"><?php echo $error; ?></div>
         <?php } ?>
     </td>
 </tr>

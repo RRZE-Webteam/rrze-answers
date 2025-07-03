@@ -1,12 +1,12 @@
 <?php
 
-namespace RRZE\Answers\Common\Settings;
+namespace RRZE\Answers\Settings;
 
 defined('ABSPATH') || exit;
 
-use RRZE\Answers\Common\Settings\Section;
+use RRZE\Answers\Settings\Section;
 
-use RRZE\Answers\Common\Settings\Options\{
+use RRZE\Answers\Settings\Options\{
     Checkbox,
     CheckboxMultiple,
     Password,
@@ -62,7 +62,7 @@ class Option
         $this->type = $type;
         $this->args = $args;
 
-        $typeMap = apply_filters('rrze_plugin_blueprint_settings_option_type_map', [
+        $typeMap = apply_filters('rrze_answers_settings_option_type_map', [
             'checkbox' => Checkbox::class,
             'checkbox-multiple' => CheckboxMultiple::class,
             'password' => Password::class,

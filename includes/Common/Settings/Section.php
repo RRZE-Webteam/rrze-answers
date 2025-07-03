@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\Answers\Common\Settings;
+namespace RRZE\Answers\Settings;
 
-use RRZE\Answers\Common\Settings\{
+use RRZE\Answers\Settings\{
     Option,
     Tab
 };
@@ -15,7 +15,7 @@ defined('ABSPATH') || exit;
  * This class represents a section in the settings page, allowing the addition
  * of options and defining properties such as title, slug, and description.
  *
- * @package RRZE\Answers\Common\Settings
+ * @package RRZE\Answers\Settings
  */
 class Section
 {

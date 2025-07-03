@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\Answers\Common\Settings;
+namespace RRZE\Answers\Settings;
 
-use RRZE\Answers\Common\Settings\{
+use RRZE\Answers\Settings\{
     Builder,
     Error,
     Flash,
@@ -22,7 +22,7 @@ defined('ABSPATH') || exit;
  * It allows for the creation and management of settings, tabs, sections, and options.
  * It also handles saving settings, rendering the settings page, and managing errors and flash messages.
  *
- * @package RRZE\Answers\Common\Settings
+ * @package RRZE\Answers\Settings
  */
 class Settings
 {
@@ -326,7 +326,7 @@ class Settings
             return;
         }
 
-        echo '<style>.rrze-plugin-blueprint-settings-error {color: #d63638; margin: 5px 0;}</style>';
+        echo '<style>.rrze-answers-settings-error {color: #d63638; margin: 5px 0;}</style>';
     }
 
     /**
@@ -549,10 +549,10 @@ class Settings
     public function save()
     {
         if (
-            !isset($_POST['rrze_plugin_blueprint_settings_save'])
+            !isset($_POST['rrze_answers_settings_save'])
             || !wp_verify_nonce(
-                $_POST['rrze_plugin_blueprint_settings_save'],
-                'rrze_plugin_blueprint_settings_save_' . $this->optionName
+                $_POST['rrze_answers_settings_save'],
+                'rrze_answers_settings_save_' . $this->optionName
             )
         ) {
             return;
@@ -563,7 +563,7 @@ class Settings
         }
 
         $currentOptions = $this->getOptions();
-        $submittedOptions = apply_filters('rrze_plugin_blueprint_settings_new_options', $_POST[$this->optionName] ?? [], $currentOptions);
+        $submittedOptions = apply_filters('rrze_answers_settings_new_options', $_POST[$this->optionName] ?? [], $currentOptions);
         $newOptions = $currentOptions;
 
         foreach ($this->getActiveTab()->getActiveSections() as $section) {
@@ -576,7 +576,7 @@ class Settings
                     continue;
                 }
 
-                $value = apply_filters('rrze_plugin_blueprint_settings_new_option_' . $option->implementation->getName(), $option->sanitize($value), $option->implementation);
+                $value = apply_filters('rrze_answers_settings_new_option_' . $option->implementation->getName(), $option->sanitize($value), $option->implementation);
 
                 $newOptions[$option->implementation->getName()] = $value;
             }
@@ -654,6 +654,6 @@ class Settings
     public function updateOptions($options)
     {
         update_option($this->optionName, $options);
-        do_action('rrze_plugin_blueprint_settings_after_update_option', $this->optionName, $options);
+        do_action('rrze_answers_settings_after_update_option', $this->optionName, $options);
     }
 }

@@ -4,7 +4,7 @@ namespace RRZE\Answers;
 
 use RRZE\Answers\Defaults;
 
-use RRZE\Answers\Common\{
+use RRZE\Answers\{
     Settings\Settings,
     CPT\CPT,
     CPT\Taxonomy,
@@ -29,14 +29,6 @@ class Main
      * @var Defaults $defaults The defaults instance for the plugin.
      */
     public $defaults;
-
-    /**
-     * @var CPT $cpt The custom post type instance for the plugin.
-     * 
-     * This property can be used to register custom post types.
-     * It can be extended or modified to register additional custom post types as needed.
-     */
-    public $cpt;
 
     /**
      * @var Taxonomy $taxonomy The taxonomy instance for the plugin.
@@ -152,7 +144,7 @@ class Main
                 'title' => __('Default Title', 'rrze-answers'),
             ], $atts, 'example_shortcode');
 
-            return '<div class="rrze-plugin-blueprint-example-shortcode">' . esc_html($atts['title']) . '</div>';
+            return '<div class="rrze-answers-example-shortcode">' . esc_html($atts['title']) . '</div>';
         });
     }
 

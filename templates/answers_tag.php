@@ -2,13 +2,6 @@
 /* 
 Template Name: Custom Taxonomy faq_tag Template
 */
-namespace RRZE\Answers;
-
-use RRZE\Answers\Config;
-getConstants;
-
-$cpt = Config::getConstants('cpt');
-
 get_header();
 
 ?>
@@ -17,7 +10,7 @@ get_header();
 
 <?php
 
-$taxonomy = $cpt['tag'];
+$taxonomy = 'rrze_faq_tag';
 include_once('template-parts/faq_taxonomy.php');
 
 ?>

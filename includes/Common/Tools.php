@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\Answers\Common;
+namespace RRZE\Answers;
 
 defined('ABSPATH') || exit;
 
@@ -9,12 +9,11 @@ use RRZE\Answers\Config;
 
 class Tools
 {
-    private $cpt = [];
+    
 
     public function __construct()
     {
-        $this->cpt = Config::getConstants('cpt');
-    }
+            }
 
     public static function preventGutenbergDoubleBracketBug(string $shortcode_tag)
     {
@@ -238,7 +237,7 @@ class Tools
 
     public function getLinkedPage(int &$postID): ?array
     {
-        $assigned_terms = get_the_terms($postID, $this->cpt['category']);
+        $assigned_terms = get_the_terms($postID, 'rrze_faq_category');
         if (!$assigned_terms || is_wp_error($assigned_terms)) {
             return null;
         }
@@ -267,7 +266,7 @@ class Tools
     public function hasSync(): bool
     {
         $query = new WP_Query([
-            'post_type' => $this->cpt['faq'],
+            'post_type' => 'rrze_faq',
             'post_status' => 'publish',
             'posts_per_page' => 1,
             'meta_query' => [

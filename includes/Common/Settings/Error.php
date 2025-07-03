@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\Answers\Common\Settings;
+namespace RRZE\Answers\Settings;
 
-use RRZE\Answers\Common\Settings\Settings;
+use RRZE\Answers\Settings\Settings;
 
 defined('ABSPATH') || exit;
 
@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
  * This class manages errors related to settings options.
  * It allows adding, retrieving, and checking for errors in the settings context.
  *
- * @package RRZE\Answers\Common\Settings
+ * @package RRZE\Answers\Settings
  */
 class Error
 {

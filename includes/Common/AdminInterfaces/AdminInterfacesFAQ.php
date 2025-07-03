@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\Answers\Common\AdminInterfaces\FAQ;
+namespace RRZE\Answers\AdminInterfaces;
 
 defined('ABSPATH') || exit;
 
@@ -12,44 +12,43 @@ use RRZE\Answers\Tools;
 /**
  * Layout settings for "faq"
  */
-class FAQ
+class AdminInterfaces
 {
-    private $cpt = [];
+    
 
     public function __construct()
     {
-        $this->cpt = Config::getConstants('cpt');
-
+        
         add_filter('pre_get_posts', [$this, 'makeFaqSortable']);
         add_filter('enter_title_here', [$this, 'changeTitleText']);
         // show content in box if not editable ( not editable == source is not "website" - it is sychronized from another website )
         add_action('admin_menu', [$this, 'toggleEditor']);
 
         // Table "All FAQ"
-        add_filter('manage_' . $this->cpt['faq'] . '_posts_columns', [$this, 'addFaqColumns']);
-        add_action('manage_' . $this->cpt['faq'] . '_posts_custom_column', [$this, 'getFaqColumnsValues'], 10, 2);
-        add_filter('manage_edit-' . $this->cpt['faq'] . '_sortable_columns', [$this, 'addFaqSortableColumns']);
+        add_filter('manage_' . 'rrze_faq' . '_posts_columns', [$this, 'addFaqColumns']);
+        add_action('manage_' . 'rrze_faq' . '_posts_custom_column', [$this, 'getFaqColumnsValues'], 10, 2);
+        add_filter('manage_edit-' . 'rrze_faq' . '_sortable_columns', [$this, 'addFaqSortableColumns']);
         add_action('restrict_manage_posts', [$this, 'addFaqFilters'], 10, 1);
         add_filter('parse_query', [$this, 'filterRequestQuery'], 10);
 
         // Table "Category"
-        add_filter('manage_edit-' . $this->cpt['category'] . '_columns', [$this, 'addTaxColumns']);
-        add_filter('manage_' . $this->cpt['category'] . '_custom_column', [$this, 'getTaxColumnsValues'], 10, 3);
-        add_filter('manage_edit-' . $this->cpt['category'] . '_sortable_columns', [$this, 'addTaxColumns']);
+        add_filter('manage_edit-' . 'rrze_faq_category' . '_columns', [$this, 'addTaxColumns']);
+        add_filter('manage_' . 'rrze_faq_category' . '_custom_column', [$this, 'getTaxColumnsValues'], 10, 3);
+        add_filter('manage_edit-' . 'rrze_faq_category' . '_sortable_columns', [$this, 'addTaxColumns']);
 
         // Table "Tags"
-        add_filter('manage_edit-' . $this->cpt['tag'] . '_columns', [$this, 'addTaxColumns']);
-        add_filter('manage_' . $this->cpt['tag'] . '_custom_column', [$this, 'getTaxColumnsValues'], 10, 3);
-        add_filter('manage_edit-' . $this->cpt['tag'] . '_sortable_columns', [$this, 'addTaxColumns']);
+        add_filter('manage_edit-' . 'rrze_faq_tag' . '_columns', [$this, 'addTaxColumns']);
+        add_filter('manage_' . 'rrze_faq_tag' . '_custom_column', [$this, 'getTaxColumnsValues'], 10, 3);
+        add_filter('manage_edit-' . 'rrze_faq_tag' . '_sortable_columns', [$this, 'addTaxColumns']);
 
-        add_action('save_post_' . $this->cpt['faq'], [$this, 'savePostMeta']);
+        add_action('save_post_' . 'rrze_faq', [$this, 'savePostMeta']);
     }
 
     public function makeFaqSortable($wp_query)
     {
         if (is_admin() && !empty($wp_query->query['post_type'])) {
             $post_type = $wp_query->query['post_type'];
-            if ($post_type == $this->cpt['faq']) {
+            if ($post_type == 'rrze_faq') {
                 if (!isset($wp_query->query['orderby'])) {
                     $wp_query->set('orderby', 'title');
                     $wp_query->set('order', 'ASC');
@@ -125,7 +124,7 @@ class FAQ
         $ret = '';
         $category = '';
         $tag = '';
-        $fields = array($this->cpt['category'], $this->cpt['tag']);
+        $fields = array('rrze_faq_category', 'rrze_faq_tag');
         foreach ($fields as $field) {
             $terms = wp_get_post_terms($post->ID, $field);
             foreach ($terms as $term) {
@@ -146,7 +145,7 @@ class FAQ
     public function changeTitleText($title)
     {
         $screen = get_current_screen();
-        if ($screen->post_type == $this->cpt['faq']) {
+        if ($screen->post_type == 'rrze_faq') {
             $title = __('Enter question here', 'rrze-answers');
         }
         return $title;
@@ -163,7 +162,7 @@ class FAQ
         }
 
         if ($post_id) {
-            if (get_post_type($post_id) === $this->cpt['faq']) {
+            if (get_post_type($post_id) === 'rrze_faq') {
                 $source = get_post_meta($post_id, 'source', true);
                 if ($source && $source !== 'website') {
                     $api = new SyncAPI();
@@ -171,10 +170,10 @@ class FAQ
                     $remoteID = get_post_meta($post_id, 'remoteID', true);
                     $link = esc_url($domains[$source] . 'wp-admin/post.php?post=' . $remoteID . '&action=edit');
 
-                    remove_post_type_support($this->cpt['faq'], 'title');
-                    remove_post_type_support($this->cpt['faq'], 'editor');
-                    remove_meta_box($this->cpt['category'] . 'div', $this->cpt['faq'], 'side');
-                    remove_meta_box('tagsdiv-' . $this->cpt['tag'], $this->cpt['faq'], 'side');
+                    remove_post_type_support('rrze_faq', 'title');
+                    remove_post_type_support('rrze_faq', 'editor');
+                    remove_meta_box('rrze_faq_category' . 'div', 'rrze_faq', 'side');
+                    remove_meta_box('tagsdiv-' . 'rrze_faq_tag', 'rrze_faq', 'side');
 
                     add_meta_box(
                         'read_only_content_box',
@@ -185,7 +184,7 @@ class FAQ
                             esc_html__('You can edit it at the source', 'rrze-answers')
                         ),
                         [$this, 'fillContentBox'],
-                        $this->cpt['faq'],
+                        'rrze_faq',
                         'normal',
                         'high'
                     );
@@ -196,14 +195,14 @@ class FAQ
                 'shortcode_box',
                 __('Integration in pages and posts', 'rrze-answers'),
                 [$this, 'fillShortcodeBox'],
-                $this->cpt['faq'],
+                'rrze_faq',
                 'normal'
             );
         }
 
-        add_meta_box('langbox', __('Language', 'rrze-answers'), [$this, 'langboxCallback'], $this->cpt['faq'], 'side');
-        add_meta_box('sortbox', __('Sort', 'rrze-answers'), [$this, 'sortboxCallback'], $this->cpt['faq'], 'side');
-        add_meta_box('anchorbox', __('Anchor', 'rrze-answers'), [$this, 'anchorboxCallback'], $this->cpt['faq'], 'side');
+        add_meta_box('langbox', __('Language', 'rrze-answers'), [$this, 'langboxCallback'], 'rrze_faq', 'side');
+        add_meta_box('sortbox', __('Sort', 'rrze-answers'), [$this, 'sortboxCallback'], 'rrze_faq', 'side');
+        add_meta_box('anchorbox', __('Anchor', 'rrze-answers'), [$this, 'anchorboxCallback'], 'rrze_faq', 'side');
     }
 
     public function addFaqColumns($columns)
@@ -220,8 +219,8 @@ class FAQ
 
     public function addFaqSortableColumns($columns)
     {
-        $columns['taxonomy-' . $this->cpt['category']] = __('Category', 'rrze-answers');
-        $columns['taxonomy-' . $this->cpt['tag']] = __('Tag', 'rrze-answers');
+        $columns['taxonomy-' . 'rrze_faq_category'] = __('Category', 'rrze-answers');
+        $columns['taxonomy-' . 'rrze_faq_tag'] = __('Tag', 'rrze-answers');
         $columns['lang'] = __('Language', 'rrze-answers');
         $columns['sortfield'] = 'sortfield';
 
@@ -234,7 +233,7 @@ class FAQ
 
     public function addFaqFilters($post_type)
     {
-        if ($post_type !== $this->cpt['faq']) {
+        if ($post_type !== 'rrze_faq') {
             return;
         }
 
@@ -242,7 +241,7 @@ class FAQ
             return;
         }
 
-        $taxonomies_slugs = [$this->cpt['category'], $this->cpt['tag']];
+        $taxonomies_slugs = ['rrze_faq_category', 'rrze_faq_tag'];
         foreach ($taxonomies_slugs as $slug) {
             $taxonomy = get_taxonomy($slug);
             $selected = isset($_GET[$slug]) ? sanitize_text_field(wp_unslash($_GET[$slug])) : '';
@@ -262,7 +261,7 @@ class FAQ
         $selectedVal = isset($_GET['source']) ? sanitize_text_field(wp_unslash($_GET['source'])) : '';
 
         $posts = get_posts([
-            'post_type' => $this->cpt['faq'],
+            'post_type' => 'rrze_faq',
             'post_status' => 'publish',
             'numberposts' => -1,
             'fields' => 'ids',
@@ -304,7 +303,7 @@ class FAQ
             return $query;
         }
 
-        if (!isset($query->query['post_type']) || $query->query['post_type'] !== $this->cpt['faq']) {
+        if (!isset($query->query['post_type']) || $query->query['post_type'] !== 'rrze_faq') {
             return $query;
         }
 

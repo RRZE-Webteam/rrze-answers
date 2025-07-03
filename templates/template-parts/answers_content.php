@@ -9,16 +9,14 @@
 
 namespace RRZE\Answers;
 
-use RRZE\Answers\Config;
 use RRZE\Answers\Tools;
 
 $postID = get_the_ID();
 $tools = new Tools();
 $headerID = $tools->getHeaderID($postID);
-$cpt = Config::getConstants('cpt');
 
-$cats = $tools->getTermLinks($postID, $cpt['category']);
-$tags = $tools->getTermLinks($postID, $cpt['tag']);
+$cats = $tools->getTermLinks($postID, 'rrze_faq_category');
+$tags = $tools->getTermLinks($postID, 'rrze_faq_tag');
 $aLinkedPage = $tools->getLinkedPage($postID);
 
 $content = '';

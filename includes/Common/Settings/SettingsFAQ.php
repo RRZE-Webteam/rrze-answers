@@ -12,10 +12,10 @@ use RRZE\Answers\API\SyncAPI;
 /**
  * Settings class
  */
-class Settings
+class SettingsFAQ
 {
-     private $cpt = [];
-   /**
+
+    /**
      * The complete path and file name of the plugin file.
      * @var string
      */
@@ -91,8 +91,7 @@ class Settings
     public function __construct($pluginFile)
     {
         $this->pluginFile = $pluginFile;
-         $this->cpt = Config::getConstants('cpt');
-   }
+    }
 
     /**
      * It is executed as soon as the class is instantiated.
@@ -219,7 +218,7 @@ class Settings
         // CPT-Single 404
         if (
             isset($wp_query->query_vars['post_type']) &&
-            $wp_query->query_vars['post_type'] === $this->cpt['faq'] &&
+            $wp_query->query_vars['post_type'] === 'rrze_faq' &&
             empty($wp_query->post)
         ) {
             self::render_custom_404();

@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\Answers\Common\Widgets;
+namespace RRZE\Answers\Widgets;
 
 defined('ABSPATH') || exit;
 
@@ -12,12 +12,11 @@ use RRZE\Answers\Config;
 // Creating the widget
 class FAQ extends \WP_Widget
 {
-    private $cpt = [];
+    
 
     public function __construct()
     {
-        $this->cpt = Config::getConstants('cpt');
-
+        
         parent::__construct(
             'faq_widget',
             __('FAQ Widget', 'rrze-answers'),
@@ -29,11 +28,11 @@ class FAQ extends \WP_Widget
     {
         $aFaqIDs = get_posts([ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
             'posts_per_page' => -1,
-            'post_type' => $this->cpt['faq'],
+            'post_type' => 'rrze_faq',
             'fields' => 'ids',
             'tax_query' => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
                 [
-                    'taxonomy' => $this->cpt['category'],
+                    'taxonomy' => 'rrze_faq_category',
                     'field' => 'term_id',
                     'terms' => $catID,
                 ]
@@ -88,7 +87,7 @@ class FAQ extends \WP_Widget
     public function dropdownFAQs($selectedID = 0)
     {
         $args = [
-            'post_type' => $this->cpt['faq'],
+            'post_type' => 'rrze_faq',
             'pagination' => false,
             'posts_per_page' => -1,
             'post_status' => 'publish',
@@ -165,7 +164,7 @@ class FAQ extends \WP_Widget
         $args = [
             'show_option_none' => '---',
             'name' => esc_attr($this->get_field_name('catID')),
-            'taxonomy' => $this->cpt['category'],
+            'taxonomy' => 'rrze_faq_category',
             'hide_empty' => 0,
             'orderby' => 'name',
             'selected' => $catID,

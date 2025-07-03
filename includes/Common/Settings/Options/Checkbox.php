@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\Answers\Common\Settings\Options;
+namespace RRZE\Answers\Settings\Options;
 
-use RRZE\Answers\Common\Settings\Options\Type;
+use RRZE\Answers\Settings\Options\Type;
 
 defined('ABSPATH') || exit;
 
@@ -13,7 +13,7 @@ defined('ABSPATH') || exit;
  * It extends the Type class and provides methods to get the value
  * and check if the checkbox is checked.
  *
- * @package RRZE\Answers\Common\Settings\Options
+ * @package RRZE\Answers\Settings\Options
  */
 class Checkbox extends Type
 {

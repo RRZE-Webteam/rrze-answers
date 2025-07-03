@@ -1,17 +1,17 @@
 <?php
 
-namespace RRZE\Answers\Common;
+namespace RRZE\Answers;
 
 defined('ABSPATH') || exit;
 
 use RRZE\Answers\Config;
-use RRZE\Answers\Common\API\RESTAPI;
-use RRZE\Answers\Common\API\SyncAPI;
-use RRZE\Answers\Common\CPT\FAQ as CPTFAQ;
-use RRZE\Answers\Common\AdminInterfaces\FAQ as AdminFAQ;
-use RRZE\Answers\Common\Settings\FAQ as SettingsFAQ;
-use RRZE\Answers\Common\Shortcode\FAQ as ShortcodeFAQ;
-use RRZE\Answers\Common\Widgets\FAQ as WidgetFAQ;
+use RRZE\Answers\API\RESTAPI;
+use RRZE\Answers\API\SyncAPI;
+use RRZE\Answers\CPT\FAQ as CPTFAQ;
+use RRZE\Answers\AdminInterfaces\FAQ as AdminFAQ;
+use RRZE\Answers\Settings\FAQ as SettingsFAQ;
+use RRZE\Answers\Shortcode\FAQ as ShortcodeFAQ;
+use RRZE\Answers\Widgets\FAQ as WidgetFAQ;
 
 
 /**

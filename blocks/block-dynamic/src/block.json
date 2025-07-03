@@ -1,7 +1,7 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "rrze-plugin-blueprint/block-dynamic",
+  "name": "rrze-answers/block-dynamic",
   "version": "1.0.0",
   "title": "Block Dynamic Rendering",
   "category": "widgets",
@@ -11,7 +11,7 @@
   "supports": {
     "html": false
   },
-  "textdomain": "rrze-plugin-blueprint",
+  "textdomain": "rrze-answers",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css",

@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\Answers\Common\Sync;
+namespace RRZE\Answers\Sync;
 
 use RRZE\Answers\API\SyncAPI;
 

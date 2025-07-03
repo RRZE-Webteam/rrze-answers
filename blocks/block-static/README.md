@@ -1,6 +1,6 @@
 # Static Block
 
-This is a static block included in the **RRZE Plugin Blueprint** plugin.
+This is a static block included in the **RRZE Answers** plugin.
 
 ## Description
 

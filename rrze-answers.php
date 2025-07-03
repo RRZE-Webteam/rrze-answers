@@ -2,7 +2,7 @@
 
 /*
 Plugin Name:        RRZE Answers
-Plugin URI:         https://github.com/RRZE-Webteam/rrze-plugin-blueprint
+Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
 Version:            0.0.1
 Description:        Explain your content with FAQ, glossary and synonyms. 
 Author:             RRZE Webteam
@@ -17,8 +17,8 @@ Requires PHP:       8.2
 
 namespace RRZE\Answers;
 
-use RRZE\Answers\Common\Main;
-use RRZE\Answers\Common\Plugin\Plugin;
+use RRZE\Answers\Main;
+use RRZE\Answers\Plugin\Plugin;
 
 // Prevent direct access to the file.
 // This line ensures that the file is only executed within the context of WordPress.
