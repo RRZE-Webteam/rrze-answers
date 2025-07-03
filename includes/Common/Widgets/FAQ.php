@@ -1,12 +1,12 @@
 <?php
 
-namespace RRZE\Answers\Widgets;
+namespace RRZE\Answers\Common\Widgets;
 
 defined('ABSPATH') || exit;
 
 require_once ABSPATH . 'wp-includes/class-wp-widget.php';
 
-use RRZE\Answers\Config;
+use RRZE\Answers\Common\Config;
 
 
 // Creating the widget

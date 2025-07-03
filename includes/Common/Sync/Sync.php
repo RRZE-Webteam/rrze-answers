@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\Answers\Sync;
+namespace RRZE\Answers\Common\Sync;
 
-use RRZE\Answers\API\SyncAPI;
+use RRZE\Answers\Common\API\SyncAPI;
 
 defined('ABSPATH') || exit;
 

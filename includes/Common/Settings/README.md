@@ -1,4 +1,4 @@
-# RRZE\Answers\Settings
+# RRZE\Answers\Common\Settings
 
 The objective of this PHP library is to simplify the process of creating settings pages for WordPress plugins. Traditionally, developers have utilized the Settings API or custom code for this purpose. Although the Settings API functions well, it necessitates substantial setup effort. For instance, developers must manually write the HTML code for their options. Additionally, incorporating tabs and tab-sections can become rather complex. This PHP library aims to streamline these tasks and make settings page creation more straightforward.
 
@@ -9,7 +9,7 @@ Based on the package `jeffreyvanrossum/wp-settings`.
 ### Basic example
 
 ```php
-use RRZE\Answers\Settings\Settings;
+use RRZE\Answers\Common\Settings\Settings;
 
 $settings = new Settings(__('My Plugin Settings'));
 
@@ -28,7 +28,7 @@ $settings->build();
 ### Initializing the Settings class
 
 ```php
-use RRZE\Answers\Settings\Settings;
+use RRZE\Answers\Common\Settings\Settings;
 
 $settings = new Settings(__('Custom Settings', 'textdomain'));
 ```
@@ -257,7 +257,7 @@ apply_filters('rrze_answers_settings_new_options', array $newOptions, array $cur
 ```
 
 ```php
-apply_filters('rrze_answers_settings_new_option_{$optionName}', mixed $value, object \RRZE\Answers\Settings\Options\Type)
+apply_filters('rrze_answers_settings_new_option_{$optionName}', mixed $value, object \RRZE\Answers\Common\Settings\Options\Type)
 ```
 
 ```php
@@ -286,7 +286,7 @@ add_filter('rrze_answers_settings_option_type_map', function($options){
 Next, the class `MyCustomOption` must be added for the custom option type.
 
 ```php
-use RRZE\Answers\Settings\Options\Type;
+use RRZE\Answers\Common\Settings\Options\Type;
 
 class MyCustomOption extends Type
 {

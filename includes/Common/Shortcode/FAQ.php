@@ -1,11 +1,11 @@
 <?php
 
-namespace RRZE\Answers\Shortcode;
+namespace RRZE\Answers\Common\Shortcode;
 
 defined('ABSPATH') || exit;
 
-use RRZE\Answers\Config;
-use RRZE\Answers\Tools;
+use RRZE\Answers\Common\Config;
+use RRZE\Answers\Common\Tools;
 
 
 class FAQ

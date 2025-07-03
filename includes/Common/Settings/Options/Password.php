@@ -1,9 +1,9 @@
 <?php
 
-namespace RRZE\Answers\Settings\Options;
+namespace RRZE\Answers\Common\Settings\Options;
 
-use RRZE\Answers\Settings\Options\Type;
-use RRZE\Answers\Settings\Encryption;
+use RRZE\Answers\Common\Settings\Options\Type;
+use RRZE\Answers\Common\Settings\Encryption;
 
 defined('ABSPATH') || exit;
 
@@ -14,7 +14,7 @@ defined('ABSPATH') || exit;
  * It extends the Type class and provides methods to get the value
  * and sanitize the input using encryption.
  *
- * @package RRZE\Answers\Settings\Options
+ * @package RRZE\Answers\Common\Settings\Options
  */
 class Password extends Type
 {

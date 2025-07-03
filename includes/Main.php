@@ -4,10 +4,10 @@ namespace RRZE\Answers;
 
 use RRZE\Answers\Defaults;
 
-use RRZE\Answers\{
+use RRZE\Answers\Common\{
     Settings\Settings,
-    CPT\CPT,
-    CPT\Taxonomy,
+    Settings\SettingsFAQ,
+    CPT\CPTFAQ,
     Blocks\Blocks,
     Shortcode\Shortcode
 };
@@ -20,7 +20,7 @@ defined('ABSPATH') || exit;
  * This class serves as the entry point for the plugin.
  * It can be extended to include additional functionality or components as needed.
  * 
- * @package RRZE\Answers
+ * @package RRZE\Answers\Common
  * @since 1.0.0
  */
 class Main
@@ -29,14 +29,6 @@ class Main
      * @var Defaults $defaults The defaults instance for the plugin.
      */
     public $defaults;
-
-    /**
-     * @var Taxonomy $taxonomy The taxonomy instance for the plugin.
-     * 
-     * This property can be used to register custom taxonomy.
-     * It can be extended or modified to register additional custom taxonomy as needed.
-     */
-    public $taxonomy;
 
     /**
      * @var Settings $settings The settings instance for the plugin.
@@ -70,8 +62,6 @@ class Main
 
         $this->cpt();
 
-        $this->taxonomy();
-
         $this->settings();
 
         $this->shortcode();
@@ -93,7 +83,7 @@ class Main
     {
         // Example of registering a custom post type
         // This can be extended or modified as needed.
-        $this->cpt = new CPT($this->defaults->get('cpt')['name'], [
+        $this->cpt = new CPTFAQ($this->defaults->get('cpt')['name'], [
             'labels' => [
                 'name' => __('Books', 'rrze-answers'),
                 'singular_name' => __('Book', 'rrze-answers')
@@ -105,28 +95,6 @@ class Main
         ]);
     }
 
-    /**
-     * Register custom taxonomy.
-     *
-     * @return void
-     */
-    public function taxonomy()
-    {
-        // Example: Register a "genre" taxonomy for the "book" CPT.
-        $this->taxonomy = new Taxonomy(
-            $this->defaults->get('cpt')['taxonomy_name'],
-            $this->defaults->get('cpt')['name'],
-            [
-                'labels' => [
-                    'name' => __('Genres', 'rrze-answers'),
-                    'singular_name' => __('Genre', 'rrze-answers'),
-                ],
-                'public' => true,
-                'hierarchical' => true,
-                'show_in_rest' => true,
-            ]
-        );
-    }
 
     /**
      * Shortcode method

@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\Answers\Settings;
+namespace RRZE\Answers\Common\Settings;
 
-use RRZE\Answers\Settings\Section;
+use RRZE\Answers\Common\Settings\Section;
 
 defined('ABSPATH') || exit;
 
@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
  * Represents a settings tab in the plugin settings.
  * Each tab can contain multiple sections, and each section can have various options.
  *
- * @package RRZE\Answers\Settings
+ * @package RRZE\Answers\Common\Settings
  */
 class Tab
 {
@@ -22,7 +22,7 @@ class Tab
      * This property holds the settings object that contains all the settings
      * for this tab, allowing access to the settings values and methods.
      *
-     * @var \RRZE\Answers\Settings\Settings
+     * @var \RRZE\Answers\Common\Settings\Settings
      */
     public $settings;
 
@@ -61,7 +61,7 @@ class Tab
      *
      * Initializes the tab with the given settings, title, and optional slug.
      *
-     * @param \RRZE\Answers\Settings\Settings $settings The settings object for this tab.
+     * @param \RRZE\Answers\Common\Settings\Settings $settings The settings object for this tab.
      * @param string $title The title of the tab.
      * @param string|null $slug The slug of the tab (optional).
      * @return void

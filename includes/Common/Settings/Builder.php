@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\Answers\Settings;
+namespace RRZE\Answers\Common\Settings;
 
 defined('ABSPATH') || exit;
 
@@ -10,7 +10,7 @@ defined('ABSPATH') || exit;
  * This class provides methods to add, remove, and enqueue settings options.
  * It is used to build the settings structure for the plugin.
  *
- * @package RRZE\Answers\Settings
+ * @package RRZE\Answers\Common\Settings
  */
 class Builder
 {

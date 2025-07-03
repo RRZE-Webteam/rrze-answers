@@ -1,11 +1,11 @@
 <?php
 
-namespace RRZE\Answers\CPT;
+namespace RRZE\Answers\Common\CPT;
 
 defined('ABSPATH') || exit;
-use RRZE\Answers\Config;
+use RRZE\Answers\Common\Config;
 
-class FAQ
+class CPTFAQ
 {
 
     private $lang = '';

@@ -1,11 +1,11 @@
 <?php
 
-namespace RRZE\Answers;
+namespace RRZE\Answers\Common;
 
 defined('ABSPATH') || exit;
 
-use RRZE\Answers\Config;
-use RRZE\Answers\API\SyncAPI;
+use RRZE\Answers\Common\Config;
+use RRZE\Answers\Common\API\SyncAPI;
 
 
 

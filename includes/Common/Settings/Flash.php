@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\Answers\Settings;
+namespace RRZE\Answers\Common\Settings;
 
 defined('ABSPATH') || exit;
 
@@ -10,7 +10,7 @@ defined('ABSPATH') || exit;
  * This class manages flash messages for settings, allowing to set and check
  * the status and message associated with a specific settings option.
  *
- * @package RRZE\Answers\Settings
+ * @package RRZE\Answers\Common\Settings
  */
 class Flash
 {

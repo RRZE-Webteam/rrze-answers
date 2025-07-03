@@ -1,12 +1,12 @@
 <?php
 
-namespace RRZE\Answers\Settings;
+namespace RRZE\Answers\Common\Settings;
 
 defined('ABSPATH') || exit;
 
-use RRZE\Answers\Settings\Section;
+use RRZE\Answers\Common\Settings\Section;
 
-use RRZE\Answers\Settings\Options\{
+use RRZE\Answers\Common\Settings\Options\{
     Checkbox,
     CheckboxMultiple,
     Password,

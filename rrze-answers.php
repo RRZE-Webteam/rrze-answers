@@ -18,7 +18,7 @@ Requires PHP:       8.2
 namespace RRZE\Answers;
 
 use RRZE\Answers\Main;
-use RRZE\Answers\Plugin\Plugin;
+use RRZE\Answers\Common\Plugin\Plugin;
 
 // Prevent direct access to the file.
 // This line ensures that the file is only executed within the context of WordPress.
@@ -57,6 +57,7 @@ spl_autoload_register(function ($class) {
         require $file;
     }
 });
+
 
 // Register activation hook for the plugin
 register_activation_hook(__FILE__, __NAMESPACE__ . '\activation');

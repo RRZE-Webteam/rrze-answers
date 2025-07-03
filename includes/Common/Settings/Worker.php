@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\Answers\Settings;
+namespace RRZE\Answers\Common\Settings;
 
 defined('ABSPATH') || exit;
 
@@ -10,7 +10,7 @@ defined('ABSPATH') || exit;
  * This class provides a static interface to manage settings builders,
  * allowing for the addition, removal, and enqueuing of settings.
  *
- * @package RRZE\Answers\Settings
+ * @package RRZE\Answers\Common\Settings
  */
 class Worker
 {

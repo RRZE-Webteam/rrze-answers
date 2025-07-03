@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\Answers\Blocks;
+namespace RRZE\Answers\Common\Blocks;
 
 defined('ABSPATH') || exit;
 
@@ -9,7 +9,7 @@ defined('ABSPATH') || exit;
  * 
  * This class is responsible for registering custom blocks for the plugin.
  * 
- * @package RRZE\Answers
+ * @package RRZE\Answers\Common
  * @since 1.0.0
  */
 class Blocks

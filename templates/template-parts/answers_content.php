@@ -7,9 +7,9 @@
  * @since FAU 1.0
  */
 
-namespace RRZE\Answers;
+namespace RRZE\Answers\Common;
 
-use RRZE\Answers\Tools;
+use RRZE\Answers\Common\Tools;
 
 $postID = get_the_ID();
 $tools = new Tools();

@@ -1,11 +1,11 @@
 <?php
 
-namespace RRZE\Answers;
+namespace RRZE\Answers\Common;
 
 defined('ABSPATH') || exit;
 
 use WP_Query;
-use RRZE\Answers\Config;
+use RRZE\Answers\Common\Config;
 
 class Tools
 {

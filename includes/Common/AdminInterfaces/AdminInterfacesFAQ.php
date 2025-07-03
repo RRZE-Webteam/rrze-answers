@@ -1,12 +1,12 @@
 <?php
 
-namespace RRZE\Answers\AdminInterfaces;
+namespace RRZE\Answers\Common\AdminInterfaces;
 
 defined('ABSPATH') || exit;
 
-use RRZE\Answers\Config;
-use RRZE\Answers\API\SyncAPI\SyncAPI;
-use RRZE\Answers\Tools;
+use RRZE\Answers\Common\Config;
+use RRZE\Answers\Common\API\SyncAPI\SyncAPI;
+use RRZE\Answers\Common\Tools;
 
 
 /**

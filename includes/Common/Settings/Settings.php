@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\Answers\Settings;
+namespace RRZE\Answers\Common\Settings;
 
-use RRZE\Answers\Settings\{
+use RRZE\Answers\Common\Settings\{
     Builder,
     Error,
     Flash,
@@ -22,7 +22,7 @@ defined('ABSPATH') || exit;
  * It allows for the creation and management of settings, tabs, sections, and options.
  * It also handles saving settings, rendering the settings page, and managing errors and flash messages.
  *
- * @package RRZE\Answers\Settings
+ * @package RRZE\Answers\Common\Settings
  */
 class Settings
 {

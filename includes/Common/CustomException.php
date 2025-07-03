@@ -1,5 +1,5 @@
 <?php
-namespace RRZE\Answers;
+namespace RRZE\Answers\Common;
 
 defined('ABSPATH') || exit;
 

@@ -11,7 +11,7 @@ defined('ABSPATH') || exit;
  *
  * Holds and provides access to plugin-wide default values.
  *
- * @package RRZE\Answers
+ * @package RRZE\Answers\Common
  */
 class Defaults
 {
