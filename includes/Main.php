@@ -159,14 +159,14 @@ class Main
             $tab = $this->settings->addTab(__($section['title'], 'rrze-answers'), $section['id']);
             $sec = $tab->addSection(__($section['title'], 'rrze-answers'), $section['id']);
 
-            foreach ($this->defaults->get('fields')[$section['id']] as $field) {
-                $sec->addOption($field['type'], array_intersect_key(
-                    $field,
-                    array_flip(['name', 'label', 'description', 'default', 'sanitize', 'validate'])
-                ));
-            }
+            // foreach ($this->defaults->get('fields')[$section['id']] as $field) {
+            //     $sec->addOption($field['type'], array_intersect_key(
+            //         $field,
+            //         array_flip(['name', 'label', 'description', 'default', 'sanitize', 'validate'])
+            //     ));
+            // }
         }
-        
+
         $this->settings->build();
     }
 }

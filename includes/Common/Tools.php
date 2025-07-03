@@ -9,11 +9,11 @@ use RRZE\Answers\Common\Config;
 
 class Tools
 {
-    
+
 
     public function __construct()
     {
-            }
+    }
 
     public static function preventGutenbergDoubleBracketBug(string $shortcode_tag)
     {
@@ -282,4 +282,20 @@ class Tools
 
         return $query->have_posts();
     }
+
+    public static function getPageList(): array
+    {
+        $pages = \get_pages([
+            'sort_column' => 'post_title',
+            'sort_order' => 'asc',
+            'post_status' => 'publish'
+        ]);
+
+        $options = ['' => __('Default archive', 'rrze-answers')];
+        foreach ($pages as $page) {
+            $options[get_permalink($page->ID)] = $page->post_title;
+        }
+        return $options;
+    }
+
 }

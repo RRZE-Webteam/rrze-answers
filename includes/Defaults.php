@@ -3,6 +3,8 @@
 namespace RRZE\Answers;
 
 use function RRZE\Answers\plugin;
+use RRZE\Answers\Common\Tools;
+
 
 defined('ABSPATH') || exit;
 
@@ -139,7 +141,7 @@ class Defaults
                         'label' => __('Custom archive page', 'rrze-answers'),
                         'desc' => '',
                         'type' => 'select',
-                        'options' => self::getPageList(),
+                        'options' => Tools::getPageList(),
                         'default' => ''
                     ],
                     [
@@ -176,8 +178,6 @@ class Defaults
                     ]
                 ]
             ]
-
-            // Add more defaults as needed
         ]);
     }
 
