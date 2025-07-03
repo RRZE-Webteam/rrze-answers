@@ -155,57 +155,18 @@ class Main
             ->setMenuPosition(6)
             ->setMenuParentSlug('options-general.php');
 
-        $sectionGeneral = $this->settings->addSection(__('General', 'rrze-answers'));
+        foreach ($this->defaults->get('sections') as $section) {
+            $tab = $this->settings->addTab(__($section['title'], 'rrze-answers'), $section['id']);
+            $sec = $tab->addSection(__($section['title'], 'rrze-answers'), $section['id']);
 
-        $sectionGeneral->addOption('checkbox', [
-            'name' => 'checkbox_option',
-            'label' => __('Checkbox Option', 'rrze-answers'),
-            'description' => __('Check this option to enable the feature.', 'rrze-answers'),
-            'default' => $this->defaults->get('settings')['checkbox_option'],
-        ]);
-
-        $sectionGeneral->addOption('text', [
-            'name' => 'text_option',
-            'label' => __('Text Option', 'rrze-answers'),
-            'description' => __('Enter some text.', 'rrze-answers'),
-            'default' => $this->defaults->get('settings')['text_placeholder'],
-            'sanitize' => 'sanitize_text_field'
-        ]);
-
-        $sectionGeneral->addOption('text', [
-            'name' => 'slug_option',
-            'label' => __('Slug Option', 'rrze-answers'),
-            'description' => __('Enter a slug.', 'rrze-answers'),
-            'default' => '',
-            'sanitize' => 'sanitize_title',
-            'validate' => [
-                [
-                    'feedback' => __('The slug can have between 4 and 32 alphanumeric characters.', 'rrze-answers'),
-                    'callback' => fn($value) => mb_strlen(sanitize_title($value)) >= 4 && mb_strlen(sanitize_title($value)) <= 32
-                ]
-            ]
-        ]);
-
-        $sectionGeneral->addOption('select', [
-            'name' => 'select_option',
-            'label' => __('Select Option', 'rrze-answers'),
-            'description' => __('Select an option from the dropdown.', 'rrze-answers'),
-            'options' => [
-                'none'  => __('None', 'rrze-answers'),
-                'one'   => __('One', 'rrze-answers'),
-                'two'   => __('Two', 'rrze-answers'),
-                'three' => __('Three', 'rrze-answers')
-            ],
-            'default' => $this->defaults->get('settings')['select_default'],
-            'sanitize' => 'sanitize_text_field',
-            'validate' => [
-                [
-                    'feedback' => __('Please select a valid option.', 'rrze-answers'),
-                    'callback' => fn($value) => in_array($value, ['none', 'one', 'two', 'three'], true)
-                ]
-            ]
-        ]);
-
+            foreach ($this->defaults->get('fields')[$section['id']] as $field) {
+                $sec->addOption($field['type'], array_intersect_key(
+                    $field,
+                    array_flip(['name', 'label', 'description', 'default', 'sanitize', 'validate'])
+                ));
+            }
+        }
+        
         $this->settings->build();
     }
 }
