@@ -66,13 +66,13 @@ class Defaults
                     [
                         'name' => 'new_name',
                         'label' => __('Short name', 'rrze-answers'),
-                        'desc' => __('Enter a short name for this domain.', 'rrze-answers'),
+                        'description' => __('Enter a short name for this domain.', 'rrze-answers'),
                         'type' => 'text'
                     ],
                     [
                         'name' => 'new_url',
                         'label' => __('URL', 'rrze-answers'),
-                        'desc' => __('Enter the domain\'s URL you want to receive FAQ from.', 'rrze-answers'),
+                        'description' => __('Enter the domain\'s URL you want to receive FAQ from.', 'rrze-answers'),
                         'type' => 'text'
                     ]
                 ],
@@ -80,53 +80,53 @@ class Defaults
                     [
                         'name' => 'shortname',
                         'label' => __('Short name', 'rrze-answers'),
-                        'desc' => __('Use this name as attribute \'domain\' in shortcode [faq]', 'rrze-answers'),
+                        'description' => __('Use this name as attribute \'domain\' in shortcode [faq]', 'rrze-answers'),
                         'type' => 'plaintext',
                         'default' => ''
                     ],
                     [
                         'name' => 'url',
                         'label' => __('URL', 'rrze-answers'),
-                        'desc' => '',
+                        'description' => '',
                         'type' => 'plaintext',
                         'default' => ''
                     ],
                     [
                         'name' => 'categories',
                         'label' => __('Categories', 'rrze-answers'),
-                        'desc' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
+                        'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
                         'type' => 'multiselect',
                         'options' => []
                     ],
                     [
                         'name' => 'donotsync',
                         'label' => __('Synchronize', 'rrze-answers'),
-                        'desc' => __('Do not synchronize', 'rrze-answers'),
+                        'description' => __('Do not synchronize', 'rrze-answers'),
                         'type' => 'checkbox',
                     ],
                     [
                         'name' => 'hr',
                         'label' => '',
-                        'desc' => '',
+                        'description' => '',
                         'type' => 'line'
                     ],
                     [
                         'name' => 'info',
                         'label' => __('Info', 'rrze-answers'),
-                        'desc' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-answers'),
+                        'description' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-answers'),
                         'type' => 'plaintext',
                         'default' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-answers'),
                     ],
                     [
                         'name' => 'autosync',
                         'label' => __('Mode', 'rrze-answers'),
-                        'desc' => __('Synchronize automatically', 'rrze-answers'),
+                        'description' => __('Synchronize automatically', 'rrze-answers'),
                         'type' => 'checkbox',
                     ],
                     [
                         'name' => 'frequency',
                         'label' => __('Frequency', 'rrze-answers'),
-                        'desc' => '',
+                        'description' => '',
                         'default' => 'daily',
                         'options' => [
                             'daily' => __('daily', 'rrze-answers'),
@@ -139,7 +139,7 @@ class Defaults
                     [
                         'name' => 'redirect_archivpage_uri',
                         'label' => __('Custom archive page', 'rrze-answers'),
-                        'desc' => '',
+                        'description' => '',
                         'type' => 'select',
                         'options' => Tools::getPageList(),
                         'default' => ''
@@ -147,7 +147,7 @@ class Defaults
                     [
                         'name' => 'custom_faq_slug',
                         'label' => __('Custom FAQ Slug', 'rrze-answers'),
-                        'desc' => '',
+                        'description' => '',
                         'type' => 'text',
                         'default' => 'faq',
                         'placeholder' => 'faq'
@@ -155,7 +155,7 @@ class Defaults
                     [
                         'name' => 'custom_faq_category_slug',
                         'label' => __('Custom FAQ Category Slug', 'rrze-answers'),
-                        'desc' => '',
+                        'description' => '',
                         'type' => 'text',
                         'default' => 'faq_category',
                         'placeholder' => 'faq_category'
@@ -164,7 +164,7 @@ class Defaults
                     [
                         'name' => 'custom_faq_tag_slug',
                         'label' => __('Custom FAQ Tag Slug', 'rrze-answers'),
-                        'desc' => '',
+                        'description' => '',
                         'type' => 'text',
                         'default' => 'faq_tag',
                         'placeholder' => 'faq_tag'
