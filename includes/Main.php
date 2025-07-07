@@ -2,6 +2,8 @@
 
 namespace RRZE\Answers;
 
+use function RRZE\Answers\plugin;
+
 use RRZE\Answers\Defaults;
 
 use RRZE\Answers\Common\{
@@ -34,6 +36,7 @@ class Main
      * @var Settings $settings The settings instance for the plugin.
      */
     public $settings;
+    public $settingsFAQ;
 
     /**
      * @var Blocks $blocks The blocks instance for the plugin.
@@ -60,11 +63,7 @@ class Main
     {
 
 
-        add_action('init', function () {
-            $this->defaults = new Defaults();
-            $this->cpt();
-            $this->settings();
-        });
+        add_action('init', [$this, 'onInit']);
 
 
         $this->shortcode();
@@ -72,6 +71,17 @@ class Main
         $this->blocks();
 
         // Initialize other components or functionality as needed.   
+    }
+
+    public function onInit(){
+            $this->defaults = new Defaults();
+            $this->cpt();
+            $this->settings();
+            $this->settingsFAQ();
+    }
+
+    public function settingsFAQ(){
+        $this->settingsFAQ = new SettingsFAQ(plugin()->getFile());
     }
 
     /**

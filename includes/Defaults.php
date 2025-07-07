@@ -64,17 +64,13 @@ class Defaults
             'fields' => [
                 'doms' => [
                     [
-                        'name' => 'new_name',
-                        'label' => __('Short name', 'rrze-answers'),
-                        'description' => __('Enter a short name for this domain.', 'rrze-answers'),
-                        'type' => 'text'
+                        'name' => 'remote_api_url',
+                        'label' => __('Remote site', 'rrze-answers'),
+                        'description' => __('Select the site you want to synchronize with.', 'rrze-answers'),
+                        'type' => 'select',
+                        'options' => Tools::getSitesWithPlugin(),
+                        'default' => ''
                     ],
-                    [
-                        'name' => 'new_url',
-                        'label' => __('URL', 'rrze-answers'),
-                        'description' => __('Enter the domain\'s URL you want to receive FAQ from.', 'rrze-answers'),
-                        'type' => 'text'
-                    ]
                 ],
                 'faqsync' => [
                     [

@@ -298,4 +298,35 @@ class Tools
         return $options;
     }
 
+
+    public static function getSitesWithPlugin(): array
+    {
+        if (!is_multisite()) {
+            return [];
+        }
+
+        $pluginFile = 'rrze-answers/rrze-answers.php'; // ggf. anpassen
+        $sites = get_sites(['public' => 1, 'archived' => 0, 'deleted' => 0]);
+        $result = [];
+
+        foreach ($sites as $site) {
+            $blog_id = (int) $site->blog_id;
+
+            $active_plugins = get_blog_option($blog_id, 'active_plugins', []);
+            if (in_array($pluginFile, $active_plugins, true)) {
+                switch_to_blog($blog_id);
+
+                $site_name = get_bloginfo('name');
+                $site_url = home_url('/wp-json/rrze-answers/v1/'); // REST-Base oder eigene Route
+                // Beispiel: Plugin-spezifischer REST-Endpunkt
+
+                restore_current_blog();
+
+                $result[$site_url] = $site_name;
+            }
+        }
+
+        return $result;
+    }
+
 }
