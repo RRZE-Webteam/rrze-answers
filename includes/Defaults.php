@@ -157,8 +157,8 @@ class Defaults
                         'label' => __('Custom FAQ Category Slug', 'rrze-answers'),
                         'description' => '',
                         'type' => 'text',
-                        'default' => 'faq_category',
-                        'placeholder' => 'faq_category'
+                        'default' => 'faq-category',
+                        'placeholder' => 'faq-category'
 
                     ],
                     [
@@ -166,8 +166,8 @@ class Defaults
                         'label' => __('Custom FAQ Tag Slug', 'rrze-answers'),
                         'description' => '',
                         'type' => 'text',
-                        'default' => 'faq_tag',
-                        'placeholder' => 'faq_tag'
+                        'default' => 'faq-tag',
+                        'placeholder' => 'faq-tag'
                     ],
                 ],
                 'faqlog' => [
