@@ -115,9 +115,9 @@ class SettingsFAQ
     public function checkSlugChange($old_value, $value)
     {
         $rewriteKeys = [
-            'website_custom_faq_slug',
-            'website_custom_faq_category_slug',
-            'website_custom_faq_tag_slug',
+            'faq_settings_custom_faq_slug',
+            'faq_settings_custom_faq_category_slug',
+            'faq_settings_custom_faq_tag_slug',
         ];
 
         foreach ($rewriteKeys as $key) {
@@ -138,7 +138,7 @@ class SettingsFAQ
 
     public function rrze_faq_get_redirect_page_url($options): string
     {
-        $redirect_id = isset($this->options['website_redirect_archivpage_uri']) ? (int) $this->options['website_redirect_archivpage_uri'] : 0;
+        $redirect_id = isset($this->options['faq_settings_redirect_archivpage_uri']) ? (int) $this->options['faq_settings_redirect_archivpage_uri'] : 0;
         if ($redirect_id > 0) {
             $post = get_post($redirect_id);
             if ($post && get_post_status($post) === 'publish') {
@@ -189,10 +189,10 @@ class SettingsFAQ
     public function maybe_disable_canonical_redirect(): void
     {
         $this->options = $this->getOptions();
-        $slug = !empty($this->options['website_custom_faq_slug']) ? sanitize_title($this->options['website_custom_faq_slug']) : 'faq';
+        $slug = !empty($this->options['faq_settings_custom_faq_slug']) ? sanitize_title($this->options['faq_settings_custom_faq_slug']) : 'faq';
 
         // Nur deaktivieren, wenn eine Weiterleitungsseite gesetzt ist UND exakt der Slug aufgerufen wird
-        $redirect_id = (int) ($this->options['website_redirect_archivpage_uri'] ?? 0);
+        $redirect_id = (int) ($this->options['faq_settings_redirect_archivpage_uri'] ?? 0);
         if ($redirect_id > 0 && self::is_slug_request($slug)) {
             remove_filter('template_redirect', 'redirect_canonical');
         }
@@ -213,7 +213,7 @@ class SettingsFAQ
         global $wp_query;
 
         $this->options = $this->getOptions();
-        $slug = !empty($this->options['website_custom_faq_slug']) ? sanitize_title($this->options['website_custom_faq_slug']) : 'faq';
+        $slug = !empty($this->options['faq_settings_custom_faq_slug']) ? sanitize_title($this->options['faq_settings_custom_faq_slug']) : 'faq';
 
         // CPT-Single 404
         if (
@@ -227,7 +227,7 @@ class SettingsFAQ
 
         // Archiv-Slug direkt aufgerufen?
         if (self::is_slug_request($slug)) {
-            $redirect_id = (int) ($this->options['website_redirect_archivpage_uri'] ?? 0);
+            $redirect_id = (int) ($this->options['faq_settings_redirect_archivpage_uri'] ?? 0);
 
             if ($redirect_id > 0) {
                 $post = get_post($redirect_id);

@@ -56,9 +56,9 @@ class Defaults
                 'select_default' => 'none',
             ],
             'sections' => [
-                ['id' => 'doms', 'title' => __('Domains', 'rrze-answers')],
-                ['id' => 'faqsync', 'title' => __('Synchronize', 'rrze-answers')],
-                ['id' => 'website', 'title' => __('Website', 'rrze-answers')],
+                ['id' => 'faq_settings', 'title' => __('FAQ Settings', 'rrze-answers')],
+                ['id' => 'doms', 'title' => __('Import', 'rrze-answers')],
+                ['id' => 'faqsync', 'title' => __('Import Settings', 'rrze-answers')],
                 ['id' => 'faqlog', 'title' => __('Logfile', 'rrze-answers')]
             ],
             'fields' => [
@@ -135,7 +135,7 @@ class Defaults
                         'type' => 'select'
                     ],
                 ],
-                'website' => [
+                'faq_settings' => [
                     [
                         'name' => 'redirect_archivpage_uri',
                         'label' => __('Custom archive page', 'rrze-answers'),
@@ -157,8 +157,8 @@ class Defaults
                         'label' => __('Custom FAQ Category Slug', 'rrze-answers'),
                         'description' => '',
                         'type' => 'text',
-                        'default' => 'faq-category',
-                        'placeholder' => 'faq-category'
+                        'default' => 'faq_category',
+                        'placeholder' => 'faq_category'
 
                     ],
                     [
@@ -166,8 +166,8 @@ class Defaults
                         'label' => __('Custom FAQ Tag Slug', 'rrze-answers'),
                         'description' => '',
                         'type' => 'text',
-                        'default' => 'faq-tag',
-                        'placeholder' => 'faq-tag'
+                        'default' => 'faq_tag',
+                        'placeholder' => 'faq_tag'
                     ],
                 ],
                 'faqlog' => [
