@@ -165,7 +165,7 @@ class Main
             foreach ($this->defaults->get('fields')[$section['id']] as $field) {
                 $sec->addOption($field['type'], array_intersect_key(
                     $field,
-                    array_flip(['name', 'label', 'description', 'options', 'default', 'sanitize', 'validate'])
+                    array_flip(['name', 'label', 'description', 'options', 'default', 'sanitize', 'validate', 'placeholder'])
                 ));
             }
         }
