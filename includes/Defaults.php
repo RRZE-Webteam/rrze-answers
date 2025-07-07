@@ -134,7 +134,7 @@ class Defaults
                 'faq_settings' => [
                     [
                         'name' => 'redirect_archivpage_uri',
-                        'label' => __('Custom archive page', 'rrze-answers'),
+                        'label' => __('Archive page', 'rrze-answers'),
                         'description' => '',
                         'type' => 'select',
                         'options' => Tools::getPageList(),
@@ -142,7 +142,7 @@ class Defaults
                     ],
                     [
                         'name' => 'custom_faq_slug',
-                        'label' => __('Custom FAQ Slug', 'rrze-answers'),
+                        'label' => __('FAQ Slug', 'rrze-answers'),
                         'description' => '',
                         'type' => 'text',
                         'default' => 'faq',
@@ -150,7 +150,7 @@ class Defaults
                     ],
                     [
                         'name' => 'custom_faq_category_slug',
-                        'label' => __('Custom FAQ Category Slug', 'rrze-answers'),
+                        'label' => __('FAQ Category Slug', 'rrze-answers'),
                         'description' => '',
                         'type' => 'text',
                         'default' => 'faq_category',
@@ -159,7 +159,7 @@ class Defaults
                     ],
                     [
                         'name' => 'custom_faq_tag_slug',
-                        'label' => __('Custom FAQ Tag Slug', 'rrze-answers'),
+                        'label' => __('FAQ Tag Slug', 'rrze-answers'),
                         'description' => '',
                         'type' => 'text',
                         'default' => 'faq_tag',
