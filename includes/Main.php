@@ -75,7 +75,7 @@ class Main
 
     public function onInit(){
             $this->defaults = new Defaults();
-            $this->cpt();
+            // $this->cpt();
             $this->settings();
             $this->settingsFAQ();
     }

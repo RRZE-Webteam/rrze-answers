@@ -3,10 +3,7 @@
 namespace RRZE\Answers\Common\CPT;
 
 defined('ABSPATH') || exit;
-<<<<<<< Updated upstream:includes/Common/CPT/CPTFAQ.php
 use RRZE\Answers\Common\Config;
-=======
->>>>>>> Stashed changes:includes/Common/CPT/FAQ.php
 
 class CPTFAQ
 {
