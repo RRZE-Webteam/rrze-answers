@@ -208,8 +208,6 @@ class CPTFAQ
         add_term_meta($termID, 'lang', $this->lang, TRUE);
     }
 
-
-
     public static function add_category_page_field($taxonomy)
     {
         $pages = get_pages();
@@ -274,9 +272,6 @@ class CPTFAQ
 
     public function filter_archive_template($template)
     {
-    // echo '<pre>';
-    // var_dump('rrze_faq');
-    // exit;
         if (is_post_type_archive('rrze_faq')) {
             $template = plugin_dir_path(__DIR__) . 'templates/archive-faq.php';
         }

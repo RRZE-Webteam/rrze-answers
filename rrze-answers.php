@@ -36,7 +36,7 @@ $r = array(
     '-',
 );
 
-define('FAQLOGFILE', plugin_dir_path(__FILE__) . 'rrze-faq-' . preg_replace($s, $r, get_bloginfo('url')) . '.log');
+define('ANSWERSLOGFILE', plugin_dir_path(__FILE__) . 'rrze-faq-' . preg_replace($s, $r, get_bloginfo('url')) . '.log');
 
 
 /**
