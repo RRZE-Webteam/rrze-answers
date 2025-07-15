@@ -165,6 +165,58 @@ function load_textdomain()
     );
 }
 
+
+function rrze_answers_migration()
+{
+    $option_name = 'rrze_answers_migration_done';
+
+    if (get_option($option_name)) {
+        return;
+    }
+
+    global $wpdb;
+
+    $taxonomies = get_taxonomies([], 'objects');
+
+    foreach ($taxonomies as $taxonomy) {
+        if (in_array($taxonomy->name, ['category', 'tag', 'post_tag', 'faq_category', 'faq_tag'])) {
+            continue;
+        }
+
+        $terms = get_terms([
+            'taxonomy' => $taxonomy->name,
+            'hide_empty' => false,
+        ]);
+
+        foreach ($terms as $term) {
+            $source = get_term_meta($term->term_id, 'source', true);
+
+            if ($source) {
+                $new_taxonomy = $taxonomy->hierarchical ? 'rrze_faq_category' : 'rrze_faq_tag';
+
+                $wpdb->update(
+                    $wpdb->term_taxonomy,
+                    ['taxonomy' => $new_taxonomy],
+                    [
+                        'term_taxonomy_id' => $term->term_taxonomy_id,
+                    ]
+                );
+            }
+        }
+    }
+
+    $wpdb->update(
+        $wpdb->posts,
+        ['post_type' => 'rrze_faq'],
+        ['post_type' => 'faq']
+    );
+
+    wp_cache_flush();
+    flush_rewrite_rules();
+
+    update_option($option_name, 1);
+}
+
 /**
  * Handle the loading of the plugin.
  *
@@ -186,7 +238,7 @@ function loaded()
     $phpCompatible = is_php_version_compatible(plugin()->getRequiresPHP());
 
     // Check system requirements.
-    if (! $wpCompatibe || ! $phpCompatible) {
+    if (!$wpCompatibe || !$phpCompatible) {
         // If the system requirements are not met, add an action to display an admin notice.
         add_action('init', function () use ($wpCompatibe, $phpCompatible) {
             // Check if the current user has the capability to activate plugins.
@@ -198,14 +250,14 @@ function loaded()
                 $tag = is_plugin_active_for_network(plugin()->getBaseName()) ? 'network_admin_notices' : 'admin_notices';
 
                 $error = '';
-                if (! $wpCompatibe) {
+                if (!$wpCompatibe) {
                     $error = sprintf(
                         /* translators: 1: Server WordPress version number, 2: Required WordPress version number. */
                         __('The server is running WordPress version %1$s. The plugin requires at least WordPress version %2$s.', 'rrze-answers'),
                         wp_get_wp_version(),
                         plugin()->getRequiresWP()
                     );
-                } elseif (! $phpCompatible) {
+                } elseif (!$phpCompatible) {
                     $error = sprintf(
                         /* translators: 1: Server PHP version number, 2: Required PHP version number. */
                         __('The server is running PHP version %1$s. The plugin requires at least PHP version %2$s.', 'rrze-answers'),
@@ -219,9 +271,9 @@ function loaded()
                 add_action('admin_notices', function () use ($pluginName, $error) {
                     printf(
                         '<div class="notice notice-error"><p>' .
-                            /* translators: 1: The plugin name, 2: The error string. */
-                            esc_html__('Plugins: %1$s: %2$s', 'rrze-answers') .
-                            '</p></div>',
+                        /* translators: 1: The plugin name, 2: The error string. */
+                        esc_html__('Plugins: %1$s: %2$s', 'rrze-answers') .
+                        '</p></div>',
                         $pluginName,
                         $error
                     );
@@ -236,4 +288,9 @@ function loaded()
     // If system requirements are met, proceed to initialize the main plugin instance.
     // This will load the main functionality of the plugin.
     main();
+
+    add_action(
+        'init',
+        __NAMESPACE__ . '\rrze_answers_migration'
+    );
 }
