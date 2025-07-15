@@ -39,9 +39,9 @@ class CPTFAQ
     public function registerFaq()
     {
         $labels = array(
-            'name' => _x('FAQ', 'FAQ, synonym or glossary entries', 'rrze-answers'),
-            'singular_name' => _x('FAQ', 'Single FAQ, synonym or glossary ', 'rrze-answers'),
-            'menu_name' => __('FAQ', 'rrze-answers'),
+            'name' => _x('rrze_faq', 'FAQ, synonym or glossary entries', 'rrze-answers'),
+            'singular_name' => _x('rrze_faq', 'Single FAQ, synonym or glossary ', 'rrze-answers'),
+            'menu_name' => __('rrze_faq', 'rrze-answers'),
             'add_new' => __('Add FAQ', 'rrze-answers'),
             'add_new_item' => __('Add new FAQ', 'rrze-answers'),
             'edit_item' => __('Edit FAQ', 'rrze-answers'),
@@ -49,9 +49,9 @@ class CPTFAQ
             'search_items' => __('Search FAQ', 'rrze-answers'),
         );
 
-        // Get the slug from the options; fallback to 'faq' if not set.
+        // Get the slug from the options; fallback to 'rrze_faq' if not set.
         $options = get_option('rrze-answers');
-        $slug = !empty($options['faq_settings_custom_faq_slug']) ? sanitize_title($options['faq_settings_custom_faq_slug']) : 'faq';
+        $slug = !empty($options['faq_settings_custom_faq_slug']) ? sanitize_title($options['faq_settings_custom_faq_slug']) : 'rrze_faq';
 
         $rewrite = array(
             'slug' => $slug, // dynamic slug
@@ -60,7 +60,7 @@ class CPTFAQ
             'feeds' => true,
         );
         $args = array(
-            'label' => __('FAQ', 'rrze-answers'),
+            'label' => __('rrze_faq', 'rrze-answers'),
             'description' => __('FAQ informations', 'rrze-answers'),
             'labels' => $labels,
             'supports' => array('title', 'editor'),
@@ -75,10 +75,10 @@ class CPTFAQ
             'has_archive' => true,
             'exclude_from_search' => false,
             'publicly_queryable' => true,
-            'query_var' => 'faq',
+            'query_var' => 'rrze_faq',
             'rewrite' => $rewrite,
             'show_in_rest' => true,
-            'rest_base' => 'faq',
+            'rest_base' => 'rrze_faq',
             'rest_controller_class' => 'WP_REST_Posts_Controller',
         );
         register_post_type('rrze_faq', $args);
@@ -100,7 +100,7 @@ class CPTFAQ
                 'rest_base' => 'rrze_faq_category',
                 'hierarchical' => TRUE,
                 'labels' => array(
-                    'singular_name' => __('Category', 'rrze-answers'),
+                    'singular_name' => __('rrze_category', 'rrze-answers'),
                     'add_new' => __('Add new category', 'rrze-answers'),
                     'add_new_item' => __('Add new category', 'rrze-answers'),
                     'new_item' => __('New category', 'rrze-answers'),
@@ -122,7 +122,7 @@ class CPTFAQ
                 'rest_base' => 'rrze_faq_tag',
                 'hierarchical' => FALSE,
                 'labels' => array(
-                    'singular_name' => __('Tag', 'rrze-answers'),
+                    'singular_name' => __('rrze_tag', 'rrze-answers'),
                     'add_new' => __('Add new tag', 'rrze-answers'),
                     'add_new_item' => __('Add new tag', 'rrze-answers'),
                     'new_item' => __('New tag', 'rrze-answers'),

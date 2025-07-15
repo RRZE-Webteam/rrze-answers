@@ -219,8 +219,8 @@ class AdminInterfaces
 
     public function addFaqSortableColumns($columns)
     {
-        $columns['taxonomy-' . 'rrze_faq_category'] = __('Category', 'rrze-answers');
-        $columns['taxonomy-' . 'rrze_faq_tag'] = __('Tag', 'rrze-answers');
+        $columns['taxonomy-' . 'rrze_faq_category'] = __('rrze_category', 'rrze-answers');
+        $columns['taxonomy-' . 'rrze_faq_tag'] = __('rrze_tag', 'rrze-answers');
         $columns['lang'] = __('Language', 'rrze-answers');
         $columns['sortfield'] = 'sortfield';
 

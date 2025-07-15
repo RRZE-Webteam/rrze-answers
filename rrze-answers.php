@@ -179,7 +179,7 @@ function rrze_answers_migration()
     $taxonomies = get_taxonomies([], 'objects');
 
     foreach ($taxonomies as $taxonomy) {
-        if (in_array($taxonomy->name, ['category', 'tag', 'post_tag', 'faq_category', 'faq_tag'])) {
+        if (in_array($taxonomy->name, ['rrze_category', 'rrze_tag', 'post_tag', 'faq_category', 'faq_tag'])) {
             continue;
         }
 
@@ -208,7 +208,7 @@ function rrze_answers_migration()
     $wpdb->update(
         $wpdb->posts,
         ['post_type' => 'rrze_faq'],
-        ['post_type' => 'faq']
+        ['post_type' => 'rrze_faq']
     );
 
     wp_cache_flush();

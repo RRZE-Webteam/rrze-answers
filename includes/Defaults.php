@@ -141,8 +141,8 @@ class Defaults
                         'label' => __('FAQ Slug', 'rrze-answers'),
                         'description' => '',
                         'type' => 'text',
-                        'default' => 'faq',
-                        'placeholder' => 'faq'
+                        'default' => 'rrze_faq',
+                        'placeholder' => 'rrze_faq'
                     ],
                     [
                         'name' => 'custom_faq_category_slug',

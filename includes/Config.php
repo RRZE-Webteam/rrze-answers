@@ -17,9 +17,9 @@ class Config
     {
         $options = [
             'cpt' => [
-                'faq' => 'rrze_faq',
-                'category' => 'rrze_faq_category',
-                'tag' => 'rrze_faq_tag'
+                'rrze_faq' => 'rrze_faq',
+                'rrze_category' => 'rrze_faq_category',
+                'rrze_tag' => 'rrze_faq_tag'
             ],
             'langcodes' => [
                 'de' => __('German', 'rrze-answers'),
@@ -79,9 +79,9 @@ public static function getShortcodeSettings():array
 	$ret = [
 		'block' => [
 			'blocktype' => 'rrze-answers/faq',
-			'blockname' => 'faq',
+			'blockname' => 'rrze_faq',
 			'title' => 'RRZE FAQ',
-			'category' => 'widgets',
+			'rrze_category' => 'widgets',
 			'icon' => 'editor-help',
 			'tinymce_icon' => 'help'
 		],
@@ -92,11 +92,11 @@ public static function getShortcodeSettings():array
 					'val' => __('none', 'rrze-answers')
 				],
 				[
-					'id' => 'category',
+					'id' => 'rrze_category',
 					'val' => __('Categories', 'rrze-answers')
 				],
 				[
-					'id' => 'tag',
+					'id' => 'rrze_tag',
 					'val' => __('Tags', 'rrze-answers')
 				]
 			],
@@ -129,13 +129,13 @@ public static function getShortcodeSettings():array
 			'label' => __('Glossary style', 'rrze-answers'),
 			'type' => 'string'
 		],
-		'category' => [
+		'rrze_category' => [
 			'default' => '',
 			'field_type' => 'text',
 			'label' => __('Categories', 'rrze-answers'),
 			'type' => 'text'
 		],
-		'tag' => [
+		'rrze_tag' => [
 			'default' => '',
 			'field_type' => 'text',
 			'label' => __('Tags', 'rrze-answers'),
@@ -150,7 +150,7 @@ public static function getShortcodeSettings():array
 		'id' => [
 			'default' => NULL,
 			'field_type' => 'text',
-			'label' => __('FAQ', 'rrze-answers'),
+			'label' => __('rrze_faq', 'rrze-answers'),
 			'type' => 'number'
 		],
 		'hide_accordion' => [

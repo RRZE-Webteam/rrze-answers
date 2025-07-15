@@ -189,7 +189,7 @@ class SettingsFAQ
     public function maybe_disable_canonical_redirect(): void
     {
         $this->options = $this->getOptions();
-        $slug = !empty($this->options['faq_settings_custom_faq_slug']) ? sanitize_title($this->options['faq_settings_custom_faq_slug']) : 'faq';
+        $slug = !empty($this->options['faq_settings_custom_faq_slug']) ? sanitize_title($this->options['faq_settings_custom_faq_slug']) : 'rrze_faq';
 
         // Nur deaktivieren, wenn eine Weiterleitungsseite gesetzt ist UND exakt der Slug aufgerufen wird
         $redirect_id = (int) ($this->options['faq_settings_redirect_archivpage_uri'] ?? 0);
@@ -213,7 +213,7 @@ class SettingsFAQ
         global $wp_query;
 
         $this->options = $this->getOptions();
-        $slug = !empty($this->options['faq_settings_custom_faq_slug']) ? sanitize_title($this->options['faq_settings_custom_faq_slug']) : 'faq';
+        $slug = !empty($this->options['faq_settings_custom_faq_slug']) ? sanitize_title($this->options['faq_settings_custom_faq_slug']) : 'rrze_faq';
 
         // CPT-Single 404
         if (

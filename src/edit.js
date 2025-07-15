@@ -96,7 +96,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 
 	const faqs = useSelect( ( select ) => {
-		return select( 'core' ).getEntityRecords( 'postType', 'faq', {
+		return select( 'core' ).getEntityRecords( 'postType', 'rrze_faq', {
 			per_page: -1,
 			orderby: 'title',
 			order: 'asc',
@@ -161,11 +161,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		},
 		{
 			label: __( 'Categories', 'rrze-answers' ),
-			value: 'category',
+			value: 'rrze_category',
 		},
 		{
 			label: __( 'Tags', 'rrze-answers' ),
-			value: 'tag',
+			value: 'rrze_tag',
 		},
 	];
 
