@@ -53,12 +53,12 @@ class Defaults
             ],
             'sections' => [
                 ['id' => 'faq_settings', 'title' => __('FAQ Settings', 'rrze-answers')],
-                ['id' => 'doms', 'title' => __('Import', 'rrze-answers')],
+                ['id' => 'faq_import', 'title' => __('Import', 'rrze-answers')],
                 ['id' => 'faqsync', 'title' => __('Import Settings', 'rrze-answers')],
                 ['id' => 'faqlog', 'title' => __('Logfile', 'rrze-answers')]
             ],
             'fields' => [
-                'doms' => [
+                'faq_import' => [
                     [
                         'name' => 'remote_api_url',
                         'label' => __('Remote site', 'rrze-answers'),

@@ -3,10 +3,7 @@
 namespace RRZE\Answers\Common\CPT;
 
 defined('ABSPATH') || exit;
-<<<<<<< Updated upstream:includes/Common/CPT/CPTFAQ.php
 use RRZE\Answers\Common\Config;
-=======
->>>>>>> Stashed changes:includes/Common/CPT/FAQ.php
 
 class CPTFAQ
 {
@@ -39,9 +36,9 @@ class CPTFAQ
     public function registerFaq()
     {
         $labels = array(
-            'name' => _x('rrze_faq', 'FAQ, synonym or glossary entries', 'rrze-answers'),
-            'singular_name' => _x('rrze_faq', 'Single FAQ, synonym or glossary ', 'rrze-answers'),
-            'menu_name' => __('rrze_faq', 'rrze-answers'),
+            'name' => _x('FAQ', 'FAQ, synonym or glossary entries', 'rrze-answers'),
+            'singular_name' => _x('FAQ', 'Single FAQ, synonym or glossary ', 'rrze-answers'),
+            'menu_name' => __('FAQ', 'rrze-answers'),
             'add_new' => __('Add FAQ', 'rrze-answers'),
             'add_new_item' => __('Add new FAQ', 'rrze-answers'),
             'edit_item' => __('Edit FAQ', 'rrze-answers'),
@@ -232,7 +229,7 @@ class CPTFAQ
         $selected = get_term_meta($term->term_id, 'linked_page', true);
 
         echo '<tr class="form-field term-linked-page-wrap">';
-        echo '<th><label for="linked_page">' . esc_html__('Verlinkte Seite', 'rrze-answers') . '</label></th>';
+        echo '<th><label for="linked_page">' . esc_html__('Linked page', 'rrze-answers') . '</label></th>';
         echo '<td><select name="linked_page">';
         echo '<option value="">' . esc_html__('None', 'rrze-answers') . '</option>';
         foreach ($pages as $page) {

@@ -104,19 +104,19 @@ class Main
             $options = array_merge($storedOptions, $options);
         }
 
-        $tab = (isset($_GET['doms']) ? 'doms' : (isset($_GET['sync']) ? 'sync' : (isset($_GET['del']) ? 'del' : '')));
+        $tab = (isset($_GET['faq_import']) ? 'faq_import' : (isset($_GET['sync']) ? 'sync' : (isset($_GET['del']) ? 'del' : '')));
 
         switch ($tab) {
-            case 'doms':
-                if ($options['doms_new_name'] && $options['doms_new_url']) {
+            case 'faq_import':
+                if ($options['faq_import_new_name'] && $options['faq_import_new_url']) {
                     // add new domain
-                    $aRet = $api->setDomain($options['doms_new_name'], $options['doms_new_url'], $domains);
+                    $aRet = $api->setDomain($options['faq_import_new_name'], $options['faq_import_new_url'], $domains);
 
                     if ($aRet['status']) {
                         // url is correct, rrze-answers at given url is in use and shortname is new
                         $domains[$aRet['ret']['cleanShortname']] = $aRet['ret']['cleanUrl'];
                     } else {
-                        add_settings_error('doms_new_url', 'doms_new_error', $aRet['ret'], 'error');
+                        add_settings_error('faq_import_new_url', 'faq_import_new_error', $aRet['ret'], 'error');
                     }
                 } else {
                     // delete domain(s)
@@ -152,8 +152,8 @@ class Main
         // we don't need these temporary fields to be stored in database table options
         // domains are stored as shortname and url in registeredDomains
         // categories and donotsync are stored in faqsync_categories_<SHORTNAME> and faqsync_donotsync_<SHORTNAME>
-        unset($options['doms_new_name']);
-        unset($options['doms_new_url']);
+        unset($options['faq_import_new_name']);
+        unset($options['faq_import_new_url']);
         unset($options['faqsync_shortname']);
         unset($options['faqsync_url']);
         unset($options['faqsync_categories']);

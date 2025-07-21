@@ -65,6 +65,7 @@ class Main
 
         add_action('init', [$this, 'onInit']);
 
+        $this->cpt();
 
         $this->shortcode();
 
@@ -75,7 +76,6 @@ class Main
 
     public function onInit(){
             $this->defaults = new Defaults();
-            $this->cpt();
             $this->settings();
             $this->settingsFAQ();
     }
@@ -96,16 +96,19 @@ class Main
     {
         // Example of registering a custom post type
         // This can be extended or modified as needed.
-        $this->cpt = new CPTFAQ($this->defaults->get('cpt')['name'], [
-            'labels' => [
-                'name' => __('Books', 'rrze-answers'),
-                'singular_name' => __('Book', 'rrze-answers')
-            ],
-            'public' => true,
-            'has_archive' => true,
-            'show_in_rest' => true,
-            'supports' => ['title', 'editor', 'thumbnail'],
-        ]);
+        // $this->cpt = new CPTFAQ($this->defaults->get('cpt')['name'], [
+        //     'labels' => [
+        //         'name' => __('Books', 'rrze-answers'),
+        //         'singular_name' => __('Book', 'rrze-answers')
+        //     ],
+        //     'public' => true,
+        //     'has_archive' => true,
+        //     'show_in_rest' => true,
+        //     'supports' => ['title', 'editor', 'thumbnail'],
+        // ]);
+
+        $this->cpt = new CPTFAQ();
+
     }
 
 
