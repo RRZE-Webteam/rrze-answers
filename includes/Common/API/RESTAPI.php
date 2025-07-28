@@ -204,25 +204,25 @@ class RESTAPI
     public function registerTaxRestFields()
     {
         // Registers the 'rrze_faq_category' taxonomy field for the 'rrze_faq' object type
-        register_rest_field(
-            'rrze_faq',
-            'rrze_faq_category',
-            array(
-                'get_callback' => [$this, 'getCategories'],
-                'update_callback' => null,
-                'schema' => null,
-            )
-        );
+        // register_rest_field(
+        //     'rrze_faq',
+        //     'rrze_faq_category',
+        //     array(
+        //         'get_callback' => [$this, 'getCategories'],
+        //         'update_callback' => null,
+        //         'schema' => null,
+        //     )
+        // );
         // Registers the 'rrze_faq_tag' taxonomy field for the 'rrze_faq' object type
-        register_rest_field(
-            'rrze_faq',
-            'rrze_faq_tag',
-            array(
-                'get_callback' => [$this, 'getTags'],
-                'update_callback' => null,
-                'schema' => null,
-            )
-        );
+        // register_rest_field(
+        //     'rrze_faq',
+        //     'rrze_faq_tag',
+        //     array(
+        //         'get_callback' => [$this, 'getTags'],
+        //         'update_callback' => null,
+        //         'schema' => null,
+        //     )
+        // );
         // Registers the 'source' and 'lang' meta fields for the 'rrze_faq_category' and 'rrze_faq_tag' taxonomies
         $fields = array('rrze_faq_category', 'rrze_faq_tag');
         foreach ($fields as $field) {
