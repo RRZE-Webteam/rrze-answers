@@ -14,11 +14,11 @@ use RRZE\Answers\Common\Tools;
  */
 class AdminInterfaces
 {
-    
+
 
     public function __construct()
     {
-        
+
         add_filter('pre_get_posts', [$this, 'makeFaqSortable']);
         add_filter('enter_title_here', [$this, 'changeTitleText']);
         // show content in box if not editable ( not editable == source is not "website" - it is sychronized from another website )
@@ -191,13 +191,15 @@ class AdminInterfaces
                 }
             }
 
-            add_meta_box(
-                'shortcode_box',
-                __('Integration in pages and posts', 'rrze-answers'),
-                [$this, 'fillShortcodeBox'],
-                'rrze_faq',
-                'normal'
-            );
+            if (!use_block_editor_for_post($post_id)) {
+                add_meta_box(
+                    'shortcode_box',
+                    __('Integration in pages and posts', 'rrze-answers'),
+                    [$this, 'fillShortcodeBox'],
+                    'rrze_faq',
+                    'normal'
+                );
+            }
         }
 
         add_meta_box('langbox', __('Language', 'rrze-answers'), [$this, 'langboxCallback'], 'rrze_faq', 'side');
