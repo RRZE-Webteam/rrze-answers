@@ -99,6 +99,8 @@ class SettingsFAQ
      */
     public function onLoaded()
     {
+        add_filter('wp_kses_allowed_html', [$this, 'my_custom_allowed_html'], 10, 2);
+
         add_action('init', [$this, 'regularInit'], 1);
         add_action('admin_init', [$this, 'adminInit']);
 
@@ -244,45 +246,97 @@ class SettingsFAQ
 
 
 
-    public function my_custom_allowed_html($allowed_tags, $context)
-    {
-        if ('post' === $context) {
-            // Add the <select> tag and its attributes
-            $allowed_tags['select'] = array(
-                'name' => true,
-                'id' => true,
-                'class' => true,
-                'multiple' => true,
-                'size' => true,
-            );
-
-            // Add the <option> tag and its attributes
-            $allowed_tags['option'] = array(
-                'value' => true,
-                'selected' => true,
-            );
-
-            // Add the <input> tag and its attributes
-            $allowed_tags['input'] = array(
-                'type' => true,
-                'name' => true,
-                'id' => true,
-                'class' => true,
-                'value' => true,
-                'placeholder' => true,
-                'checked' => true,
-                'disabled' => true,
-                'readonly' => true,
-                'maxlength' => true,
-                'size' => true,
-                'min' => true,
-                'max' => true,
-                'step' => true,
-            );
-        }
-
+/**
+ * Allow needed HTML on post content sanitized by wp_kses_post().
+ *
+ * @param array  $allowed_tags The current allowed tags/attributes for the given context.
+ * @param string $context      KSES context; wp_kses_post() uses 'post'.
+ * @return array               Modified allowed tags/attributes.
+ */
+function my_custom_allowed_html($allowed_tags, $context)
+{
+    // Only alter the 'post' context used by wp_kses_post()
+    if ($context !== 'post') {
         return $allowed_tags;
     }
+
+    // 1) Schema.org microdata attributes we want to allow on various elements
+    $schema_attrs = [
+        'itemscope' => true, // boolean attribute (no value needed)
+        'itemtype'  => true, // URL to schema type, e.g. https://schema.org/FAQPage
+        'itemprop'  => true, // property name within the item
+        'itemid'    => true, // global identifier
+        'itemref'   => true, // references other elements by ID
+    ];
+
+    // 2) HTML5 elements that may carry microdata in your templates/shortcodes
+    $tags_to_extend = [
+        'div','span','p','a',
+        'h1','h2','h3','h4','h5','h6',
+        'ul','ol','li',
+        'section','article','header','footer','main','nav',
+        'details','summary'
+    ];
+
+    // Ensure details/summary exist with common attributes for accordion UI
+    if (!isset($allowed_tags['details'])) {
+        $allowed_tags['details'] = [];
+    }
+    $allowed_tags['details'] = array_merge($allowed_tags['details'], [
+        'id'    => true,
+        'class' => true,
+        'open'  => true, // render expanded by default
+    ]);
+
+    if (!isset($allowed_tags['summary'])) {
+        $allowed_tags['summary'] = [];
+    }
+    $allowed_tags['summary'] = array_merge($allowed_tags['summary'], [
+        'id'    => true,
+        'class' => true,
+    ]);
+
+    // 3) Add Schema.org attributes to the listed tags without removing existing ones
+    foreach ($tags_to_extend as $tag) {
+        if (!isset($allowed_tags[$tag])) {
+            $allowed_tags[$tag] = [];
+        }
+        $allowed_tags[$tag] = array_merge($allowed_tags[$tag], $schema_attrs);
+    }
+
+    // 4) (Optional) keep your form elements if you output any in content
+    $allowed_tags['select'] = array_merge($allowed_tags['select'] ?? [], [
+        'name'     => true,
+        'id'       => true,
+        'class'    => true,
+        'multiple' => true,
+        'size'     => true,
+    ]);
+
+    $allowed_tags['option'] = array_merge($allowed_tags['option'] ?? [], [
+        'value'    => true,
+        'selected' => true,
+    ]);
+
+    $allowed_tags['input'] = array_merge($allowed_tags['input'] ?? [], [
+        'type'        => true,
+        'name'        => true,
+        'id'          => true,
+        'class'       => true,
+        'value'       => true,
+        'placeholder' => true,
+        'checked'     => true,
+        'disabled'    => true,
+        'readonly'    => true,
+        'maxlength'   => true,
+        'size'        => true,
+        'min'         => true,
+        'max'         => true,
+        'step'        => true,
+    ]);
+
+    return $allowed_tags;
+}
 
 
     public function regularInit()
@@ -624,8 +678,6 @@ class SettingsFAQ
      */
     public function adminInit()
     {
-        add_filter('wp_kses_allowed_html', [$this, 'my_custom_allowed_html'], 10, 2);
-
         // Adding setting areas
         foreach ($this->settingsSections as $section) {
             if (isset($section['desc']) && !empty($section['desc'])) {
