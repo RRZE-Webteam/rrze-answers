@@ -53,6 +53,67 @@ class Tools
         return 'header-' . ($postID ?? 'noid') . '-' . $random;
     }
 
+
+        /**
+     * Renders a single FAQ entry in an accordion (<details>/<summary>) format.
+     * 
+     * Optionally wraps the output in Schema.org FAQPage microdata if $useSchema is true.
+     * The markup remains fully accessible and keeps the existing HTML structure intact.
+     * 
+     * @param string $anchor      HTML ID for the <details> element.
+     * @param string $question    The FAQ question text.
+     * @param string $answer      The FAQ answer HTML content.
+     * @param string $color       Optional color class suffix for styling.
+     * @param string $load_open   If non-empty, sets the <details> element to be open by default.
+     * @param bool   $useSchema   Whether to output Schema.org Question/Answer markup.
+     * @return string             The complete HTML string for the FAQ item.
+     */
+    public static function renderFAQItemAccordion(string $anchor, string $question, string $answer, string $color, string $load_open, bool $useSchema): string
+    {
+        $out = $useSchema ? '<div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">' : '';
+        $out .= '<details' . ($load_open ? ' open' : '') . ' id="' . esc_attr($anchor) . '" class="faq-item' . ($color ? ' color-' . esc_attr($color) : '') . '">';
+
+        if ($useSchema) {
+            $out .= '<summary itemprop="name">' . esc_html($question) . '</summary>';
+            $out .= '<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">';
+            $out .= '<div class="faq-content" itemprop="text">' . $answer . '</div>';
+            $out .= '</div>'; // acceptedAnswer
+        } else {
+            $out .= '<summary>' . esc_html($question) . '</summary>';
+            $out .= '<div class="faq-content">' . $answer . '</div>';
+        }
+
+        $out .= '</details>';
+        $out .= $useSchema ? '</div>' : '';
+
+        return $out;
+    }
+
+    /**
+     * Renders a single FAQ entry as a heading and answer block (non-accordion format).
+     * 
+     * If $useSchema is true, wraps the output in Schema.org Question/Answer microdata.
+     * This format is intended for simple lists without collapsible behavior.
+     * 
+     * @param string $question  The FAQ question text.
+     * @param string $answer    The FAQ answer HTML content.
+     * @param int    $hstart    The heading level (1–6) for the question.
+     * @param bool   $useSchema Whether to output Schema.org Question/Answer markup.
+     * @return string           The complete HTML string for the FAQ item.
+     */
+    public static function renderFAQItem(string $question, string $answer, int $hstart, bool $useSchema): string
+    {
+        if ($useSchema) {
+            return '<div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">'
+                . '<h' . $hstart . ' itemprop="name">' . esc_html($question) . '</h' . $hstart . '>'
+                . '<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text">' . $answer . '</div></div>'
+                . '</div>';
+        }
+
+        return '<h' . $hstart . '>' . esc_html($question) . '</h' . $hstart . '>' . $answer;
+    }
+
+
     public static function renderFAQWrapper(?int $postID = null, string &$content, string &$headerID, bool &$masonry, string &$color, string &$additional_class): string
     {
         $classes = 'rrze-answers';

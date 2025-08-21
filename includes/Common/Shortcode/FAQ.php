@@ -435,7 +435,7 @@ class FAQ
      */
     public function shortcodeOutput($atts, $content = null, $shortcode_tag = '')
     {
-        // Workaround - see: https://github.com/RRZE-Webteam/rrze-answers/issues/132#issuecomment-2839668060
+        // Workaround - see: https://github.com/RRZE-Webteam/rrze-faq/issues/132#issuecomment-2839668060
         if (($skip = Tools::preventGutenbergDoubleBracketBug($shortcode_tag)) !== false) {
             return $skip;
         }
@@ -469,11 +469,7 @@ class FAQ
 
         if ($id && (!$gutenberg || $gutenberg && $id[0])) {
             $content = $this->renderExplicitFAQs($id, $gutenberg, $hstart, $style, $masonry, $expand_all_link, $hide_accordion, $hide_title, $color, $load_open);
-            echo 'A';
-            exit;
         } else {
-            // echo 'B';
-            // exit;
             $content = $this->renderFilteredFAQs($atts, $hstart, $style, $expand_all_link, $hide_accordion, $hide_title, $color, $load_open, $sort, $order, $category, $tag, $glossary, $glossarystyle);
         }
 
@@ -487,12 +483,11 @@ class FAQ
         $postID = get_the_ID();
         $headerID = (new Tools())->getHeaderID($postID);
 
-        wp_enqueue_style('rrze-answers-css');
+        wp_enqueue_style('rrze-faq-css');
 
-        $content = Tools::renderFAQWrapper($postID, $content, $headerID, $masonry, $color, $additional_class);
+        $content = Tools::renderFAQWrapper($postID, $content, $headerID, $masonry, $color, $additional_class, $this->bSchema);
 
         return $content;
-
     }
 
     public function setMCEConfig()
