@@ -18,7 +18,7 @@ class Sync {
         $iCnt = 0;
         $api = new API();
         $domains = $api->getDomains();
-        $options = get_option( 'rrze-synonym' );
+        $options = get_option( 'rrze-answers' );
         $allowSettingsError = ( $mode == 'manual' ? TRUE : FALSE );
         $syncRan = FALSE;
         foreach( $domains as $shortname => $url ){            
@@ -26,7 +26,7 @@ class Sync {
             if ( isset( $options['synonymsync_donotsync_' . $shortname] ) && $options['synonymsync_donotsync_' . $shortname ] != 'on' ){
                 $aCnt = $api->setSynonyms( $url, $shortname  );
                 $syncRan = TRUE;
-                $sync_msg = __( 'Domain', 'rrze-synonym' ) . ' "' . $shortname . '": ' . __( 'Synchronization completed.', 'rrze-synonym' ) . ' ' . $aCnt['iNew'] . ' ' . __( 'new', 'rrze-synonym' ) . ', ' . $aCnt['iUpdated'] . ' ' . __( ' updated', 'rrze-synonym' ) . ' ' . __( 'and', 'rrze-synonym' ) . ' ' . $aCnt['iDeleted'] . ' ' . __( 'deleted', 'rrze-synonym' ) . '. ' . __('Required time:', 'rrze-synonym') . ' ' . sprintf( '%.1f ', microtime( TRUE ) - $tStartDetail ) . __( 'seconds', 'rrze-synonym' );
+                $sync_msg = __( 'Domain', 'rrze-answers' ) . ' "' . $shortname . '": ' . __( 'Synchronization completed.', 'rrze-answers' ) . ' ' . $aCnt['iNew'] . ' ' . __( 'new', 'rrze-answers' ) . ', ' . $aCnt['iUpdated'] . ' ' . __( ' updated', 'rrze-answers' ) . ' ' . __( 'and', 'rrze-answers' ) . ' ' . $aCnt['iDeleted'] . ' ' . __( 'deleted', 'rrze-answers' ) . '. ' . __('Required time:', 'rrze-answers') . ' ' . sprintf( '%.1f ', microtime( TRUE ) - $tStartDetail ) . __( 'seconds', 'rrze-answers' );
                 logIt( $sync_msg . ' | ' . $mode );
                 if ( $allowSettingsError ){
                     add_settings_error( 'Synchronization completed', 'synccompleted', $sync_msg, 'success' );
@@ -35,9 +35,9 @@ class Sync {
         }        
 
         if ( $syncRan ){
-            $sync_msg = __( 'All synchronizations completed', 'rrze-synonym' ) . '. ' . __('Required time:', 'rrze-synonym') . ' ' . sprintf( '%.1f ', microtime( true ) - $tStart ) . __( 'seconds', 'rrze-synonym' );
+            $sync_msg = __( 'All synchronizations completed', 'rrze-answers' ) . '. ' . __('Required time:', 'rrze-answers') . ' ' . sprintf( '%.1f ', microtime( true ) - $tStart ) . __( 'seconds', 'rrze-answers' );
         } else {
-            $sync_msg = __( 'Settings updated', 'rrze-synonym' );
+            $sync_msg = __( 'Settings updated', 'rrze-answers' );
         }
         if ( $allowSettingsError ){
             add_settings_error( 'Synchronization completed', 'synccompleted', $sync_msg, 'success' );

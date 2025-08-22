@@ -139,7 +139,7 @@ class Settings {
      */
     protected function setFields() {
         $this->settingsFields = getFields();
-        if ( isset($_GET['page']) && $_GET['page'] == 'rrze-synonym' && isset($_GET['current-tab']) && $_GET['current-tab'] == 'synonymsync' ){
+        if ( isset($_GET['page']) && $_GET['page'] == 'rrze-answers' && isset($_GET['current-tab']) && $_GET['current-tab'] == 'synonymsync' ){
             // Add Sync fields for each domain
             $this->settingsFields['synonymsync'] = $this->setSettingsDomains();
         }
@@ -301,11 +301,11 @@ class Settings {
                     $get = '?sync';
                     break;
                 case 'synonymdoms': 
-                    $btn_label = __('Add domain', 'rrze-synonym' );
+                    $btn_label = __('Add domain', 'rrze-answers' );
                     $get = '?synonymdoms';
                     break;
                 case 'synonymlog': 
-                    $btn_label = __('Delete logfile', 'rrze-synonym' );
+                    $btn_label = __('Delete logfile', 'rrze-answers' );
                     $get = '?del';
                     break;
             }
@@ -345,8 +345,8 @@ class Settings {
                 $i++;
             }
             echo '</tbody></table>';
-            echo '<p>' . __( 'Please note: "Delete selected domains" will DELETE every synonym on this website that has been fetched from the selected domains.', 'rrze-synonym' ) . '</p>'; 
-            submit_button( __( 'Delete selected domains', 'rrze-synonym' ) );
+            echo '<p>' . __( 'Please note: "Delete selected domains" will DELETE every synonym on this website that has been fetched from the selected domains.', 'rrze-answers' ) . '</p>'; 
+            submit_button( __( 'Delete selected domains', 'rrze-answers' ) );
         }
     }
 
@@ -937,10 +937,10 @@ class Settings {
                 }
                 echo '</tbody></table>';
             }else{
-                echo __( 'Logfile is empty.', 'rrze-synonym' );
+                echo __( 'Logfile is empty.', 'rrze-answers' );
             }
         }else{
-            echo __( 'Logfile is empty.', 'rrze-synonym' );
+            echo __( 'Logfile is empty.', 'rrze-answers' );
         }
     }
 

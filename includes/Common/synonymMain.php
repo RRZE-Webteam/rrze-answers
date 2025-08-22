@@ -82,7 +82,7 @@ class Main
         $domains = $api->getDomains();
 
         // get stored options because they are generated and not defined in config.php
-        $storedOptions = get_option('rrze-synonym');
+        $storedOptions = get_option('rrze-answers');
         if (is_array($storedOptions)) {
             $options = array_merge($storedOptions, $options);
         }
@@ -164,7 +164,7 @@ class Main
     {
         date_default_timezone_set('Europe/Berlin');
 
-        $options = get_option('rrze-synonym');
+        $options = get_option('rrze-answers');
 
         if ($options['synonymsync_autosync'] != 'on') {
             wp_clear_scheduled_hook('rrze_synonym_auto_sync');
@@ -186,7 +186,7 @@ class Main
         wp_schedule_event($nextcron, $options['synonymsync_frequency'], 'rrze_synonym_auto_sync');
 
         $timestamp = wp_next_scheduled('rrze_synonym_auto_sync');
-        $message = __('Next automatically synchronization:', 'rrze-synonym') . ' ' . date('d.m.Y H:i:s', $timestamp);
+        $message = __('Next automatically synchronization:', 'rrze-answers') . ' ' . date('d.m.Y H:i:s', $timestamp);
         add_settings_error('AutoSyncComplete', 'autosynccomplete', $message, 'updated');
         settings_errors();
     }
@@ -209,7 +209,7 @@ class Main
 
         $custom_category = [
             'slug' => 'rrze',
-            'title' => __('RRZE Plugins', 'rrze-synonym'),
+            'title' => __('RRZE Plugins', 'rrze-answers'),
         ];
 
         // Add RRZE to the end of the categories array

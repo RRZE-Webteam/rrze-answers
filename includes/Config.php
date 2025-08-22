@@ -18,7 +18,7 @@ defined('ABSPATH') || exit;
 //  * @return array [description]
 //  */
 // function getOptionName() {
-//     return 'rrze-synonym';
+//     return 'rrze-answers';
 // }
 
 
@@ -36,12 +36,12 @@ defined('ABSPATH') || exit;
 // 			'FAU-Jobs'
 // 		],
 // 		'langcodes' => [
-// 			"de" => __('German','rrze-synonym'),
-// 			"en" => __('English','rrze-synonym'),
-// 			"es" => __('Spanish','rrze-synonym'),
-// 			"fr" => __('French','rrze-synonym'),
-// 			"ru" => __('Russian','rrze-synonym'),
-// 			"zh" => __('Chinese','rrze-synonym')
+// 			"de" => __('German','rrze-answers'),
+// 			"en" => __('English','rrze-answers'),
+// 			"es" => __('Spanish','rrze-answers'),
+// 			"fr" => __('French','rrze-answers'),
+// 			"ru" => __('Russian','rrze-answers'),
+// 			"zh" => __('Chinese','rrze-answers')
 // 		]
 // 	);               
 // 	return $options;
@@ -53,11 +53,11 @@ defined('ABSPATH') || exit;
 //  */
 // function getMenuSettings() {
 //     return [
-//         'page_title'    => __('RRZE Synonym', 'rrze-synonym'),
-//         'menu_title'    => __('RRZE Synonym', 'rrze-synonym'),
+//         'page_title'    => __('RRZE Synonym', 'rrze-answers'),
+//         'menu_title'    => __('RRZE Synonym', 'rrze-answers'),
 //         'capability'    => 'manage_options',
-//         'menu_slug'     => 'rrze-synonym',
-//         'title'         => __('RRZE Synonym Settings', 'rrze-synonym'),
+//         'menu_slug'     => 'rrze-answers',
+//         'title'         => __('RRZE Synonym Settings', 'rrze-answers'),
 //     ];
 // }
 
@@ -70,10 +70,10 @@ defined('ABSPATH') || exit;
 //         [
 //             'id'        => 'rrze-synonym-help',
 //             'content'   => [
-//                 '<p>' . __('Here comes the Context Help content.', 'rrze-synonym') . '</p>'
+//                 '<p>' . __('Here comes the Context Help content.', 'rrze-answers') . '</p>'
 //             ],
-//             'title'     => __('Overview', 'rrze-synonym'),
-//             'sidebar'   => sprintf('<p><strong>%1$s:</strong></p><p><a href="https://blogs.fau.de/webworking">RRZE Webworking</a></p><p><a href="https://github.com/RRZE Webteam">%2$s</a></p>', __('For more information', 'rrze-synonym'), __('RRZE Webteam on Github', 'rrze-synonym'))
+//             'title'     => __('Overview', 'rrze-answers'),
+//             'sidebar'   => sprintf('<p><strong>%1$s:</strong></p><p><a href="https://blogs.fau.de/webworking">RRZE Webworking</a></p><p><a href="https://github.com/RRZE Webteam">%2$s</a></p>', __('For more information', 'rrze-answers'), __('RRZE Webteam on Github', 'rrze-answers'))
 //         ]
 //     ];
 // }
@@ -87,15 +87,15 @@ defined('ABSPATH') || exit;
 // 	return [ 
 // 		[
 // 			'id'    => 'synonymdoms',
-// 			'title' => __('Domains', 'rrze-synonym' )
+// 			'title' => __('Domains', 'rrze-answers' )
 // 		],
 // 		[
 // 			'id'    => 'synonymsync',
-// 			'title' => __('Synchronize', 'rrze-synonym' )
+// 			'title' => __('Synchronize', 'rrze-answers' )
 // 		],
 // 		[
 // 		  	'id' => 'synonymlog',
-// 		  	'title' => __('Logfile', 'rrze-synonym' )
+// 		  	'title' => __('Logfile', 'rrze-answers' )
 // 		]
 // 	];   
 // }
@@ -110,36 +110,36 @@ defined('ABSPATH') || exit;
 // 		'synonymdoms' => [
 // 			[
 // 				'name' => 'new_name',
-// 				'label' => __('Short name', 'rrze-synonym' ),
-// 				'desc' => __('Enter a short name for this domain.', 'rrze-synonym' ),
+// 				'label' => __('Short name', 'rrze-answers' ),
+// 				'desc' => __('Enter a short name for this domain.', 'rrze-answers' ),
 // 				'type' => 'text'
 // 			],
 // 			[
 // 				'name' => 'new_url',
-// 				'label' => __('URL', 'rrze-synonym' ),
-// 				'desc' => __('Enter the domain\'s URL you want to receive synonyms from.', 'rrze-synonym' ),
+// 				'label' => __('URL', 'rrze-answers' ),
+// 				'desc' => __('Enter the domain\'s URL you want to receive synonyms from.', 'rrze-answers' ),
 // 				'type' => 'text'
 // 			]
 // 		],
 // 		'synonymsync' => [
 // 			[
 // 				'name' => 'shortname',
-// 				'label' => __('Short name', 'rrze-synonym' ),
-// 				'desc' => __('Use this name as attribute \'domain\' in shortcode [synonym]', 'rrze-synonym' ),
+// 				'label' => __('Short name', 'rrze-answers' ),
+// 				'desc' => __('Use this name as attribute \'domain\' in shortcode [synonym]', 'rrze-answers' ),
 // 				'type' => 'plaintext',
 // 				'default' => ''
 // 			],
 // 			[
 // 				'name' => 'url',
-// 				'label' => __('URL', 'rrze-synonym' ),
+// 				'label' => __('URL', 'rrze-answers' ),
 // 				'desc' => '',
 // 				'type' => 'plaintext',
 // 				'default' => ''
 // 			],
 // 			[
 // 				'name' => 'donotsync',
-// 				'label' => __('Synchronize', 'rrze-synonym' ),
-// 				'desc' => __('Do not synchronize', 'rrze-synonym' ),
+// 				'label' => __('Synchronize', 'rrze-answers' ),
+// 				'desc' => __('Do not synchronize', 'rrze-answers' ),
 // 				'type' => 'checkbox',
 // 			],
 // 			[
@@ -150,25 +150,25 @@ defined('ABSPATH') || exit;
 // 			],
 // 			[
 // 				'name' => 'info',
-// 				'label' => __('Info', 'rrze-synonym' ),
-// 				'desc' => __( 'All synonyms will be updated or inserted. Synonyms that have been deleted at the remote website will be deleted on this website, too.', 'rrze-synonym' ),
+// 				'label' => __('Info', 'rrze-answers' ),
+// 				'desc' => __( 'All synonyms will be updated or inserted. Synonyms that have been deleted at the remote website will be deleted on this website, too.', 'rrze-answers' ),
 // 				'type' => 'plaintext',
-// 				'default' => __( 'All synonyms will be updated or inserted. Synonyms that have been deleted at the remote website will be deleted on this website, too.', 'rrze-synonym' ),
+// 				'default' => __( 'All synonyms will be updated or inserted. Synonyms that have been deleted at the remote website will be deleted on this website, too.', 'rrze-answers' ),
 // 			],
 // 			[
 // 				'name' => 'autosync',
-// 				'label' => __('Mode', 'rrze-synonym' ),
-// 				'desc' => __('Synchronize automatically', 'rrze-synonym' ),
+// 				'label' => __('Mode', 'rrze-answers' ),
+// 				'desc' => __('Synchronize automatically', 'rrze-answers' ),
 // 				'type' => 'checkbox',
 // 			],
 // 			[
 // 				'name' => 'frequency',
-// 				'label' => __('Frequency', 'rrze-synonym' ),
+// 				'label' => __('Frequency', 'rrze-answers' ),
 // 				'desc' => '',
 // 				'default' => 'daily',
 // 				'options' => [
-// 					'daily' => __('daily', 'rrze-synonym' ),
-// 					'twicedaily' => __('twicedaily', 'rrze-synonym' )
+// 					'daily' => __('daily', 'rrze-answers' ),
+// 					'twicedaily' => __('twicedaily', 'rrze-answers' )
 // 				],
 // 				'type' => 'select'
 // 			],
@@ -202,29 +202,29 @@ defined('ABSPATH') || exit;
 // 		'slug' => [
 // 			'default' => '',
 // 			'field_type' => 'text',
-// 			'label' => __( 'Slug', 'rrze-synonym' ),
+// 			'label' => __( 'Slug', 'rrze-answers' ),
 // 			'type' => 'text'
 //         ],
 // 		'id' => [
 // 			'default' => 0,
 // 			'field_type' => 'text',
-// 			'label' => __( 'Synonym', 'rrze-synonym' ),
+// 			'label' => __( 'Synonym', 'rrze-answers' ),
 // 			'type' => 'number'
 // 		],
 // 		'gutenberg_shortcode_type' => [
 // 			'values' => [
-// 				'fau_abbr' => __( 'Abbreviation', 'rrze-synonym' ), // Abkürzung
-// 				'synonym' => __( 'Longform', 'rrze-synonym' ) // Ausgeschriebene Form
+// 				'fau_abbr' => __( 'Abbreviation', 'rrze-answers' ), // Abkürzung
+// 				'synonym' => __( 'Longform', 'rrze-answers' ) // Ausgeschriebene Form
 // 			],
 // 			'default' => 'synonym',
 // 			'field_type' => 'radio',
-// 			'label' => __( 'Type of output', 'rrze-synonym' ),
+// 			'label' => __( 'Type of output', 'rrze-answers' ),
 // 			'type' => 'string'
 // 		],		
 // 		// 'additional_class' => [
 // 		// 	'default' => '',
 // 		// 	'field_type' => 'text',
-// 		// 	'label' => __( 'Additonal CSS-class(es) for surrounding DIV', 'rrze-synonym' ),
+// 		// 	'label' => __( 'Additonal CSS-class(es) for surrounding DIV', 'rrze-answers' ),
 // 		// 	'type' => 'text'
 // 		// ],
 //     ];

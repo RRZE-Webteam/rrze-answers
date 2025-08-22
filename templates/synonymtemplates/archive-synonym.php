@@ -29,7 +29,7 @@ if ($bFAUTheme) {
 		<main id="main" class="site-main">
 <?php }
 
-echo '<h2>'. __('Synonyms','rrze-synonym') . '</h2>';
+echo '<h2>'. __('Synonyms','rrze-answers') . '</h2>';
 if (have_posts()) {
     echo '<table class="synonym">';
     while ( have_posts() ){

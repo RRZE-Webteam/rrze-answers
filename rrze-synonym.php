@@ -72,7 +72,7 @@ add_action('plugins_loaded', __NAMESPACE__ . '\loaded');
  * Einbindung der Sprachdateien.
  */
 function load_textdomain(){
-    load_plugin_textdomain('rrze-synonym', false, sprintf('%s/languages/', dirname(plugin_basename(__FILE__))));
+    load_plugin_textdomain('rrze-answers', false, sprintf('%s/languages/', dirname(plugin_basename(__FILE__))));
 }
 
 /**
@@ -82,10 +82,10 @@ function system_requirements(){
     $error = '';
     if (version_compare(PHP_VERSION, RRZE_PHP_VERSION, '<')) {
         /* Übersetzer: 1: aktuelle PHP-Version, 2: erforderliche PHP-Version */
-        $error = sprintf(__('The server is running PHP version %1$s. The Plugin requires at least PHP version %2$s.', 'rrze-synonym'), PHP_VERSION, RRZE_PHP_VERSION);
+        $error = sprintf(__('The server is running PHP version %1$s. The Plugin requires at least PHP version %2$s.', 'rrze-answers'), PHP_VERSION, RRZE_PHP_VERSION);
     } elseif (version_compare($GLOBALS['wp_version'], RRZE_WP_VERSION, '<')) {
         /* Übersetzer: 1: aktuelle WP-Version, 2: erforderliche WP-Version */
-        $error = sprintf(__('The server is running WordPress version %1$s. The Plugin requires at least WordPress version %2$s.', 'rrze-synonym'), $GLOBALS['wp_version'], RRZE_WP_VERSION);
+        $error = sprintf(__('The server is running WordPress version %1$s. The Plugin requires at least WordPress version %2$s.', 'rrze-answers'), $GLOBALS['wp_version'], RRZE_WP_VERSION);
     }
     return $error;
 }
@@ -156,7 +156,7 @@ function deactivation() {
 function rrze_synonym_init() {
 	register_block_type( __DIR__ . '/build' );
     $script_handle = generate_block_asset_handle( 'create-block/rrze-synonym', 'editorScript' );
-    wp_set_script_translations( $script_handle, 'rrze-synonym', plugin_dir_path( __FILE__ ) . 'languages' );
+    wp_set_script_translations( $script_handle, 'rrze-answers', plugin_dir_path( __FILE__ ) . 'languages' );
 }
 
 /**

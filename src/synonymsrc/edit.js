@@ -40,7 +40,7 @@ export default function Edit({attributes, setAttributes}) {
 
     const registeroptions = [
         {
-            label: __('all', 'rrze-synonym'),
+            label: __('all', 'rrze-answers'),
             value: ''
         }
     ];
@@ -60,7 +60,7 @@ export default function Edit({attributes, setAttributes}) {
 
     const tagoptions = [
         {
-            label: __('all', 'rrze-synonym'),
+            label: __('all', 'rrze-answers'),
             value: ''
         }
     ];
@@ -80,7 +80,7 @@ export default function Edit({attributes, setAttributes}) {
 
     const synonymoptions = [
         {
-            label: __('all', 'rrze-synonym'),
+            label: __('all', 'rrze-answers'),
             value: 0
         }
     ];
@@ -88,7 +88,7 @@ export default function Edit({attributes, setAttributes}) {
     if (!!synonyms) {
         Object.values(synonyms).forEach(synonym => {
             synonymoptions.push({
-                label: synonym.title.rendered ? synonym.title.rendered : __('No title', 'rrze-synonym'),
+                label: synonym.title.rendered ? synonym.title.rendered : __('No title', 'rrze-answers'),
                 value: synonym.id,
             });
         });
@@ -131,19 +131,19 @@ export default function Edit({attributes, setAttributes}) {
 
     const synonymstyleoptions = [
         {
-            label: __('-- hidden --', 'rrze-synonym'),
+            label: __('-- hidden --', 'rrze-answers'),
             value: ''
         },
         {
-            label: __('A - Z', 'rrze-synonym'),
+            label: __('A - Z', 'rrze-answers'),
             value: 'a-z'
         },
         {
-            label: __('Tagcloud', 'rrze-synonym'),
+            label: __('Tagcloud', 'rrze-answers'),
             value: 'tagcloud'
         },
         {
-            label: __('Tabs', 'rrze-synonym'),
+            label: __('Tabs', 'rrze-answers'),
             value: 'tabs'
         }
     ];
@@ -177,26 +177,26 @@ export default function Edit({attributes, setAttributes}) {
 
     const sortoptions = [
         {
-            label: __('Title', 'rrze-synonym'),
+            label: __('Title', 'rrze-answers'),
             value: 'title'
         },
         {
-            label: __('ID', 'rrze-synonym'),
+            label: __('ID', 'rrze-answers'),
             value: 'id'
         },
         {
-            label: __('Sort field', 'rrze-synonym'),
+            label: __('Sort field', 'rrze-answers'),
             value: 'sortfield'
         }
     ];
 
     const orderoptions = [
         {
-            label: __('ASC', 'rrze-synonym'),
+            label: __('ASC', 'rrze-answers'),
             value: 'ASC'
         },
         {
-            label: __('DESC', 'rrze-synonym'),
+            label: __('DESC', 'rrze-answers'),
             value: 'DESC'
         }
     ];
@@ -215,9 +215,9 @@ export default function Edit({attributes, setAttributes}) {
                     <SelectControl
                         label={__(
                             "synonym",
-                            'rrze-synonym'
+                            'rrze-answers'
                         )}
-                        help={__('Show a selection of individual Synonyms', 'rrze-synonym')}
+                        help={__('Show a selection of individual Synonyms', 'rrze-answers')}
                         value={idstate}
                         options={synonymoptions}
                         onChange={onChangeID}
@@ -226,9 +226,9 @@ export default function Edit({attributes, setAttributes}) {
                     <SelectControl
                         label={__(
                             "Language",
-                            'rrze-synonym'
+                            'rrze-answers'
                         )}
-                        help={__('Show only Synonyms matching the selected language.', 'rrze-synonym')}
+                        help={__('Show only Synonyms matching the selected language.', 'rrze-answers')}
                         value={lang}
                         options={langoptions}
                         onChange={(value) => setAttributes({lang: value})}

@@ -59,7 +59,7 @@ class Layout {
         $langlist = $constants['langcodes'];
 
         $lang = get_post_meta($post_id, 'titleLang', TRUE);
-        return ($lang == substr( get_locale(), 0, 2) ? '' : ' (' . __('Pronunciation', 'rrze-synonym') . ': ' . $langlist[$lang] . ')');
+        return ($lang == substr( get_locale(), 0, 2) ? '' : ' (' . __('Pronunciation', 'rrze-answers') . ': ' . $langlist[$lang] . ')');
     }
 
     public function getSynonymSingleTemplate( $template ) {
@@ -109,9 +109,9 @@ class Layout {
         $output = '';
 
         $output .= '<h1>' . html_entity_decode( $post->post_title ) . '</h1><br>';
-        $output .= '<strong>' . __( 'Full form', 'rrze-synonym') . ':</strong>';
+        $output .= '<strong>' . __( 'Full form', 'rrze-answers') . ':</strong>';
         $output .= '<p>' . $fields['synonym'] . '</p>';
-        $output .= '<p><i>' . __( 'Pronunciation', 'rrze-synonym' ) . ': ' . $this->constants['langcodes'][$fields['titleLang']] . '</i></p>';
+        $output .= '<p><i>' . __( 'Pronunciation', 'rrze-answers' ) . ': ' . $this->constants['langcodes'][$fields['titleLang']] . '</i></p>';
 
         echo $output;
     }
@@ -137,7 +137,7 @@ class Layout {
         if ( ( $source == '' ) || ( $source == 'website' ) ){
             add_meta_box(
                 'postmetabox',
-                __( 'Properties', 'rrze-synonym'),
+                __( 'Properties', 'rrze-answers'),
                 [$this, 'postmetaCallback'],
                 'synonym',
                 'normal',
@@ -146,7 +146,7 @@ class Layout {
         }
         add_meta_box(
             'shortcode_box',
-            __( 'Integration in pages and posts', 'rrze-synonym'),
+            __( 'Integration in pages and posts', 'rrze-answers'),
             [$this, 'fillShortcodeBox'],
             'synonym',
             'normal'
@@ -170,7 +170,7 @@ class Layout {
                         // remove_meta_box( 'postmetabox', 'synonym', 'normal' );
                         add_meta_box(
                             'read_only_content_box',
-                            __( 'This synonym cannot be edited because it is synchronized', 'rrze-synonym') . '. <a href="' . $link . '" target="_blank">' . __('You can edit it at the source', 'rrze-synonym') . '</a>',
+                            __( 'This synonym cannot be edited because it is synchronized', 'rrze-answers') . '. <a href="' . $link . '" target="_blank">' . __('You can edit it at the source', 'rrze-answers') . '</a>',
                             [$this, 'fillContentBox'],
                             'synonym',
                             'normal',
@@ -183,14 +183,14 @@ class Layout {
     }
 
     public function addColumns( $columns ) {
-        $columns['source'] = __( 'Source', 'rrze-synonym' );
-        $columns['id'] = __( 'ID', 'rrze-synonym' );
+        $columns['source'] = __( 'Source', 'rrze-answers' );
+        $columns['id'] = __( 'ID', 'rrze-answers' );
         return $columns;
     }
 
     public function addSortableColumns( $columns ) {
-        $columns['source'] = __( 'Source', 'rrze-synonym' );
-        $columns['id'] = __( 'ID', 'rrze-synonym' );
+        $columns['source'] = __( 'Source', 'rrze-answers' );
+        $columns['id'] = __( 'ID', 'rrze-answers' );
         return $columns;
     }
 
@@ -206,9 +206,9 @@ class Layout {
         $fields = $this->getPostMetas( $meta_id->ID );
 
         // synonym
-        $output = '<p><label for="synonym">' . __( 'Full form', 'rrze-synonym') . '</label></p>';
+        $output = '<p><label for="synonym">' . __( 'Full form', 'rrze-answers') . '</label></p>';
         $output .= '<textarea rows="3" cols="60" name="synonym" id="synonym">'. esc_attr( $fields['synonym'] ) .'</textarea>';
-        $output .= '<p class="description">' . __( 'Enter here the long, written form of the synonym. This text will later replace the shortcode. Attention: Breaks or HTML statements are not accepted.', 'rrze-synonym' ) . '</p>';// Geben Sie hier die lange, ausgeschriebene Form des Synonyms ein. Mit diesem Text wird dann im späteren Gebrauch der verwendete Shortcode ersetzt. Achtung: Umbrüche oder HTML-Anweisungen werden nicht übernommen.
+        $output .= '<p class="description">' . __( 'Enter here the long, written form of the synonym. This text will later replace the shortcode. Attention: Breaks or HTML statements are not accepted.', 'rrze-answers' ) . '</p>';// Geben Sie hier die lange, ausgeschriebene Form des Synonyms ein. Mit diesem Text wird dann im späteren Gebrauch der verwendete Shortcode ersetzt. Achtung: Umbrüche oder HTML-Anweisungen werden nicht übernommen.
 
         // langTitle
         $selectedLang = ( $fields['titleLang'] ? $fields['titleLang'] : substr( get_locale(), 0, 2) );
@@ -218,7 +218,7 @@ class Layout {
             $output .= '<option value="' . $lang . '"' . $selected . '>' . $desc . '</option>';
         }
         $output .= '</select>';
-        $output .= '<p class="description">' . __( 'Choose the language in which the long form is pronounced.', 'rrze-synonym' ) . '</p>'; // Wählen Sie die Sprache, in der die Langform ausgesprochen wird. 
+        $output .= '<p class="description">' . __( 'Choose the language in which the long form is pronounced.', 'rrze-answers' ) . '</p>'; // Wählen Sie die Sprache, in der die Langform ausgesprochen wird. 
 
         echo $output;
     }

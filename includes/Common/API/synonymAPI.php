@@ -18,17 +18,17 @@ class API {
         $cleanShortname = strtolower( preg_replace('/[^A-Za-z0-9]/', '', $shortname ) );
 
         if ( in_array( $cleanUrl, $domains )){
-            $aRet['ret'] = $url . ' ' . __( 'is already in use.', 'rrze-synonym' );
+            $aRet['ret'] = $url . ' ' . __( 'is already in use.', 'rrze-answers' );
             return $aRet;
         }elseif ( array_key_exists( $cleanShortname, $domains )){
-            $aRet['ret'] = $cleanShortname . ' ' . __( 'is already in use.', 'rrze-synonym' );
+            $aRet['ret'] = $cleanShortname . ' ' . __( 'is already in use.', 'rrze-answers' );
             return $aRet;
         }else{
             $request = wp_remote_get( $cleanUrl . SYNONYM_ENDPOINT . '?per_page=1' );
             $status_code = wp_remote_retrieve_response_code( $request );
 
             if ( $status_code != '200' ){
-                $aRet['ret'] = $cleanUrl . ' ' . __( 'is not valid.', 'rrze-synonym' );
+                $aRet['ret'] = $cleanUrl . ' ' . __( 'is not valid.', 'rrze-answers' );
                 return $aRet;
             }else{
                 $content = json_decode( wp_remote_retrieve_body( $request ), TRUE );
@@ -36,7 +36,7 @@ class API {
                 if ($content){
                     $cleanUrl = substr( $content[0]['link'], 0 , strpos( $content[0]['link'], '/synonym' ) ) . '/';
                 }else{
-                    $aRet['ret'] = $cleanUrl . ' ' . __( 'is not valid.', 'rrze-synonym' );
+                    $aRet['ret'] = $cleanUrl . ' ' . __( 'is not valid.', 'rrze-answers' );
                     return $aRet;    
                 }
             } 
@@ -53,7 +53,7 @@ class API {
 
     public function getDomains(){
         $domains = array();
-        $options = get_option( 'rrze-synonym' );
+        $options = get_option( 'rrze-answers' );
         if ( isset( $options['registeredDomains'] ) ){
             foreach( $options['registeredDomains'] as $shortname => $url ){
                 $domains[$shortname] = $url;

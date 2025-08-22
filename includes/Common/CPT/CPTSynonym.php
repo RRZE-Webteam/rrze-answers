@@ -21,14 +21,14 @@ class CPT {
     
     public function registerCPT() {	    
         $labels = array(
-                'name'                => _x( 'synonym', 'synonyms', 'rrze-synonym' ),
-                'singular_name'       => _x( 'synonym', 'Single synonym', 'rrze-synonym' ),
-                'menu_name'           => __( 'Synonyms', 'rrze-synonym' ),
-                'add_new'             => __( 'Add synonym', 'rrze-synonym' ),
-                'add_new_item'        => __( 'Add new synonym', 'rrze-synonym' ),
-                'edit_item'           => __( 'Edit synonym', 'rrze-synonym' ),
-                'all_items'           => __( 'All synonyms', 'rrze-synonym' ),
-                'search_items'        => __( 'Search synonym', 'rrze-synonym' ),
+                'name'                => _x( 'synonym', 'synonyms', 'rrze-answers' ),
+                'singular_name'       => _x( 'synonym', 'Single synonym', 'rrze-answers' ),
+                'menu_name'           => __( 'Synonyms', 'rrze-answers' ),
+                'add_new'             => __( 'Add synonym', 'rrze-answers' ),
+                'add_new_item'        => __( 'Add new synonym', 'rrze-answers' ),
+                'edit_item'           => __( 'Edit synonym', 'rrze-answers' ),
+                'all_items'           => __( 'All synonyms', 'rrze-answers' ),
+                'search_items'        => __( 'Search synonym', 'rrze-answers' ),
         );
         $rewrite = array(
                 'slug'                => 'synonym',
@@ -37,8 +37,8 @@ class CPT {
                 'feeds'               => true,
         );
         $args = array(
-                'label'               => __( 'synonym', 'rrze-synonym' ),
-                'description'         => __( 'Synonym informations', 'rrze-synonym' ),
+                'label'               => __( 'synonym', 'rrze-answers' ),
+                'description'         => __( 'Synonym informations', 'rrze-answers' ),
                 'labels'              => $labels,
                 'supports'            => array( 'title' ),
                 'hierarchical'        => false,
