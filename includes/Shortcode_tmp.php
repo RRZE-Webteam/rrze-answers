@@ -1,11 +1,11 @@
 <?php
 
-namespace RRZE\FAQ;
+namespace RRZE\ANSWERS;
 
 defined('ABSPATH') || exit;
 
-use RRZE\FAQ\Config;
-use RRZE\FAQ\Tools;
+use RRZE\ANSWERS\Config;
+use RRZE\ANSWERS\Tools;
 
 
 /**

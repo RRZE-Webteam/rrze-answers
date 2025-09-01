@@ -1,262 +1,165 @@
 <?php
 
-namespace RRZE\FAQ;
+namespace RRZE\Answers;
 
 defined('ABSPATH') || exit;
 
 /**
- * Custom Post Type "faq"
+ * Base class for custom post types
  */
-class CPT
+abstract class CPT
 {
-
-    private $lang = '';
+    protected $lang = '';
+    protected $post_type;
+    protected $rest_base;
+    protected $menu_icon = 'dashicons-admin-post';
+    protected $supports = ['title','editor'];
+    protected $has_archive = true;
+    protected $labels = [];
+    protected $taxonomies = [];
+    protected $templates = [];
+    protected $slug_options = ['slug_option_key' => '', 'default_slug' => ''];
+    protected $textdomain = 'rrze-faq';
 
     public function __construct()
     {
-        $this->lang = substr(get_locale(), 0, 2);
+        $this->lang = substr(get_locale(), 0, 2) ?: 'en';
 
-        add_action('init', [$this, 'registerFaq'], 0);
-        add_action('init', [$this, 'registerFaqTaxonomy'], 0);
+        add_action('init', [$this, 'registerPostType'], 0);
+        add_action('init', [$this, 'registerTaxonomies'], 0);
 
-        add_action('publish_rrze_faq', [$this, 'setPostMeta'], 10, 1);
-        add_action('create_rrze_faq_category', [$this, 'setTermMeta'], 10, 1);
-        add_action('create_rrze_faq_tag', [$this, 'setTermMeta'], 10, 1);
+        add_action("publish_{$this->post_type}", [$this, 'setPostMeta'], 10, 1);
+        foreach ($this->taxonomies as $tx) {
+            add_action("create_{$tx['name']}", [$this, 'setTermMeta'], 10, 1);
+        }
 
-        add_action('rrze_faq_category_add_form_fields', [$this, 'add_category_page_field'], 10, 1);
-        add_action('rrze_faq_category_edit_form_fields', [$this, 'edit_category_page_field'], 10, 1);
-        add_action('created_rrze_faq_category', [$this, 'save_category_page_field'], 10, 1);
-        add_action('edited_rrze_faq_category', [$this, 'save_category_page_field'], 10, 1);
+        foreach ($this->taxonomies as $tx) {
+            if (!empty($tx['hierarchical'])) {
+                add_action("{$tx['name']}_add_form_fields", [$this, 'add_category_page_field']);
+                add_action("{$tx['name']}_edit_form_fields", [$this, 'edit_category_page_field']);
+                add_action("created_{$tx['name']}", [$this, 'save_category_page_field']);
+                add_action("edited_{$tx['name']}", [$this, 'save_category_page_field']);
+            }
+        }
 
         add_filter('single_template', [$this, 'filter_single_template']);
         add_filter('archive_template', [$this, 'filter_archive_template']);
         add_filter('taxonomy_template', [$this, 'filter_taxonomy_template']);
     }
 
-
-    public function registerFaq()
+    public function registerPostType()
     {
-        $labels = array(
-            'name' => _x('FAQ', 'FAQ, synonym or glossary entries', 'rrze-faq'),
-            'singular_name' => _x('FAQ', 'Single FAQ, synonym or glossary ', 'rrze-faq'),
-            'menu_name' => __('FAQ', 'rrze-faq'),
-            'add_new' => __('Add FAQ', 'rrze-faq'),
-            'add_new_item' => __('Add new FAQ', 'rrze-faq'),
-            'edit_item' => __('Edit FAQ', 'rrze-faq'),
-            'all_items' => __('All FAQ', 'rrze-faq'),
-            'search_items' => __('Search FAQ', 'rrze-faq'),
-        );
+        $options = get_option($this->textdomain);
+        $slug_option_key = $this->slug_options['slug_option_key'];
+        $default_slug    = $this->slug_options['default_slug'];
+        $slug = !empty($options[$slug_option_key]) ? sanitize_title($options[$slug_option_key]) : $default_slug;
 
-        // Get the slug from the options; fallback to 'faq' if not set.
-        $options = get_option('rrze-faq');
-        $slug = !empty($options['website_custom_faq_slug']) ? sanitize_title($options['website_custom_faq_slug']) : 'faq';
-
-        $rewrite = array(
-            'slug' => $slug, // dynamic slug
-            'with_front' => true,
-            'pages' => true,
-            'feeds' => true,
-        );
-        $args = array(
-            'label' => __('FAQ', 'rrze-faq'),
-            'description' => __('FAQ informations', 'rrze-faq'),
-            'labels' => $labels,
-            'supports' => array('title', 'editor'),
-            'hierarchical' => false,
-            'public' => true,
-            'show_ui' => true,
-            'show_in_menu' => true,
-            'show_in_nav_menus' => false,
-            'show_in_admin_bar' => true,
-            'menu_icon' => 'dashicons-editor-help',
-            'can_export' => true,
-            'has_archive' => true,
-            'exclude_from_search' => false,
-            'publicly_queryable' => true,
-            'query_var' => 'faq',
-            'rewrite' => $rewrite,
-            'show_in_rest' => true,
-            'rest_base' => 'faq',
+        $args = [
+            'label'               => $this->labels['name'] ?? __('Entries', $this->textdomain),
+            'description'         => $this->labels['name'] ?? __('Entries', $this->textdomain),
+            'labels'              => $this->labels,
+            'supports'            => $this->supports,
+            'public'              => true,
+            'show_ui'             => true,
+            'menu_icon'           => $this->menu_icon,
+            'has_archive'         => $this->has_archive,
+            'publicly_queryable'  => true,
+            'query_var'           => $this->rest_base,
+            'rewrite'             => ['slug' => $slug, 'with_front' => true],
+            'show_in_rest'        => true,
+            'rest_base'           => $this->rest_base,
             'rest_controller_class' => 'WP_REST_Posts_Controller',
-        );
-        register_post_type('rrze_faq', $args);
-    }
-
-    public function registerFaqTaxonomy()
-    {
-
-        // Get the slug from the options; fallback to 'faq_category' and 'faq_tag' if not set.
-        $options = get_option('rrze-faq');
-        $slug_category = !empty($options['website_custom_faq_category_slug']) ? sanitize_title($options['website_custom_faq_category_slug']) : 'faq_category';
-        $slug_tag = !empty($options['website_custom_faq_tag_slug']) ? sanitize_title($options['website_custom_faq_tag_slug']) : 'faq_tag';
-
-        $tax = [
-            [
-                'name' => 'rrze_faq_category',
-                'label' => 'FAQ ' . __('Categories', 'rrze-faq'),
-                'slug' => $slug_category, // Dynamic slug
-                'rest_base' => 'rrze_faq_category',
-                'hierarchical' => TRUE,
-                'labels' => array(
-                    'singular_name' => __('Category', 'rrze-faq'),
-                    'add_new' => __('Add new category', 'rrze-faq'),
-                    'add_new_item' => __('Add new category', 'rrze-faq'),
-                    'new_item' => __('New category', 'rrze-faq'),
-                    'view_item' => __('Show category', 'rrze-faq'),
-                    'view_items' => __('Show categories', 'rrze-faq'),
-                    'search_items' => __('Search categories', 'rrze-faq'),
-                    'not_found' => __('No category found', 'rrze-faq'),
-                    'all_items' => __('All categories', 'rrze-faq'),
-                    'separate_items_with_commas' => __('Separate categories with commas', 'rrze-faq'),
-                    'choose_from_most_used' => __('Choose from the most used categories', 'rrze-faq'),
-                    'edit_item' => __('Edit category', 'rrze-faq'),
-                    'update_item' => __('Update category', 'rrze-faq')
-                )
-            ],
-            [
-                'name' => 'rrze_faq_tag',
-                'label' => 'FAQ ' . __('Tags', 'rrze-faq'),
-                'slug' => $slug_tag, // dynamic slug
-                'rest_base' => 'rrze_faq_tag',
-                'hierarchical' => FALSE,
-                'labels' => array(
-                    'singular_name' => __('Tag', 'rrze-faq'),
-                    'add_new' => __('Add new tag', 'rrze-faq'),
-                    'add_new_item' => __('Add new tag', 'rrze-faq'),
-                    'new_item' => __('New tag', 'rrze-faq'),
-                    'view_item' => __('Show tag', 'rrze-faq'),
-                    'view_items' => __('Show tags', 'rrze-faq'),
-                    'search_items' => __('Search tags', 'rrze-faq'),
-                    'not_found' => __('No tag found', 'rrze-faq'),
-                    'all_items' => __('All tags', 'rrze-faq'),
-                    'separate_items_with_commas' => __('Separate tags with commas', 'rrze-faq'),
-                    'choose_from_most_used' => __('Choose from the most used tags', 'rrze-faq'),
-                    'edit_item' => __('Edit tag', 'rrze-faq'),
-                    'update_item' => __('Update tag', 'rrze-faq')
-                )
-            ],
         ];
 
-        foreach ($tax as $t) {
-            $ret = register_taxonomy(
+        register_post_type($this->post_type, $args);
+    }
+
+    public function registerTaxonomies()
+    {
+        $options = get_option($this->textdomain);
+
+        foreach ($this->taxonomies as $t) {
+            $slug = !empty($options[$t['slug_option_key'] ?? ''])
+                ? sanitize_title($options[$t['slug_option_key']])
+                : ($t['default_slug'] ?? $t['name']);
+
+            register_taxonomy(
                 $t['name'],
-                'rrze_faq',
-                array(
-                    'hierarchical' => $t['hierarchical'],
-                    'label' => $t['label'],
-                    'labels' => $t['labels'],
-                    'show_ui' => TRUE,
-                    'show_admin_column' => TRUE,
-                    'query_var' => TRUE,
-                    'rewrite' => array(
-                        'slug' => $t['slug'], // base slug that will display before each term
-                        'with_front' => TRUE
-                    ),
-                    'show_in_rest' => TRUE,
-                    'rest_base' => $t['rest_base'],
-                    'rest_controller_class' => 'WP_REST_Terms_Controller'
-                )
-            );
-            register_term_meta(
-                $t['name'],
-                'source',
+                $this->post_type,
                 [
-                    'query_var' => TRUE,
-                    'type' => 'string',
-                    'single' => TRUE,
-                    'show_in_rest' => TRUE,
-                    'rest_base' => 'source',
-                    'rest_controller_class' => 'WP_REST_Terms_Controller'
-                ]
-            );
-            register_term_meta(
-                $t['name'],
-                'lang',
-                [
-                    'query_var' => TRUE,
-                    'type' => 'string',
-                    'single' => TRUE,
-                    'show_in_rest' => TRUE,
-                    'rest_base' => 'lang',
-                    'rest_controller_class' => 'WP_REST_Terms_Controller'
-                ]
-            );
-            register_term_meta(
-                $t['name'],
-                'linked_page',
-                [
-                    'type' => 'integer',
-                    'single' => TRUE,
-                    'show_in_rest' => FALSE
+                    'hierarchical' => (bool) ($t['hierarchical'] ?? false),
+                    'label'        => $t['label'],
+                    'labels'       => $t['labels'] ?? [],
+                    'show_ui'      => true,
+                    'show_admin_column' => true,
+                    'query_var'    => true,
+                    'rewrite'      => ['slug' => $slug, 'with_front' => true],
+                    'show_in_rest' => true,
+                    'rest_base'    => $t['rest_base'] ?? $t['name'],
+                    'rest_controller_class' => 'WP_REST_Terms_Controller',
                 ]
             );
 
+            register_term_meta($t['name'], 'source', ['type'=>'string','single'=>true,'show_in_rest'=>true]);
+            register_term_meta($t['name'], 'lang',   ['type'=>'string','single'=>true,'show_in_rest'=>true]);
+            register_term_meta($t['name'], 'linked_page', ['type'=>'integer','single'=>true,'show_in_rest'=>false]);
         }
     }
 
     public function setPostMeta($postID)
     {
-        add_post_meta($postID, 'source', 'website', TRUE);
-        add_post_meta($postID, 'lang', $this->lang, TRUE);
-        add_post_meta($postID, 'remoteID', $postID, TRUE);
-        $remoteChanged = get_post_timestamp($postID, 'modified');
-        add_post_meta($postID, 'remoteChanged', $remoteChanged, TRUE);
+        add_post_meta($postID, 'source', 'website', true);
+        add_post_meta($postID, 'lang', $this->lang, true);
+        add_post_meta($postID, 'remoteID', $postID, true);
+        add_post_meta($postID, 'remoteChanged', get_post_timestamp($postID, 'modified'), true);
     }
 
     public function setTermMeta($termID)
     {
-        add_term_meta($termID, 'source', 'website', TRUE);
-        add_term_meta($termID, 'lang', $this->lang, TRUE);
+        add_term_meta($termID, 'source', 'website', true);
+        add_term_meta($termID, 'lang', $this->lang, true);
     }
 
-
-
-    public static function add_category_page_field($taxonomy)
+    public function add_category_page_field()
     {
         $pages = get_pages();
         echo '<div class="form-field term-linked-page-wrap">';
-        echo '<label for="linked_page">' . esc_html__('Linked Page', 'rrze-faq') . '</label>';
+        echo '<label for="linked_page">' . esc_html__('Linked Page', $this->textdomain) . '</label>';
         echo '<select name="linked_page">';
-        echo '<option value="">' . esc_html__('None', 'rrze-faq') . '</option>';
+        echo '<option value="">' . esc_html__('None', $this->textdomain) . '</option>';
         foreach ($pages as $page) {
             echo '<option value="' . esc_attr($page->ID) . '">' . esc_html($page->post_title) . '</option>';
         }
         echo '</select></div>';
     }
 
-    public static function edit_category_page_field($term)
+    public function edit_category_page_field($term)
     {
-        wp_nonce_field('save_faq_category_meta', 'faq_category_meta_nonce');
-
+        wp_nonce_field('save_term_linked_page_meta', 'term_linked_page_meta_nonce');
         $pages = get_pages();
         $selected = get_term_meta($term->term_id, 'linked_page', true);
 
         echo '<tr class="form-field term-linked-page-wrap">';
-        echo '<th><label for="linked_page">' . esc_html__('Linked Page', 'rrze-faq') . '</label></th>';
+        echo '<th><label for="linked_page">' . esc_html__('Linked Page', $this->textdomain) . '</label></th>';
         echo '<td><select name="linked_page">';
-        echo '<option value="">' . esc_html__('None', 'rrze-faq') . '</option>';
+        echo '<option value="">' . esc_html__('None', $this->textdomain) . '</option>';
         foreach ($pages as $page) {
-            $id = (int) $page->ID;
-
             printf(
                 '<option value="%1$d" %2$s>%3$s</option>',
-                esc_attr($id),
-                selected($selected, $id, false),
+                esc_attr($page->ID),
+                selected((int)$selected, (int)$page->ID, false),
                 esc_html($page->post_title)
             );
         }
         echo '</select></td></tr>';
     }
 
-    public static function save_category_page_field($term_id)
+    public function save_category_page_field($term_id)
     {
-        if (
-            !isset($_POST['faq_category_meta_nonce']) ||
-            !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['faq_category_meta_nonce'])), 'save_faq_category_meta')
-        ) {
+        if (!isset($_POST['term_linked_page_meta_nonce']) ||
+            !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['term_linked_page_meta_nonce'])), 'save_term_linked_page_meta')) {
             return;
         }
-
         if (isset($_POST['linked_page'])) {
             update_term_meta($term_id, 'linked_page', (int) $_POST['linked_page']);
         }
@@ -265,29 +168,29 @@ class CPT
     public function filter_single_template($template)
     {
         global $post;
-        if ('rrze_faq' === $post->post_type) {
-            $template = plugin_dir_path(__DIR__) . 'templates/single-faq.php';
+        if ($post && $post->post_type === $this->post_type && !empty($this->templates['single'])) {
+            $template = plugin_dir_path(__DIR__) . 'templates/' . $this->templates['single'];
         }
         return $template;
     }
-
-
 
     public function filter_archive_template($template)
     {
-        if (is_post_type_archive('rrze_faq')) {
-            $template = plugin_dir_path(__DIR__) . 'templates/archive-faq.php';
+        if (is_post_type_archive($this->post_type) && !empty($this->templates['archive'])) {
+            $template = plugin_dir_path(__DIR__) . 'templates/' . $this->templates['archive'];
         }
         return $template;
     }
 
-
     public function filter_taxonomy_template($template)
     {
-        if (is_tax('rrze_faq_category')) {
-            $template = plugin_dir_path(__DIR__) . 'templates/faq_category.php';
-        } elseif (is_tax('rrze_faq_tag')) {
-            $template = plugin_dir_path(__DIR__) . 'templates/faq_tag.php';
+        if (!empty($this->templates['taxonomy'])) {
+            foreach ($this->templates['taxonomy'] as $tax => $file) {
+                if (is_tax($tax)) {
+                    $template = plugin_dir_path(__DIR__) . 'templates/' . $file;
+                    break;
+                }
+            }
         }
         return $template;
     }

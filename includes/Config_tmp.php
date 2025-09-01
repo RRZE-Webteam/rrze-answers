@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\FAQ;
+namespace RRZE\ANSWERS;
 
 use function __;
 
@@ -183,7 +183,7 @@ class Config
 					'type' => 'text',
 					'default' => 'faq',
 					'placeholder' => 'faq',
-					'sanitize_callback' => [\RRZE\FAQ\Settings::class, 'sanitizeSlug'],
+					'sanitize_callback' => [\RRZE\ANSWERS\Settings::class, 'sanitizeSlug'],
 				],
 				[
 					'name' => 'custom_faq_category_slug',
@@ -192,7 +192,7 @@ class Config
 					'type' => 'text',
 					'default' => 'faq_category',
 					'placeholder' => 'faq_category',
-					'sanitize_callback' => [\RRZE\FAQ\Settings::class, 'sanitizeSlug'],
+					'sanitize_callback' => [\RRZE\ANSWERS\Settings::class, 'sanitizeSlug'],
 
 				],
 				[
@@ -202,7 +202,7 @@ class Config
 					'type' => 'text',
 					'default' => 'faq_tag',
 					'placeholder' => 'faq_tag',
-					'sanitize_callback' => [\RRZE\FAQ\Settings::class, 'sanitizeSlug'],
+					'sanitize_callback' => [\RRZE\ANSWERS\Settings::class, 'sanitizeSlug'],
 				],
 			],
 			'faqlog' => [
