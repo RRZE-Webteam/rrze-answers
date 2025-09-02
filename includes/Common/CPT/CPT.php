@@ -1,6 +1,7 @@
 <?php
 
-namespace RRZE\Answers;
+namespace RRZE\Answers\Common\CPT;
+
 
 defined('ABSPATH') || exit;
 

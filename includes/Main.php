@@ -7,9 +7,12 @@ use function RRZE\Answers\plugin;
 use RRZE\Answers\Defaults;
 
 use RRZE\Answers\Common\{
+    AdminInterfaces\AdminMenu,
     Settings\Settings,
     Settings\SettingsFAQ,
     CPT\CPTFAQ,
+    CPT\CPTGlossary,
+    CPT\CPTSynonym,
     Blocks\Blocks,
     Shortcode\Shortcode
 };
@@ -50,6 +53,7 @@ class Main
      * It can be extended or modified to register additional shortcode as needed.
      */
     public $shortcode;
+    private $adminMenu;
 
     /**
      * Constructor for the Main class.
@@ -78,6 +82,7 @@ class Main
             $this->defaults = new Defaults();
             $this->settings();
             $this->settingsFAQ();
+            $this->adminMenue = new AdminMenu();
     }
 
     public function settingsFAQ(){
@@ -94,21 +99,9 @@ class Main
      */
     public function cpt()
     {
-        // Example of registering a custom post type
-        // This can be extended or modified as needed.
-        // $this->cpt = new CPTFAQ($this->defaults->get('cpt')['name'], [
-        //     'labels' => [
-        //         'name' => __('Books', 'rrze-answers'),
-        //         'singular_name' => __('Book', 'rrze-answers')
-        //     ],
-        //     'public' => true,
-        //     'has_archive' => true,
-        //     'show_in_rest' => true,
-        //     'supports' => ['title', 'editor', 'thumbnail'],
-        // ]);
-
         $this->cpt = new CPTFAQ();
-
+        $this->cpt = new CPTGlossary();
+        $this->cpt = new CPTSynonym();
     }
 
 
