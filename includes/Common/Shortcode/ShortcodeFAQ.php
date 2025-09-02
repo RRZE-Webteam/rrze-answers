@@ -16,12 +16,13 @@ class ShortcodeFAQ
      */
     private $settings = '';
     private $pluginname = '';
-    
+    protected $textdomain;
 
 
-    public function __construct()
+
+    public function __construct($textdomain)
     {
-        
+        $this->textdomain = $textdomain;
         $this->settings = $this->getShortcodeSettings();
         $this->pluginname = $this->settings['block']['blockname'];
 
@@ -31,262 +32,262 @@ class ShortcodeFAQ
     }
 
 
-    	public static function getShortcodeSettings(): array
-	{
-		$ret = [
-			'block' => [
-				'blocktype' => 'rrze-faq/faq',
-				'blockname' => 'faq',
-				'title' => 'RRZE FAQ',
-				'category' => 'widgets',
-				'icon' => 'editor-help',
-				'tinymce_icon' => 'help'
-			],
-			'glossary' => [
-				'values' => [
-					[
-						'id' => '',
-						'val' => __('none', 'rrze-faq')
-					],
-					[
-						'id' => 'category',
-						'val' => __('Categories', 'rrze-faq')
-					],
-					[
-						'id' => 'tag',
-						'val' => __('Tags', 'rrze-faq')
-					]
-				],
-				'default' => '',
-				'field_type' => 'select',
-				'label' => __('Glossary content', 'rrze-faq'),
-				'type' => 'string'
-			],
-			'glossarystyle' => [
-				'values' => [
-					[
-						'id' => '',
-						'val' => __('-- hidden --', 'rrze-faq')
-					],
-					[
-						'id' => 'a-z',
-						'val' => __('A - Z', 'rrze-faq')
-					],
-					[
-						'id' => 'tagcloud',
-						'val' => __('Tagcloud', 'rrze-faq')
-					],
-					[
-						'id' => 'tabs',
-						'val' => __('Tabs', 'rrze-faq')
-					]
-				],
-				'default' => 'a-z',
-				'field_type' => 'select',
-				'label' => __('Glossary style', 'rrze-faq'),
-				'type' => 'string'
-			],
-			'category' => [
-				'default' => '',
-				'field_type' => 'text',
-				'label' => __('Categories', 'rrze-faq'),
-				'type' => 'text'
-			],
-			'tag' => [
-				'default' => '',
-				'field_type' => 'text',
-				'label' => __('Tags', 'rrze-faq'),
-				'type' => 'text'
-			],
-			'domain' => [
-				'default' => '',
-				'field_type' => 'text',
-				'label' => __('Domain', 'rrze-faq'),
-				'type' => 'text'
-			],
-			'id' => [
-				'default' => NULL,
-				'field_type' => 'text',
-				'label' => __('FAQ', 'rrze-faq'),
-				'type' => 'number'
-			],
-			'hide_accordion' => [
-				'field_type' => 'toggle',
-				'label' => __('Hide accordeon', 'rrze-faq'),
-				'type' => 'boolean',
-				'default' => FALSE,
-				'checked' => FALSE
-			],
-			'hide_title' => [
-				'field_type' => 'toggle',
-				'label' => __('Hide title', 'rrze-faq'),
-				'type' => 'boolean',
-				'default' => FALSE,
-				'checked' => FALSE
-			],
-			'expand_all_link' => [
-				'field_type' => 'toggle',
-				'label' => __('Show "expand all" button', 'rrze-faq'),
-				'type' => 'boolean',
-				'default' => FALSE,
-				'checked' => FALSE
-			],
-			'load_open' => [
-				'field_type' => 'toggle',
-				'label' => __('Load website with opened accordeons', 'rrze-faq'),
-				'type' => 'boolean',
-				'default' => FALSE,
-				'checked' => FALSE
-			],
-			'color' => [
-				'values' => [
-					[
-						'id' => 'fau',
-						'val' => 'fau',
-					],
-					[
-						'id' => 'med',
-						'val' => 'med',
-					],
-					[
-						'id' => 'nat',
-						'val' => 'nat',
-					],
-					[
-						'id' => 'phil',
-						'val' => 'phil',
-					],
-					[
-						'id' => 'rw',
-						'val' => 'rw',
-					],
-					[
-						'id' => 'tf',
-						'val' => 'tf',
-					],
-				],
-				'default' => 'fau',
-				'field_type' => 'select',
-				'label' => __('Color', 'rrze-faq'),
-				'type' => 'string'
-			],
-			'style' => [
-				'values' => [
-					[
-						'id' => '',
-						'val' => __('none', 'rrze-faq')
-					],
-					[
-						'id' => 'light',
-						'val' => 'light'
-					],
-					[
-						'id' => 'dark',
-						'val' => 'dark'
-					],
-				],
-				'default' => '',
-				'field_type' => 'select',
-				'label' => __('Style', 'rrze-faq'),
-				'type' => 'string'
-			],
-			'masonry' => [
-				'field_type' => 'toggle',
-				'label' => __('Grid', 'rrze-faq'),
-				'type' => 'boolean',
-				'default' => FALSE,
-				'checked' => FALSE
-			],
-			'additional_class' => [
-				'default' => '',
-				'field_type' => 'text',
-				'label' => __('Additonal CSS-class(es) for sourrounding DIV', 'rrze-faq'),
-				'type' => 'text'
-			],
-			'lang' => [
-				'default' => '',
-				'field_type' => 'select',
-				'label' => __('Language', 'rrze-faq'),
-				'type' => 'string'
-			],
-			'sort' => [
-				'values' => [
-					[
-						'id' => 'title',
-						'val' => __('Title', 'rrze-faq')
-					],
-					[
-						'id' => 'id',
-						'val' => __('ID', 'rrze-faq')
-					],
-					[
-						'id' => 'sortfield',
-						'val' => __('Sort field', 'rrze-faq')
-					],
-				],
-				'default' => 'title',
-				'field_type' => 'select',
-				'label' => __('Sort', 'rrze-faq'),
-				'type' => 'string'
-			],
-			'order' => [
-				'values' => [
-					[
-						'id' => 'ASC',
-						'val' => __('ASC', 'rrze-faq')
-					],
-					[
-						'id' => 'DESC',
-						'val' => __('DESC', 'rrze-faq')
-					],
-				],
-				'default' => 'ASC',
-				'field_type' => 'select',
-				'label' => __('Order', 'rrze-faq'),
-				'type' => 'string'
-			],
-			'hstart' => [
-				'default' => 2,
-				'field_type' => 'text',
-				'label' => __('Heading level of the first heading', 'rrze-faq'),
-				'type' => 'number'
-			],
-		];
+    public function getShortcodeSettings(): array
+    {
+        $ret = [
+            'block' => [
+                'blocktype' => 'rrze-faq/faq',
+                'blockname' => 'faq',
+                'title' => 'RRZE FAQ',
+                'category' => 'widgets',
+                'icon' => 'editor-help',
+                'tinymce_icon' => 'help'
+            ],
+            'glossary' => [
+                'values' => [
+                    [
+                        'id' => '',
+                        'val' => __('none', $this->textdomain)
+                    ],
+                    [
+                        'id' => 'category',
+                        'val' => __('Categories', $this->textdomain)
+                    ],
+                    [
+                        'id' => 'tag',
+                        'val' => __('Tags', $this->textdomain)
+                    ]
+                ],
+                'default' => '',
+                'field_type' => 'select',
+                'label' => __('Glossary content', $this->textdomain),
+                'type' => 'string'
+            ],
+            'glossarystyle' => [
+                'values' => [
+                    [
+                        'id' => '',
+                        'val' => __('-- hidden --', $this->textdomain)
+                    ],
+                    [
+                        'id' => 'a-z',
+                        'val' => __('A - Z', $this->textdomain)
+                    ],
+                    [
+                        'id' => 'tagcloud',
+                        'val' => __('Tagcloud', $this->textdomain)
+                    ],
+                    [
+                        'id' => 'tabs',
+                        'val' => __('Tabs', $this->textdomain)
+                    ]
+                ],
+                'default' => 'a-z',
+                'field_type' => 'select',
+                'label' => __('Glossary style', $this->textdomain),
+                'type' => 'string'
+            ],
+            'category' => [
+                'default' => '',
+                'field_type' => 'text',
+                'label' => __('Categories', $this->textdomain),
+                'type' => 'text'
+            ],
+            'tag' => [
+                'default' => '',
+                'field_type' => 'text',
+                'label' => __('Tags', $this->textdomain),
+                'type' => 'text'
+            ],
+            'domain' => [
+                'default' => '',
+                'field_type' => 'text',
+                'label' => __('Domain', $this->textdomain),
+                'type' => 'text'
+            ],
+            'id' => [
+                'default' => NULL,
+                'field_type' => 'text',
+                'label' => __('FAQ', $this->textdomain),
+                'type' => 'number'
+            ],
+            'hide_accordion' => [
+                'field_type' => 'toggle',
+                'label' => __('Hide accordeon', $this->textdomain),
+                'type' => 'boolean',
+                'default' => FALSE,
+                'checked' => FALSE
+            ],
+            'hide_title' => [
+                'field_type' => 'toggle',
+                'label' => __('Hide title', $this->textdomain),
+                'type' => 'boolean',
+                'default' => FALSE,
+                'checked' => FALSE
+            ],
+            'expand_all_link' => [
+                'field_type' => 'toggle',
+                'label' => __('Show "expand all" button', $this->textdomain),
+                'type' => 'boolean',
+                'default' => FALSE,
+                'checked' => FALSE
+            ],
+            'load_open' => [
+                'field_type' => 'toggle',
+                'label' => __('Load website with opened accordeons', $this->textdomain),
+                'type' => 'boolean',
+                'default' => FALSE,
+                'checked' => FALSE
+            ],
+            'color' => [
+                'values' => [
+                    [
+                        'id' => 'fau',
+                        'val' => 'fau',
+                    ],
+                    [
+                        'id' => 'med',
+                        'val' => 'med',
+                    ],
+                    [
+                        'id' => 'nat',
+                        'val' => 'nat',
+                    ],
+                    [
+                        'id' => 'phil',
+                        'val' => 'phil',
+                    ],
+                    [
+                        'id' => 'rw',
+                        'val' => 'rw',
+                    ],
+                    [
+                        'id' => 'tf',
+                        'val' => 'tf',
+                    ],
+                ],
+                'default' => 'fau',
+                'field_type' => 'select',
+                'label' => __('Color', $this->textdomain),
+                'type' => 'string'
+            ],
+            'style' => [
+                'values' => [
+                    [
+                        'id' => '',
+                        'val' => __('none', $this->textdomain)
+                    ],
+                    [
+                        'id' => 'light',
+                        'val' => 'light'
+                    ],
+                    [
+                        'id' => 'dark',
+                        'val' => 'dark'
+                    ],
+                ],
+                'default' => '',
+                'field_type' => 'select',
+                'label' => __('Style', $this->textdomain),
+                'type' => 'string'
+            ],
+            'masonry' => [
+                'field_type' => 'toggle',
+                'label' => __('Grid', $this->textdomain),
+                'type' => 'boolean',
+                'default' => FALSE,
+                'checked' => FALSE
+            ],
+            'additional_class' => [
+                'default' => '',
+                'field_type' => 'text',
+                'label' => __('Additonal CSS-class(es) for sourrounding DIV', $this->textdomain),
+                'type' => 'text'
+            ],
+            'lang' => [
+                'default' => '',
+                'field_type' => 'select',
+                'label' => __('Language', $this->textdomain),
+                'type' => 'string'
+            ],
+            'sort' => [
+                'values' => [
+                    [
+                        'id' => 'title',
+                        'val' => __('Title', $this->textdomain)
+                    ],
+                    [
+                        'id' => 'id',
+                        'val' => __('ID', $this->textdomain)
+                    ],
+                    [
+                        'id' => 'sortfield',
+                        'val' => __('Sort field', $this->textdomain)
+                    ],
+                ],
+                'default' => 'title',
+                'field_type' => 'select',
+                'label' => __('Sort', $this->textdomain),
+                'type' => 'string'
+            ],
+            'order' => [
+                'values' => [
+                    [
+                        'id' => 'ASC',
+                        'val' => __('ASC', $this->textdomain)
+                    ],
+                    [
+                        'id' => 'DESC',
+                        'val' => __('DESC', $this->textdomain)
+                    ],
+                ],
+                'default' => 'ASC',
+                'field_type' => 'select',
+                'label' => __('Order', $this->textdomain),
+                'type' => 'string'
+            ],
+            'hstart' => [
+                'default' => 2,
+                'field_type' => 'text',
+                'label' => __('Heading level of the first heading', $this->textdomain),
+                'type' => 'number'
+            ],
+        ];
 
-		$ret['lang']['values'] = [
-			[
-				'id' => '',
-				'val' => __('All languages', 'rrze-faq')
-			],
-			[
-				'id' => 'de',
-				'val' => __('German', 'rrze-faq'),
-			],
-			[
-				'id' => 'en',
-				'val' => __('English', 'rrze-faq'),
-			],
-			[
-				'id' => 'es',
-				'val' => __('Spanish', 'rrze-faq'),
-			],
-			[
-				'id' => 'fr',
-				'val' => __('French', 'rrze-faq'),
-			],
-			[
-				'id' => 'ru',
-				'val' => __('Russian', 'rrze-faq'),
-			],
-			[
-				'id' => 'zh',
-				'val' => __('Chinese', 'rrze-faq')
+        $ret['lang']['values'] = [
+            [
+                'id' => '',
+                'val' => __('All languages', $this->textdomain)
+            ],
+            [
+                'id' => 'de',
+                'val' => __('German', $this->textdomain),
+            ],
+            [
+                'id' => 'en',
+                'val' => __('English', $this->textdomain),
+            ],
+            [
+                'id' => 'es',
+                'val' => __('Spanish', $this->textdomain),
+            ],
+            [
+                'id' => 'fr',
+                'val' => __('French', $this->textdomain),
+            ],
+            [
+                'id' => 'ru',
+                'val' => __('Russian', $this->textdomain),
+            ],
+            [
+                'id' => 'zh',
+                'val' => __('Chinese', $this->textdomain)
             ]
         ];
 
-		return $ret;
+        return $ret;
 
-	}
+    }
 
     /**
      * Translates composite shortcode attributes into individual properties

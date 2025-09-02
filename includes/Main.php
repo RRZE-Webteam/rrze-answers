@@ -38,29 +38,29 @@ class Main
     public $settingsFAQ;
 
     public $blocks;
-    public $shortcode;
     public $shortcodeFAQ;
     private $adminMenu;
     private $adminInterface;
 
     public function __construct()
     {
+        $this->cpt();
         add_action('init', [$this, 'onInit']);
-
-        $this->cpt($this->textdomain);
-        $this->shortcode($this->textdomain);
-        $this->blocks($this->textdomain);
     }
 
-    public function onInit(){
-            $this->defaults = new Defaults();
-            $this->settings();
-            $this->settingsFAQ();
-            $this->adminInterface = new AdminInterfacesFAQ();
-            // $this->adminMenue = new AdminMenu(); // in admin menu there is a maximum of 2 levels. Deactivated this workaround because it wouldn't be best practice.
+    public function onInit()
+    {
+        $this->defaults = new Defaults();
+        $this->settings();
+        $this->settingsAll();
+        $this->adminInterface = new AdminInterfacesFAQ();
+        // $this->adminMenue = new AdminMenu(); // in admin menu there is a maximum of 2 levels. Deactivated this workaround because it wouldn't be best practice.
+        $this->shortcode();
+        $this->blocks();
     }
 
-    public function settingsFAQ(){
+    public function settingsAll()
+    {
         $this->settingsFAQ = new SettingsFAQ(plugin()->getFile());
     }
 
@@ -82,9 +82,7 @@ class Main
      */
     public function shortcode()
     {
-        $this->shortcodeFAQ = new ShortcodeFAQ();
-        
-        $this->shortcode = new Shortcode('example_shortcode', $this->shortcodeFAQ->output());
+        $this->shortcodeFAQ = new ShortcodeFAQ($this->textdomain);
     }
 
     /**
