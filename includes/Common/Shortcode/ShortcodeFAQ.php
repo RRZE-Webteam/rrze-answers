@@ -4,11 +4,10 @@ namespace RRZE\Answers\Common\Shortcode;
 
 defined('ABSPATH') || exit;
 
-use RRZE\Answers\Common\Config;
 use RRZE\Answers\Common\Tools;
 
 
-class FAQ
+class ShortcodeFAQ
 {
 
     /**
@@ -23,15 +22,271 @@ class FAQ
     public function __construct()
     {
         
-        $this->settings = Config::getShortcodeSettings();
+        $this->settings = $this->getShortcodeSettings();
         $this->pluginname = $this->settings['block']['blockname'];
-        // add_shortcode( 'fau_glossar', [ $this, 'shortcodeOutput' ]); // BK 2020-06-05 Shortcode [fau_glossar ...] is moved to its own plugin rrze-glossary, because for historical reasons incompatible code exists in FAU institutions, which was not known when rrze-answers was rebuilt
-        // add_shortcode( 'glossary', [ $this, 'shortcodeOutput' ]); // BK 2020-06-05 Shortcode [glossary ...] is outsourced to its own plugin rrze-glossary, because for historical reasons incompatible code exists in FAU facilities, which was not known when rrze-answers was rebuilt
 
-        add_shortcode('faq', [$this, 'shortcodeOutput']);
+        add_shortcode('faq', [$this, 'output']);
         add_action('admin_head', [$this, 'setMCEConfig']);
         add_filter('mce_external_plugins', [$this, 'addMCEButtons']);
     }
+
+
+    	public static function getShortcodeSettings(): array
+	{
+		$ret = [
+			'block' => [
+				'blocktype' => 'rrze-faq/faq',
+				'blockname' => 'faq',
+				'title' => 'RRZE FAQ',
+				'category' => 'widgets',
+				'icon' => 'editor-help',
+				'tinymce_icon' => 'help'
+			],
+			'glossary' => [
+				'values' => [
+					[
+						'id' => '',
+						'val' => __('none', 'rrze-faq')
+					],
+					[
+						'id' => 'category',
+						'val' => __('Categories', 'rrze-faq')
+					],
+					[
+						'id' => 'tag',
+						'val' => __('Tags', 'rrze-faq')
+					]
+				],
+				'default' => '',
+				'field_type' => 'select',
+				'label' => __('Glossary content', 'rrze-faq'),
+				'type' => 'string'
+			],
+			'glossarystyle' => [
+				'values' => [
+					[
+						'id' => '',
+						'val' => __('-- hidden --', 'rrze-faq')
+					],
+					[
+						'id' => 'a-z',
+						'val' => __('A - Z', 'rrze-faq')
+					],
+					[
+						'id' => 'tagcloud',
+						'val' => __('Tagcloud', 'rrze-faq')
+					],
+					[
+						'id' => 'tabs',
+						'val' => __('Tabs', 'rrze-faq')
+					]
+				],
+				'default' => 'a-z',
+				'field_type' => 'select',
+				'label' => __('Glossary style', 'rrze-faq'),
+				'type' => 'string'
+			],
+			'category' => [
+				'default' => '',
+				'field_type' => 'text',
+				'label' => __('Categories', 'rrze-faq'),
+				'type' => 'text'
+			],
+			'tag' => [
+				'default' => '',
+				'field_type' => 'text',
+				'label' => __('Tags', 'rrze-faq'),
+				'type' => 'text'
+			],
+			'domain' => [
+				'default' => '',
+				'field_type' => 'text',
+				'label' => __('Domain', 'rrze-faq'),
+				'type' => 'text'
+			],
+			'id' => [
+				'default' => NULL,
+				'field_type' => 'text',
+				'label' => __('FAQ', 'rrze-faq'),
+				'type' => 'number'
+			],
+			'hide_accordion' => [
+				'field_type' => 'toggle',
+				'label' => __('Hide accordeon', 'rrze-faq'),
+				'type' => 'boolean',
+				'default' => FALSE,
+				'checked' => FALSE
+			],
+			'hide_title' => [
+				'field_type' => 'toggle',
+				'label' => __('Hide title', 'rrze-faq'),
+				'type' => 'boolean',
+				'default' => FALSE,
+				'checked' => FALSE
+			],
+			'expand_all_link' => [
+				'field_type' => 'toggle',
+				'label' => __('Show "expand all" button', 'rrze-faq'),
+				'type' => 'boolean',
+				'default' => FALSE,
+				'checked' => FALSE
+			],
+			'load_open' => [
+				'field_type' => 'toggle',
+				'label' => __('Load website with opened accordeons', 'rrze-faq'),
+				'type' => 'boolean',
+				'default' => FALSE,
+				'checked' => FALSE
+			],
+			'color' => [
+				'values' => [
+					[
+						'id' => 'fau',
+						'val' => 'fau',
+					],
+					[
+						'id' => 'med',
+						'val' => 'med',
+					],
+					[
+						'id' => 'nat',
+						'val' => 'nat',
+					],
+					[
+						'id' => 'phil',
+						'val' => 'phil',
+					],
+					[
+						'id' => 'rw',
+						'val' => 'rw',
+					],
+					[
+						'id' => 'tf',
+						'val' => 'tf',
+					],
+				],
+				'default' => 'fau',
+				'field_type' => 'select',
+				'label' => __('Color', 'rrze-faq'),
+				'type' => 'string'
+			],
+			'style' => [
+				'values' => [
+					[
+						'id' => '',
+						'val' => __('none', 'rrze-faq')
+					],
+					[
+						'id' => 'light',
+						'val' => 'light'
+					],
+					[
+						'id' => 'dark',
+						'val' => 'dark'
+					],
+				],
+				'default' => '',
+				'field_type' => 'select',
+				'label' => __('Style', 'rrze-faq'),
+				'type' => 'string'
+			],
+			'masonry' => [
+				'field_type' => 'toggle',
+				'label' => __('Grid', 'rrze-faq'),
+				'type' => 'boolean',
+				'default' => FALSE,
+				'checked' => FALSE
+			],
+			'additional_class' => [
+				'default' => '',
+				'field_type' => 'text',
+				'label' => __('Additonal CSS-class(es) for sourrounding DIV', 'rrze-faq'),
+				'type' => 'text'
+			],
+			'lang' => [
+				'default' => '',
+				'field_type' => 'select',
+				'label' => __('Language', 'rrze-faq'),
+				'type' => 'string'
+			],
+			'sort' => [
+				'values' => [
+					[
+						'id' => 'title',
+						'val' => __('Title', 'rrze-faq')
+					],
+					[
+						'id' => 'id',
+						'val' => __('ID', 'rrze-faq')
+					],
+					[
+						'id' => 'sortfield',
+						'val' => __('Sort field', 'rrze-faq')
+					],
+				],
+				'default' => 'title',
+				'field_type' => 'select',
+				'label' => __('Sort', 'rrze-faq'),
+				'type' => 'string'
+			],
+			'order' => [
+				'values' => [
+					[
+						'id' => 'ASC',
+						'val' => __('ASC', 'rrze-faq')
+					],
+					[
+						'id' => 'DESC',
+						'val' => __('DESC', 'rrze-faq')
+					],
+				],
+				'default' => 'ASC',
+				'field_type' => 'select',
+				'label' => __('Order', 'rrze-faq'),
+				'type' => 'string'
+			],
+			'hstart' => [
+				'default' => 2,
+				'field_type' => 'text',
+				'label' => __('Heading level of the first heading', 'rrze-faq'),
+				'type' => 'number'
+			],
+		];
+
+		$ret['lang']['values'] = [
+			[
+				'id' => '',
+				'val' => __('All languages', 'rrze-faq')
+			],
+			[
+				'id' => 'de',
+				'val' => __('German', 'rrze-faq'),
+			],
+			[
+				'id' => 'en',
+				'val' => __('English', 'rrze-faq'),
+			],
+			[
+				'id' => 'es',
+				'val' => __('Spanish', 'rrze-faq'),
+			],
+			[
+				'id' => 'fr',
+				'val' => __('French', 'rrze-faq'),
+			],
+			[
+				'id' => 'ru',
+				'val' => __('Russian', 'rrze-faq'),
+			],
+			[
+				'id' => 'zh',
+				'val' => __('Chinese', 'rrze-faq')
+            ]
+        ];
+
+		return $ret;
+
+	}
 
     /**
      * Translates composite shortcode attributes into individual properties
@@ -433,12 +688,8 @@ class FAQ
      * @param string $content Enclosed content
      * @return string Return the content
      */
-    public function shortcodeOutput($atts, $content = null, $shortcode_tag = '')
+    public function output($atts, $content = null)
     {
-        // Workaround - see: https://github.com/RRZE-Webteam/rrze-faq/issues/132#issuecomment-2839668060
-        if (($skip = Tools::preventGutenbergDoubleBracketBug($shortcode_tag)) !== false) {
-            return $skip;
-        }
 
         if (empty($atts)) {
             $atts = array();

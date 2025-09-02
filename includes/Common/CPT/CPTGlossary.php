@@ -27,23 +27,29 @@ class CPTGlossary extends CPT
         ],
     ];
 
-    public function __construct()
+        protected $textdomain;
+
+    public function __construct($textdomain)
     {
-        // Call parent constructor if needed
-        if (is_callable(['parent', '__construct'])) {
-            parent::__construct();
-        }
+        $this->textdomain = $textdomain;
+
+        parent::__construct($this->textdomain);
 
         $this->labels = [
-            'name'          => __('Glossary', 'rrze-glossary'),
-            'singular_name' => __('Glossary', 'rrze-glossary'),
-            'menu_name'     => __('Glossary', 'rrze-glossary'),
+            'name' => _x('Glossary', 'Glossary entries', $this->textdomain),
+            'singular_name' => _x('Glossary', 'Single glossary ', $this->textdomain),
+            'menu_name' => __('Glossary', $this->textdomain),
+            'add_new' => __('Add glossary', $this->textdomain),
+            'add_new_item' => __('Add new glossary', $this->textdomain),
+            'edit_item' => __('Edit glossary', $this->textdomain),
+            'all_items' => __('All glossaries', $this->textdomain),
+            'search_items' => __('Search glossary', $this->textdomain),
         ];
 
         $this->taxonomies = [
             [
                 'name'            => 'rrze_glossary_category',
-                'label'           => __('Glossary Categories', 'rrze-glossary'),
+                'label'           => __('Glossary Categories', $this->textdomain),
                 'slug_option_key' => 'website_custom_glossary_category_slug',
                 'default_slug'    => 'glossary_category',
                 'rest_base'       => 'rrze_glossary_category',
@@ -51,7 +57,7 @@ class CPTGlossary extends CPT
             ],
             [
                 'name'            => 'rrze_glossary_tag',
-                'label'           => __('Glossary Tags', 'rrze-glossary'),
+                'label'           => __('Glossary Tags', $this->textdomain),
                 'slug_option_key' => 'website_custom_glossary_tag_slug',
                 'default_slug'    => 'glossary_tag',
                 'rest_base'       => 'rrze_glossary_tag',

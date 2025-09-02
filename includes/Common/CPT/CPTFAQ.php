@@ -27,23 +27,29 @@ class CPTFAQ extends CPT
         ],
     ];
 
-    public function __construct()
+    protected $textdomain;
+
+    public function __construct($textdomain)
     {
-        // Call parent constructor if needed
-        if (is_callable(['parent', '__construct'])) {
-            parent::__construct();
-        }
+        $this->textdomain = $textdomain;
+
+        parent::__construct($this->textdomain);
 
         $this->labels = [
-            'name'          => __('FAQ', 'rrze-faq'),
-            'singular_name' => __('FAQ', 'rrze-faq'),
-            'menu_name'     => __('FAQ', 'rrze-faq'),
+            'name' => _x('FAQ', 'FAQ, synonym or glossary entries', $this->textdomain),
+            'singular_name' => _x('FAQ', 'Single FAQ, synonym or glossary ', $this->textdomain),
+            'menu_name' => __('FAQ', $this->textdomain),
+            'add_new' => __('Add FAQ', $this->textdomain),
+            'add_new_item' => __('Add new FAQ', $this->textdomain),
+            'edit_item' => __('Edit FAQ', $this->textdomain),
+            'all_items' => __('All FAQ', $this->textdomain),
+            'search_items' => __('Search FAQ', $this->textdomain),
         ];
 
         $this->taxonomies = [
             [
                 'name'            => 'rrze_faq_category',
-                'label'           => __('FAQ Categories', 'rrze-faq'),
+                'label'           => __('FAQ Categories', $this->textdomain),
                 'slug_option_key' => 'website_custom_faq_category_slug',
                 'default_slug'    => 'faq_category',
                 'rest_base'       => 'rrze_faq_category',
@@ -51,7 +57,7 @@ class CPTFAQ extends CPT
             ],
             [
                 'name'            => 'rrze_faq_tag',
-                'label'           => __('FAQ Tags', 'rrze-faq'),
+                'label'           => __('FAQ Tags', $this->textdomain),
                 'slug_option_key' => 'website_custom_faq_tag_slug',
                 'default_slug'    => 'faq_tag',
                 'rest_base'       => 'rrze_faq_tag',

@@ -12,7 +12,7 @@ use RRZE\Answers\Common\Tools;
 /**
  * Layout settings for "faq"
  */
-class AdminInterfaces
+class AdminInterfacesFAQ
 {
 
 

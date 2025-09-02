@@ -27,14 +27,24 @@ class CPTSynonym extends CPT
         ]
     ];
 
-    public function __construct()
+    protected $textdomain;
+
+
+    public function __construct($textdomain)
     {
-        parent::__construct();
+        $this->textdomain = $textdomain;
+
+        parent::__construct($this->textdomain);
 
         $this->labels = [
-            'name'          => __('Synonyms', 'rrze-faq'),
-            'singular_name' => __('Synonym', 'rrze-faq'),
-            'menu_name'     => __('Synonyms', 'rrze-faq'),
+            'name' => _x('Synonym', 'Synonyms', $this->textdomain),
+            'singular_name' => _x('Synonym', 'Single synonym', $this->textdomain),
+            'menu_name' => __('Synonyms', $this->textdomain),
+            'add_new' => __('Add synonym', $this->textdomain),
+            'add_new_item' => __('Add new synonym', $this->textdomain),
+            'edit_item' => __('Edit synonym', $this->textdomain),
+            'all_items' => __('All synonyms', $this->textdomain),
+            'search_items' => __('Search synonym', $this->textdomain),
         ];
 
         $this->taxonomies = [

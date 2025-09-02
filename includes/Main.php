@@ -8,13 +8,15 @@ use RRZE\Answers\Defaults;
 
 use RRZE\Answers\Common\{
     AdminInterfaces\AdminMenu,
+    AdminInterfaces\AdminInterfacesFAQ,
     Settings\Settings,
     Settings\SettingsFAQ,
     CPT\CPTFAQ,
     CPT\CPTGlossary,
     CPT\CPTSynonym,
     Blocks\Blocks,
-    Shortcode\Shortcode
+    Shortcode\Shortcode,
+    Shortcode\ShortcodeFAQ
 };
 
 defined('ABSPATH') || exit;
@@ -30,78 +32,43 @@ defined('ABSPATH') || exit;
  */
 class Main
 {
-    /**
-     * @var Defaults $defaults The defaults instance for the plugin.
-     */
+    private $textdomain = 'rrze-answers';
     public $defaults;
-
-    /**
-     * @var Settings $settings The settings instance for the plugin.
-     */
     public $settings;
     public $settingsFAQ;
 
-    /**
-     * @var Blocks $blocks The blocks instance for the plugin.
-     */
     public $blocks;
-
-    /**
-     * @var Shortcode $shortcode The shortcode instance for the plugin.
-     * 
-     * This property can be used to register custom shortcode.
-     * It can be extended or modified to register additional shortcode as needed.
-     */
     public $shortcode;
+    public $shortcodeFAQ;
     private $adminMenu;
+    private $adminInterface;
 
-    /**
-     * Constructor for the Main class.
-     * 
-     * This method initializes the plugin by loading (optionally) the settings.
-     * It can also be used to initialize other components of the plugin.
-     * 
-     * @return void
-     */
     public function __construct()
     {
-
-
         add_action('init', [$this, 'onInit']);
 
-        $this->cpt();
-
-        $this->shortcode();
-
-        $this->blocks();
-
-        // Initialize other components or functionality as needed.   
+        $this->cpt($this->textdomain);
+        $this->shortcode($this->textdomain);
+        $this->blocks($this->textdomain);
     }
 
     public function onInit(){
             $this->defaults = new Defaults();
             $this->settings();
             $this->settingsFAQ();
-            $this->adminMenue = new AdminMenu();
+            $this->adminInterface = new AdminInterfacesFAQ();
+            // $this->adminMenue = new AdminMenu(); // in admin menu there is a maximum of 2 levels. Deactivated this workaround because it wouldn't be best practice.
     }
 
     public function settingsFAQ(){
         $this->settingsFAQ = new SettingsFAQ(plugin()->getFile());
     }
 
-    /**
-     * Custom Post Type method
-     * 
-     * This method registers a custom post type using the CPT class.
-     * It can be extended or modified to register additional custom post types as needed.
-     * 
-     * @return void
-     */
     public function cpt()
     {
-        $this->cpt = new CPTFAQ();
-        $this->cpt = new CPTGlossary();
-        $this->cpt = new CPTSynonym();
+        $this->cpt = new CPTFAQ($this->textdomain);
+        $this->cpt = new CPTGlossary($this->textdomain);
+        $this->cpt = new CPTSynonym($this->textdomain);
     }
 
 
@@ -115,14 +82,9 @@ class Main
      */
     public function shortcode()
     {
-        // Example of registering a shortcode.
-        $this->shortcode = new Shortcode('example_shortcode', function ($atts, $content = null) {
-            $atts = shortcode_atts([
-                'title' => __('Default Title', 'rrze-answers'),
-            ], $atts, 'example_shortcode');
-
-            return '<div class="rrze-answers-example-shortcode">' . esc_html($atts['title']) . '</div>';
-        });
+        $this->shortcodeFAQ = new ShortcodeFAQ();
+        
+        $this->shortcode = new Shortcode('example_shortcode', $this->shortcodeFAQ->output());
     }
 
     /**
@@ -165,8 +127,8 @@ class Main
             ->setMenuParentSlug('options-general.php');
 
         foreach ($this->defaults->get('sections') as $section) {
-            $tab = $this->settings->addTab(__($section['title'], 'rrze-answers'), $section['id']);
-            $sec = $tab->addSection(__($section['title'], 'rrze-answers'), $section['id']);
+            $tab = $this->settings->addTab(__($section['title'], $this->textdomain), $section['id']);
+            $sec = $tab->addSection(__($section['title'], $this->textdomain), $section['id']);
 
             foreach ($this->defaults->get('fields')[$section['id']] as $field) {
                 $sec->addOption($field['type'], array_intersect_key(

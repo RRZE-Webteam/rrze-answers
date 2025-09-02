@@ -20,10 +20,11 @@ abstract class CPT
     protected $taxonomies = [];
     protected $templates = [];
     protected $slug_options = ['slug_option_key' => '', 'default_slug' => ''];
-    protected $textdomain = 'rrze-faq';
+    protected $textdomain;
 
-    public function __construct()
+    public function __construct($textdomain)
     {
+        $this->textdomain = $textdomain;
         $this->lang = substr(get_locale(), 0, 2) ?: 'en';
 
         add_action('init', [$this, 'registerPostType'], 0);

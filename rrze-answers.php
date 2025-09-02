@@ -166,57 +166,6 @@ function load_textdomain()
 }
 
 
-function rrze_answers_migration()
-{
-    $option_name = 'rrze_answers_migration_done';
-
-    if (get_option($option_name)) {
-        return;
-    }
-
-    global $wpdb;
-
-    $taxonomies = get_taxonomies([], 'objects');
-
-    foreach ($taxonomies as $taxonomy) {
-        if (in_array($taxonomy->name, ['rrze_category', 'rrze_tag', 'post_tag', 'faq_category', 'faq_tag'])) {
-            continue;
-        }
-
-        $terms = get_terms([
-            'taxonomy' => $taxonomy->name,
-            'hide_empty' => false,
-        ]);
-
-        foreach ($terms as $term) {
-            $source = get_term_meta($term->term_id, 'source', true);
-
-            if ($source) {
-                $new_taxonomy = $taxonomy->hierarchical ? 'rrze_faq_category' : 'rrze_faq_tag';
-
-                $wpdb->update(
-                    $wpdb->term_taxonomy,
-                    ['taxonomy' => $new_taxonomy],
-                    [
-                        'term_taxonomy_id' => $term->term_taxonomy_id,
-                    ]
-                );
-            }
-        }
-    }
-
-    $wpdb->update(
-        $wpdb->posts,
-        ['post_type' => 'rrze_faq'],
-        ['post_type' => 'rrze_faq']
-    );
-
-    wp_cache_flush();
-    flush_rewrite_rules();
-
-    update_option($option_name, 1);
-}
-
 /**
  * Handle the loading of the plugin.
  *
@@ -288,9 +237,4 @@ function loaded()
     // If system requirements are met, proceed to initialize the main plugin instance.
     // This will load the main functionality of the plugin.
     main();
-
-    add_action(
-        'init',
-        __NAMESPACE__ . '\rrze_answers_migration'
-    );
 }
