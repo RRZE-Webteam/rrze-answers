@@ -15,7 +15,6 @@ use RRZE\Answers\Common\{
     CPT\CPTGlossary,
     CPT\CPTSynonym,
     Blocks\Blocks,
-    Shortcode\Shortcode,
     Shortcode\ShortcodeFAQ
 };
 
@@ -97,8 +96,7 @@ class Main
     {
         $this->blocks = new Blocks(
             [                                  // Array of block names
-                'block-static',
-                'block-dynamic'
+                'faq',
             ],
             plugin()->getPath('build/blocks'), // Blocks directory path
             plugin()->getPath()                // Plugin directory path

@@ -1,6 +1,6 @@
 {
   "name": "rrze-answers",
-  "version": "0.0.2",
+  "version": "0.0.9",
   "description": "Plugin to create FAQs and synchronize them from the FAU network. Usable as a shortcode, block, or widget.",
   "author": "RRZE Webteam",
   "license": "GPL-2.0-or-later",
@@ -10,7 +10,8 @@
     "extends @wordpress/browserslist-config"
   ],
   "scripts": {
-    "build": "wp-scripts build && npm run build:css && npm run increment-version",
+    "start": "wp-scripts start blocks/*/index.js",
+    "build": "wp-scripts build blocks/*/index.js && npm run build:css && npm run increment-version",
     "build:css": "sass src/sass:build/css --style compressed",
     "increment-version": "node increment-version.js patch",
     "format": "wp-scripts format",
@@ -19,7 +20,6 @@
     "lint:js:fix": "wp-scripts lint-js --fix",
     "packages-update": "wp-scripts packages-update",
     "plugin-zip": "wp-scripts plugin-zip",
-    "start": "wp-scripts start",
     "test:e2e": "wp-scripts test-e2e",
     "test:unit": "wp-scripts test-unit-js",
     "i18n:make-pot": "wp i18n make-pot build/ languages/rrze-answers.pot",
