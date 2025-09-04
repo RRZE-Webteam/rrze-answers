@@ -353,7 +353,7 @@ class Tools
             return [];
         }
 
-        $pluginFile = 'rrze-answers/rrze-answers.php'; // ggf. anpassen
+        $pluginFile = 'rrze-answers/rrze-answers.php'; 
         $sites = get_sites(['public' => 1, 'archived' => 0, 'deleted' => 0]);
         $result = [];
 
@@ -365,8 +365,7 @@ class Tools
                 switch_to_blog($blog_id);
 
                 $site_name = get_bloginfo('name');
-                $site_url = home_url('/wp-json/rrze-answers/v1/'); // REST-Base oder eigene Route
-                // Beispiel: Plugin-spezifischer REST-Endpunkt
+                $site_url = home_url('/wp-json/rrze-answers/v2/');
 
                 restore_current_blog();
 

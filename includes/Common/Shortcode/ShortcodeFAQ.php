@@ -25,16 +25,276 @@ class ShortcodeFAQ
 
     public function __construct()
     {
-        $this->settings = Config::getShortcodeSettings();
+        $this->settings = $this->getShortcodeSettings();
         $this->pluginname = $this->settings['block']['blockname'];
-
-        // add_shortcode( 'fau_glossar', [ $this, 'shortcodeOutput' ]); // BK 2020-06-05 Shortcode [fau_glossar ...] is moved to its own plugin rrze-glossary, because for historical reasons incompatible code exists in FAU institutions, which was not known when rrze-faq was rebuilt
-        // add_shortcode( 'glossary', [ $this, 'shortcodeOutput' ]); // BK 2020-06-05 Shortcode [glossary ...] is outsourced to its own plugin rrze-glossary, because for historical reasons incompatible code exists in FAU facilities, which was not known when rrze-faq was rebuilt
 
         add_shortcode('faq', [$this, 'shortcodeOutput']);
         add_action('admin_head', [$this, 'setMCEConfig']);
         add_filter('mce_external_plugins', [$this, 'addMCEButtons']);
     }
+
+
+    /**
+     * Gibt die Einstellungen der Parameter für Shortcode für den klassischen Editor und für Gutenberg zurück.
+     * @return array [description]
+     */
+
+    public function getShortcodeSettings(): array
+    {
+        $ret = [
+            'block' => [
+                'blocktype' => 'rrze-answers/faq',
+                'blockname' => 'rrze_faq',
+                'title' => 'RRZE FAQ',
+                'rrze_category' => 'widgets',
+                'icon' => 'editor-help',
+                'tinymce_icon' => 'help'
+            ],
+            'glossary' => [
+                'values' => [
+                    [
+                        'id' => '',
+                        'val' => __('none', 'rrze-answers')
+                    ],
+                    [
+                        'id' => 'rrze_category',
+                        'val' => __('Categories', 'rrze-answers')
+                    ],
+                    [
+                        'id' => 'rrze_tag',
+                        'val' => __('Tags', 'rrze-answers')
+                    ]
+                ],
+                'default' => '',
+                'field_type' => 'select',
+                'label' => __('Glossary content', 'rrze-answers'),
+                'type' => 'string'
+            ],
+            'glossarystyle' => [
+                'values' => [
+                    [
+                        'id' => '',
+                        'val' => __('-- hidden --', 'rrze-answers')
+                    ],
+                    [
+                        'id' => 'a-z',
+                        'val' => __('A - Z', 'rrze-answers')
+                    ],
+                    [
+                        'id' => 'tagcloud',
+                        'val' => __('Tagcloud', 'rrze-answers')
+                    ],
+                    [
+                        'id' => 'tabs',
+                        'val' => __('Tabs', 'rrze-answers')
+                    ]
+                ],
+                'default' => 'a-z',
+                'field_type' => 'select',
+                'label' => __('Glossary style', 'rrze-answers'),
+                'type' => 'string'
+            ],
+            'category' => [
+                'default' => '',
+                'field_type' => 'text',
+                'label' => __('Categories', 'rrze-answers'),
+                'type' => 'text'
+            ],
+            'tag' => [
+                'default' => '',
+                'field_type' => 'text',
+                'label' => __('Tags', 'rrze-answers'),
+                'type' => 'text'
+            ],
+            'domain' => [
+                'default' => '',
+                'field_type' => 'text',
+                'label' => __('Domain', 'rrze-answers'),
+                'type' => 'text'
+            ],
+            'id' => [
+                'default' => NULL,
+                'field_type' => 'text',
+                'label' => __('rrze_faq', 'rrze-answers'),
+                'type' => 'number'
+            ],
+            'hide_accordion' => [
+                'field_type' => 'toggle',
+                'label' => __('Hide accordeon', 'rrze-answers'),
+                'type' => 'boolean',
+                'default' => FALSE,
+                'checked' => FALSE
+            ],
+            'hide_title' => [
+                'field_type' => 'toggle',
+                'label' => __('Hide title', 'rrze-answers'),
+                'type' => 'boolean',
+                'default' => FALSE,
+                'checked' => FALSE
+            ],
+            'expand_all_link' => [
+                'field_type' => 'toggle',
+                'label' => __('Show "expand all" button', 'rrze-answers'),
+                'type' => 'boolean',
+                'default' => FALSE,
+                'checked' => FALSE
+            ],
+            'load_open' => [
+                'field_type' => 'toggle',
+                'label' => __('Load website with opened accordeons', 'rrze-answers'),
+                'type' => 'boolean',
+                'default' => FALSE,
+                'checked' => FALSE
+            ],
+            'color' => [
+                'values' => [
+                    [
+                        'id' => 'fau',
+                        'val' => 'fau'
+                    ],
+                    [
+                        'id' => 'med',
+                        'val' => 'med'
+                    ],
+                    [
+                        'id' => 'nat',
+                        'val' => 'nat'
+                    ],
+                    [
+                        'id' => 'phil',
+                        'val' => 'phil'
+                    ],
+                    [
+                        'id' => 'rw',
+                        'val' => 'rw'
+                    ],
+                    [
+                        'id' => 'tf',
+                        'val' => 'tf'
+                    ],
+                ],
+                'default' => 'fau',
+                'field_type' => 'select',
+                'label' => __('Color', 'rrze-answers'),
+                'type' => 'string'
+            ],
+            'style' => [
+                'values' => [
+                    [
+                        'id' => '',
+                        'val' => __('none', 'rrze-answers')
+                    ],
+                    [
+                        'id' => 'light',
+                        'val' => 'light'
+                    ],
+                    [
+                        'id' => 'dark',
+                        'val' => 'dark'
+                    ],
+                ],
+                'default' => '',
+                'field_type' => 'select',
+                'label' => __('Style', 'rrze-answers'),
+                'type' => 'string'
+            ],
+            'masonry' => [
+                'field_type' => 'toggle',
+                'label' => __('Grid', 'rrze-answers'),
+                'type' => 'boolean',
+                'default' => FALSE,
+                'checked' => FALSE
+            ],
+            'additional_class' => [
+                'default' => '',
+                'field_type' => 'text',
+                'label' => __('Additonal CSS-class(es) for sourrounding DIV', 'rrze-answers'),
+                'type' => 'text'
+            ],
+            'lang' => [
+                'default' => '',
+                'field_type' => 'select',
+                'label' => __('Language', 'rrze-answers'),
+                'type' => 'string'
+            ],
+            'sort' => [
+                'values' => [
+                    [
+                        'id' => 'title',
+                        'val' => __('Title', 'rrze-answers')
+                    ],
+                    [
+                        'id' => 'id',
+                        'val' => __('ID', 'rrze-answers')
+                    ],
+                    [
+                        'id' => 'sortfield',
+                        'val' => __('Sort field', 'rrze-answers')
+                    ],
+                ],
+                'default' => 'title',
+                'field_type' => 'select',
+                'label' => __('Sort', 'rrze-answers'),
+                'type' => 'string'
+            ],
+            'order' => [
+                'values' => [
+                    [
+                        'id' => 'ASC',
+                        'val' => __('ASC', 'rrze-answers')
+                    ],
+                    [
+                        'id' => 'DESC',
+                        'val' => __('DESC', 'rrze-answers')
+                    ],
+                ],
+                'default' => 'ASC',
+                'field_type' => 'select',
+                'label' => __('Order', 'rrze-answers'),
+                'type' => 'string'
+            ],
+            'hstart' => [
+                'default' => 2,
+                'field_type' => 'text',
+                'label' => __('Heading level of the first heading', 'rrze-answers'),
+                'type' => 'number'
+            ],
+        ];
+
+        $ret['lang']['values'] = [
+            [
+                'id' => '',
+                'val' => __('All languages', 'rrze-answers')
+            ],
+            [
+                'id' => 'de',
+                'val' => __('German', 'rrze-answers'),
+            ],
+            [
+                'id' => 'en',
+                'val' => __('English', 'rrze-answers'),
+            ],
+            [
+                'id' => 'es',
+                'val' => __('Spanish', 'rrze-answers'),
+            ],
+            [
+                'id' => 'fr',
+                'val' => __('French', 'rrze-answers'),
+            ],
+            [
+                'id' => 'ru',
+                'val' => __('Russian', 'rrze-answers'),
+            ],
+            [
+                'id' => 'zh',
+                'val' => __('Chinese', 'rrze-answers')
+            ],
+        ];
+
+        return $ret;
+    }
+
 
     /**
      * Translates composite shortcode attributes into individual properties
@@ -169,7 +429,7 @@ class ShortcodeFAQ
                 $answer = str_replace(']]>', ']]&gt;', apply_filters('the_content', get_post_field('post_content', $id)));
                 $useSchema = (get_post_meta($id, 'source', true) === 'website');
 
-                if ($useSchema){
+                if ($useSchema) {
                     $this->bSchema = true;
                 }
 
@@ -354,7 +614,7 @@ class ShortcodeFAQ
                         $source = get_post_meta($ID, "source", true);
                         $useSchema = ($source === 'website');
 
-                        if ($useSchema){
+                        if ($useSchema) {
                             $this->bSchema = true;
                         }
 
@@ -379,7 +639,7 @@ class ShortcodeFAQ
                     $source = get_post_meta($post->ID, "source", true);
                     $useSchema = ($source === 'website');
 
-                    if ($useSchema){
+                    if ($useSchema) {
                         $this->bSchema = true;
                     }
 

@@ -54,6 +54,7 @@ class Main
         $this->settingsAll();
         $this->adminInterface = new AdminInterfacesFAQ();
         // $this->adminMenue = new AdminMenu(); // in admin menu there is a maximum of 2 levels. Deactivated this workaround because it wouldn't be best practice.
+        add_action('wp_enqueue_scripts', [$this, 'enqueueScripts']);
         $this->shortcode();
         $this->blocks();
     }
@@ -136,4 +137,13 @@ class Main
 
         $this->settings->build();
     }
+
+    /**
+     * Enqueue der globale Skripte.
+     */
+    public function enqueueScripts()
+    {
+        wp_register_style('rrze-faq-css', plugins_url('build/css/rrze-faq.css', plugin()->getBasename()));
+    }
+
 }
