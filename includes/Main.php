@@ -14,7 +14,7 @@ use RRZE\Answers\Common\{
     CPT\CPTFAQ,
     CPT\CPTGlossary,
     CPT\CPTSynonym,
-    Blocks\Blocks,
+    // Blocks\Blocks,
     Shortcode\ShortcodeFAQ
 };
 
@@ -36,7 +36,7 @@ class Main
     public $settings;
     public $settingsFAQ;
 
-    public $blocks;
+    // public $blocks;
     public $shortcodeFAQ;
     private $adminMenu;
     private $adminInterface;
@@ -56,7 +56,7 @@ class Main
         // $this->adminMenue = new AdminMenu(); // in admin menu there is a maximum of 2 levels. Deactivated this workaround because it wouldn't be best practice.
         add_action('wp_enqueue_scripts', [$this, 'enqueueScripts']);
         $this->shortcode();
-        $this->blocks();
+        // $this->blocks();
     }
 
     public function settingsAll()
@@ -95,6 +95,7 @@ class Main
      */
     public function blocks()
     {
+
         $this->blocks = new Blocks(
             [                                  // Array of block names
                 'faq',
