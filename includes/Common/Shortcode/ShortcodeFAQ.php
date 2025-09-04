@@ -4,7 +4,6 @@ namespace RRZE\Answers\Common\Shortcode;
 
 defined('ABSPATH') || exit;
 
-use RRZE\Answers\Config;
 use RRZE\Answers\Common\Tools;
 
 
