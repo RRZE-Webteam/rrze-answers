@@ -5,11 +5,9 @@ namespace RRZE\Answers\Common;
 defined('ABSPATH') || exit;
 
 use WP_Query;
-use RRZE\Answers\Common\Config;
 
 class Tools
 {
-
 
     public function __construct()
     {
@@ -53,8 +51,7 @@ class Tools
         return 'header-' . ($postID ?? 'noid') . '-' . $random;
     }
 
-
-        /**
+    /**
      * Renders a single FAQ entry in an accordion (<details>/<summary>) format.
      * 
      * Optionally wraps the output in Schema.org FAQPage microdata if $useSchema is true.
@@ -68,16 +65,17 @@ class Tools
      * @param bool   $useSchema   Whether to output Schema.org Question/Answer markup.
      * @return string             The complete HTML string for the FAQ item.
      */
+
     public static function renderFAQItemAccordion(string $anchor, string $question, string $answer, string $color, string $load_open, bool $useSchema): string
     {
         $out = $useSchema ? '<div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">' : '';
-        $out .= '<details' . ($load_open ? ' open' : '') . ' id="' . esc_attr($anchor) . '" class="faq-item' . ($color ? ' color-' . esc_attr($color) : '') . '">';
+        $out .= '<details' . ($load_open ? ' open' : '') . ' id="' . esc_attr($anchor) . '" class="faq-item is-' . $color . '">';
 
         if ($useSchema) {
             $out .= '<summary itemprop="name">' . esc_html($question) . '</summary>';
             $out .= '<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">';
             $out .= '<div class="faq-content" itemprop="text">' . $answer . '</div>';
-            $out .= '</div>'; // acceptedAnswer
+            $out .= '</div>';
         } else {
             $out .= '<summary>' . esc_html($question) . '</summary>';
             $out .= '<div class="faq-content">' . $answer . '</div>';
@@ -114,24 +112,27 @@ class Tools
     }
 
 
-    public static function renderFAQWrapper(?int $postID = null, string &$content, string &$headerID, bool &$masonry, string &$color, string &$additional_class): string
+    public static function renderFAQWrapper(?int $postID = null, string &$content, string &$headerID, bool &$masonry, string &$color, string &$additional_class, bool &$bSchema): string
     {
-        $classes = 'rrze-answers';
-
+        $classes = 'rrze-faq';
         if ($masonry) {
             $classes .= ' faq-masonry';
         }
-
-        if (!empty($color)) {
-            $classes .= ' ' . trim($color);
-        }
-
         if (!empty($additional_class)) {
             $classes .= ' ' . trim($additional_class);
         }
 
-        return '<div class="' . esc_attr($classes) . '" aria-labelledby="' . esc_attr($headerID) . '">' . $content . '</div>';
+        return '<div ' . ($bSchema ? 'itemscope itemtype="https://schema.org/FAQPage" ' : '')
+            . 'class="' . esc_attr($classes) . '" role="region" aria-labelledby="' . esc_attr($headerID) . '"'
+            . ' data-accordion="single"'
+            . ' data-scroll-offset="96"'
+            . '>'
+            . '<h2 id="' . esc_attr($headerID) . '" class="screen-reader-text">' . esc_html(get_the_title($postID) ?: __('FAQ', 'rrze-faq')) . '</h2>'
+            . $content
+            . '</div>';
     }
+
+
 
     public static function getLetter(&$txt)
     {
@@ -211,6 +212,7 @@ class Tools
                     'taxonomy' => $taxfield,
                     'field' => 'slug',
                     'terms' => $aTerms,
+                    'include_children' => false
                 );
 
                 if (count($aTerms) > 1) {
@@ -236,20 +238,6 @@ class Tools
         return $ret;
     }
 
-    public static function getSchema(int &$postID, string &$question, string &$answer): string
-    {
-        $schema = '';
-        $source = get_post_meta($postID, "source", true);
-        $answer = wp_strip_all_tags($answer, true);
-        $schemaHTML = Config::getConstants('schema');
-
-        if ($source === 'website') {
-            $schema = $schemaHTML['RRZE_SCHEMA_QUESTION_START'] . $question . $schemaHTML['RRZE_SCHEMA_QUESTION_END'];
-            $schema .= $schemaHTML['RRZE_SCHEMA_ANSWER_START'] . $answer . $schemaHTML['RRZE_SCHEMA_ANSWER_END'];
-        }
-        return $schema;
-    }
-
     public static function getTaxBySource($input)
     {
         $result = [];
@@ -258,7 +246,7 @@ class Tools
             return $result;
         }
 
-        $categories = explode(', ', $input);
+        $categories = preg_split('/\s*,\s*/', $input);
 
         foreach ($categories as $category) {
             list($source, $value) = array_pad(explode(':', $category, 2), 2, '');
@@ -299,6 +287,7 @@ class Tools
     public function getLinkedPage(int &$postID): ?array
     {
         $assigned_terms = get_the_terms($postID, 'rrze_faq_category');
+
         if (!$assigned_terms || is_wp_error($assigned_terms)) {
             return null;
         }
@@ -358,8 +347,6 @@ class Tools
         }
         return $options;
     }
-
-
     public static function getSitesWithPlugin(): array
     {
         if (!is_multisite()) {
@@ -389,5 +376,4 @@ class Tools
 
         return $result;
     }
-
 }

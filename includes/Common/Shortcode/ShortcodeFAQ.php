@@ -4,9 +4,13 @@ namespace RRZE\Answers\Common\Shortcode;
 
 defined('ABSPATH') || exit;
 
+use RRZE\Answers\Config;
 use RRZE\Answers\Common\Tools;
 
 
+/**
+ * Shortcode
+ */
 class ShortcodeFAQ
 {
 
@@ -16,277 +20,20 @@ class ShortcodeFAQ
      */
     private $settings = '';
     private $pluginname = '';
-    protected $textdomain;
+    private $bSchema = false;
 
 
-
-    public function __construct($textdomain)
+    public function __construct()
     {
-        $this->textdomain = $textdomain;
-        $this->settings = $this->getShortcodeSettings();
+        $this->settings = Config::getShortcodeSettings();
         $this->pluginname = $this->settings['block']['blockname'];
 
-        add_shortcode('faq', [$this, 'output']);
+        // add_shortcode( 'fau_glossar', [ $this, 'shortcodeOutput' ]); // BK 2020-06-05 Shortcode [fau_glossar ...] is moved to its own plugin rrze-glossary, because for historical reasons incompatible code exists in FAU institutions, which was not known when rrze-faq was rebuilt
+        // add_shortcode( 'glossary', [ $this, 'shortcodeOutput' ]); // BK 2020-06-05 Shortcode [glossary ...] is outsourced to its own plugin rrze-glossary, because for historical reasons incompatible code exists in FAU facilities, which was not known when rrze-faq was rebuilt
+
+        add_shortcode('faq', [$this, 'shortcodeOutput']);
         add_action('admin_head', [$this, 'setMCEConfig']);
         add_filter('mce_external_plugins', [$this, 'addMCEButtons']);
-    }
-
-
-    public function getShortcodeSettings(): array
-    {
-        $ret = [
-            'block' => [
-                'blocktype' => 'rrze-faq/faq',
-                'blockname' => 'faq',
-                'title' => 'RRZE FAQ',
-                'category' => 'widgets',
-                'icon' => 'editor-help',
-                'tinymce_icon' => 'help'
-            ],
-            'glossary' => [
-                'values' => [
-                    [
-                        'id' => '',
-                        'val' => __('none', $this->textdomain)
-                    ],
-                    [
-                        'id' => 'category',
-                        'val' => __('Categories', $this->textdomain)
-                    ],
-                    [
-                        'id' => 'tag',
-                        'val' => __('Tags', $this->textdomain)
-                    ]
-                ],
-                'default' => '',
-                'field_type' => 'select',
-                'label' => __('Glossary content', $this->textdomain),
-                'type' => 'string'
-            ],
-            'glossarystyle' => [
-                'values' => [
-                    [
-                        'id' => '',
-                        'val' => __('-- hidden --', $this->textdomain)
-                    ],
-                    [
-                        'id' => 'a-z',
-                        'val' => __('A - Z', $this->textdomain)
-                    ],
-                    [
-                        'id' => 'tagcloud',
-                        'val' => __('Tagcloud', $this->textdomain)
-                    ],
-                    [
-                        'id' => 'tabs',
-                        'val' => __('Tabs', $this->textdomain)
-                    ]
-                ],
-                'default' => 'a-z',
-                'field_type' => 'select',
-                'label' => __('Glossary style', $this->textdomain),
-                'type' => 'string'
-            ],
-            'category' => [
-                'default' => '',
-                'field_type' => 'text',
-                'label' => __('Categories', $this->textdomain),
-                'type' => 'text'
-            ],
-            'tag' => [
-                'default' => '',
-                'field_type' => 'text',
-                'label' => __('Tags', $this->textdomain),
-                'type' => 'text'
-            ],
-            'domain' => [
-                'default' => '',
-                'field_type' => 'text',
-                'label' => __('Domain', $this->textdomain),
-                'type' => 'text'
-            ],
-            'id' => [
-                'default' => NULL,
-                'field_type' => 'text',
-                'label' => __('FAQ', $this->textdomain),
-                'type' => 'number'
-            ],
-            'hide_accordion' => [
-                'field_type' => 'toggle',
-                'label' => __('Hide accordeon', $this->textdomain),
-                'type' => 'boolean',
-                'default' => FALSE,
-                'checked' => FALSE
-            ],
-            'hide_title' => [
-                'field_type' => 'toggle',
-                'label' => __('Hide title', $this->textdomain),
-                'type' => 'boolean',
-                'default' => FALSE,
-                'checked' => FALSE
-            ],
-            'expand_all_link' => [
-                'field_type' => 'toggle',
-                'label' => __('Show "expand all" button', $this->textdomain),
-                'type' => 'boolean',
-                'default' => FALSE,
-                'checked' => FALSE
-            ],
-            'load_open' => [
-                'field_type' => 'toggle',
-                'label' => __('Load website with opened accordeons', $this->textdomain),
-                'type' => 'boolean',
-                'default' => FALSE,
-                'checked' => FALSE
-            ],
-            'color' => [
-                'values' => [
-                    [
-                        'id' => 'fau',
-                        'val' => 'fau',
-                    ],
-                    [
-                        'id' => 'med',
-                        'val' => 'med',
-                    ],
-                    [
-                        'id' => 'nat',
-                        'val' => 'nat',
-                    ],
-                    [
-                        'id' => 'phil',
-                        'val' => 'phil',
-                    ],
-                    [
-                        'id' => 'rw',
-                        'val' => 'rw',
-                    ],
-                    [
-                        'id' => 'tf',
-                        'val' => 'tf',
-                    ],
-                ],
-                'default' => 'fau',
-                'field_type' => 'select',
-                'label' => __('Color', $this->textdomain),
-                'type' => 'string'
-            ],
-            'style' => [
-                'values' => [
-                    [
-                        'id' => '',
-                        'val' => __('none', $this->textdomain)
-                    ],
-                    [
-                        'id' => 'light',
-                        'val' => 'light'
-                    ],
-                    [
-                        'id' => 'dark',
-                        'val' => 'dark'
-                    ],
-                ],
-                'default' => '',
-                'field_type' => 'select',
-                'label' => __('Style', $this->textdomain),
-                'type' => 'string'
-            ],
-            'masonry' => [
-                'field_type' => 'toggle',
-                'label' => __('Grid', $this->textdomain),
-                'type' => 'boolean',
-                'default' => FALSE,
-                'checked' => FALSE
-            ],
-            'additional_class' => [
-                'default' => '',
-                'field_type' => 'text',
-                'label' => __('Additonal CSS-class(es) for sourrounding DIV', $this->textdomain),
-                'type' => 'text'
-            ],
-            'lang' => [
-                'default' => '',
-                'field_type' => 'select',
-                'label' => __('Language', $this->textdomain),
-                'type' => 'string'
-            ],
-            'sort' => [
-                'values' => [
-                    [
-                        'id' => 'title',
-                        'val' => __('Title', $this->textdomain)
-                    ],
-                    [
-                        'id' => 'id',
-                        'val' => __('ID', $this->textdomain)
-                    ],
-                    [
-                        'id' => 'sortfield',
-                        'val' => __('Sort field', $this->textdomain)
-                    ],
-                ],
-                'default' => 'title',
-                'field_type' => 'select',
-                'label' => __('Sort', $this->textdomain),
-                'type' => 'string'
-            ],
-            'order' => [
-                'values' => [
-                    [
-                        'id' => 'ASC',
-                        'val' => __('ASC', $this->textdomain)
-                    ],
-                    [
-                        'id' => 'DESC',
-                        'val' => __('DESC', $this->textdomain)
-                    ],
-                ],
-                'default' => 'ASC',
-                'field_type' => 'select',
-                'label' => __('Order', $this->textdomain),
-                'type' => 'string'
-            ],
-            'hstart' => [
-                'default' => 2,
-                'field_type' => 'text',
-                'label' => __('Heading level of the first heading', $this->textdomain),
-                'type' => 'number'
-            ],
-        ];
-
-        $ret['lang']['values'] = [
-            [
-                'id' => '',
-                'val' => __('All languages', $this->textdomain)
-            ],
-            [
-                'id' => 'de',
-                'val' => __('German', $this->textdomain),
-            ],
-            [
-                'id' => 'en',
-                'val' => __('English', $this->textdomain),
-            ],
-            [
-                'id' => 'es',
-                'val' => __('Spanish', $this->textdomain),
-            ],
-            [
-                'id' => 'fr',
-                'val' => __('French', $this->textdomain),
-            ],
-            [
-                'id' => 'ru',
-                'val' => __('Russian', $this->textdomain),
-            ],
-            [
-                'id' => 'zh',
-                'val' => __('Chinese', $this->textdomain)
-            ]
-        ];
-
-        return $ret;
-
     }
 
     /**
@@ -359,11 +106,11 @@ class ShortcodeFAQ
             foreach ($parts as $part) {
                 $part = trim($part);
                 switch ($part) {
+                    case 'tf':
                     case 'med':
                     case 'nat':
                     case 'phil':
                     case 'rw':
-                    case 'tk':
                         $atts['color'] = $part;
                         break;
                     default:
@@ -379,10 +126,6 @@ class ShortcodeFAQ
         $atts['load_open'] = (isset($atts['load_open']) && $atts['load_open'] ? ' load="open"' : '');
     }
 
-
-
-
-
     /**
      * Outputs explicitly requested FAQs as accordion or simple content.
      *
@@ -392,7 +135,7 @@ class ShortcodeFAQ
      * @param bool $gutenberg Whether Gutenberg is used
      * @param int $hstart HTML heading level
      * @param string $style Inline styles for the accordion
-     * @param bool $masonry Whether tiles should be displayed (fake masonry - see https://github.com/RRZE-Webteam/rrze-answers/issues/105#issuecomment-2873361435 )
+     * @param bool $masonry Whether tiles should be displayed (fake masonry - see https://github.com/RRZE-Webteam/rrze-faq/issues/105#issuecomment-2873361435 )
      * @param string $expand_all_link Attribute for “expand all” link
      * @param bool $hide_accordion Whether the accordion should be suppressed
      * @param bool $hide_title Whether the title should be suppressed
@@ -400,11 +143,10 @@ class ShortcodeFAQ
      * @param string $load_open Attribute for open state
      * @return string The generated HTML content
      */
-
-
     private function renderExplicitFAQs($id, bool $gutenberg, int $hstart, string $style, bool $masonry, string $expand_all_link, bool $hide_accordion, bool $hide_title, string $color, string $load_open): string
     {
         $content = '';
+        $this->bSchema = false;
 
         // EXPLICIT FAQ(s)
         if ($gutenberg) {
@@ -413,8 +155,6 @@ class ShortcodeFAQ
             // classic editor
             $aIDs = explode(',', $id);
         }
-
-        $found = false;
 
         foreach ($aIDs as $id) {
             $id = trim($id);
@@ -426,32 +166,23 @@ class ShortcodeFAQ
                     $anchorfield = 'ID-' . $id;
                 }
 
-                $description = str_replace(']]>', ']]&gt;', apply_filters('the_content', get_post_field('post_content', $id)));
-                if (!isset($description) || (mb_strlen($description) < 1)) {
-                    $description = get_post_meta($id, 'description', true);
+                $answer = str_replace(']]>', ']]&gt;', apply_filters('the_content', get_post_field('post_content', $id)));
+                $useSchema = (get_post_meta($id, 'source', true) === 'website');
+
+                if ($useSchema){
+                    $this->bSchema = true;
                 }
 
                 if ($hide_accordion) {
-                    $content .= ($hide_title ? '' : '<h' . $hstart . '>' . $question . '</h' . $hstart . '>') .
-                        ($description ? '<p>' . $description . '</p>' : '');
+                    $content .= Tools::renderFAQItem($question, $answer, $hstart, $useSchema);
                 } else {
-                    if ($description) {
-                        $content .= '<details' . ($load_open ? ' open' : '') . ' id="' . esc_attr($anchorfield) . '" class="faq-item' . ($color ? ' color-' . esc_attr($color) : '') . '">';
-                        $content .= '<summary>' . esc_html($question) . '</summary>';
-                        $content .= '<div class="faq-content">' . $description . '</div>';
-                        $content .= '</details>';
-                    }
+                    $content .= Tools::renderFAQItemAccordion($anchorfield, $question, $answer, $color, $load_open, $useSchema);
                 }
-
-                $content .= Tools::getSchema($id, $question, $description);
-
-                $found = true;
             }
         }
 
         return $content;
     }
-
 
     /**
      * Outputs FAQs based on taxonomies (category/tag) or glossary view.
@@ -477,6 +208,7 @@ class ShortcodeFAQ
     private function renderFilteredFAQs(array $atts, int $hstart, string $style, string $expand_all_link, bool $hide_accordion, bool $hide_title, string $color, string $load_open, string $sort, string $order, $category, $tag, string $glossary, string $glossarystyle): string
     {
         $content = '';
+        $this->bSchema = false;
 
         // attribute category or tag is given or none of them
         $aLetters = array();
@@ -509,6 +241,7 @@ class ShortcodeFAQ
 
         $metaQuery = [];
         $lang = $atts['lang'] ? trim($atts['lang']) : '';
+
         if ($lang) {
             $metaQuery[] = [
                 'key' => 'lang',
@@ -571,7 +304,7 @@ class ShortcodeFAQ
                             }
                         }
                     }
-                    $terms = wp_get_post_terms($post->ID, 'faq_' . $glossary);
+                    $terms = wp_get_post_terms($post->ID, 'rrze_faq_' . $glossary);
                     if ($terms) {
                         foreach ($terms as $t) {
                             if ($valid_term_ids && in_array($t->term_id, $valid_term_ids) === false) {
@@ -609,8 +342,8 @@ class ShortcodeFAQ
                     }
 
                     $term_id_attr = $anchor . '-' . $aVal[$anchor];
-                    $content .= '<section id="' . esc_attr($term_id_attr) . '" class="faq-term' . ($color ? ' color-' . esc_attr($color) : '') . '">';
-                    $content .= '<h3>' . esc_html($k) . '</h3>'; // ersetzt <summary>
+                    $content .= '<section id="' . esc_attr($term_id_attr) . '" class="faq-item is-' . $color . '">';
+                    $content .= '<h3>' . esc_html($k) . '</h3>';
 
                     $content .= '<div class="faq-term-content">';
 
@@ -618,23 +351,22 @@ class ShortcodeFAQ
                     $aIDs = Tools::searchArrayByKey($aVal['ID'], $aPostIDs);
 
                     foreach ($aIDs as $ID) {
-                        $answer = str_replace(']]>', ']]&gt;', apply_filters('the_content', get_post_field('post_content', $ID)));
-                        if (!isset($answer) || (mb_strlen($answer) < 1)) {
-                            $answer = get_post_meta($ID, 'description', true);
-                        }
-                        $question = get_the_title($ID);
+                        $source = get_post_meta($ID, "source", true);
+                        $useSchema = ($source === 'website');
 
+                        if ($useSchema){
+                            $this->bSchema = true;
+                        }
+
+                        $question = get_the_title($ID);
+                        $answer = str_replace(']]>', ']]&gt;', apply_filters('the_content', get_post_field('post_content', $ID)));
                         $anchorfield = get_post_meta($ID, 'anchorfield', true);
+
                         if (empty($anchorfield)) {
                             $anchorfield = 'innerID-' . $ID;
                         }
 
-                        $content .= '<details id="' . esc_attr($anchorfield) . '" class="faq-item">';
-                        $content .= '<summary>' . esc_html($question) . '</summary>';
-                        $content .= '<div class="faq-content">' . $answer . '</div>';
-                        $content .= '</details>';
-
-                        $content .= Tools::getSchema($ID, $question, $answer);
+                        $content .= Tools::renderFAQItemAccordion($anchorfield, $question, $answer, $color, $load_open, $useSchema);
                     }
 
                     $content .= '</div></section>';
@@ -644,15 +376,18 @@ class ShortcodeFAQ
                 // attribut glossary is not given
                 $last_anchor = '';
                 foreach ($posts as $post) {
+                    $source = get_post_meta($post->ID, "source", true);
+                    $useSchema = ($source === 'website');
+
+                    if ($useSchema){
+                        $this->bSchema = true;
+                    }
 
                     $question = get_the_title($post->ID);
+                    $answer = str_replace(']]>', ']]&gt;', apply_filters('the_content', get_post_field('post_content', $post->ID)));
+
                     $letter = Tools::getLetter($question);
                     $aLetters[$letter] = true;
-
-                    $answer = str_replace(']]>', ']]&gt;', apply_filters('the_content', get_post_field('post_content', $post->ID)));
-                    if (!isset($answer) || (mb_strlen($answer) < 1)) {
-                        $answer = get_post_meta($post->ID, 'description', true);
-                    }
 
                     if (!$hide_accordion) {
                         $anchorfield = get_post_meta($post->ID, 'anchorfield', true);
@@ -664,15 +399,11 @@ class ShortcodeFAQ
                         if ($glossarystyle == 'a-z' && count($posts) > 1) {
                             $content .= ($last_anchor != $letter ? '<h2 id="letter-' . $letter . '">' . $letter . '</h2>' : '');
                         }
-                        $content .= '<details' . ($load_open ? ' open' : '') . ' id="' . esc_attr($anchorfield) . '" class="faq-item' . ($color ? ' color-' . esc_attr($color) : '') . '">';
-                        $content .= '<summary>' . esc_html($question) . '</summary>';
-                        $content .= '<div class="faq-content">' . $answer . '</div>';
-                        $content .= '</details>';
 
+                        $content .= Tools::renderFAQItemAccordion($anchorfield, $question, $answer, $color, $load_open, $useSchema);
                     } else {
-                        $content .= ($hide_title ? '' : '<h' . $hstart . '>' . $question . '</h' . $hstart . '>') . ($answer ? '<p>' . $answer . '</p>' : '');
+                        $content .= Tools::renderFAQItem($question, $answer, $hstart, $useSchema);
                     }
-                    $content .= Tools::getSchema($post->ID, $question, $answer);
                     $last_anchor = $letter;
                 }
 
@@ -689,8 +420,12 @@ class ShortcodeFAQ
      * @param string $content Enclosed content
      * @return string Return the content
      */
-    public function output($atts, $content = null)
+    public function shortcodeOutput($atts, $content = null, $shortcode_tag = '')
     {
+        // Workaround - see: https://github.com/RRZE-Webteam/rrze-faq/issues/132#issuecomment-2839668060
+        if (($skip = Tools::preventGutenbergDoubleBracketBug($shortcode_tag)) !== false) {
+            return $skip;
+        }
 
         if (empty($atts)) {
             $atts = array();
@@ -735,11 +470,13 @@ class ShortcodeFAQ
         $postID = get_the_ID();
         $headerID = (new Tools())->getHeaderID($postID);
 
+        wp_enqueue_script('rrze-faq-accordion');
         wp_enqueue_style('rrze-faq-css');
 
         $content = Tools::renderFAQWrapper($postID, $content, $headerID, $masonry, $color, $additional_class, $this->bSchema);
 
         return $content;
+
     }
 
     public function setMCEConfig()
