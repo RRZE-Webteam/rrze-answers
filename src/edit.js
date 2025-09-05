@@ -465,7 +465,7 @@ export default function Edit({ attributes, setAttributes }) {
 			</InspectorControls>
 			<div {...blockProps}>
 				<ServerSideRender
-					block="create-block/rrze-faq"
+					block="rrze-answers/faq"
 					attributes={attributes}
 				/>
 			</div>

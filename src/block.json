@@ -1,9 +1,9 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "create-block/rrze-faq",
+	"name": "rrze-answers/faq",
 	"version": "5.3.4",
-	"title": "FAQ RRZE",
+	"title": "FAQ",
 	"category": "rrze",
 	"description": "Display FAQ",
 	"icon": "editor-help",
