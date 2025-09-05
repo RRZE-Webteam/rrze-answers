@@ -55,6 +55,8 @@ class Main
         $this->adminInterface = new AdminInterfacesFAQ();
         // $this->adminMenue = new AdminMenu(); // in admin menu there is a maximum of 2 levels. Deactivated this workaround because it wouldn't be best practice.
         add_action('wp_enqueue_scripts', [$this, 'enqueueScripts']);
+        add_action('enqueue_block_assets', [$this, 'enqueueScripts']);
+
         $this->shortcode();
         // $this->blocks();
     }
@@ -144,7 +146,22 @@ class Main
      */
     public function enqueueScripts()
     {
-        wp_register_style('rrze-faq-css', plugins_url('build/css/rrze-faq.css', plugin()->getBasename()));
+        wp_enqueue_style(
+            'rrze-faq-css',
+            plugins_url('build/css/rrze-faq.css', plugin()->getBasename()),
+            [],
+            filemtime(plugin()->getPath() . 'build/css/rrze-faq.css')
+        );
+
+        wp_register_script(
+            'rrze-faq-accordion',
+            plugins_url('build/rrze-faq-accordion.js', plugin()->getBasename()),
+            array('jquery'),
+            filemtime(plugin()->getPath() . 'build/rrze-faq-accordion.js'),
+            true
+        );
     }
 
 }
+
+
