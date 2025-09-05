@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            0.0.32
+Version:            0.0.35
 Description:        Explain your content with FAQ, glossary and synonyms. 
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
@@ -171,7 +171,7 @@ function register_blocks()
     register_block_type_from_metadata(__DIR__ . '/blocks/synonym');
 
     // $script_handle = generate_block_asset_handle('rrze-answers/faq', 'editorScript');
-    // wp_set_script_translations($script_handle, 'rrze-anwers', plugin_dir_path(__FILE__) . 'languages');
+    // wp_set_script_translations($script_handle, 'rrze-answers', plugin_dir_path(__FILE__) . 'languages');
 }
 
 
@@ -213,6 +213,25 @@ function rrze_update_glossary_cpt()
     update_option('rrze_update_glossary_cpt_done', 1);
 }
 
+function rrze_update_synonym_cpt()
+{
+    global $wpdb;
+
+    if (get_option('rrze_update_synonym_cpt_done')) {
+        return;
+    }
+
+    $wpdb->update(
+        $wpdb->posts,
+        ['post_type' => 'rrze_synonym'],
+        ['post_type' => 'synonym']
+    );
+
+    wp_cache_flush();
+    flush_rewrite_rules();
+
+    update_option('rrze_update_synonym_cpt_done', 1);
+}
 
 /**
  * Handle the loading of the plugin.
@@ -288,6 +307,7 @@ function loaded()
 
     add_action('init', __NAMESPACE__ . '\register_blocks');
     add_action('init', __NAMESPACE__ . '\rrze_update_glossary_cpt');
+    add_action('init', __NAMESPACE__ . '\rrze_update_synonym_cpt');
 
 
 }

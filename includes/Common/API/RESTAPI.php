@@ -14,14 +14,62 @@ class RESTAPI
      */
     public function __construct()
     {
-        // Register REST API meta fields
         add_action('rest_api_init', [$this, 'registerPostMetaRestFields']);
-        // Register REST API taxonomy fields
         add_action('rest_api_init', [$this, 'registerTaxRestFields']);
-        // Register REST API taxonomy children fields
         add_action('rest_api_init', [$this, 'registerTaxChildrenRestField']);
-        // Register REST API query filters
         add_action('rest_api_init', [$this, 'addRestQueryFilters']);
+
+        add_action('rest_api_init', [$this, 'createPostMeta']);
+        add_action('rest_api_init', [$this, 'addFilters']);
+
+    }
+
+
+    public function getMyPostMeta($object, $attr)
+    {
+        return get_post_meta($object['id'], $attr, TRUE);
+    }
+
+    // make API deliver source and lang for synonyms
+    public function createPostMeta()
+    {
+        $fields = array(
+            'source',
+            'lang',
+            'synonym',
+            'titleLang',
+            'remoteID',
+            'remoteChanged'
+        );
+
+        foreach ($fields as $field) {
+            register_rest_field('synonym', $field, array(
+                'get_callback' => [$this, 'getMyPostMeta'],
+                'schema' => null,
+            ));
+        }
+    }
+
+    public function addFilterParam($args, $request)
+    {
+        if (empty($request['filter']) || !is_array($request['filter'])) {
+            return $args;
+        }
+        global $wp;
+        $filter = $request['filter'];
+
+        $vars = apply_filters('query_vars', $wp->public_query_vars);
+        foreach ($vars as $var) {
+            if (isset($filter[$var])) {
+                $args[$var] = $filter[$var];
+            }
+        }
+        return $args;
+    }
+
+    public function addFilters()
+    {
+        add_filter('rest_synonym_query', [$this, 'addFilterParam'], 10, 2);
     }
 
     /**

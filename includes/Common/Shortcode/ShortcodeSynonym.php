@@ -40,29 +40,29 @@ class ShortcodeSynonym
             'slug' => [
                 'default' => '',
                 'field_type' => 'text',
-                'label' => __('Slug', 'rrze-anwers'),
+                'label' => __('Slug', 'rrze-answers'),
                 'type' => 'text'
             ],
             'id' => [
                 'default' => 0,
                 'field_type' => 'text',
-                'label' => __('Synonym', 'rrze-anwers'),
+                'label' => __('Synonym', 'rrze-answers'),
                 'type' => 'number'
             ],
             'gutenberg_shortcode_type' => [
                 'values' => [
-                    'fau_abbr' => __('Abbreviation', 'rrze-anwers'), // Abkürzung
-                    'synonym' => __('Longform', 'rrze-anwers') // Ausgeschriebene Form
+                    'fau_abbr' => __('Abbreviation', 'rrze-answers'), // Abkürzung
+                    'synonym' => __('Longform', 'rrze-answers') // Ausgeschriebene Form
                 ],
                 'default' => 'synonym',
                 'field_type' => 'radio',
-                'label' => __('Type of output', 'rrze-anwers'),
+                'label' => __('Type of output', 'rrze-answers'),
                 'type' => 'string'
             ],
             // 'additional_class' => [
             // 	'default' => '',
             // 	'field_type' => 'text',
-            // 	'label' => __( 'Additonal CSS-class(es) for surrounding DIV', 'rrze-anwers' ),
+            // 	'label' => __( 'Additonal CSS-class(es) for surrounding DIV', 'rrze-answers' ),
             // 	'type' => 'text'
             // ],
         ];

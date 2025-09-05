@@ -365,7 +365,7 @@ class Tools
                 switch_to_blog($blog_id);
 
                 $site_name = get_bloginfo('name');
-                $site_url = home_url('/wp-json/rrze-answers/v2/');
+                $site_url = home_url('/wp-json/wp/v2/');
 
                 restore_current_blog();
 

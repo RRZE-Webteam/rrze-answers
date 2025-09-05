@@ -23,7 +23,7 @@ import {
 import { useState, useRef, useEffect, useMemo } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 
-const FORMAT_NAME = 'rrze/synonym';
+const FORMAT_NAME = 'rrze-answers/synonym';
 const TAG_NAME = 'abbr';
 const CLASS_NAME = 'rrze-syn';
 
@@ -72,7 +72,7 @@ const SynonymUI = ( props ) => {
 	const options = useMemo(() => {
 		return (items || []).map(post => ({
 			value: String(post.id),
-			label: post?.title?.rendered || __('(no title)','rrze-anwers'),
+			label: post?.title?.rendered || __('(no title)','rrze-answers'),
 			long:  post?.synonym ?? post?.meta?.synonym ?? '',
 			lang:  post?.titleLang ?? post?.meta?.titleLang ?? '',
 		}));
@@ -132,7 +132,7 @@ const SynonymUI = ( props ) => {
 			<span ref={ anchorRef }>
 				<RichTextToolbarButton
 					icon="translation"
-					title={ __('Synonym/Acronym','rrze-anwers') }
+					title={ __('Synonym/Acronym','rrze-answers') }
 					onClick={ () => setIsOpen( (o) => !o ) }
 					isActive={ isActive }
 				/>
@@ -148,20 +148,20 @@ const SynonymUI = ( props ) => {
 						{ loading && (
 							<Flex align="center" gap={8}>
 								<Spinner />
-								<span>{ __('Loading synonyms…','rrze-anwers') }</span>
+								<span>{ __('Loading synonyms…','rrze-answers') }</span>
 							</Flex>
 						) }
 
 						{ (!loading && error) && (
 							<Notice status="error" isDismissible={ false }>
-								{ __('Failed to load synonyms. Check your REST setup.','rrze-anwers') }
+								{ __('Failed to load synonyms. Check your REST setup.','rrze-answers') }
 							</Notice>
 						) }
 
 						{ (!loading && !error) && (
 							<ComboboxControl
-								label={ __('Choose a synonym','rrze-anwers') }
-								help={ __('Type to search by title','rrze-anwers') }
+								label={ __('Choose a synonym','rrze-answers') }
+								help={ __('Type to search by title','rrze-answers') }
 								value={ selectedId }
 								onChange={ setSelectedId }
 								options={ options }
@@ -172,7 +172,7 @@ const SynonymUI = ( props ) => {
 							{ !!current && (
 								<FlexItem>
 									<Button variant="secondary" onClick={ removeFormatHere }>
-										{ __('Remove','rrze-anwers') }
+										{ __('Remove','rrze-answers') }
 									</Button>
 								</FlexItem>
 							) }
@@ -182,7 +182,7 @@ const SynonymUI = ( props ) => {
 									onClick={ applyFromSelected }
 									disabled={ !selectedId }
 								>
-									{ !!current ? __('Update','rrze-anwers') : __('Apply','rrze-anwers') }
+									{ !!current ? __('Update','rrze-answers') : __('Apply','rrze-answers') }
 								</Button>
 							</FlexItem>
 						</Flex>
@@ -195,7 +195,7 @@ const SynonymUI = ( props ) => {
 
 // Register the format: renders <abbr class="rrze-syn" ...>…</abbr>
 registerFormatType( FORMAT_NAME, {
-	title: __('Synonym/Acronym','rrze-anwers'),
+	title: __('Synonym/Acronym','rrze-answers'),
 	tagName: TAG_NAME,
 	className: CLASS_NAME,
 	attributes: {
