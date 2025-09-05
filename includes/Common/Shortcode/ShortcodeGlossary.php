@@ -16,214 +16,229 @@ class ShortcodeGlossary
     private $settings = '';
     private $pluginname = '';
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->settings = $this->getShortcodeSettings();
         $this->pluginname = $this->settings['block']['blockname'];
-        add_shortcode( 'glossary', [ $this, 'shortcodeOutput' ]);
-        add_shortcode( 'fau_glossar', [ $this, 'shortcodeOutput' ]);
+        add_shortcode('glossary', [$this, 'shortcodeOutput']);
+        add_shortcode('fau_glossar', [$this, 'shortcodeOutput']);
         add_action('admin_head', [$this, 'setMCEConfig']);
         add_filter('mce_external_plugins', [$this, 'addMCEButtons']);
     }
 
-function getShortcodeSettings(){
-	return [
-		'block' => [
-            'blocktype' => 'rrze-glossary/glossary',
-			'blockname' => 'glossary',
-			'title' => 'RRZE Glossary',
-			'category' => 'widgets',
-            'icon' => 'book',
-            'tinymce_icon' => 'info',
-		],
-        'register' => [
-			'values' => [
-                [
-                    'id' => '',
-                    'val' => __( 'none', 'rrze-glossary' )
-                ],
-                [
-                    'id' => 'category',
-                    'val' => __( 'Categories', 'rrze-glossary' )
-                ],
-                [
-                    'id' => 'tag',
-                    'val' => __( 'Tags', 'rrze-glossary' )
-                ]			
+    function getShortcodeSettings()
+    {
+        return [
+            'block' => [
+                'blocktype' => 'rrze-glossary/glossary',
+                'blockname' => 'glossary',
+                'title' => 'RRZE Glossary',
+                'category' => 'widgets',
+                'icon' => 'book',
+                'tinymce_icon' => 'info',
             ],
-			'default' => '',
-			'field_type' => 'select',
-			'label' => __( 'Register content', 'rrze-glossary' ),
-			'type' => 'string'
-		],
-        'registerstyle' => [
-			'values' => [
-                [
-                    'id' => '',
-                    'val' => __( '-- hidden --', 'rrze-glossary' )
+            'register' => [
+                'values' => [
+                    [
+                        'id' => '',
+                        'val' => __('none', 'rrze-answers')
+                    ],
+                    [
+                        'id' => 'category',
+                        'val' => __('Categories', 'rrze-answers')
+                    ],
+                    [
+                        'id' => 'tag',
+                        'val' => __('Tags', 'rrze-answers')
+                    ]
                 ],
-                [
-                    'id' => 'a-z',
-                    'val' => __( 'A - Z', 'rrze-glossary' )
-                ],
-                [
-                    'id' => 'tagcloud',
-                    'val' => __( 'Tagcloud', 'rrze-glossary' )
-                ],			
-                [
-                    'id' => 'tabs',
-                    'val' => __( 'Tabs', 'rrze-glossary' )
-                ]
+                'default' => '',
+                'field_type' => 'select',
+                'label' => __('Register content', 'rrze-answers'),
+                'type' => 'string'
             ],
-			'default' => 'a-z',
-			'field_type' => 'select',
-			'label' => __( 'Register style', 'rrze-glossary' ),
-			'type' => 'string'
-        ],        
-		'category' => [
-			'default' => '0',
-			'field_type' => 'text',
-			'label' => __( 'Categories', 'rrze-glossary' ),
-			'type' => 'string'
-        ],
-		'tag' => [
-			'default' => 0,
-			'field_type' => 'text',
-			'label' => __( 'Tags', 'rrze-glossary' ),
-			'type' => 'string'
-        ],
-		'id' => [
-			'default' => NULL,
-			'field_type' => 'text',
-			'label' => __( 'Glossary', 'rrze-glossary' ),
-			'type' => 'number'
-		],
-		'hide_accordion' => [
-			'field_type' => 'toggle',
-			'label' => __( 'Hide accordion', 'rrze-glossary' ),
-			'type' => 'boolean',
-			'default' => FALSE,
-			'checked'   => FALSE
-		],	  
-		'hide_title' => [
-			'field_type' => 'toggle',
-			'label' => __( 'Hide title', 'rrze-glossary' ),
-			'type' => 'boolean',
-			'default' => FALSE,
-			'checked'   => FALSE
-		],	  
-		'expand_all_link' => [
-			'field_type' => 'toggle',
-			'label' => __( 'Show "expand all" button', 'rrze-glossary' ),
-			'type' => 'boolean',
-			'default' => FALSE,
-			'checked'   => FALSE
-		],	  
-		'load_open' => [
-			'field_type' => 'toggle',
-			'label' => __( 'Load website with opened accordions', 'rrze-glossary' ),
-			'type' => 'boolean',
-			'default' => FALSE,
-			'checked'   => FALSE
-		],	  
-		'color' => [
-			'values' => [
-                [
-                    'id' => 'med',
-                    'val' => 'med'
+            'registerstyle' => [
+                'values' => [
+                    [
+                        'id' => '',
+                        'val' => __('-- hidden --', 'rrze-answers')
+                    ],
+                    [
+                        'id' => 'a-z',
+                        'val' => __('A - Z', 'rrze-answers')
+                    ],
+                    [
+                        'id' => 'tagcloud',
+                        'val' => __('Tagcloud', 'rrze-answers')
+                    ],
+                    [
+                        'id' => 'tabs',
+                        'val' => __('Tabs', 'rrze-answers')
+                    ]
                 ],
-                [
-                    'id' => 'nat',
-                    'val' => 'nat'
+                'default' => 'a-z',
+                'field_type' => 'select',
+                'label' => __('Register style', 'rrze-answers'),
+                'type' => 'string'
+            ],
+            'category' => [
+                'default' => '0',
+                'field_type' => 'text',
+                'label' => __('Categories', 'rrze-answers'),
+                'type' => 'string'
+            ],
+            'tag' => [
+                'default' => 0,
+                'field_type' => 'text',
+                'label' => __('Tags', 'rrze-answers'),
+                'type' => 'string'
+            ],
+            'id' => [
+                'default' => NULL,
+                'field_type' => 'text',
+                'label' => __('Glossary', 'rrze-answers'),
+                'type' => 'number'
+            ],
+            'masonry' => [
+                'field_type' => 'toggle',
+                'label' => __('Grid', 'rrze-answers'),
+                'type' => 'boolean',
+                'default' => FALSE,
+                'checked' => FALSE
+            ],
+            'hide_accordion' => [
+                'field_type' => 'toggle',
+                'label' => __('Hide accordion', 'rrze-answers'),
+                'type' => 'boolean',
+                'default' => FALSE,
+                'checked' => FALSE
+            ],
+            'hide_title' => [
+                'field_type' => 'toggle',
+                'label' => __('Hide title', 'rrze-answers'),
+                'type' => 'boolean',
+                'default' => FALSE,
+                'checked' => FALSE
+            ],
+            'expand_all_link' => [
+                'field_type' => 'toggle',
+                'label' => __('Show "expand all" button', 'rrze-answers'),
+                'type' => 'boolean',
+                'default' => FALSE,
+                'checked' => FALSE
+            ],
+            'load_open' => [
+                'field_type' => 'toggle',
+                'label' => __('Load website with opened accordions', 'rrze-answers'),
+                'type' => 'boolean',
+                'default' => FALSE,
+                'checked' => FALSE
+            ],
+            'color' => [
+                'values' => [
+                    [
+                        'id' => 'med',
+                        'val' => 'med'
+                    ],
+                    [
+                        'id' => 'nat',
+                        'val' => 'nat'
+                    ],
+                    [
+                        'id' => 'rw',
+                        'val' => 'rw'
+                    ],
+                    [
+                        'id' => 'phil',
+                        'val' => 'phil'
+                    ],
+                    [
+                        'id' => 'tk',
+                        'val' => 'tk'
+                    ],
                 ],
-                [
-                    'id' => 'rw',
-                    'val' => 'rw'
+                'default' => 'tk',
+                'field_type' => 'select',
+                'label' => __('Color', 'rrze-answers'),
+                'type' => 'string'
+            ],
+            'style' => [
+                'values' => [
+                    [
+                        'id' => '',
+                        'val' => __('none', 'rrze-answers')
+                    ],
+                    [
+                        'id' => 'light',
+                        'val' => 'light'
+                    ],
+                    [
+                        'id' => 'dark',
+                        'val' => 'dark'
+                    ],
                 ],
-                [
-                    'id' => 'phil',
-                    'val' => 'phil'
+                'default' => '',
+                'field_type' => 'select',
+                'label' => __('Style', 'rrze-answers'),
+                'type' => 'string'
+            ],
+            'additional_class' => [
+                'default' => '',
+                'field_type' => 'text',
+                'label' => __('Additonal CSS-class(es) for sourrounding DIV', 'rrze-answers'),
+                'type' => 'string'
+            ],
+            'lang' => [
+                'default' => '',
+                'field_type' => 'select',
+                'label' => __('Language', 'rrze-answers'),
+                'type' => 'string'
+            ],
+            'sort' => [
+                'values' => [
+                    [
+                        'id' => 'title',
+                        'val' => __('Title', 'rrze-answers')
+                    ],
+                    [
+                        'id' => 'id',
+                        'val' => __('ID', 'rrze-answers')
+                    ],
+                    [
+                        'id' => 'sortfield',
+                        'val' => __('Sort field', 'rrze-answers')
+                    ],
                 ],
-                [
-                    'id' => 'tk',
-                    'val' => 'tk'
+                'default' => 'title',
+                'field_type' => 'select',
+                'label' => __('Sort', 'rrze-answers'),
+                'type' => 'string'
+            ],
+            'order' => [
+                'values' => [
+                    [
+                        'id' => 'ASC',
+                        'val' => __('ASC', 'rrze-answers')
+                    ],
+                    [
+                        'id' => 'DESC',
+                        'val' => __('DESC', 'rrze-answers')
+                    ],
                 ],
-			],
-			'default' => 'tk',
-			'field_type' => 'select',
-			'label' => __( 'Color', 'rrze-glossary' ),
-			'type' => 'string'
-		],
-		'style' => [
-			'values' => [
-                [
-                    'id' => '',
-                    'val' => __('none', 'rrze-faq' )
-                ],
-                [
-                    'id' => 'light',
-                    'val' => 'light'
-                ],
-                [
-                    'id' => 'dark',
-                    'val' => 'dark'
-                ],
-			],
-			'default' => '',
-			'field_type' => 'select',
-			'label' => __( 'Style', 'rrze-faq' ),
-			'type' => 'string'
-		],
-		'additional_class' => [
-			'default' => '',
-			'field_type' => 'text',
-			'label' => __( 'Additonal CSS-class(es) for sourrounding DIV', 'rrze-glossary' ),
-			'type' => 'string'
-		],
-        'sort' => [
-			'values' => [
-                [
-                    'id' => 'title',
-                    'val' => __( 'Title', 'rrze-glossary' )
-                ],
-                [
-                    'id' => 'id',
-                    'val' => __( 'ID', 'rrze-glossary' )
-                ],
-                [
-                    'id' => 'sortfield',
-                    'val' => __( 'Sort field', 'rrze-glossary' )
-                ],
-			],
-			'default' => 'title',
-			'field_type' => 'select',
-			'label' => __( 'Sort', 'rrze-glossary' ),
-			'type' => 'string'
-		],
-        'order' => [
-			'values' => [
-                [
-                    'id' => 'ASC',
-                    'val' => __( 'ASC', 'rrze-glossary' )
-                ],
-                [
-                    'id' => 'DESC',
-                    'val' => __( 'DESC', 'rrze-glossary' )
-                ],
-			],
-			'default' => 'ASC',
-			'field_type' => 'select',
-			'label' => __( 'Order', 'rrze-glossary' ),
-			'type' => 'string'
-		],
-		'hstart' => [
-			'default' => 2,
-			'field_type' => 'text',
-			'label' => __( 'Heading level of the first heading', 'rrze-glossary' ),
-			'type' => 'number' 
-		],
-    ];
-}
-    
+                'default' => 'ASC',
+                'field_type' => 'select',
+                'label' => __('Order', 'rrze-answers'),
+                'type' => 'string'
+            ],
+            'hstart' => [
+                'default' => 2,
+                'field_type' => 'text',
+                'label' => __('Heading level of the first heading', 'rrze-answers'),
+                'type' => 'number'
+            ],
+        ];
+    }
+
 
     /**
      * Outputs explicitly requested FAQs as accordion or simple content.
@@ -313,7 +328,7 @@ function getShortcodeSettings(){
         $aLetters = array();
         $tax_query = '';
 
-        $postQuery = array('post_type' => 'rrze_faq', 'post_status' => 'publish', 'numberposts' => -1, 'suppress_filters' => false);
+        $postQuery = array('post_type' => 'rrze_glossary', 'post_status' => 'publish', 'numberposts' => -1, 'suppress_filters' => false);
         if ($sort == 'sortfield') {
             $postQuery['orderby'] = array(
                 'meta_value' => $order, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
@@ -327,8 +342,8 @@ function getShortcodeSettings(){
 
         // filter by category and/or tag and -if given- by domain related to category/tag, too
         $aTax = [];
-        $aTax['rrze_faq_category'] = Tools::getTaxBySource($category);
-        $aTax['rrze_faq_tag'] = Tools::getTaxBySource($tag);
+        $aTax['rrze_glossary_category'] = Tools::getTaxBySource($category);
+        $aTax['rrze_glossary_tag'] = Tools::getTaxBySource($tag);
         $aTax = array_filter($aTax); // delete empty entries
 
         if ($aTax) {
@@ -403,7 +418,7 @@ function getShortcodeSettings(){
                             }
                         }
                     }
-                    $terms = wp_get_post_terms($post->ID, 'rrze_faq_' . $register);
+                    $terms = wp_get_post_terms($post->ID, 'rrze_glossary_' . $register);
                     if ($terms) {
                         foreach ($terms as $t) {
                             if ($valid_term_ids && in_array($t->term_id, $valid_term_ids) === false) {
@@ -512,91 +527,97 @@ function getShortcodeSettings(){
         return $content;
     }
 
-    private function getLetter( &$txt ) {
-        return mb_strtoupper( mb_substr( remove_accents( $txt ), 0, 1 ), 'UTF-8');
+    private function getLetter(&$txt)
+    {
+        return mb_strtoupper(mb_substr(remove_accents($txt), 0, 1), 'UTF-8');
     }
 
-    private function createAZ( &$aSearch ){
-        if ( count( $aSearch ) == 1 ){
+    private function createAZ(&$aSearch)
+    {
+        if (count($aSearch) == 1) {
             return '';
         }
         $ret = '<div class="fau-glossar"><ul class="letters">';
-        foreach ( range( 'A', 'Z' ) as $a ) {
-            if ( array_key_exists( $a, $aSearch ) ) {
-                $ret .= '<li class="filled"><a href="#letter-'.$a.'">'.$a.'</a></li>';
+        foreach (range('A', 'Z') as $a) {
+            if (array_key_exists($a, $aSearch)) {
+                $ret .= '<li class="filled"><a href="#letter-' . $a . '">' . $a . '</a></li>';
             } else {
-                $ret .= '<li aria-hidden="true" role="presentation"><span>'.$a.'</span></li>';
+                $ret .= '<li aria-hidden="true" role="presentation"><span>' . $a . '</span></li>';
             }
         }
         return $ret . '</ul></div>';
     }
 
-    private function createTabs( &$aTerms, $aPostIDs ) {
-        if ( count( $aTerms ) == 1 ){
+    private function createTabs(&$aTerms, $aPostIDs)
+    {
+        if (count($aTerms) == 1) {
             return '';
         }
         $ret = '<div class="fau-glossar"><ul class="letters">';
-        foreach( $aTerms as $name => $aDetails ){
+        foreach ($aTerms as $name => $aDetails) {
             $ret .= '<a href="#ID-' . $aDetails['ID'] . '">' . $name . '</a> | ';
         }
-        return rtrim( $ret, ' | ' ) . '</div>';
-    }    
+        return rtrim($ret, ' | ') . '</div>';
+    }
 
-    private function createTagcloud( &$aTerms, $aPostIDs ) {
-        if ( count( $aTerms ) == 1 ){
+    private function createTagcloud(&$aTerms, $aPostIDs)
+    {
+        if (count($aTerms) == 1) {
             return '';
         }
         $ret = '<div class="fau-glossar"><ul class="letters">';
         $smallest = 12;
         $largest = 22;
         $aCounts = array();
-        foreach( $aTerms as $name => $aDetails ){
-            $aCounts[$aDetails['ID']] = count( $aPostIDs[$aDetails['ID']] );
+        foreach ($aTerms as $name => $aDetails) {
+            $aCounts[$aDetails['ID']] = count($aPostIDs[$aDetails['ID']]);
         }
-        $iMax = max( $aCounts );
+        $iMax = max($aCounts);
         $aSizes = array();
-        foreach ( $aCounts as $ID => $cnt ){
-            $aSizes[$ID] = round( ( $cnt / $iMax ) * $largest, 0 );
-            $aSizes[$ID] = ( $aSizes[$ID] < $smallest ? $smallest : $aSizes[$ID] );
+        foreach ($aCounts as $ID => $cnt) {
+            $aSizes[$ID] = round(($cnt / $iMax) * $largest, 0);
+            $aSizes[$ID] = ($aSizes[$ID] < $smallest ? $smallest : $aSizes[$ID]);
         }
-        foreach( $aTerms as $name => $aDetails ){
-            $ret .= '<a href="#ID-' . $aDetails['ID'] . '" style="font-size:'. $aSizes[$aDetails['ID']] .'px">' . $name . '</a> | ';
+        foreach ($aTerms as $name => $aDetails) {
+            $ret .= '<a href="#ID-' . $aDetails['ID'] . '" style="font-size:' . $aSizes[$aDetails['ID']] . 'px">' . $name . '</a> | ';
         }
-        return rtrim( $ret, ' | ' ) . '</div>';
+        return rtrim($ret, ' | ') . '</div>';
     }
 
-    private function getTaxQuery( &$aTax ){
+    private function getTaxQuery(&$aTax)
+    {
         $ret = '';
         $aTmp = array();
-        foreach( $aTax as $field => $aVal ){
-            if ( $aVal[0] ){
+        foreach ($aTax as $field => $aVal) {
+            if ($aVal[0]) {
                 $aTmp[] = array(
                     'taxonomy' => 'glossary_' . $field,
                     'field' => 'slug',
                     'terms' => $aVal
-                );    
+                );
             }
         }
-        if ( $aTmp ){
+        if ($aTmp) {
             $ret = $aTmp;
-            if ( count( $aTmp ) > 1 ){
+            if (count($aTmp) > 1) {
                 $ret['relation'] = 'AND';
             }
         }
         return $ret;
     }
 
-    private function searchArrayByKey( &$needle, &$aHaystack ){
-        foreach( $aHaystack as $k => $v ){
-            if ( $k === $needle ){
+    private function searchArrayByKey(&$needle, &$aHaystack)
+    {
+        foreach ($aHaystack as $k => $v) {
+            if ($k === $needle) {
                 return $v;
             }
         }
         return FALSE;
     }
 
-    
-/**
+
+    /**
      * Translates composite shortcode attributes into individual properties
      * 
      * Splits the values of attributes such as “register”, “hide”, “show” and “class” into sub-terms 
@@ -687,7 +708,7 @@ function getShortcodeSettings(){
     }
 
 
- /**
+    /**
      * Generate the shortcode output
      * @param array $atts Shortcode attributes
      * @param string $content Enclosed content
@@ -720,7 +741,8 @@ function getShortcodeSettings(){
         extract($atts);
 
         $content = '';
-        $registerstyle = (isset($registerstyle) ? $registerstyle : '');
+        $register = (string) ($register ?? '');
+        $registerstyle = (string) ($registerstyle ?? '');
         $hide_title = (isset($hide_title) ? $hide_title : false);
         $color = (isset($color) ? $color : '');
         $style = (isset($style) ? 'style="' . $style . '"' : '');
@@ -730,7 +752,7 @@ function getShortcodeSettings(){
         if ($id && (!$gutenberg || $gutenberg && $id[0])) {
             $content = $this->renderExplicitFAQs($id, $gutenberg, $hstart, $style, $masonry, $expand_all_link, $hide_accordion, $hide_title, $color, $load_open);
         } else {
-            $content = $this->renderFilteredFAQs($atts, $hstart, $style, $expand_all_link, $hide_accordion, $hide_title, $color, $load_open, $sort, $order, $category, $tag, $glossary, $registerstyle);
+            $content = $this->renderFilteredFAQs($atts, $hstart, $style, $expand_all_link, $hide_accordion, $hide_title, $color, $load_open, $sort, $order, $category, $tag, $register, $registerstyle);
         }
 
         // 2020-05-12 THIS IS NOT IN USE because f.e. [faq glossary="category"] led to errors ("TypeError: e.$slides is null slick.min.js" and "TypeError: can't access property "add"" ) as FAQ can have >1 category and so equal sliders would be returned in output which leads to JS errors that avoid accordeons to work properly
@@ -752,16 +774,18 @@ function getShortcodeSettings(){
 
     }
 
-    public function sortIt( &$arr ){
-        uasort( $arr, function($a, $b) {
-            return strtolower( $a ) <=> strtolower( $b );
-        } );
+    public function sortIt(&$arr)
+    {
+        uasort($arr, function ($a, $b) {
+            return strtolower($a) <=> strtolower($b);
+        });
     }
 
-    public function setMCEConfig(){
+    public function setMCEConfig()
+    {
         $shortcode = '';
-        foreach($this->settings as $att => $details){
-            if ($att != 'block'){
+        foreach ($this->settings as $att => $details) {
+            if ($att != 'block') {
                 $shortcode .= ' ' . $att . '=""';
             }
         }
@@ -775,12 +799,13 @@ function getShortcodeSettings(){
                 'shortcode': <?php echo json_encode($shortcode); ?>,
             }];
             phpvar = (typeof phpvar === 'undefined' ? tmp : phpvar.concat(tmp)); 
-        </script> 
-        <?php        
+        </script>
+    <?php
     }
 
-    public function addMCEButtons($pluginArray){
-        if (current_user_can('edit_posts') &&  current_user_can('edit_pages')) {
+    public function addMCEButtons($pluginArray)
+    {
+        if (current_user_can('edit_posts') && current_user_can('edit_pages')) {
             $pluginArray['rrze_shortcode'] = plugins_url('../assets/js/tinymce-shortcodes.js', plugin_basename(__FILE__));
         }
         return $pluginArray;

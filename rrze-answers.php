@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            0.0.29
+Version:            0.0.32
 Description:        Explain your content with FAQ, glossary and synonyms. 
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
@@ -175,6 +175,45 @@ function register_blocks()
 }
 
 
+function rrze_update_glossary_cpt()
+{
+    global $wpdb;
+
+    if (get_option('rrze_update_glossary_cpt_done')) {
+        return;
+    }
+
+    $wpdb->query("
+        UPDATE {$wpdb->term_taxonomy} tt
+        INNER JOIN {$wpdb->term_relationships} tr ON tr.term_taxonomy_id = tt.term_taxonomy_id
+        INNER JOIN {$wpdb->posts} p ON tr.object_id = p.ID
+        SET tt.taxonomy = 'rrze_glossary_category'
+        WHERE p.post_type = 'glossary'
+        AND tt.taxonomy = 'glossary_category'
+    ");
+
+    $wpdb->query("
+        UPDATE {$wpdb->term_taxonomy} tt
+        INNER JOIN {$wpdb->term_relationships} tr ON tr.term_taxonomy_id = tt.term_taxonomy_id
+        INNER JOIN {$wpdb->posts} p ON tr.object_id = p.ID
+        SET tt.taxonomy = 'rrze_glossary_tag'
+        WHERE p.post_type = 'glossary'
+        AND tt.taxonomy = 'glossary_tag'
+    ");
+
+    $wpdb->update(
+        $wpdb->posts,
+        ['post_type' => 'rrze_glossary'],
+        ['post_type' => 'glossary']
+    );
+
+    wp_cache_flush();
+    flush_rewrite_rules();
+
+    update_option('rrze_update_glossary_cpt_done', 1);
+}
+
+
 /**
  * Handle the loading of the plugin.
  *
@@ -247,6 +286,8 @@ function loaded()
     // This will load the main functionality of the plugin.
     main();
 
-        add_action('init', __NAMESPACE__ . '\register_blocks');
+    add_action('init', __NAMESPACE__ . '\register_blocks');
+    add_action('init', __NAMESPACE__ . '\rrze_update_glossary_cpt');
+
 
 }
