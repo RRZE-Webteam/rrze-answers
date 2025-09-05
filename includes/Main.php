@@ -15,7 +15,9 @@ use RRZE\Answers\Common\{
     CPT\CPTGlossary,
     CPT\CPTSynonym,
     // Blocks\Blocks,
-    Shortcode\ShortcodeFAQ
+    Shortcode\ShortcodeFAQ,
+    Shortcode\ShortcodeGlossary,
+    Shortcode\ShortcodeSynonym
 };
 
 defined('ABSPATH') || exit;
@@ -84,7 +86,9 @@ class Main
      */
     public function shortcode()
     {
-        $this->shortcodeFAQ = new ShortcodeFAQ($this->textdomain);
+        $this->shortcode = new ShortcodeFAQ($this->textdomain);
+        $this->shortcode = new ShortcodeGlossary($this->textdomain);
+        $this->shortcode = new ShortcodeSynonym($this->textdomain);
     }
 
     /**

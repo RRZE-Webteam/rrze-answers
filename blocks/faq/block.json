@@ -60,6 +60,6 @@
 		"html": false
 	},
 	"textdomain": "rrze-answers",
-	"editorScript": "file:./index.js",
+  	"editorScript": "file:../../build/faq.js",
 	"render": "file:./render.php"
 }

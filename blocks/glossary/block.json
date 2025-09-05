@@ -1,0 +1,68 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "rrze-answers/glossary",
+	"version": "2.1.11",
+	"title": "Glossary",
+	"category": "rrze",
+	"description": "Display glossaries",
+	"icon": "book",
+	"example": {},
+	"attributes": {
+		"category": {
+			"type": "string"
+		},
+		"tag": {
+			"type": "string"
+		},
+		"id": {
+			"type": "string"
+		},
+		"register": {
+			"type": "string"
+		},
+		"registerstyle": {
+			"type": "string"
+		},
+		"hide_accordion": {
+			"type": "boolean"
+		},
+		"hide_title": {
+			"type": "boolean"
+		},
+		"expand_all_link": {
+			"type": "boolean"
+		},
+		"load_open": {
+			"type": "boolean"
+		},
+		"color": {
+			"type": "string"
+		},
+		"style": {
+			"type": "string"
+		},
+		"additional_class": {
+			"type": "string"
+		},
+		"lang": {
+			"type": "string"
+		},
+		"sort": {
+			"type": "string"
+		},
+		"order": {
+			"type": "string"
+		},
+		"hstart": {
+			"type": "number",
+			"default": 2
+		}
+	},	
+	"supports": {
+		"html": false
+	},
+	"textdomain": "rrze-answers",
+	"editorScript": "file:../../build/glossary.js",
+	"render": "file:./render.php"
+}

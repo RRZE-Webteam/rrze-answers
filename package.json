@@ -1,6 +1,6 @@
 {
   "name": "rrze-answers",
-  "version": "0.0.26",
+  "version": "0.0.29",
   "description": "Plugin to create FAQs and synchronize them from the FAU network. Usable as a shortcode, block, or widget.",
   "author": "RRZE Webteam",
   "license": "GPL-2.0-or-later",
@@ -10,7 +10,8 @@
     "extends @wordpress/browserslist-config"
   ],
   "scripts": {
-    "build": "npm-run-all build:js build:css increment-version",
+    "start": "wp-scripts start faq=./blocks/faq/index.js glossary=./blocks/glossary/index.js synonym=./blocks/synonym/index.js --webpack-copy-php",
+    "build": "wp-scripts build faq=./blocks/faq/index.js glossary=./blocks/glossary/index.js synonym=./blocks/synonym/index.js --webpack-copy-php && npm run build:css && npm run increment-version",
     "build:js": "wp-scripts build src/index.js src/js/rrze-faq-accordion.js",
     "build:css": "sass src/sass:build/css --style compressed",
     "increment-version": "node increment-version.js patch",

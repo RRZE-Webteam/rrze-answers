@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            0.0.26
+Version:            0.0.29
 Description:        Explain your content with FAQ, glossary and synonyms. 
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
@@ -164,11 +164,14 @@ function load_textdomain()
         dirname(plugin_basename(__FILE__)) . '/languages'
     );
 }
-function rrze_faq_init()
+function register_blocks()
 {
-    register_block_type(__DIR__ . '/build');
-    $script_handle = generate_block_asset_handle('rrze-answers/faq', 'editorScript');
-    wp_set_script_translations($script_handle, 'rrze-anwers', plugin_dir_path(__FILE__) . 'languages');
+    register_block_type_from_metadata(__DIR__ . '/blocks/faq');
+    register_block_type_from_metadata(__DIR__ . '/blocks/glossary');
+    register_block_type_from_metadata(__DIR__ . '/blocks/synonym');
+
+    // $script_handle = generate_block_asset_handle('rrze-answers/faq', 'editorScript');
+    // wp_set_script_translations($script_handle, 'rrze-anwers', plugin_dir_path(__FILE__) . 'languages');
 }
 
 
@@ -244,6 +247,6 @@ function loaded()
     // This will load the main functionality of the plugin.
     main();
 
-        add_action('init', __NAMESPACE__ . '\rrze_faq_init');
+        add_action('init', __NAMESPACE__ . '\register_blocks');
 
 }
