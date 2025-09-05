@@ -23,7 +23,7 @@ import {
 import { useState, useRef, useEffect, useMemo } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 
-const FORMAT_NAME = 'rrze-answers/synonym';
+const FORMAT_NAME = 'rrze/synonym';
 const TAG_NAME = 'abbr';
 const CLASS_NAME = 'rrze-syn';
 
