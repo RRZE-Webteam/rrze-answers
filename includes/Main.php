@@ -157,6 +157,13 @@ class Main
             filemtime(plugin()->getPath() . 'build/css/rrze-faq.css')
         );
 
+        wp_enqueue_style(
+            'rrze-synonym-css',
+            plugins_url('build/css/rrze-synonym.css', plugin()->getBasename()),
+            [],
+            filemtime(plugin()->getPath() . 'build/css/rrze-synonym.css')
+        );
+
         wp_register_script(
             'rrze-faq-accordion',
             plugins_url('build/rrze-faq-accordion.js', plugin()->getBasename()),

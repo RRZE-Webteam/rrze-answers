@@ -155,6 +155,9 @@ class ShortcodeSynonym
                 $output = '<div class="synonym-outer">' . $output . '</div>';
             }
         }
+
+        wp_enqueue_style('rrze-synonym-css');
+
         return $output;
     }
 
