@@ -7,7 +7,8 @@ defined('ABSPATH') || exit;
 
 class CPTGlossary extends CPT
 {
-    public const POST_TYPE = 'rrze_glossary';
+    protected $post_type = 'rrze_glossary';
+
     protected const TEMPLATES = [
         'single'  => 'glossary-single.php',
         'archive' => 'glossary-archive.php',
@@ -28,12 +29,8 @@ class CPTGlossary extends CPT
     protected $taxonomies = [];
     protected $textdomain;
 
-    public function __construct($textdomain)
+    public function __construct()
     {
-        $this->textdomain = $textdomain;
-
-        parent::__construct($this->textdomain);
-
         $this->labels = [
             'name' => _x('Glossary', 'Glossary entries', $this->textdomain),
             'singular_name' => _x('Glossary', 'Single glossary ', $this->textdomain),
@@ -63,5 +60,42 @@ class CPTGlossary extends CPT
                 'hierarchical'    => false,
             ],
         ];
+
+        parent::__construct($this->post_type);
+
+        add_filter('single_template', [$this, 'filter_single_template']);
+        add_filter('archive_template', [$this, 'filter_archive_template']);
+        add_filter('taxonomy_template', [$this, 'filter_taxonomy_template']);
     }
+
+    public function filter_single_template($template)
+    {
+        global $post;
+
+        if ('rrze_glossary' === $post->post_type) {
+            $template = plugin()->getPath() . 'templates/glossary-single.php';
+        }
+        return $template;
+    }
+
+
+
+    public function filter_archive_template($template)
+    {
+        if (is_post_type_archive('rrze_glossary')) {
+            $template = plugin_dir_path(__DIR__) . 'templates/glossary-archive.php';
+        }
+        return $template;
+    }
+
+
+    public function filter_taxonomy_template($template)
+    {
+        if (is_tax('rrze_glossary_category')) {
+            $template = plugin_dir_path(__DIR__) . 'templates/glossary-category.php';
+        } elseif (is_tax('rrze_glossary_tag')) {
+            $template = plugin_dir_path(__DIR__) . 'templates/glossary-tag.php';
+        }
+        return $template;
+    }    
 }

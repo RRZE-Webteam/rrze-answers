@@ -15,7 +15,7 @@ get_header();
 <main id="main" class="site-main rrze-answers">
 
 <?php
-
+echo 'TEST Glossary ';
 include_once('template-parts/faq-content.php');
 ?>
 </main>

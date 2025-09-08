@@ -13,6 +13,7 @@ use function RRZE\Answers\plugin;
  */
 abstract class CPT
 {
+    protected $post_type = '';
     protected $lang = '';
     protected $rest_base;
     protected $menu_icon = 'dashicons-admin-post';
@@ -24,15 +25,15 @@ abstract class CPT
     protected $slug_options = ['slug_option_key' => '', 'default_slug' => ''];
     protected $textdomain;
 
-    public function __construct($textdomain)
+    public function __construct($posttype)
     {
-        $this->textdomain = $textdomain;
+        $this->post_type = $posttype;
         $this->lang = substr(get_locale(), 0, 2) ?: 'en';
 
         add_action('init', [$this, 'registerPostType'], 0);
         add_action('init', [$this, 'registerTaxonomies'], 0);
 
-        add_action("publish_{static::POST_TYPE}", [$this, 'setPostMeta'], 10, 1);
+        add_action("publish_{$this->post_type}", [$this, 'setPostMeta'], 10, 1);
         foreach ($this->taxonomies as $tx) {
             add_action("create_{$tx['name']}", [$this, 'setTermMeta'], 10, 1);
         }
@@ -53,14 +54,14 @@ abstract class CPT
 
     public function registerPostType()
     {
-        $options = get_option($this->textdomain);
+        $options = get_option('rrze-answers');
         $slug_option_key = $this->slug_options['slug_option_key'];
         $default_slug = $this->slug_options['default_slug'];
         $slug = !empty($options[$slug_option_key]) ? sanitize_title($options[$slug_option_key]) : $default_slug;
 
         $args = [
-            'label' => $this->labels['name'] ?? __('Entries', $this->textdomain),
-            'description' => $this->labels['name'] ?? __('Entries', $this->textdomain),
+            'label' => $this->labels['name'] ?? __('Entries', 'rrze-answers'),
+            'description' => $this->labels['name'] ?? __('Entries', 'rrze-answers'),
             'labels' => $this->labels,
             'supports' => $this->supports,
             'public' => true,
@@ -75,12 +76,12 @@ abstract class CPT
             'rest_controller_class' => 'WP_REST_Posts_Controller',
         ];
 
-        register_post_type(static::POST_TYPE, $args);
+        register_post_type($this->post_type, $args);
     }
 
     public function registerTaxonomies()
     {
-        $options = get_option($this->textdomain);
+        $options = get_option('rrze-answers');
 
         foreach ($this->taxonomies as $t) {
             $slug = !empty($options[$t['slug_option_key'] ?? ''])
@@ -89,7 +90,7 @@ abstract class CPT
 
             register_taxonomy(
                 $t['name'],
-                static::POST_TYPE,
+                $this->post_type,
                 [
                     'hierarchical' => (bool) ($t['hierarchical'] ?? false),
                     'label' => $t['label'],
@@ -128,9 +129,9 @@ abstract class CPT
     {
         $pages = get_pages();
         echo '<div class="form-field term-linked-page-wrap">';
-        echo '<label for="linked_page">' . esc_html__('Linked Page', $this->textdomain) . '</label>';
+        echo '<label for="linked_page">' . esc_html__('Linked Page', 'rrze-answers') . '</label>';
         echo '<select name="linked_page">';
-        echo '<option value="">' . esc_html__('None', $this->textdomain) . '</option>';
+        echo '<option value="">' . esc_html__('None', 'rrze-answers') . '</option>';
         foreach ($pages as $page) {
             echo '<option value="' . esc_attr($page->ID) . '">' . esc_html($page->post_title) . '</option>';
         }
@@ -144,9 +145,9 @@ abstract class CPT
         $selected = get_term_meta($term->term_id, 'linked_page', true);
 
         echo '<tr class="form-field term-linked-page-wrap">';
-        echo '<th><label for="linked_page">' . esc_html__('Linked Page', $this->textdomain) . '</label></th>';
+        echo '<th><label for="linked_page">' . esc_html__('Linked Page', 'rrze-answers') . '</label></th>';
         echo '<td><select name="linked_page">';
-        echo '<option value="">' . esc_html__('None', $this->textdomain) . '</option>';
+        echo '<option value="">' . esc_html__('None', 'rrze-answers') . '</option>';
         foreach ($pages as $page) {
             printf(
                 '<option value="%1$d" %2$s>%3$s</option>',
@@ -171,40 +172,29 @@ abstract class CPT
         }
     }
 
-    public function filter_single_template($template)
+        public function filter_single_template($template)
     {
-        // if (is_singular(static::POST_TYPE) && !empty(static::TEMPLATES['single'])) {
-            $path = plugin()->getPath() . 'templates/' . static::TEMPLATES['single'];
-            
-
-            echo static::POST_TYPE;
-            exit;
-            if (is_readable($path))
-                return $path;
-        // }
+        $template = plugin()->getPath() . 'templates/' . $this->post_type . '-single.php';
         return $template;
     }
+
+
 
     public function filter_archive_template($template)
     {
-        if (is_post_type_archive(static::POST_TYPE) && !empty(static::TEMPLATES['archive'])) {
-            $path = plugin_dir_path(__DIR__) . 'templates/' . static::TEMPLATES['archive'];
-            if (is_readable($path))
-                return $path;
-        }
+        $template = plugin()->getPath() . 'templates/' . $this->post_type . '-archive.php';
         return $template;
     }
 
+
     public function filter_taxonomy_template($template)
     {
-        if (!empty(static::TEMPLATES['taxonomy']) && is_tax()) {
-            $tax = get_queried_object();
-            if ($tax && !empty(static::TEMPLATES['taxonomy'][$tax->taxonomy])) {
-                $path = plugin_dir_path(__DIR__) . 'templates/' . static::TEMPLATES['taxonomy'][$tax->taxonomy];
-                if (is_readable($path))
-                    return $path;
-            }
+        if (is_tax('rrze_faq_category')) {
+            $template = plugin_dir_path(__DIR__) . 'templates/faq-category.php';
+        } elseif (is_tax('rrze_faq_tag')) {
+            $template = plugin_dir_path(__DIR__) . 'templates/faq-tag.php';
         }
         return $template;
-    }
+    }    
+
 }

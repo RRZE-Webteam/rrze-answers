@@ -10,9 +10,8 @@ get_header();
 
 <?php
 
-$post_type = 'rrze_faq';
 $taxonomy = 'rrze_faq_tag';
-include_once('template-parts/taxonomy.php');
+include_once('template-parts/faq-taxonomy.php');
 
 ?>
 </main>

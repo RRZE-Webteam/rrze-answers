@@ -15,7 +15,7 @@ $cat_name = get_queried_object()->name;
 echo '<h2>' . esc_html($cat_name) . '</h2>';
 
 $tax_post_args = array(
-    'post_type' => 'rrze_faq_tag',
+    'post_type' => $post_type,
     'posts_per_page' => 999,
     'order' => 'ASC',
     'tax_query' => array(// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query

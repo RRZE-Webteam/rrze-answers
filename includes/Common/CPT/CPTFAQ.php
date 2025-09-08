@@ -4,10 +4,11 @@ namespace RRZE\Answers\Common\CPT;
 
 defined('ABSPATH') || exit;
 
+use function RRZE\Answers\plugin;
 
 class CPTFAQ extends CPT
 {
-    public const POST_TYPE = 'rrze_faq';
+    protected $post_type = 'rrze_faq';
     protected const TEMPLATES = [
         'single'  => 'single-faq.php',
         'archive' => 'archive-faq.php',
@@ -26,29 +27,24 @@ class CPTFAQ extends CPT
     protected $labels = [];
     protected $taxonomies = [];
 
-    protected $textdomain;
 
-    public function __construct($textdomain)
+    public function __construct()
     {
-        $this->textdomain = $textdomain;
-
-        parent::__construct($this->textdomain);
-
         $this->labels = [
-            'name' => _x('FAQ', 'FAQ, synonym or glossary entries', $this->textdomain),
-            'singular_name' => _x('FAQ', 'Single FAQ, synonym or glossary ', $this->textdomain),
-            'menu_name' => __('FAQ', $this->textdomain),
-            'add_new' => __('Add FAQ', $this->textdomain),
-            'add_new_item' => __('Add new FAQ', $this->textdomain),
-            'edit_item' => __('Edit FAQ', $this->textdomain),
-            'all_items' => __('All FAQ', $this->textdomain),
-            'search_items' => __('Search FAQ', $this->textdomain),
+            'name' => _x('FAQ', 'FAQ, synonym or glossary entries', 'rrze-answers'),
+            'singular_name' => _x('FAQ', 'Single FAQ, synonym or glossary ', 'rrze-answers'),
+            'menu_name' => __('FAQ', 'rrze-answers'),
+            'add_new' => __('Add FAQ', 'rrze-answers'),
+            'add_new_item' => __('Add new FAQ', 'rrze-answers'),
+            'edit_item' => __('Edit FAQ', 'rrze-answers'),
+            'all_items' => __('All FAQ', 'rrze-answers'),
+            'search_items' => __('Search FAQ', 'rrze-answers'),
         ];
 
         $this->taxonomies = [
             [
                 'name'            => 'rrze_faq_category',
-                'label'           => __('FAQ Categories', $this->textdomain),
+                'label'           => __('FAQ Categories', 'rrze-answers'),
                 'slug_option_key' => 'website_custom_faq_category_slug',
                 'default_slug'    => 'faq_category',
                 'rest_base'       => 'rrze_faq_category',
@@ -56,12 +52,15 @@ class CPTFAQ extends CPT
             ],
             [
                 'name'            => 'rrze_faq_tag',
-                'label'           => __('FAQ Tags', $this->textdomain),
+                'label'           => __('FAQ Tags', 'rrze-answers'),
                 'slug_option_key' => 'website_custom_faq_tag_slug',
                 'default_slug'    => 'faq_tag',
                 'rest_base'       => 'rrze_faq_tag',
                 'hierarchical'    => false,
             ],
         ];
+
+        parent::__construct($this->post_type);
     }
+
 }
