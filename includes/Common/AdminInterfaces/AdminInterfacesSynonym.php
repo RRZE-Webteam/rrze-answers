@@ -33,10 +33,6 @@ class Layout {
         // save synonym and titleLang
         add_action( 'save_post_synonym', [$this, 'savePostMeta'] );        
 
-        // add templates for CPT synonym
-        add_filter( 'single_template', [$this, 'getSynonymSingleTemplate'] );
-        add_filter( 'archive_template', [$this, 'getSynonymArchiveTemplate'] );
-
         $this->constants = getConstants();
     }
 
@@ -51,7 +47,7 @@ class Layout {
         }
         return $fautheme;   
     }
-    
+
     public static function getPronunciation($post_id){
         // returns the language in which the long form is pronounced 
         // returns '' if it is different to the website's language
@@ -60,34 +56,6 @@ class Layout {
 
         $lang = get_post_meta($post_id, 'titleLang', TRUE);
         return ($lang == substr( get_locale(), 0, 2) ? '' : ' (' . __('Pronunciation', 'rrze-answers') . ': ' . $langlist[$lang] . ')');
-    }
-
-    public function getSynonymSingleTemplate( $template ) {
-        global $post;
-    
-        if ( 'synonym' === $post->post_type ) {
-            if ( $theme_file = locate_template(array('single-synonym.php'))) {
-                $template = $theme_file;
-            } else {
-                $template = dirname( __FILE__ ) . '/../templates/single-synonym.php';
-            }
-        }
-  
-        return $template;
-    }
-
-    public function getSynonymArchiveTemplate( $template ) {
-        global $post;
-    
-        if ( 'synonym' === $post->post_type ) {
-            if ( $theme_file = locate_template(array('archive-synonym.php'))) {
-                $template = $theme_file;
-            } else {
-                $template = dirname( __FILE__ ) . '/../templates/archive-synonym.php';
-            }
-        }
-  
-        return $template;
     }
 
 

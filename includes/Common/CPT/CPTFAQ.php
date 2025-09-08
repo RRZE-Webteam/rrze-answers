@@ -7,7 +7,15 @@ defined('ABSPATH') || exit;
 
 class CPTFAQ extends CPT
 {
-    protected $post_type  = 'rrze_faq';
+    public const POST_TYPE = 'rrze_faq';
+    protected const TEMPLATES = [
+        'single'  => 'single-faq.php',
+        'archive' => 'archive-faq.php',
+        'taxonomy' => [
+            'rrze_faq_category' => 'faq_category.php',
+            'rrze_faq_tag'      => 'faq_tag.php',
+        ],
+    ];
     protected $rest_base  = 'faq';
     protected $menu_icon  = 'dashicons-editor-help';
     protected $slug_options = [
@@ -17,15 +25,6 @@ class CPTFAQ extends CPT
 
     protected $labels = [];
     protected $taxonomies = [];
-
-    protected $templates = [
-        'single'   => 'single-faq.php',
-        'archive'  => 'archive-faq.php',
-        'taxonomy' => [
-            'rrze_faq_category' => 'faq_category.php',
-            'rrze_faq_tag'      => 'faq_tag.php',
-        ],
-    ];
 
     protected $textdomain;
 

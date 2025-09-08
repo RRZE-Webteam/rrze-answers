@@ -7,7 +7,16 @@ defined('ABSPATH') || exit;
 
 class CPTGlossary extends CPT
 {
-    protected $post_type  = 'rrze_glossary';
+    public const POST_TYPE = 'rrze_glossary';
+    protected const TEMPLATES = [
+        'single'  => 'glossary-single.php',
+        'archive' => 'glossary-archive.php',
+        'taxonomy' => [
+            'rrze_glossary_category' => 'glossary-category.php',
+            'rrze_glossary_tag'      => 'glossary-tag.php',
+        ],
+    ];
+
     protected $rest_base  = 'glossary';
     protected $menu_icon  = 'dashicons-book-alt';
     protected $slug_options = [
@@ -17,17 +26,7 @@ class CPTGlossary extends CPT
 
     protected $labels = [];
     protected $taxonomies = [];
-
-    protected $templates = [
-        'single'   => 'single-glossary.php',
-        'archive'  => 'archive-glossary.php',
-        'taxonomy' => [
-            'rrze_glossary_category' => 'glossary_category.php',
-            'rrze_glossary_tag'      => 'glossary_tag.php',
-        ],
-    ];
-
-        protected $textdomain;
+    protected $textdomain;
 
     public function __construct($textdomain)
     {

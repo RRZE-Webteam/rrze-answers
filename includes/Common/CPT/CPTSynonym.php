@@ -6,7 +6,12 @@ defined('ABSPATH') || exit;
 
 class CPTSynonym extends CPT
 {
-    protected $post_type   = 'rrze_synonym';
+    public const POST_TYPE = 'rrze_synonym';
+    protected const TEMPLATES = [
+        'single'  => 'synonym-single.php',
+        'archive' => 'synonym-archive.php',
+    ];
+
     protected $rest_base   = 'synonym';
     protected $menu_icon   = 'dashicons-translation';
     protected $slug_options = [
@@ -17,11 +22,6 @@ class CPTSynonym extends CPT
     // Funktionsaufrufe wie __() dürfen NICHT direkt hier stehen
     protected $labels = [];
     protected $taxonomies = [];
-
-    protected $templates = [
-        'single'   => 'single-synonym.php',
-        'archive'  => 'archive-synonym.php',
-    ];
 
     protected $textdomain;
 

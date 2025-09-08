@@ -99,17 +99,17 @@ class Main
      * 
      * @return void
      */
-    public function blocks()
-    {
+    // public function blocks()
+    // {
 
-        $this->blocks = new Blocks(
-            [                                  // Array of block names
-                'faq',
-            ],
-            plugin()->getPath('build/blocks'), // Blocks directory path
-            plugin()->getPath()                // Plugin directory path
-        );
-    }
+    //     $this->blocks = new Blocks(
+    //         [                                  // Array of block names
+    //             'faq',
+    //         ],
+    //         plugin()->getPath('build/blocks'), // Blocks directory path
+    //         plugin()->getPath()                // Plugin directory path
+    //     );
+    // }
 
     /**
      * Settings method

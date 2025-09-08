@@ -11,7 +11,7 @@ get_header();
 <?php
 
 $taxonomy = 'rrze_faq_tag';
-include_once('template-parts/faq_taxonomy.php');
+include_once('template-parts/faq-taxonomy.php');
 
 ?>
 </main>

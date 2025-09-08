@@ -5,16 +5,18 @@ namespace RRZE\Answers\Common\CPT;
 
 defined('ABSPATH') || exit;
 
+use function RRZE\Answers\plugin;
+
+
 /**
  * Base class for custom post types
  */
 abstract class CPT
 {
     protected $lang = '';
-    protected $post_type;
     protected $rest_base;
     protected $menu_icon = 'dashicons-admin-post';
-    protected $supports = ['title','editor'];
+    protected $supports = ['title', 'editor'];
     protected $has_archive = true;
     protected $labels = [];
     protected $taxonomies = [];
@@ -30,7 +32,7 @@ abstract class CPT
         add_action('init', [$this, 'registerPostType'], 0);
         add_action('init', [$this, 'registerTaxonomies'], 0);
 
-        add_action("publish_{$this->post_type}", [$this, 'setPostMeta'], 10, 1);
+        add_action("publish_{static::POST_TYPE}", [$this, 'setPostMeta'], 10, 1);
         foreach ($this->taxonomies as $tx) {
             add_action("create_{$tx['name']}", [$this, 'setTermMeta'], 10, 1);
         }
@@ -53,27 +55,27 @@ abstract class CPT
     {
         $options = get_option($this->textdomain);
         $slug_option_key = $this->slug_options['slug_option_key'];
-        $default_slug    = $this->slug_options['default_slug'];
+        $default_slug = $this->slug_options['default_slug'];
         $slug = !empty($options[$slug_option_key]) ? sanitize_title($options[$slug_option_key]) : $default_slug;
 
         $args = [
-            'label'               => $this->labels['name'] ?? __('Entries', $this->textdomain),
-            'description'         => $this->labels['name'] ?? __('Entries', $this->textdomain),
-            'labels'              => $this->labels,
-            'supports'            => $this->supports,
-            'public'              => true,
-            'show_ui'             => true,
-            'menu_icon'           => $this->menu_icon,
-            'has_archive'         => $this->has_archive,
-            'publicly_queryable'  => true,
-            'query_var'           => $this->rest_base,
-            'rewrite'             => ['slug' => $slug, 'with_front' => true],
-            'show_in_rest'        => true,
-            'rest_base'           => $this->rest_base,
+            'label' => $this->labels['name'] ?? __('Entries', $this->textdomain),
+            'description' => $this->labels['name'] ?? __('Entries', $this->textdomain),
+            'labels' => $this->labels,
+            'supports' => $this->supports,
+            'public' => true,
+            'show_ui' => true,
+            'menu_icon' => $this->menu_icon,
+            'has_archive' => $this->has_archive,
+            'publicly_queryable' => true,
+            'query_var' => $this->rest_base,
+            'rewrite' => ['slug' => $slug, 'with_front' => true],
+            'show_in_rest' => true,
+            'rest_base' => $this->rest_base,
             'rest_controller_class' => 'WP_REST_Posts_Controller',
         ];
 
-        register_post_type($this->post_type, $args);
+        register_post_type(static::POST_TYPE, $args);
     }
 
     public function registerTaxonomies()
@@ -87,24 +89,24 @@ abstract class CPT
 
             register_taxonomy(
                 $t['name'],
-                $this->post_type,
+                static::POST_TYPE,
                 [
                     'hierarchical' => (bool) ($t['hierarchical'] ?? false),
-                    'label'        => $t['label'],
-                    'labels'       => $t['labels'] ?? [],
-                    'show_ui'      => true,
+                    'label' => $t['label'],
+                    'labels' => $t['labels'] ?? [],
+                    'show_ui' => true,
                     'show_admin_column' => true,
-                    'query_var'    => true,
-                    'rewrite'      => ['slug' => $slug, 'with_front' => true],
+                    'query_var' => true,
+                    'rewrite' => ['slug' => $slug, 'with_front' => true],
                     'show_in_rest' => true,
-                    'rest_base'    => $t['rest_base'] ?? $t['name'],
+                    'rest_base' => $t['rest_base'] ?? $t['name'],
                     'rest_controller_class' => 'WP_REST_Terms_Controller',
                 ]
             );
 
-            register_term_meta($t['name'], 'source', ['type'=>'string','single'=>true,'show_in_rest'=>true]);
-            register_term_meta($t['name'], 'lang',   ['type'=>'string','single'=>true,'show_in_rest'=>true]);
-            register_term_meta($t['name'], 'linked_page', ['type'=>'integer','single'=>true,'show_in_rest'=>false]);
+            register_term_meta($t['name'], 'source', ['type' => 'string', 'single' => true, 'show_in_rest' => true]);
+            register_term_meta($t['name'], 'lang', ['type' => 'string', 'single' => true, 'show_in_rest' => true]);
+            register_term_meta($t['name'], 'linked_page', ['type' => 'integer', 'single' => true, 'show_in_rest' => false]);
         }
     }
 
@@ -149,7 +151,7 @@ abstract class CPT
             printf(
                 '<option value="%1$d" %2$s>%3$s</option>',
                 esc_attr($page->ID),
-                selected((int)$selected, (int)$page->ID, false),
+                selected((int) $selected, (int) $page->ID, false),
                 esc_html($page->post_title)
             );
         }
@@ -158,8 +160,10 @@ abstract class CPT
 
     public function save_category_page_field($term_id)
     {
-        if (!isset($_POST['term_linked_page_meta_nonce']) ||
-            !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['term_linked_page_meta_nonce'])), 'save_term_linked_page_meta')) {
+        if (
+            !isset($_POST['term_linked_page_meta_nonce']) ||
+            !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['term_linked_page_meta_nonce'])), 'save_term_linked_page_meta')
+        ) {
             return;
         }
         if (isset($_POST['linked_page'])) {
@@ -169,29 +173,36 @@ abstract class CPT
 
     public function filter_single_template($template)
     {
-        global $post;
-        if ($post && $post->post_type === $this->post_type && !empty($this->templates['single'])) {
-            $template = plugin_dir_path(__DIR__) . 'templates/' . $this->templates['single'];
-        }
+        // if (is_singular(static::POST_TYPE) && !empty(static::TEMPLATES['single'])) {
+            $path = plugin()->getPath() . 'templates/' . static::TEMPLATES['single'];
+            
+
+            echo static::POST_TYPE;
+            exit;
+            if (is_readable($path))
+                return $path;
+        // }
         return $template;
     }
 
     public function filter_archive_template($template)
     {
-        if (is_post_type_archive($this->post_type) && !empty($this->templates['archive'])) {
-            $template = plugin_dir_path(__DIR__) . 'templates/' . $this->templates['archive'];
+        if (is_post_type_archive(static::POST_TYPE) && !empty(static::TEMPLATES['archive'])) {
+            $path = plugin_dir_path(__DIR__) . 'templates/' . static::TEMPLATES['archive'];
+            if (is_readable($path))
+                return $path;
         }
         return $template;
     }
 
     public function filter_taxonomy_template($template)
     {
-        if (!empty($this->templates['taxonomy'])) {
-            foreach ($this->templates['taxonomy'] as $tax => $file) {
-                if (is_tax($tax)) {
-                    $template = plugin_dir_path(__DIR__) . 'templates/' . $file;
-                    break;
-                }
+        if (!empty(static::TEMPLATES['taxonomy']) && is_tax()) {
+            $tax = get_queried_object();
+            if ($tax && !empty(static::TEMPLATES['taxonomy'][$tax->taxonomy])) {
+                $path = plugin_dir_path(__DIR__) . 'templates/' . static::TEMPLATES['taxonomy'][$tax->taxonomy];
+                if (is_readable($path))
+                    return $path;
             }
         }
         return $template;
