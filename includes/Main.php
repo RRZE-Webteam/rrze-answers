@@ -70,9 +70,9 @@ class Main
 
     public function cpt()
     {
-        $this->cpt = new CPTFAQ($this->textdomain);
-        $this->cpt = new CPTGlossary($this->textdomain);
-        $this->cpt = new CPTSynonym($this->textdomain);
+        $this->cpt = new CPTFAQ();
+        $this->cpt = new CPTGlossary();
+        $this->cpt = new CPTSynonym();
     }
 
 
@@ -86,9 +86,9 @@ class Main
      */
     public function shortcode()
     {
-        $this->shortcode = new ShortcodeFAQ($this->textdomain);
-        $this->shortcode = new ShortcodeGlossary($this->textdomain);
-        $this->shortcode = new ShortcodeSynonym($this->textdomain);
+        $this->shortcode = new ShortcodeFAQ();
+        $this->shortcode = new ShortcodeGlossary();
+        $this->shortcode = new ShortcodeSynonym();
     }
 
     /**
@@ -131,8 +131,8 @@ class Main
             ->setMenuParentSlug('options-general.php');
 
         foreach ($this->defaults->get('sections') as $section) {
-            $tab = $this->settings->addTab(__($section['title'], $this->textdomain), $section['id']);
-            $sec = $tab->addSection(__($section['title'], $this->textdomain), $section['id']);
+            $tab = $this->settings->addTab(__($section['title'], 'rrze-answers'), $section['id']);
+            $sec = $tab->addSection(__($section['title'], 'rrze-answers'), $section['id']);
 
             foreach ($this->defaults->get('fields')[$section['id']] as $field) {
                 $sec->addOption($field['type'], array_intersect_key(

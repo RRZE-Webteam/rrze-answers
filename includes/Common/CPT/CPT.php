@@ -172,7 +172,7 @@ abstract class CPT
         }
     }
 
-        public function filter_single_template($template)
+    public function filter_single_template($template)
     {
         $template = plugin()->getPath() . 'templates/' . $this->post_type . '-single.php';
         return $template;
@@ -189,12 +189,12 @@ abstract class CPT
 
     public function filter_taxonomy_template($template)
     {
-        if (is_tax('rrze_faq_category')) {
-            $template = plugin_dir_path(__DIR__) . 'templates/faq-category.php';
-        } elseif (is_tax('rrze_faq_tag')) {
-            $template = plugin_dir_path(__DIR__) . 'templates/faq-tag.php';
+        if (is_tax($this->post_type . '_category')) {
+            $template = plugin_dir_path(__DIR__) . 'templates/' . $this->post_type . '-category.php';
+        } elseif (is_tax($this->post_type . '_tag')) {
+            $template = plugin_dir_path(__DIR__) . 'templates/' . $this->post_type . '-tag.php';
         }
         return $template;
-    }    
+    }
 
 }

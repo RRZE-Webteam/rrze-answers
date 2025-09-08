@@ -4,8 +4,6 @@ namespace RRZE\Answers\Common\CPT;
 
 defined('ABSPATH') || exit;
 
-use function RRZE\Answers\plugin;
-
 class CPTFAQ extends CPT
 {
     protected $post_type = 'rrze_faq';

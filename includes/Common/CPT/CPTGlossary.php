@@ -63,39 +63,5 @@ class CPTGlossary extends CPT
 
         parent::__construct($this->post_type);
 
-        add_filter('single_template', [$this, 'filter_single_template']);
-        add_filter('archive_template', [$this, 'filter_archive_template']);
-        add_filter('taxonomy_template', [$this, 'filter_taxonomy_template']);
     }
-
-    public function filter_single_template($template)
-    {
-        global $post;
-
-        if ('rrze_glossary' === $post->post_type) {
-            $template = plugin()->getPath() . 'templates/glossary-single.php';
-        }
-        return $template;
-    }
-
-
-
-    public function filter_archive_template($template)
-    {
-        if (is_post_type_archive('rrze_glossary')) {
-            $template = plugin_dir_path(__DIR__) . 'templates/glossary-archive.php';
-        }
-        return $template;
-    }
-
-
-    public function filter_taxonomy_template($template)
-    {
-        if (is_tax('rrze_glossary_category')) {
-            $template = plugin_dir_path(__DIR__) . 'templates/glossary-category.php';
-        } elseif (is_tax('rrze_glossary_tag')) {
-            $template = plugin_dir_path(__DIR__) . 'templates/glossary-tag.php';
-        }
-        return $template;
-    }    
 }

@@ -40,27 +40,5 @@ class CPTSynonym extends CPT
 
         parent::__construct($this->post_type);
 
-        add_filter('single_template', [$this, 'filter_single_template']);
-        add_filter('archive_template', [$this, 'filter_archive_template']);
     }
-
-    public function filter_single_template($template)
-    {
-        global $post;
-        if ('rrze_synonym' === $post->post_type) {
-            $template = plugin_dir_path(__DIR__) . 'templates/single-synonym.php';
-        }
-        return $template;
-    }
-
-
-
-    public function filter_archive_template($template)
-    {
-        if (is_post_type_archive('rrze_synonym')) {
-            $template = plugin_dir_path(__DIR__) . 'templates/archive-synonym.php';
-        }
-        return $template;
-    }
-
 }
