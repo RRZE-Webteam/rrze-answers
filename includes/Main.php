@@ -150,14 +150,14 @@ class Main
      */
     public function enqueueScripts()
     {
-        wp_enqueue_style(
+        wp_register_style(
             'rrze-faq-css',
             plugins_url('build/css/rrze-faq.css', plugin()->getBasename()),
             [],
             filemtime(plugin()->getPath() . 'build/css/rrze-faq.css')
         );
 
-        wp_enqueue_style(
+        wp_register_style(
             'rrze-synonym-css',
             plugins_url('build/css/rrze-synonym.css', plugin()->getBasename()),
             [],
