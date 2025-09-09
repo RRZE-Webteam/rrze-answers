@@ -26,7 +26,7 @@ class ShortcodeSynonym
         add_shortcode('synonym', [$this, 'shortcodeOutput']); // liefert Langform (custom field) entweder nach slug oder id
         add_shortcode('fau_abbr', [$this, 'shortcodeOutput']); // liefert <abbr title=" synonym (custom field) " lang=" titleLang (custom field)" > title </abbr> nach slug oder id
         add_action('admin_head', [$this, 'setMCEConfig']);
-        // add_filter('mce_external_plugins', [$this, 'addMCEButtons']);
+        add_filter('mce_external_plugins', [$this, 'addMCEButtons']);
     }
 
     public function getShortcodeSettings(): array
@@ -77,7 +77,7 @@ class ShortcodeSynonym
     {
         $ret = get_posts([
             'name' => $slug,
-            'post_type' => 'synonym',
+            'post_type' => 'rrze_synonym',
             'post_status' => 'publish',
             'posts_per_page' => 1
         ]);
@@ -117,18 +117,15 @@ class ShortcodeSynonym
             $myPosts = array(get_post($id));
         } else {
             // show all
-            $myPosts = $this->getPostsByCPT('synonym');
+            $myPosts = $this->getPostsByCPT('rrze_synonym');
         }
 
-        if ($gutenberg_shortcode_type) {
-            // Gutenberg
-            $shortcode_tag = $gutenberg_shortcode_type;
-        }
+        // if ($gutenberg_shortcode_type) {
+        //     // Gutenberg
+        //     $shortcode_tag = $gutenberg_shortcode_type;
+        // }
 
         $output = '';
-
-        echo $shortcode_tag;
-        exit;
 
         if ($myPosts) {
             switch ($shortcode_tag) {
@@ -194,7 +191,7 @@ class ShortcodeSynonym
     public function addMCEButtons($pluginArray)
     {
         if (current_user_can('edit_posts') && current_user_can('edit_pages')) {
-            $pluginArray['rrze_shortcode'] = plugin()->getPath() . 'assets/js/tinymce-shortcodes.js';
+            $pluginArray['rrze_shortcode'] = plugin()->getUrl() . 'assets/js/tinymce-shortcodes.js';
         }
         return $pluginArray;
     }
