@@ -6,6 +6,9 @@ defined('ABSPATH') || exit;
 
 use RRZE\Answers\Common\Tools;
 
+use function RRZE\Answers\plugin;
+
+
 
 /**
  * Shortcode
@@ -23,7 +26,7 @@ class ShortcodeSynonym
         add_shortcode('synonym', [$this, 'shortcodeOutput']); // liefert Langform (custom field) entweder nach slug oder id
         add_shortcode('fau_abbr', [$this, 'shortcodeOutput']); // liefert <abbr title=" synonym (custom field) " lang=" titleLang (custom field)" > title </abbr> nach slug oder id
         add_action('admin_head', [$this, 'setMCEConfig']);
-        add_filter('mce_external_plugins', [$this, 'addMCEButtons']);
+        // add_filter('mce_external_plugins', [$this, 'addMCEButtons']);
     }
 
     public function getShortcodeSettings(): array
@@ -123,6 +126,10 @@ class ShortcodeSynonym
         }
 
         $output = '';
+
+        echo $shortcode_tag;
+        exit;
+
         if ($myPosts) {
             switch ($shortcode_tag) {
                 case 'fau_abbr':
@@ -187,7 +194,7 @@ class ShortcodeSynonym
     public function addMCEButtons($pluginArray)
     {
         if (current_user_can('edit_posts') && current_user_can('edit_pages')) {
-            $pluginArray['rrze_shortcode'] = plugins_url('../assets/js/tinymce-shortcodes.js', plugin_basename(__FILE__));
+            $pluginArray['rrze_shortcode'] = plugin()->getPath() . 'assets/js/tinymce-shortcodes.js';
         }
         return $pluginArray;
     }

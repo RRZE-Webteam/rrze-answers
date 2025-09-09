@@ -6,6 +6,8 @@ defined('ABSPATH') || exit;
 
 use RRZE\Answers\Common\Tools;
 
+use function RRZE\Answers\plugin;
+
 
 /**
  * Shortcode
@@ -29,7 +31,7 @@ class ShortcodeFAQ
 
         add_shortcode('faq', [$this, 'shortcodeOutput']);
         add_action('admin_head', [$this, 'setMCEConfig']);
-        add_filter('mce_external_plugins', [$this, 'addMCEButtons']);
+        // add_filter('mce_external_plugins', [$this, 'addMCEButtons']);
     }
 
 
@@ -763,7 +765,7 @@ class ShortcodeFAQ
     public function addMCEButtons($pluginArray)
     {
         if (current_user_can('edit_posts') && current_user_can('edit_pages')) {
-            $pluginArray['rrze_shortcode'] = plugins_url('../assets/js/tinymce-shortcodes.js', plugin_basename(__FILE__));
+            $pluginArray['rrze_shortcode'] = plugin()->getPath() . 'assets/js/tinymce-shortcodes.js';
         }
         return $pluginArray;
     }
