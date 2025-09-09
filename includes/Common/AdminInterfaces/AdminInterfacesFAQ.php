@@ -9,13 +9,8 @@ use RRZE\Answers\Common\API\SyncAPI\SyncAPI;
 use RRZE\Answers\Common\Tools;
 
 
-/**
- * Layout settings for "faq"
- */
 class AdminInterfacesFAQ
 {
-
-
     public function __construct()
     {
 
@@ -25,23 +20,23 @@ class AdminInterfacesFAQ
         add_action('admin_menu', [$this, 'toggleEditor']);
 
         // Table "All FAQ"
-        add_filter('manage_' . 'rrze_faq' . '_posts_columns', [$this, 'addFaqColumns']);
-        add_action('manage_' . 'rrze_faq' . '_posts_custom_column', [$this, 'getFaqColumnsValues'], 10, 2);
-        add_filter('manage_edit-' . 'rrze_faq' . '_sortable_columns', [$this, 'addFaqSortableColumns']);
+        add_filter('manage_rrze_faq_posts_columns', [$this, 'addFaqColumns']);
+        add_action('manage_rrze_faq_posts_custom_column', [$this, 'getFaqColumnsValues'], 10, 2);
+        add_filter('manage_edit-rrze_faq_sortable_columns', [$this, 'addFaqSortableColumns']);
         add_action('restrict_manage_posts', [$this, 'addFaqFilters'], 10, 1);
         add_filter('parse_query', [$this, 'filterRequestQuery'], 10);
 
         // Table "Category"
-        add_filter('manage_edit-' . 'rrze_faq_category' . '_columns', [$this, 'addTaxColumns']);
-        add_filter('manage_' . 'rrze_faq_category' . '_custom_column', [$this, 'getTaxColumnsValues'], 10, 3);
-        add_filter('manage_edit-' . 'rrze_faq_category' . '_sortable_columns', [$this, 'addTaxColumns']);
+        add_filter('manage_edit-rrze_faq_category_columns', [$this, 'addTaxColumns']);
+        add_filter('manage_rrze_faq_category_custom_column', [$this, 'getTaxColumnsValues'], 10, 3);
+        add_filter('manage_edit-rrze_faq_category_sortable_columns', [$this, 'addTaxColumns']);
 
         // Table "Tags"
-        add_filter('manage_edit-' . 'rrze_faq_tag' . '_columns', [$this, 'addTaxColumns']);
-        add_filter('manage_' . 'rrze_faq_tag' . '_custom_column', [$this, 'getTaxColumnsValues'], 10, 3);
-        add_filter('manage_edit-' . 'rrze_faq_tag' . '_sortable_columns', [$this, 'addTaxColumns']);
+        add_filter('manage_edit-rrze_faq_tag_columns', [$this, 'addTaxColumns']);
+        add_filter('manage_rrze_faq_tag_custom_column', [$this, 'getTaxColumnsValues'], 10, 3);
+        add_filter('manage_edit-rrze_faq_tag_sortable_columns', [$this, 'addTaxColumns']);
 
-        add_action('save_post_' . 'rrze_faq', [$this, 'savePostMeta']);
+        add_action('save_post_rrze_faq', [$this, 'savePostMeta']);
     }
 
     public function makeFaqSortable($wp_query)
@@ -172,8 +167,8 @@ class AdminInterfacesFAQ
 
                     remove_post_type_support('rrze_faq', 'title');
                     remove_post_type_support('rrze_faq', 'editor');
-                    remove_meta_box('rrze_faq_category' . 'div', 'rrze_faq', 'side');
-                    remove_meta_box('tagsdiv-' . 'rrze_faq_tag', 'rrze_faq', 'side');
+                    remove_meta_box('rrze_faq_categorydiv', 'rrze_faq', 'side');
+                    remove_meta_box('tagsdiv-rrze_faq_tag', 'rrze_faq', 'side');
 
                     add_meta_box(
                         'read_only_content_box',
@@ -221,8 +216,8 @@ class AdminInterfacesFAQ
 
     public function addFaqSortableColumns($columns)
     {
-        $columns['taxonomy-' . 'rrze_faq_category'] = __('rrze_category', 'rrze-answers');
-        $columns['taxonomy-' . 'rrze_faq_tag'] = __('rrze_tag', 'rrze-answers');
+        $columns['taxonomy-rrze_faq_category'] = __('rrze_category', 'rrze-answers');
+        $columns['taxonomy-rrze_faq_tag'] = __('rrze_tag', 'rrze-answers');
         $columns['lang'] = __('Language', 'rrze-answers');
         $columns['sortfield'] = 'sortfield';
 

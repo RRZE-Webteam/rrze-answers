@@ -9,6 +9,7 @@ use RRZE\Answers\Defaults;
 use RRZE\Answers\Common\{
     AdminInterfaces\AdminMenu,
     AdminInterfaces\AdminInterfacesFAQ,
+    AdminInterfaces\AdminInterfacesSynonym,
     Settings\Settings,
     Settings\SettingsFAQ,
     CPT\CPTFAQ,
@@ -55,6 +56,7 @@ class Main
         $this->settings();
         $this->settingsAll();
         $this->adminInterface = new AdminInterfacesFAQ();
+        $this->adminInterface = new AdminInterfacesSynonym();
         // $this->adminMenue = new AdminMenu(); // in admin menu there is a maximum of 2 levels. Deactivated this workaround because it wouldn't be best practice.
         add_action('wp_enqueue_scripts', [$this, 'enqueueScripts']);
         add_action('enqueue_block_assets', [$this, 'enqueueScripts']);

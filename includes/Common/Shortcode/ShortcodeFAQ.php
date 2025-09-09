@@ -5,6 +5,7 @@ namespace RRZE\Answers\Common\Shortcode;
 defined('ABSPATH') || exit;
 
 use RRZE\Answers\Common\Tools;
+use RRZE\Answers\Defaults;
 
 use function RRZE\Answers\plugin;
 
@@ -262,36 +263,15 @@ class ShortcodeFAQ
             ],
         ];
 
-        $ret['lang']['values'] = [
-            [
+        $defaults = new Defaults();
+        $languages = $defaults->get('languages');
+        $tmp =             [
                 'id' => '',
                 'val' => __('All languages', 'rrze-answers')
-            ],
-            [
-                'id' => 'de',
-                'val' => __('German', 'rrze-answers'),
-            ],
-            [
-                'id' => 'en',
-                'val' => __('English', 'rrze-answers'),
-            ],
-            [
-                'id' => 'es',
-                'val' => __('Spanish', 'rrze-answers'),
-            ],
-            [
-                'id' => 'fr',
-                'val' => __('French', 'rrze-answers'),
-            ],
-            [
-                'id' => 'ru',
-                'val' => __('Russian', 'rrze-answers'),
-            ],
-            [
-                'id' => 'zh',
-                'val' => __('Chinese', 'rrze-answers')
-            ],
         ];
+
+        $languages = $tmp + $languages;
+        $ret['lang']['values'] = $languages;
 
         return $ret;
     }

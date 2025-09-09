@@ -2,6 +2,8 @@
 
 namespace RRZE\Answers\Common;
 
+use RRZE\Answers\Defaults;
+
 defined('ABSPATH') || exit;
 
 use WP_Query;
@@ -375,4 +377,16 @@ class Tools
 
         return $result;
     }
+
+
+    public static function getPronunciation($post_id){
+        // returns the language in which the long form is pronounced 
+        // returns '' if it is different to the website's language
+        $defaults = new Defaults();
+        $langlist = $defaults->get('languages');
+
+        $lang = get_post_meta($post_id, 'titleLang', TRUE);
+        return ($lang == substr( get_locale(), 0, 2) ? '' : ' (' . __('Pronunciation', 'rrze-answers') . ': ' . $langlist[$lang] . ')');
+    }
+
 }

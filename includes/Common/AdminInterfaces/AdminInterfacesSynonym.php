@@ -1,18 +1,16 @@
 <?php
 
-namespace RRZE\Synonym;
+namespace RRZE\Answers\Common\AdminInterfaces;
 
-defined( 'ABSPATH' ) || exit;
+defined('ABSPATH') || exit;
 
-use RRZE\Synonym\API;
-use function RRZE\Synonym\Config\getConstants;
+use RRZE\Answers\Common\Config;
+use RRZE\Answers\Common\API\SyncAPI\SyncAPI;
+use RRZE\Answers\Common\Tools;
 
 
-    
-/**
- * Layout settings for "synonym"
- */
-class Layout {
+class AdminInterfacesSynonym
+{
 
     protected $constants;
 
@@ -26,43 +24,18 @@ class Layout {
         add_action( 'admin_menu', [$this, 'toggleEditor'] );
 
         // Table "All synonym"
-        add_filter( 'manage_synonym_posts_columns', [$this, 'addColumns'] );        
-        add_action( 'manage_synonym_posts_custom_column', [$this, 'getColumnsValues'], 10, 2 );
-        add_filter( 'manage_edit-synonym_sortable_columns', [$this, 'addSortableColumns'] );
+        add_filter( 'manage_rrze_synonym_posts_columns', [$this, 'addColumns'] );        
+        add_action( 'manage_rrze_rrze_synonym_posts_custom_column', [$this, 'getColumnsValues'], 10, 2 );
+        add_filter( 'manage_edit-rrze_synonym_sortable_columns', [$this, 'addSortableColumns'] );
 
         // save synonym and titleLang
-        add_action( 'save_post_synonym', [$this, 'savePostMeta'] );        
-
-        $this->constants = getConstants();
+        add_action( 'save_post_rrze_synonym', [$this, 'savePostMeta'] );    
     }
-
-    public static function isFAUTheme() {
-        $constants = getConstants();
-        $themelist = $constants['fauthemes'];
-        $fautheme = false;
-        $active_theme = wp_get_theme();
-        $active_theme = $active_theme->get( 'Name' );
-        if (in_array($active_theme, $themelist)) {
-            $fautheme = true;
-        }
-        return $fautheme;   
-    }
-
-    public static function getPronunciation($post_id){
-        // returns the language in which the long form is pronounced 
-        // returns '' if it is different to the website's language
-        $constants = getConstants();
-        $langlist = $constants['langcodes'];
-
-        $lang = get_post_meta($post_id, 'titleLang', TRUE);
-        return ($lang == substr( get_locale(), 0, 2) ? '' : ' (' . __('Pronunciation', 'rrze-answers') . ': ' . $langlist[$lang] . ')');
-    }
-
 
     public function orderByTitle( $wp_query ) {
         if ( $wp_query->is_main_query() ) {
             $post_type = (isset($wp_query->query['post_type']) ? $wp_query->query['post_type'] : '');
-            if ( $post_type == 'synonym') {
+            if ( $post_type == 'rrze_synonym') {
                 if( ! isset($wp_query->query['orderby'])) {
                     $wp_query->set('orderby', 'title');
                     $wp_query->set('order', 'ASC');
@@ -107,7 +80,7 @@ class Layout {
                 'postmetabox',
                 __( 'Properties', 'rrze-answers'),
                 [$this, 'postmetaCallback'],
-                'synonym',
+                'rrze_synonym',
                 'normal',
                 'high'
             ); 
@@ -116,7 +89,7 @@ class Layout {
             'shortcode_box',
             __( 'Integration in pages and posts', 'rrze-answers'),
             [$this, 'fillShortcodeBox'],
-            'synonym',
+            'rrze_synonym',
             'normal'
         );
 
@@ -125,7 +98,7 @@ class Layout {
     public function toggleEditor(){
         $post_id = ( isset( $_GET['post'] ) ? $_GET['post'] : ( isset ( $_POST['post_ID'] ) ? $_POST['post_ID'] : 0 ) ) ;
         if ( $post_id ){            
-            if ( get_post_type( $post_id ) == 'synonym' ) {
+            if ( get_post_type( $post_id ) == 'rrze_synonym' ) {
                 $source = get_post_meta( $post_id, "source", TRUE );
                 if ( $source ){
                     if ( $source != 'website' ){
@@ -134,13 +107,13 @@ class Layout {
                         $remoteID = get_post_meta( $post_id, "remoteID", TRUE );
                         $link = $domains[$source] . 'wp-admin/post.php?post=' . $remoteID . '&action=edit';
                         remove_post_type_support( 'synonym', 'title' );
-                        remove_meta_box( 'submitdiv', 'synonym', 'side' );  
-                        // remove_meta_box( 'postmetabox', 'synonym', 'normal' );
+                        remove_meta_box( 'submitdiv', 'rrze_synonym', 'side' );  
+                        // remove_meta_box( 'postmetabox', 'rrze_synonym', 'normal' );
                         add_meta_box(
                             'read_only_content_box',
                             __( 'This synonym cannot be edited because it is synchronized', 'rrze-answers') . '. <a href="' . $link . '" target="_blank">' . __('You can edit it at the source', 'rrze-answers') . '</a>',
                             [$this, 'fillContentBox'],
-                            'synonym',
+                            'rrze_synonym',
                             'normal',
                             'high'
                         );
