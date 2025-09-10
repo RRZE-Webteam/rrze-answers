@@ -2,6 +2,8 @@
 
 namespace RRZE\Answers\Common\AdminInterfaces;
 
+use RRZE\Answers\Defaults;
+
 defined('ABSPATH') || exit;
 
 use RRZE\Answers\Common\Config;
@@ -34,6 +36,12 @@ class AdminInterfacesSynonym
 
         // save synonym and titleLang
         add_action( 'save_post_rrze_synonym', [$this, 'savePostMeta'] );    
+
+        $defaults = new Defaults();
+        $lang = $defaults->get('lang');
+        $this->constants = [
+            'lang' => $lang,
+        ];
     }
 
 
@@ -168,10 +176,10 @@ class AdminInterfacesSynonym
         // langTitle
         $selectedLang = ( $fields['titleLang'] ? $fields['titleLang'] : substr( get_locale(), 0, 2) );
         $output .= '<br><select class="" id="titleLang" name="titleLang">';
-        // foreach( $this->constants['langcodes'] as $lang => $desc ){
-        //     $selected = ( $lang == $selectedLang ? ' selected' : '' );
-        //     $output .= '<option value="' . $lang . '"' . $selected . '>' . $desc . '</option>';
-        // }
+        foreach( $this->constants['lang'] as $lang => $desc ){
+            $selected = ( $lang == $selectedLang ? ' selected' : '' );
+            $output .= '<option value="' . $lang . '"' . $selected . '>' . $desc . '</option>';
+        }
         $output .= '</select>';
         $output .= '<p class="description">' . __( 'Choose the language in which the long form is pronounced.', 'rrze-answers' ) . '</p>'; // Wählen Sie die Sprache, in der die Langform ausgesprochen wird. 
 

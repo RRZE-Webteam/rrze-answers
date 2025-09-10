@@ -8,8 +8,8 @@ class CPTSynonym extends CPT
 {
     protected $post_type = 'rrze_synonym';
     protected $templates = [
-        'single'  => 'synonym-single.php',
-        'archive' => 'synonym-archive.php',
+        'single'  => 'rrze_synonym-single.php',
+        'archive' => 'rrze_synonym-archive.php',
     ];
 
     protected $rest_base   = 'synonym';

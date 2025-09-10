@@ -381,9 +381,8 @@ class Tools
 
     public static function getPronunciation($post_id){
         // returns the language in which the long form is pronounced 
-        // returns '' if it is different to the website's language
         $defaults = new Defaults();
-        $langlist = $defaults->get('languages');
+        $langlist = $defaults->get('lang');
 
         $lang = get_post_meta($post_id, 'titleLang', TRUE);
         return ($lang == substr( get_locale(), 0, 2) ? '' : ' (' . __('Pronunciation', 'rrze-answers') . ': ' . $langlist[$lang] . ')');

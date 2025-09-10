@@ -172,36 +172,46 @@ class Defaults
                         ]
                     ]
                 ],
-                'languages' => [
-                    // [
-                    //     'id' => '',
-                    //     'val' => __('All languages', 'rrze-answers')
-                    // ],
-                    [
-                        'id' => 'de',
-                        'val' => __('German', 'rrze-answers'),
+                'lang' => [
+                    '' =>  __('All languages', 'rrze-answers'),
+                    'de'  => __('German', 'rrze-answers'),
+                    'en' => __('English', 'rrze-answers'),
+                    'es' => __('Spanish', 'rrze-answers'),
+                    'fr' => __('French', 'rrze-answers'),
+                    'ru' => __('Russian', 'rrze-answers'),
+                    'zh' => __('Chinese', 'rrze-answers')
                     ],
-                    [
-                        'id' => 'en',
-                        'val' => __('English', 'rrze-answers'),
-                    ],
-                    [
-                        'id' => 'es',
-                        'val' => __('Spanish', 'rrze-answers'),
-                    ],
-                    [
-                        'id' => 'fr',
-                        'val' => __('French', 'rrze-answers'),
-                    ],
-                    [
-                        'id' => 'ru',
-                        'val' => __('Russian', 'rrze-answers'),
-                    ],
-                    [
-                        'id' => 'zh',
-                        'val' => __('Chinese', 'rrze-answers')
-                    ],
-                ],
+
+                // 'lang' => [
+                //     // [
+                //     //     'id' => '',
+                //     //     'val' => __('All languages', 'rrze-answers')
+                //     // ],
+                //     [
+                //         'id' => 'de',
+                //         'val' => __('German', 'rrze-answers'),
+                //     ],
+                //     [
+                //         'id' => 'en',
+                //         'val' => __('English', 'rrze-answers'),
+                //     ],
+                //     [
+                //         'id' => 'es',
+                //         'val' => __('Spanish', 'rrze-answers'),
+                //     ],
+                //     [
+                //         'id' => 'fr',
+                //         'val' => __('French', 'rrze-answers'),
+                //     ],
+                //     [
+                //         'id' => 'ru',
+                //         'val' => __('Russian', 'rrze-answers'),
+                //     ],
+                //     [
+                //         'id' => 'zh',
+                //         'val' => __('Chinese', 'rrze-answers')
+                //     ],
+                // ],
             ]
         );
     }

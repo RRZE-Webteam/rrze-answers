@@ -10,11 +10,11 @@ class CPTGlossary extends CPT
     protected $post_type = 'rrze_glossary';
 
     protected $templates = [
-        'single'  => 'glossary-single.php',
-        'archive' => 'glossary-archive.php',
+        'single'  => 'rrze_glossary-single.php',
+        'archive' => 'rrze_glossary-archive.php',
         'taxonomy' => [
-            'category' => 'glossary-category.php',
-            'tag'      => 'glossary-tag.php',
+            'category' => 'rrze_glossary_category.php',
+            'tag'      => 'rrze_glossary_tag.php',
         ],
     ];
 

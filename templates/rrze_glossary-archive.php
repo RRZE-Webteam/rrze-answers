@@ -13,7 +13,7 @@ get_header();
 
 <main id="main" class="site-main rrze-answers archive">
     <div id="content"><div class="content-container">
-        <h2>FAQ</h2>
+        <h2><?php echo __('Glossary', 'rrze-answers'); ?></h2>
         <ul>
         <?php
         if (have_posts()) {

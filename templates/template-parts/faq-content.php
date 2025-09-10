@@ -14,6 +14,7 @@ use RRZE\Answers\Common\Tools;
 $postID = get_the_ID();
 $tools = new Tools();
 $headerID = $tools->getHeaderID($postID);
+$source = get_post_meta($postID, "source", true);
 
 $cats = $tools->getTermLinks($postID, 'rrze_faq_category');
 $tags = $tools->getTermLinks($postID, 'rrze_faq_tag');

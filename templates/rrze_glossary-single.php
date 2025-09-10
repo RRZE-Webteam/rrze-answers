@@ -16,7 +16,7 @@ get_header();
 
 <?php
 echo 'TEST Glossary ';
-include_once('template-parts/faq-content.php');
+include_once('template-parts/glossary-content.php');
 ?>
 </main>
 

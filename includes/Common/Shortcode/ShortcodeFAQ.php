@@ -263,16 +263,6 @@ class ShortcodeFAQ
             ],
         ];
 
-        $defaults = new Defaults();
-        $languages = $defaults->get('languages');
-        $tmp =             [
-                'id' => '',
-                'val' => __('All languages', 'rrze-answers')
-        ];
-
-        $languages = $tmp + $languages;
-        $ret['lang']['values'] = $languages;
-
         return $ret;
     }
 

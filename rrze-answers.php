@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            0.0.37
+Version:            0.0.38
 Description:        Explain your content with FAQ, glossary and synonyms. 
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/

@@ -8,9 +8,11 @@
  * @since FAU 1.0
 */
 
-namespace RRZE\Glossary;
+namespace RRZE\Answers\Common;
 
-use RRZE\Glossary\Layout;
+use RRZE\Answers\Common\Tools;
+$tools = new Tools();
+
 
 echo '<div id="post-' . esc_attr(get_the_ID()) . '" class="' . esc_attr(implode(' ', get_post_class())) .'">';
 
@@ -24,8 +26,8 @@ echo '<div id="post-' . esc_attr(get_the_ID()) . '" class="' . esc_attr(implode(
 <?php 
 
 $postID = get_the_ID();
-$cats = wp_kses_post(Layout::getTermLinks( $postID, 'glossary_category' ));
-$tags = wp_kses_post(Layout::getTermLinks( $postID, 'glossary_tag' ));            
+$cats = wp_kses_post($tools->getTermLinks( $postID, 'glossary_category' ));
+$tags = wp_kses_post($tools->getTermLinks( $postID, 'glossary_tag' ));            
 $details = '<article class="news-details">
 <!-- rrze-glossary --><p id="rrze-glossary" class="meta-footer">'
 . ( $cats ? '<span class="post-meta-categories"> '. __( 'Categories', 'rrze-glossary' ) . ': ' . $cats . '</span>' : '' )

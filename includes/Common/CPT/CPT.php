@@ -47,9 +47,9 @@ abstract class CPT
             }
         }
 
-        // add_filter('single_template', [$this, 'filter_single_template']);
-        // add_filter('archive_template', [$this, 'filter_archive_template']);
-        // add_filter('taxonomy_template', [$this, 'filter_taxonomy_template']);
+        add_filter('single_template', [$this, 'filter_single_template']);
+        add_filter('archive_template', [$this, 'filter_archive_template']);
+        add_filter('taxonomy_template', [$this, 'filter_taxonomy_template']);
     }
 
     public function registerPostType()

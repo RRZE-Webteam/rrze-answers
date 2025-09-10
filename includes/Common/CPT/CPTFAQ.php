@@ -8,11 +8,11 @@ class CPTFAQ extends CPT
 {
     protected $post_type = 'rrze_faq';
     protected $templates= [
-        'single'  => 'faq-single.php',
-        'archive' => 'faq-archive.php',
+        'single'  => 'rrze_faq-single.php',
+        'archive' => 'rrze_faq-archive.php',
         'taxonomy' => [
-            'category' => 'faq_category.php',
-            'tag'      => 'faq_tag.php',
+            'category' => 'rrze_faq_category.php',
+            'tag'      => 'rrze_faq_tag.php',
         ],
     ];
     protected $rest_base  = 'faq';

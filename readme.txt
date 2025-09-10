@@ -4,7 +4,7 @@ Tags: faq, shortcode, block, widget, categories
 Requires at least: 6.1
 Tested up to: 6.8
 Requires PHP: 8.2
-Stable tag: 0.0.37
+Stable tag: 0.0.38
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
