@@ -7,7 +7,7 @@ defined('ABSPATH') || exit;
 class CPTSynonym extends CPT
 {
     protected $post_type = 'rrze_synonym';
-    protected const TEMPLATES = [
+    protected $templates = [
         'single'  => 'synonym-single.php',
         'archive' => 'synonym-archive.php',
     ];

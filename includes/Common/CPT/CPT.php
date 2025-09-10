@@ -174,7 +174,10 @@ abstract class CPT
 
     public function filter_single_template($template)
     {
-        $template = plugin()->getPath() . 'templates/' . $this->post_type . '-single.php';
+        global $post;
+        if ($post->post_type == $this->post_type){
+            $template = plugin()->getPath() . 'templates/' . $this->templates['single'];
+        }
         return $template;
     }
 
@@ -182,7 +185,10 @@ abstract class CPT
 
     public function filter_archive_template($template)
     {
-        $template = plugin()->getPath() . 'templates/' . $this->post_type . '-archive.php';
+        global $post;
+        if ($post->post_type == $this->post_type){
+            $template = plugin()->getPath() . 'templates/' . $this->templates['archive'];
+        }
         return $template;
     }
 
@@ -190,9 +196,9 @@ abstract class CPT
     public function filter_taxonomy_template($template)
     {
         if (is_tax($this->post_type . '_category')) {
-            $template = plugin_dir_path(__DIR__) . 'templates/' . $this->post_type . '-category.php';
+            $template = plugin()->getPath() . 'templates/' . $this->templates['taxonomy']['category'];
         } elseif (is_tax($this->post_type . '_tag')) {
-            $template = plugin_dir_path(__DIR__) . 'templates/' . $this->post_type . '-tag.php';
+            $template = plugin()->getPath() . 'templates/' . $this->templates['taxonomy']['tag'];
         }
         return $template;
     }

@@ -7,12 +7,12 @@ defined('ABSPATH') || exit;
 class CPTFAQ extends CPT
 {
     protected $post_type = 'rrze_faq';
-    protected const TEMPLATES = [
-        'single'  => 'single-faq.php',
-        'archive' => 'archive-faq.php',
+    protected $templates= [
+        'single'  => 'faq-single.php',
+        'archive' => 'faq-archive.php',
         'taxonomy' => [
-            'rrze_faq_category' => 'faq_category.php',
-            'rrze_faq_tag'      => 'faq_tag.php',
+            'category' => 'faq_category.php',
+            'tag'      => 'faq_tag.php',
         ],
     ];
     protected $rest_base  = 'faq';
@@ -23,7 +23,10 @@ class CPTFAQ extends CPT
     ];
 
     protected $labels = [];
-    protected $taxonomies = [];
+    protected $taxonomies = [
+        'rrze_faq_category', 
+        'rrze_faq_tag'
+    ];
 
 
     public function __construct()
