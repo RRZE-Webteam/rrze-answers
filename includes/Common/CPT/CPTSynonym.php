@@ -23,6 +23,9 @@ class CPTSynonym extends CPT
     protected $labels = [];
     protected $taxonomies = [];
 
+    protected $supports = ['title'];
+
+
 
 
     public function __construct()

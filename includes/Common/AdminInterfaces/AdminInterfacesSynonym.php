@@ -5,7 +5,7 @@ namespace RRZE\Answers\Common\AdminInterfaces;
 defined('ABSPATH') || exit;
 
 use RRZE\Answers\Common\Config;
-use RRZE\Answers\Common\API\SyncAPI\SyncAPI;
+use RRZE\Answers\Common\API\SyncAPI;
 use RRZE\Answers\Common\Tools;
 
 
@@ -28,8 +28,21 @@ class AdminInterfacesSynonym
         add_action( 'manage_rrze_rrze_synonym_posts_custom_column', [$this, 'getColumnsValues'], 10, 2 );
         add_filter( 'manage_edit-rrze_synonym_sortable_columns', [$this, 'addSortableColumns'] );
 
+        // Change title txt
+        add_filter('enter_title_here', [$this, 'changeTitlePlaceholder'], 10, 2);
+
+
         // save synonym and titleLang
         add_action( 'save_post_rrze_synonym', [$this, 'savePostMeta'] );    
+    }
+
+
+        public function changeTitlePlaceholder($title, $post)
+    {
+        if ($post->post_type == 'rrze_synonym') {
+            $title = __('Enter synonym here', 'rrze-synonym');
+        }
+        return $title;
     }
 
     public function orderByTitle( $wp_query ) {
@@ -96,17 +109,18 @@ class AdminInterfacesSynonym
     }
 
     public function toggleEditor(){
+
         $post_id = ( isset( $_GET['post'] ) ? $_GET['post'] : ( isset ( $_POST['post_ID'] ) ? $_POST['post_ID'] : 0 ) ) ;
         if ( $post_id ){            
             if ( get_post_type( $post_id ) == 'rrze_synonym' ) {
                 $source = get_post_meta( $post_id, "source", TRUE );
                 if ( $source ){
                     if ( $source != 'website' ){
-                        $api = new API();
+                        $api = new SyncAPI();
                         $domains = $api->getDomains();
                         $remoteID = get_post_meta( $post_id, "remoteID", TRUE );
                         $link = $domains[$source] . 'wp-admin/post.php?post=' . $remoteID . '&action=edit';
-                        remove_post_type_support( 'synonym', 'title' );
+                        remove_post_type_support( 'rrze_synonym', 'title' );
                         remove_meta_box( 'submitdiv', 'rrze_synonym', 'side' );  
                         // remove_meta_box( 'postmetabox', 'rrze_synonym', 'normal' );
                         add_meta_box(
@@ -154,10 +168,10 @@ class AdminInterfacesSynonym
         // langTitle
         $selectedLang = ( $fields['titleLang'] ? $fields['titleLang'] : substr( get_locale(), 0, 2) );
         $output .= '<br><select class="" id="titleLang" name="titleLang">';
-        foreach( $this->constants['langcodes'] as $lang => $desc ){
-            $selected = ( $lang == $selectedLang ? ' selected' : '' );
-            $output .= '<option value="' . $lang . '"' . $selected . '>' . $desc . '</option>';
-        }
+        // foreach( $this->constants['langcodes'] as $lang => $desc ){
+        //     $selected = ( $lang == $selectedLang ? ' selected' : '' );
+        //     $output .= '<option value="' . $lang . '"' . $selected . '>' . $desc . '</option>';
+        // }
         $output .= '</select>';
         $output .= '<p class="description">' . __( 'Choose the language in which the long form is pronounced.', 'rrze-answers' ) . '</p>'; // Wählen Sie die Sprache, in der die Langform ausgesprochen wird. 
 
