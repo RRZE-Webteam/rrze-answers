@@ -9,41 +9,45 @@ use RRZE\Answers\Common\API\SyncAPI\SyncAPI;
 use RRZE\Answers\Common\Tools;
 
 
-class AdminInterfacesFAQ
+class AdminInterfaces
 {
-    public function __construct()
-    {
 
-        add_filter('pre_get_posts', [$this, 'makeFaqSortable']);
+    protected $post_type = '';
+
+    public function __construct($post_type)
+    {
+        $this->post_type = $post_type;
+
+        add_filter('pre_get_posts', [$this, 'makeSortable']);
         add_filter('enter_title_here', [$this, 'changeTitleText']);
         // show content in box if not editable ( not editable == source is not "website" - it is sychronized from another website )
         add_action('admin_menu', [$this, 'toggleEditor']);
 
-        // Table "All FAQ"
-        add_filter('manage_rrze_faq_posts_columns', [$this, 'addFaqColumns']);
-        add_action('manage_rrze_faq_posts_custom_column', [$this, 'getFaqColumnsValues'], 10, 2);
-        add_filter('manage_edit-rrze_faq_sortable_columns', [$this, 'addFaqSortableColumns']);
+        // Table "All"
+        add_filter('manage_' . $this->post_type . '_posts_columns', [$this, 'addColumns']);
+        add_action('manage_' . $this->post_type . '_posts_custom_column', [$this, 'getColumnsValues'], 10, 2);
+        add_filter('manage_edit-' . $this->post_type . '_sortable_columns', [$this, 'addSortableColumns']);
         add_action('restrict_manage_posts', [$this, 'addFaqFilters'], 10, 1);
         add_filter('parse_query', [$this, 'filterRequestQuery'], 10);
 
         // Table "Category"
-        add_filter('manage_edit-rrze_faq_category_columns', [$this, 'addTaxColumns']);
-        add_filter('manage_rrze_faq_category_custom_column', [$this, 'getTaxColumnsValues'], 10, 3);
-        add_filter('manage_edit-rrze_faq_category_sortable_columns', [$this, 'addTaxColumns']);
+        add_filter('manage_edit-' . $this->post_type . '_category_columns', [$this, 'addTaxColumns']);
+        add_filter('manage_' . $this->post_type . '_category_custom_column', [$this, 'getTaxColumnsValues'], 10, 3);
+        add_filter('manage_edit-' . $this->post_type . '_category_sortable_columns', [$this, 'addTaxColumns']);
 
         // Table "Tags"
-        add_filter('manage_edit-rrze_faq_tag_columns', [$this, 'addTaxColumns']);
-        add_filter('manage_rrze_faq_tag_custom_column', [$this, 'getTaxColumnsValues'], 10, 3);
-        add_filter('manage_edit-rrze_faq_tag_sortable_columns', [$this, 'addTaxColumns']);
+        add_filter('manage_edit-' . $this->post_type . '_tag_columns', [$this, 'addTaxColumns']);
+        add_filter('manage_' . $this->post_type . '_tag_custom_column', [$this, 'getTaxColumnsValues'], 10, 3);
+        add_filter('manage_edit-' . $this->post_type . '_tag_sortable_columns', [$this, 'addTaxColumns']);
 
-        add_action('save_post_rrze_faq', [$this, 'savePostMeta']);
+        add_action('save_post_' . $this->post_type . '', [$this, 'savePostMeta']);
     }
 
-    public function makeFaqSortable($wp_query)
+    public function makeSortable($wp_query)
     {
         if (is_admin() && !empty($wp_query->query['post_type'])) {
             $post_type = $wp_query->query['post_type'];
-            if ($post_type == 'rrze_faq') {
+            if (($post_type == 'rrze_faq') || ($post_type == 'rrze_glossary')) {
                 if (!isset($wp_query->query['orderby'])) {
                     $wp_query->set('orderby', 'title');
                     $wp_query->set('order', 'ASC');
@@ -62,9 +66,9 @@ class AdminInterfacesFAQ
     {
         if (
             !current_user_can('edit_post', $postID) ||
-            !isset($_POST['sortfield'], $_POST['anchorfield'], $_POST['rrze_faq_meta_nonce']) ||
+            !isset($_POST['sortfield'], $_POST['anchorfield'], $_POST[$this->post_type . '_meta_nonce']) ||
             (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) ||
-            !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['rrze_faq_meta_nonce'])), 'rrze_faq_save_meta')
+            !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST[$this->post_type . '_meta_nonce'])), $this->post_type . '_save_meta')
         ) {
             return $postID;
         }
@@ -83,7 +87,7 @@ class AdminInterfacesFAQ
 
     public function sortboxCallback($meta_id)
     {
-        wp_nonce_field('rrze_faq_save_meta', 'rrze_faq_meta_nonce');
+        wp_nonce_field($this->post_type . '_save_meta', $this->post_type . '_meta_nonce');
 
         $output = '<input type="hidden" name="source" id="source" value="' . esc_attr(get_post_meta($meta_id->ID, 'source', true)) . '">';
         $output .= '<input type="text" name="sortfield" id="sortfield" class="sortfield" value="' . esc_attr(get_post_meta($meta_id->ID, 'sortfield', true)) . '">';
@@ -119,7 +123,7 @@ class AdminInterfacesFAQ
         $ret = '';
         $category = '';
         $tag = '';
-        $fields = array('rrze_faq_category', 'rrze_faq_tag');
+        $fields = array($this->post_type . '_category', $this->post_type . '_tag');
         foreach ($fields as $field) {
             $terms = wp_get_post_terms($post->ID, $field);
             foreach ($terms as $term) {
@@ -157,7 +161,7 @@ class AdminInterfacesFAQ
         }
 
         if ($post_id) {
-            if (get_post_type($post_id) === 'rrze_faq') {
+            if ((get_post_type($post_id) === 'rrze_faq') || (get_post_type($post_id) === 'rrze_glossary')) {
                 $source = get_post_meta($post_id, 'source', true);
                 if ($source && $source !== 'website') {
                     $api = new SyncAPI();
@@ -165,10 +169,10 @@ class AdminInterfacesFAQ
                     $remoteID = get_post_meta($post_id, 'remoteID', true);
                     $link = esc_url($domains[$source] . 'wp-admin/post.php?post=' . $remoteID . '&action=edit');
 
-                    remove_post_type_support('rrze_faq', 'title');
-                    remove_post_type_support('rrze_faq', 'editor');
-                    remove_meta_box('rrze_faq_categorydiv', 'rrze_faq', 'side');
-                    remove_meta_box('tagsdiv-rrze_faq_tag', 'rrze_faq', 'side');
+                    remove_post_type_support($this->post_type, 'title');
+                    remove_post_type_support($this->post_type, 'editor');
+                    remove_meta_box($this->post_type . '_categorydiv', $this->post_type, 'side');
+                    remove_meta_box('tagsdiv-' . $this->post_type . '_tag', $this->post_type, 'side');
 
                     add_meta_box(
                         'read_only_content_box',
@@ -179,7 +183,7 @@ class AdminInterfacesFAQ
                             esc_html__('You can edit it at the source', 'rrze-answers')
                         ),
                         [$this, 'fillContentBox'],
-                        'rrze_faq',
+                        $this->post_type,
                         'normal',
                         'high'
                     );
@@ -191,18 +195,18 @@ class AdminInterfacesFAQ
                     'shortcode_box',
                     __('Integration in pages and posts', 'rrze-answers'),
                     [$this, 'fillShortcodeBox'],
-                    'rrze_faq',
+                    $this->post_type,
                     'normal'
                 );
             }
         }
 
-        add_meta_box('langbox', __('Language', 'rrze-answers'), [$this, 'langboxCallback'], 'rrze_faq', 'side');
-        add_meta_box('sortbox', __('Sort', 'rrze-answers'), [$this, 'sortboxCallback'], 'rrze_faq', 'side');
-        add_meta_box('anchorbox', __('Anchor', 'rrze-answers'), [$this, 'anchorboxCallback'], 'rrze_faq', 'side');
+        add_meta_box('langbox', __('Language', 'rrze-answers'), [$this, 'langboxCallback'], $this->post_type, 'side');
+        add_meta_box('sortbox', __('Sort', 'rrze-answers'), [$this, 'sortboxCallback'], $this->post_type, 'side');
+        add_meta_box('anchorbox', __('Anchor', 'rrze-answers'), [$this, 'anchorboxCallback'], $this->post_type, 'side');
     }
 
-    public function addFaqColumns($columns)
+    public function addColumns($columns)
     {
         $columns['lang'] = __('Language', 'rrze-answers');
         $columns['sortfield'] = __('Sort criterion', 'rrze-answers');
@@ -214,10 +218,10 @@ class AdminInterfacesFAQ
         return $columns;
     }
 
-    public function addFaqSortableColumns($columns)
+    public function addSortableColumns($columns)
     {
-        $columns['taxonomy-rrze_faq_category'] = __('rrze_category', 'rrze-answers');
-        $columns['taxonomy-rrze_faq_tag'] = __('rrze_tag', 'rrze-answers');
+        $columns['taxonomy-' . $this->post_type . '_category'] = __('Category', 'rrze-answers');
+        $columns['taxonomy-' . $this->post_type . '_tag'] = __('Tag', 'rrze-answers');
         $columns['lang'] = __('Language', 'rrze-answers');
         $columns['sortfield'] = 'sortfield';
 
@@ -230,7 +234,7 @@ class AdminInterfacesFAQ
 
     public function addFaqFilters($post_type)
     {
-        if ($post_type !== 'rrze_faq') {
+        if (($post_type !== 'rrze_faq') && ($post_type !== 'rrze_glossary')) {
             return;
         }
 
@@ -238,7 +242,7 @@ class AdminInterfacesFAQ
             return;
         }
 
-        $taxonomies_slugs = ['rrze_faq_category', 'rrze_faq_tag'];
+        $taxonomies_slugs = [$this->post_type . '_category', $this->post_type . '_tag'];
         foreach ($taxonomies_slugs as $slug) {
             $taxonomy = get_taxonomy($slug);
             $selected = isset($_GET[$slug]) ? sanitize_text_field(wp_unslash($_GET[$slug])) : '';
@@ -258,7 +262,7 @@ class AdminInterfacesFAQ
         $selectedVal = isset($_GET['source']) ? sanitize_text_field(wp_unslash($_GET['source'])) : '';
 
         $posts = get_posts([
-            'post_type' => 'rrze_faq',
+            'post_type' => $this->post_type,
             'post_status' => 'publish',
             'numberposts' => -1,
             'fields' => 'ids',
@@ -300,7 +304,7 @@ class AdminInterfacesFAQ
             return $query;
         }
 
-        if (!isset($query->query['post_type']) || $query->query['post_type'] !== 'rrze_faq') {
+        if (!isset($query->query['post_type']) || ($query->query['post_type'] !== 'rrze_faq') && ($query->query['post_type'] !== 'rrze_glossary')) {
             return $query;
         }
 
@@ -334,7 +338,7 @@ class AdminInterfacesFAQ
         return $columns;
     }
 
-    public function getFaqColumnsValues($column_name, $post_id)
+    public function getColumnsValues($column_name, $post_id)
     {
         if ($column_name == 'lang') {
             echo esc_html(get_post_meta($post_id, 'lang', true));

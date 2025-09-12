@@ -9,7 +9,7 @@ use RRZE\Answers\Defaults;
 use RRZE\Answers\Common\{
     API\RESTAPI,
     AdminInterfaces\AdminMenu,
-    AdminInterfaces\AdminInterfacesFAQ,
+    AdminInterfaces\AdminInterfaces,
     AdminInterfaces\AdminInterfacesSynonym,
     Settings\Settings,
     Settings\SettingsFAQ,
@@ -57,7 +57,8 @@ class Main
         $restAPI = new RESTAPI();
         $this->settings();
         $this->settingsAll();
-        $this->adminInterface = new AdminInterfacesFAQ();
+        $this->adminInterface = new AdminInterfaces('rrze_faq');
+        $this->adminInterface = new AdminInterfaces('rrze_glossary');
         $this->adminInterface = new AdminInterfacesSynonym();
         // $this->adminMenue = new AdminMenu(); // in admin menu there is a maximum of 2 levels. Deactivated this workaround because it wouldn't be best practice.
         add_action('wp_enqueue_scripts', [$this, 'enqueueScripts']);
