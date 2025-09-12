@@ -43,28 +43,11 @@ class RESTAPI
         );
 
         foreach ($fields as $field) {
-            register_rest_field('synonym', $field, array(
+            register_rest_field('rrze_synonym', $field, array(
                 'get_callback' => [$this, 'getMyPostMeta'],
                 'schema' => null,
             ));
         }
-    }
-
-    public function addFilterParam($args, $request)
-    {
-        if (empty($request['filter']) || !is_array($request['filter'])) {
-            return $args;
-        }
-        global $wp;
-        $filter = $request['filter'];
-
-        $vars = apply_filters('query_vars', $wp->public_query_vars);
-        foreach ($vars as $var) {
-            if (isset($filter[$var])) {
-                $args[$var] = $filter[$var];
-            }
-        }
-        return $args;
     }
 
     public function addFilters()
@@ -251,26 +234,6 @@ class RESTAPI
      */
     public function registerTaxRestFields()
     {
-        // Registers the 'rrze_faq_category' taxonomy field for the 'rrze_faq' object type
-        // register_rest_field(
-        //     'rrze_faq',
-        //     'rrze_faq_category',
-        //     array(
-        //         'get_callback' => [$this, 'getCategories'],
-        //         'update_callback' => null,
-        //         'schema' => null,
-        //     )
-        // );
-        // Registers the 'rrze_faq_tag' taxonomy field for the 'rrze_faq' object type
-        // register_rest_field(
-        //     'rrze_faq',
-        //     'rrze_faq_tag',
-        //     array(
-        //         'get_callback' => [$this, 'getTags'],
-        //         'update_callback' => null,
-        //         'schema' => null,
-        //     )
-        // );
         // Registers the 'source' and 'lang' meta fields for the 'rrze_faq_category' and 'rrze_faq_tag' taxonomies
         $fields = array('rrze_faq_category', 'rrze_faq_tag');
         foreach ($fields as $field) {

@@ -72,7 +72,7 @@ const SynonymUI = ( props ) => {
 	const options = useMemo(() => {
 		return (items || []).map(post => ({
 			value: String(post.id),
-			label: post?.title?.rendered || __('(no title)','rrze-answers'),
+			label: post?.title?.rendered || __('(no title)','rrze-synonym'),
 			long:  post?.synonym ?? post?.meta?.synonym ?? '',
 			lang:  post?.titleLang ?? post?.meta?.titleLang ?? '',
 		}));
@@ -132,7 +132,7 @@ const SynonymUI = ( props ) => {
 			<span ref={ anchorRef }>
 				<RichTextToolbarButton
 					icon="translation"
-					title={ __('Synonym/Acronym','rrze-answers') }
+					title={ __('Synonym/Acronym','rrze-synonym') }
 					onClick={ () => setIsOpen( (o) => !o ) }
 					isActive={ isActive }
 				/>
@@ -148,20 +148,20 @@ const SynonymUI = ( props ) => {
 						{ loading && (
 							<Flex align="center" gap={8}>
 								<Spinner />
-								<span>{ __('Loading synonyms…','rrze-answers') }</span>
+								<span>{ __('Loading synonyms…','rrze-synonym') }</span>
 							</Flex>
 						) }
 
 						{ (!loading && error) && (
 							<Notice status="error" isDismissible={ false }>
-								{ __('Failed to load synonyms. Check your REST setup.','rrze-answers') }
+								{ __('Failed to load synonyms. Check your REST setup.','rrze-synonym') }
 							</Notice>
 						) }
 
 						{ (!loading && !error) && (
 							<ComboboxControl
-								label={ __('Choose a synonym','rrze-answers') }
-								help={ __('Type to search by title','rrze-answers') }
+								label={ __('Choose a synonym','rrze-synonym') }
+								help={ __('Type to search by title','rrze-synonym') }
 								value={ selectedId }
 								onChange={ setSelectedId }
 								options={ options }
@@ -172,7 +172,7 @@ const SynonymUI = ( props ) => {
 							{ !!current && (
 								<FlexItem>
 									<Button variant="secondary" onClick={ removeFormatHere }>
-										{ __('Remove','rrze-answers') }
+										{ __('Remove','rrze-synonym') }
 									</Button>
 								</FlexItem>
 							) }
@@ -182,7 +182,7 @@ const SynonymUI = ( props ) => {
 									onClick={ applyFromSelected }
 									disabled={ !selectedId }
 								>
-									{ !!current ? __('Update','rrze-answers') : __('Apply','rrze-answers') }
+									{ !!current ? __('Update','rrze-synonym') : __('Apply','rrze-synonym') }
 								</Button>
 							</FlexItem>
 						</Flex>
@@ -195,7 +195,7 @@ const SynonymUI = ( props ) => {
 
 // Register the format: renders <abbr class="rrze-syn" ...>…</abbr>
 registerFormatType( FORMAT_NAME, {
-	title: __('Synonym/Acronym','rrze-answers'),
+	title: __('Synonym/Acronym','rrze-synonym'),
 	tagName: TAG_NAME,
 	className: CLASS_NAME,
 	attributes: {

@@ -4,7 +4,7 @@
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
 import { registerBlockType } from '@wordpress/blocks';
-import './synonym-format'; // <-- registers the toolbar-button to use it inline
+import './synonym-format.js'; // <-- registers the toolbar-button to use it inline
 
 /**
  * Internal dependencies

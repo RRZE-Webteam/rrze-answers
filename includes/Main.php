@@ -7,6 +7,7 @@ use function RRZE\Answers\plugin;
 use RRZE\Answers\Defaults;
 
 use RRZE\Answers\Common\{
+    API\RESTAPI,
     AdminInterfaces\AdminMenu,
     AdminInterfaces\AdminInterfacesFAQ,
     AdminInterfaces\AdminInterfacesSynonym,
@@ -53,6 +54,7 @@ class Main
     public function onInit()
     {
         $this->defaults = new Defaults();
+        $restAPI = new RESTAPI();
         $this->settings();
         $this->settingsAll();
         $this->adminInterface = new AdminInterfacesFAQ();
