@@ -234,35 +234,70 @@ function rrze_update_synonym_cpt()
 }
 
 
-function deactivate_old_plugins() {
-    if ( get_option( 'deactivate_old_plugins_done' ) ) return;
-    if ( ! current_user_can('activate_plugins') ) return;
+// 1. activate rrze-answers on all websites where rrze-faq, rrze-glossary or rrze-synonym is active
+// 2. deaktivate rrze-faq, rrze-glossary and rrze-synonym
+function rrze_answers_migrate_multisite() {
+    if ( get_site_option('rrze_answers_migrate_multisite_done') ) return;
+    if ( ! is_multisite() || ! is_network_admin() || ! current_user_can('manage_network_plugins') ) return;
+    if ( ! function_exists('is_plugin_active') ) require_once ABSPATH . 'wp-admin/includes/plugin.php';
+    if ( ! function_exists('activate_plugin') ) require_once ABSPATH . 'wp-admin/includes/plugin.php';
     if ( ! function_exists('deactivate_plugins') ) require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
-    $plugins = [
+    $targets = [
         'rrze-faq/rrze-faq.php',
         'rrze-glossary/rrze-glossary.php',
-        'rrze-synonym/rrze-synonym.php'
+        'rrze-synonym/rrze-synonym.php',
     ];
+    $answers = 'rrze-answers/rrze-answers.php';
+    $report  = [];
 
-    $deactivated = [];
+    foreach ( get_sites(['number' => 0]) as $site ) {
+        switch_to_blog( (int) $site->blog_id );
 
-    foreach ( $plugins as $plugin ) {
-        if ( is_plugin_active($plugin) ) {
-            deactivate_plugins($plugin, false);
-            $deactivated[] = dirname($plugin);
-        }
-    }
+        $has_target = false;
+        foreach ( $targets as $p ) { if ( is_plugin_active($p) ) { $has_target = true; break; } }
 
-    if ( ! empty( $deactivated ) ) {
-        add_action('admin_notices', function () use ($deactivated) {
-            foreach ( $deactivated as $name ) {
-                echo '<div class="notice notice-warning"><p>' . sprintf( esc_html__( '%s was deactivated because RRZE-Answers includes the functionality from now on.', 'rrze-answers' ), esc_html( $name ) ) . '</p></div>';
+        if ( $has_target ) {
+            if ( ! is_plugin_active( $answers ) ) {
+                $res = activate_plugin( $answers, '', false, false );
+                if ( is_wp_error( $res ) || ! is_plugin_active( $answers ) ) {
+                    restore_current_blog();
+                    continue;
+                }
             }
-        });
+
+            $deactivated = [];
+            foreach ( $targets as $p ) {
+                if ( is_plugin_active( $p ) ) {
+                    deactivate_plugins( $p, false );
+                    $deactivated[] = dirname( $p );
+                }
+            }
+
+            if ( $deactivated ) {
+                $report[] = [
+                    'label' => get_bloginfo('name') . ' (' . home_url() . ')',
+                    'list'  => $deactivated,
+                ];
+            }
+        }
+
+        restore_current_blog();
     }
 
-    update_option( 'deactivate_old_plugins_done', 1 );
+    add_action('network_admin_notices', function () use ($report) {
+        if ( $report ) {
+            echo '<div class="notice notice-success"><p><strong>RRZE-Answers</strong> ' . esc_html__( 'was activated and old plugins were deactivated on these sites:', 'rrze-answers' ) . '</p><ul style="margin-left:1.2em">';
+            foreach ( $report as $row ) {
+                echo '<li>' . esc_html( $row['label'] ) . ': ' . esc_html( implode(', ', $row['list']) ) . '</li>';
+            }
+            echo '</ul></div>';
+        } else {
+            echo '<div class="notice notice-info"><p>' . esc_html__( 'No sites required changes.', 'rrze-answers' ) . '</p></div>';
+        }
+    });
+
+    update_site_option('rrze_answers_migrate_multisite_done', 1);
 }
 
 
@@ -341,5 +376,5 @@ function loaded()
     add_action('init', __NAMESPACE__ . '\register_blocks');
     add_action('init', __NAMESPACE__ . '\rrze_update_glossary_cpt');
     add_action('init', __NAMESPACE__ . '\rrze_update_synonym_cpt');
-    add_action('admin_init', __NAMESPACE__ . '\deactivate_old_plugins');
+    add_action('network_admin_init', __NAMESPACE__ . '\rrze_answers_migrate_multisite');
 }
