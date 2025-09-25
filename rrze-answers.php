@@ -235,7 +235,7 @@ function rrze_update_synonym_cpt()
 
 
 function deactivate_old_plugins() {
-    if ( get_option( 'rrze_answers_old_plugins_deactivated' ) ) return;
+    if ( get_option( 'deactivate_old_plugins_done' ) ) return;
     if ( ! current_user_can('activate_plugins') ) return;
     if ( ! function_exists('deactivate_plugins') ) require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
@@ -262,7 +262,7 @@ function deactivate_old_plugins() {
         });
     }
 
-    update_option( 'rrze_answers_old_plugins_deactivated', 1 );
+    update_option( 'deactivate_old_plugins_done', 1 );
 }
 
 
@@ -341,5 +341,5 @@ function loaded()
     add_action('init', __NAMESPACE__ . '\register_blocks');
     add_action('init', __NAMESPACE__ . '\rrze_update_glossary_cpt');
     add_action('init', __NAMESPACE__ . '\rrze_update_synonym_cpt');
-    add_action('admin_init', __NAMESPACE__ . 'deactivate_old_plugins');
+    add_action('admin_init', __NAMESPACE__ . '\deactivate_old_plugins');
 }
