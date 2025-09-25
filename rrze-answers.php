@@ -233,6 +233,39 @@ function rrze_update_synonym_cpt()
     update_option('rrze_update_synonym_cpt_done', 1);
 }
 
+
+function deactivate_old_plugins() {
+    if ( get_option( 'rrze_answers_old_plugins_deactivated' ) ) return;
+    if ( ! current_user_can('activate_plugins') ) return;
+    if ( ! function_exists('deactivate_plugins') ) require_once ABSPATH . 'wp-admin/includes/plugin.php';
+
+    $plugins = [
+        'rrze-faq/rrze-faq.php',
+        'rrze-glossary/rrze-glossary.php',
+        'rrze-synonym/rrze-synonym.php'
+    ];
+
+    $deactivated = [];
+
+    foreach ( $plugins as $plugin ) {
+        if ( is_plugin_active($plugin) ) {
+            deactivate_plugins($plugin, false);
+            $deactivated[] = dirname($plugin);
+        }
+    }
+
+    if ( ! empty( $deactivated ) ) {
+        add_action('admin_notices', function () use ($deactivated) {
+            foreach ( $deactivated as $name ) {
+                echo '<div class="notice notice-warning"><p>' . sprintf( esc_html__( '%s was deactivated because RRZE-Answers includes the functionality from now on.', 'rrze-answers' ), esc_html( $name ) ) . '</p></div>';
+            }
+        });
+    }
+
+    update_option( 'rrze_answers_old_plugins_deactivated', 1 );
+}
+
+
 /**
  * Handle the loading of the plugin.
  *
@@ -308,6 +341,5 @@ function loaded()
     add_action('init', __NAMESPACE__ . '\register_blocks');
     add_action('init', __NAMESPACE__ . '\rrze_update_glossary_cpt');
     add_action('init', __NAMESPACE__ . '\rrze_update_synonym_cpt');
-
-
+    add_action('admin_init', __NAMESPACE__ . 'deactivate_old_plugins');
 }
