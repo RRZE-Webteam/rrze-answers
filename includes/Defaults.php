@@ -45,7 +45,7 @@ class Defaults
             'rrze_answers_defaults',
             [
                 'settings' => [
-                    'option_name' => 'rrze_answers_settings',
+                    'option_name' => 'rrze_answers',
                     'menu_title' => __('RRZE Answers', 'rrze-answers'),
                     'page_title' => __('RRZE Answers Settings', 'rrze-answers'),
                     'capability' => 'manage_options',
