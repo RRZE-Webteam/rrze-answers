@@ -150,8 +150,8 @@ class Sync
 
         foreach ($domains as $shortname => $url) {
             $tStartDetail = microtime(true);
-            if (isset($options['faqsync_donotsync_' . $shortname]) && $options['faqsync_donotsync_' . $shortname] != 'on') {
-                $categories = (isset($options['faqsync_categories_' . $shortname]) ? implode(',', $options['faqsync_categories_' . $shortname]) : false);
+            if (isset($options['import_faq_donotsync_' . $shortname]) && $options['import_faq_donotsync_' . $shortname] != 'on') {
+                $categories = (isset($options['import_faq_categories_' . $shortname]) ? implode(',', $options['import_faq_categories_' . $shortname]) : false);
                 if ($categories) {
                     $aCnt = $api->setFAQ($url, $categories, $shortname);
                     $syncRan = true;

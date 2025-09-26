@@ -56,8 +56,9 @@ class Defaults
                 'sections' => [
                     ['id' => 'permissions', 'title' => __('Permissions', 'rrze-answers')],
                     ['id' => 'permalink_settings', 'title' => __('Permalink Settings', 'rrze-answers')],
-                    ['id' => 'faq_import', 'title' => __('Import', 'rrze-answers')],
-                    ['id' => 'faqsync', 'title' => __('Import Settings', 'rrze-answers')],
+                    ['id' => 'import_faq', 'title' => __('Import FAQ', 'rrze-answers')],
+                    ['id' => 'import_glossary', 'title' => __('Import Glossary', 'rrze-answers')],
+                    ['id' => 'import_synonym', 'title' => __('Import Synonym', 'rrze-answers')],
                     ['id' => 'faqlog', 'title' => __('Logfile', 'rrze-answers')]
                 ],
                 'fields' => [
@@ -81,7 +82,7 @@ class Defaults
                             'type' => 'checkbox',
                         ],
                     ],                    
-                    'faq_import' => [
+                    'import_faq' => [
                         [
                             'name' => 'remote_api_url',
                             'label' => __('Remote site', 'rrze-answers'),
@@ -90,8 +91,140 @@ class Defaults
                             'options' => Tools::getSitesWithPlugin(),
                             'default' => ''
                         ],
+                        [
+                            'name' => 'shortname',
+                            'label' => __('Short name', 'rrze-answers'),
+                            'description' => __('Use this name as attribute \'domain\' in shortcode [faq]', 'rrze-answers'),
+                            'type' => 'plaintext',
+                            'default' => ''
+                        ],
+                        [
+                            'name' => 'url',
+                            'label' => __('URL', 'rrze-answers'),
+                            'description' => '',
+                            'type' => 'plaintext',
+                            'default' => ''
+                        ],
+                        [
+                            'name' => 'categories',
+                            'label' => __('Categories', 'rrze-answers'),
+                            'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
+                            'type' => 'multiselect',
+                            'options' => []
+                        ],
+                        [
+                            'name' => 'donotsync',
+                            'label' => __('Synchronize', 'rrze-answers'),
+                            'description' => __('Do not synchronize', 'rrze-answers'),
+                            'type' => 'checkbox',
+                        ],
+                        [
+                            'name' => 'hr',
+                            'label' => '',
+                            'description' => '',
+                            'type' => 'line'
+                        ],
+                        [
+                            'name' => 'info',
+                            'label' => __('Info', 'rrze-answers'),
+                            'description' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-answers'),
+                            'type' => 'plaintext',
+                            'default' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-answers'),
+                        ],
+                        [
+                            'name' => 'autosync',
+                            'label' => __('Mode', 'rrze-answers'),
+                            'description' => __('Synchronize automatically', 'rrze-answers'),
+                            'type' => 'checkbox',
+                        ],
+                        [
+                            'name' => 'frequency',
+                            'label' => __('Frequency', 'rrze-answers'),
+                            'description' => '',
+                            'default' => 'daily',
+                            'options' => [
+                                'daily' => __('daily', 'rrze-answers'),
+                                'twicedaily' => __('twicedaily', 'rrze-answers')
+                            ],
+                            'type' => 'select'
+                        ],
                     ],
-                    'faqsync' => [
+                    'import_glossary' => [
+                        [
+                            'name' => 'remote_api_url',
+                            'label' => __('Remote site', 'rrze-answers'),
+                            'description' => __('Select the site you want to synchronize with.', 'rrze-answers'),
+                            'type' => 'select',
+                            'options' => Tools::getSitesWithPlugin(),
+                            'default' => ''
+                        ],
+                        [
+                            'name' => 'shortname',
+                            'label' => __('Short name', 'rrze-answers'),
+                            'description' => __('Use this name as attribute \'domain\' in shortcode [faq]', 'rrze-answers'),
+                            'type' => 'plaintext',
+                            'default' => ''
+                        ],
+                        [
+                            'name' => 'url',
+                            'label' => __('URL', 'rrze-answers'),
+                            'description' => '',
+                            'type' => 'plaintext',
+                            'default' => ''
+                        ],
+                        [
+                            'name' => 'categories',
+                            'label' => __('Categories', 'rrze-answers'),
+                            'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
+                            'type' => 'multiselect',
+                            'options' => []
+                        ],
+                        [
+                            'name' => 'donotsync',
+                            'label' => __('Synchronize', 'rrze-answers'),
+                            'description' => __('Do not synchronize', 'rrze-answers'),
+                            'type' => 'checkbox',
+                        ],
+                        [
+                            'name' => 'hr',
+                            'label' => '',
+                            'description' => '',
+                            'type' => 'line'
+                        ],
+                        [
+                            'name' => 'info',
+                            'label' => __('Info', 'rrze-answers'),
+                            'description' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-answers'),
+                            'type' => 'plaintext',
+                            'default' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-answers'),
+                        ],
+                        [
+                            'name' => 'autosync',
+                            'label' => __('Mode', 'rrze-answers'),
+                            'description' => __('Synchronize automatically', 'rrze-answers'),
+                            'type' => 'checkbox',
+                        ],
+                        [
+                            'name' => 'frequency',
+                            'label' => __('Frequency', 'rrze-answers'),
+                            'description' => '',
+                            'default' => 'daily',
+                            'options' => [
+                                'daily' => __('daily', 'rrze-answers'),
+                                'twicedaily' => __('twicedaily', 'rrze-answers')
+                            ],
+                            'type' => 'select'
+                        ],
+                    ],
+                    'import_synonym' => [
+                        [
+                            'name' => 'remote_api_url',
+                            'label' => __('Remote site', 'rrze-answers'),
+                            'description' => __('Select the site you want to synchronize with.', 'rrze-answers'),
+                            'type' => 'select',
+                            'options' => Tools::getSitesWithPlugin(),
+                            'default' => ''
+                        ],
                         [
                             'name' => 'shortname',
                             'label' => __('Short name', 'rrze-answers'),
