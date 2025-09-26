@@ -131,7 +131,13 @@ class Defaults
                     ],
                     'permalink_settings' => [
                         [
-                            'name' => 'redirect_archivpage_uri',
+                            'name' => 'api_active_faq',
+                            'label' => __('Allow import', 'rrze-answers'),
+                            'description' => __('Allow other websites to import your FAQ. Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
+                            'type' => 'checkbox',
+                        ],
+                        [
+                            'name' => 'redirect_archivpage_uri_faq',
                             'label' => __('Archive page', 'rrze-answers'),
                             'description' => '',
                             'type' => 'select',
@@ -162,6 +168,67 @@ class Defaults
                             'type' => 'text',
                             'default' => 'faq_tag',
                             'placeholder' => 'faq_tag'
+                        ],
+                        [
+                            'name' => 'api_active_glossary',
+                            'label' => __('Allow other websites to import my glossary.', 'rrze-answers'),
+                            'description' => __('Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
+                            'type' => 'checkbox',
+                        ],
+                        [
+                            'name' => 'redirect_archivpage_uri_glossary',
+                            'label' => __('Archive page', 'rrze-answers'),
+                            'description' => '',
+                            'type' => 'select',
+                            'options' => Tools::getPageList(),
+                            'default' => ''
+                        ],
+                        [
+                            'name' => 'custom_glossary_slug',
+                            'label' => __('Glossary Slug', 'rrze-answers'),
+                            'description' => '',
+                            'type' => 'text',
+                            'default' => 'rrze_glossary',
+                            'placeholder' => 'rrze_glossary'
+                        ],
+                        [
+                            'name' => 'custom_glossary_category_slug',
+                            'label' => __('Glossary Category Slug', 'rrze-answers'),
+                            'description' => '',
+                            'type' => 'text',
+                            'default' => 'glossary_category',
+                            'placeholder' => 'glossary_category'
+
+                        ],
+                        [
+                            'name' => 'custom_glossary_tag_slug',
+                            'label' => __('Glossary Tag Slug', 'rrze-answers'),
+                            'description' => '',
+                            'type' => 'text',
+                            'default' => 'glossary_tag',
+                            'placeholder' => 'glossary_tag'
+                        ],
+                        [
+                            'name' => 'api_active_synonym',
+                            'label' => __('Allow other websites to import my FAQ.', 'rrze-answers'),
+                            'description' => __('Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
+                            'type' => 'checkbox',
+                        ],
+                        [
+                            'name' => 'redirect_archivpage_uri_synonym',
+                            'label' => __('Archive page', 'rrze-answers'),
+                            'description' => '',
+                            'type' => 'select',
+                            'options' => Tools::getPageList(),
+                            'default' => ''
+                        ],
+                        [
+                            'name' => 'custom_synonym_slug',
+                            'label' => __('Synonym Slug', 'rrze-answers'),
+                            'description' => '',
+                            'type' => 'text',
+                            'default' => 'rrze_synonym',
+                            'placeholder' => 'rrze_synonym'
                         ],
                     ],
                     'faqlog' => [
