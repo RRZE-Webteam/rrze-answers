@@ -65,10 +65,12 @@ abstract class CPT
     
     public function registerPostType()
     {
-        $options = get_option('rrze-answers');
+        $options = get_option('rrze_answers');
         $slug_option_key = $this->slug_options['slug_option_key'];
         $default_slug = $this->slug_options['default_slug'];
         $slug = !empty($options[$slug_option_key]) ? sanitize_title($options[$slug_option_key]) : $default_slug;
+
+        $show_in_rest  = ($options['api_active_' . $this->post_type] ?? false);
 
         $args = [
             'label' => $this->labels['name'] ?? __('Entries', 'rrze-answers'),
@@ -82,7 +84,7 @@ abstract class CPT
             'publicly_queryable' => true,
             'query_var' => $this->rest_base,
             'rewrite' => ['slug' => $slug, 'with_front' => true],
-            'show_in_rest' => true,
+            'show_in_rest' => $show_in_rest,
             'rest_base' => $this->rest_base,
             'rest_controller_class' => 'WP_REST_Posts_Controller',
         ];
@@ -92,7 +94,7 @@ abstract class CPT
 
     public function registerTaxonomies()
     {
-        $options = get_option('rrze-answers');
+        $options = get_option('rrze_answers');
 
         foreach ($this->taxonomies as $t) {
             $slug = !empty($options[$t['slug_option_key'] ?? ''])

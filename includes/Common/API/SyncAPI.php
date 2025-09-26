@@ -68,7 +68,7 @@ class SyncAPI
     public function getDomains()
     {
         $domains = array();
-        $options = get_option('rrze-answers');
+        $options = get_option('rrze_answers');
         if (isset($options['registeredDomains'])) {
             foreach ($options['registeredDomains'] as $shortname => $url) {
                 $domains[$shortname] = $url;

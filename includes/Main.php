@@ -73,8 +73,6 @@ class Main
         $options = get_option('rrze_answers');
         $isAllowed = (bool) ($options['api_active_faq'] ?? false);
         if ($isAllowed) {
-            echo 'activate';
-            exit;
             $restAPI = new RESTAPI();
         }
     }
