@@ -47,7 +47,7 @@ abstract class CPT
             }
         }
 
-        add_filter('single_template', [$this, 'filter_single_template']);
+        add_filter('single_template', [$this, 'filter_single_template']);   
         add_filter('archive_template', [$this, 'filter_archive_template']);
         add_filter('taxonomy_template', [$this, 'filter_taxonomy_template']);
 
@@ -55,7 +55,7 @@ abstract class CPT
         // 2DO: adjust to faq, glossary, synonym
         add_action('init', [$this, 'maybeFlushRewriteRules'], 20);
         add_action('update_option_rrze-answers', [$this, 'checkSlugChange'], 10, 2);
-        add_action('register_post_type_args', [$this, 'activateAPI'], 10, 2);
+        add_filter('register_post_type_args', [$this, 'activateAPI'], 0, 2);
 
         add_action('template_redirect', [$this, 'maybe_disable_canonical_redirect'], 1);
         add_action('template_redirect', [$this, 'custom_cpt_404_message']);
@@ -63,14 +63,21 @@ abstract class CPT
     }
 
 
-// 2DO: doesn't work -> pre update options
-    public function activateAPI($args, $post_type)
+    // 2DO: doesn't work -> pre update options
+    public function activateAPI(array $args, string $post_type): array
     {
-        if ('rrze_faq' === $post_type) {
-            $options = get_option('rrze-answers');
+        if ($post_type !== $this->post_type) {
+            return $args;
+        }
 
+        $opts = (array) get_option('rrze-answers');
 
-            $args['show_in_rest'] = true;
+        $enabled = (($opts['api_active_' . $post_type] ?? 'off') === 'on');
+        $args['show_in_rest'] = $enabled;
+
+        if ($enabled) {
+            $args['rest_base'] = $this->rest_base;
+            $args['rest_controller_class'] = 'WP_REST_Posts_Controller';
         }
 
         return $args;
@@ -97,9 +104,9 @@ abstract class CPT
             'publicly_queryable' => true,
             'query_var' => $this->rest_base,
             'rewrite' => ['slug' => $slug, 'with_front' => true],
-            'show_in_rest' => false,
-            'rest_base' => $this->rest_base,
-            'rest_controller_class' => 'WP_REST_Posts_Controller',
+            // 'show_in_rest' => true,
+            // 'rest_base' => $this->rest_base,
+            // 'rest_controller_class' => 'WP_REST_Posts_Controller',
         ];
 
         register_post_type($this->post_type, $args);
