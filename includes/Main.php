@@ -12,7 +12,7 @@ use RRZE\Answers\Common\{
     AdminInterfaces\AdminInterfaces,
     AdminInterfaces\AdminInterfacesSynonym,
     Settings\Settings,
-    Settings\SettingsFAQ,
+    // Settings\SettingsFAQ,
     CPT\CPTFAQ,
     CPT\CPTGlossary,
     CPT\CPTSynonym,
@@ -38,7 +38,7 @@ class Main
     private $textdomain = 'rrze-answers';
     public $defaults;
     public $settings;
-    public $settingsFAQ;
+    // public $settingsFAQ;
 
     // public $blocks;
     public $shortcodeFAQ;
@@ -57,7 +57,7 @@ class Main
         $this->defaults = new Defaults();
         $restAPI = new RESTAPI();
         $this->settings();
-        $this->settingsAll();
+        // $this->settingsAll();
         $this->adminInterface = new AdminInterfaces('rrze_faq');
         $this->adminInterface = new AdminInterfaces('rrze_glossary');
         $this->adminInterface = new AdminInterfacesSynonym();
@@ -177,10 +177,10 @@ class Main
         return $allowed_tags;
     }
 
-    public function settingsAll()
-    {
-        $this->settingsFAQ = new SettingsFAQ(plugin()->getFile());
-    }
+    // public function settingsAll()
+    // {
+    //     $this->settingsFAQ = new SettingsFAQ(plugin()->getFile());
+    // }
 
     public function cpt()
     {

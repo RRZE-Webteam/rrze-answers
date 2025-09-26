@@ -50,8 +50,19 @@ abstract class CPT
         add_filter('single_template', [$this, 'filter_single_template']);
         add_filter('archive_template', [$this, 'filter_archive_template']);
         add_filter('taxonomy_template', [$this, 'filter_taxonomy_template']);
+
+
+        // 2DO: adjust to faq, glossary, synonym
+        add_action('init', [$this, 'maybeFlushRewriteRules'], 20);
+        add_action('update_option_rrze-answers', [$this, 'checkSlugChange'], 10, 2);
+
+        add_action('template_redirect', [$this, 'maybe_disable_canonical_redirect'], 1);
+        add_action('template_redirect', [$this, 'custom_cpt_404_message']);
+
     }
 
+
+    
     public function registerPostType()
     {
         $options = get_option('rrze-answers');
@@ -203,4 +214,131 @@ abstract class CPT
         return $template;
     }
 
+    public function checkSlugChange($old_value, $value)
+    {
+        $rewriteKeys = [
+            'faq_settings_custom_faq_slug',
+            'faq_settings_custom_faq_category_slug',
+            'faq_settings_custom_faq_tag_slug',
+        ];
+
+        foreach ($rewriteKeys as $key) {
+            if (isset($old_value[$key], $value[$key]) && $old_value[$key] !== $value[$key]) {
+                set_transient('rrze_faq_flush_rewrite_needed', true, 60); // 1 minute is enough 
+                break;
+            }
+        }
+    }
+
+    public function maybeFlushRewriteRules()
+    {
+        if (get_transient('rrze_faq_flush_rewrite_needed')) {
+            flush_rewrite_rules();
+            delete_transient('rrze_faq_flush_rewrite_needed');
+        }
+    }
+
+    public function rrze_faq_get_redirect_page_url($options): string
+    {
+        $redirect_id = isset($this->options['faq_settings_redirect_archivpage_uri']) ? (int) $this->options['faq_settings_redirect_archivpage_uri'] : 0;
+        if ($redirect_id > 0) {
+            $post = get_post($redirect_id);
+            if ($post && get_post_status($post) === 'publish') {
+                return get_permalink($redirect_id);
+            }
+        }
+        return '';
+    }
+
+    public static function is_slug_request($slug): bool
+    {
+        if (empty($slug)) {
+            return false;
+        }
+
+        global $wp;
+        $request_path = trim($wp->request, '/');
+
+        return $request_path === trim($slug, '/');
+    }
+
+
+    public function rrze_faq_redirect_if_needed(string $custom_slug): void
+    {
+        if (!self::is_slug_request($custom_slug)) {
+            return;
+        }
+
+        $target_url = rrze_faq_get_redirect_page_url($this->options);
+        if (!empty($target_url)) {
+            wp_redirect(esc_url_raw($target_url), 301);
+            exit;
+        }
+    }
+
+    public function rrze_faq_disable_canonical_redirect_if_needed(string $custom_slug): void
+    {
+        if (!self::is_slug_request($custom_slug)) {
+            return;
+        }
+
+        $target_url = rrze_faq_get_redirect_page_url($this->options);
+        if (!empty($target_url)) {
+            remove_filter('template_redirect', 'redirect_canonical');
+        }
+    }
+
+    public function maybe_disable_canonical_redirect(): void
+    {
+        $this->options = $this->getOptions();
+        $slug = !empty($this->options['faq_settings_custom_faq_slug']) ? sanitize_title($this->options['faq_settings_custom_faq_slug']) : 'rrze_faq';
+
+        // Nur deaktivieren, wenn eine Weiterleitungsseite gesetzt ist UND exakt der Slug aufgerufen wird
+        $redirect_id = (int) ($this->options['faq_settings_redirect_archivpage_uri'] ?? 0);
+        if ($redirect_id > 0 && self::is_slug_request($slug)) {
+            remove_filter('template_redirect', 'redirect_canonical');
+        }
+    }
+
+    public static function render_custom_404(): void
+    {
+        global $wp_query;
+        $wp_query->set_404();
+        status_header(404);
+        nocache_headers();
+        include get_404_template();
+        exit;
+    }
+
+    public function custom_cpt_404_message(): void
+    {
+        global $wp_query;
+
+        $this->options = $this->getOptions();
+        $slug = !empty($this->options['faq_settings_custom_faq_slug']) ? sanitize_title($this->options['faq_settings_custom_faq_slug']) : 'rrze_faq';
+
+        // CPT-Single 404
+        if (
+            isset($wp_query->query_vars['post_type']) &&
+            $wp_query->query_vars['post_type'] === 'rrze_faq' &&
+            empty($wp_query->post)
+        ) {
+            self::render_custom_404();
+            return;
+        }
+
+        // Archiv-Slug direkt aufgerufen?
+        if (self::is_slug_request($slug)) {
+            $redirect_id = (int) ($this->options['faq_settings_redirect_archivpage_uri'] ?? 0);
+
+            if ($redirect_id > 0) {
+                $post = get_post($redirect_id);
+                if ($post && get_post_status($post) === 'publish') {
+                    wp_redirect(esc_url_raw(get_permalink($post)), 301);
+                    exit;
+                }
+            }
+            // Andernfalls keine Weiterleitung, Archiv anzeigen lassen
+        }
+    }    
 }
