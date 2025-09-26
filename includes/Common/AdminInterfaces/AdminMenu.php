@@ -32,7 +32,7 @@ class AdminMenu {
     private $syn_tag      = 'rrze_synonym_tag';
 
     // Menü-Slug des Top-Level-Punktes
-    private $parent_slug  = 'rrze_answers';
+    private $parent_slug  = 'rrze-answers';
 
     public function __construct() {
         // 1) CPT-Menüs unterdrücken, wir bauen selbst die Struktur
@@ -69,9 +69,9 @@ class AdminMenu {
         );
 
         // Sub: FAQ / Glossary / Synonym
-        add_submenu_page($this->parent_slug, __('FAQ', 'rrze-faq'), __('FAQ', 'rrze-faq'), 'edit_posts', 'rrze_answers_faq',      function () { $this->renderHub($this->faq_pt, $this->faq_cat, $this->faq_tag, __('FAQ', 'rrze-faq')); });
-        add_submenu_page($this->parent_slug, __('Glossary', 'rrze-faq'), __('Glossary', 'rrze-faq'), 'edit_posts', 'rrze_answers_glossary', function () { $this->renderHub($this->glossary_pt, $this->glossary_cat, $this->glossary_tag, __('Glossary', 'rrze-faq')); });
-        add_submenu_page($this->parent_slug, __('Synonym', 'rrze-faq'), __('Synonym', 'rrze-faq'), 'edit_posts', 'rrze_answers_synonym', function () { $this->renderHub($this->synonym_pt, $this->syn_group, $this->syn_tag, __('Synonym', 'rrze-faq')); });
+        add_submenu_page($this->parent_slug, __('FAQ', 'rrze-faq'), __('FAQ', 'rrze-faq'), 'edit_posts', 'rrze-answers_faq',      function () { $this->renderHub($this->faq_pt, $this->faq_cat, $this->faq_tag, __('FAQ', 'rrze-faq')); });
+        add_submenu_page($this->parent_slug, __('Glossary', 'rrze-faq'), __('Glossary', 'rrze-faq'), 'edit_posts', 'rrze-answers_glossary', function () { $this->renderHub($this->glossary_pt, $this->glossary_cat, $this->glossary_tag, __('Glossary', 'rrze-faq')); });
+        add_submenu_page($this->parent_slug, __('Synonym', 'rrze-faq'), __('Synonym', 'rrze-faq'), 'edit_posts', 'rrze-answers_synonym', function () { $this->renderHub($this->synonym_pt, $this->syn_group, $this->syn_tag, __('Synonym', 'rrze-faq')); });
     }
 
     public function renderAnswersDashboard(): void {
@@ -79,9 +79,9 @@ class AdminMenu {
         echo '<p>'.esc_html__('Wähle einen Bereich:', 'rrze-faq').'</p>';
         echo '<ul style="display:grid;gap:.5rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));max-width:900px">';
         $cards = [
-            ['slug'=>'rrze_answers_faq',      'title'=>__('FAQ', 'rrze-faq'),      'desc'=>__('Fragen & Antworten verwalten', 'rrze-faq')],
-            ['slug'=>'rrze_answers_glossary', 'title'=>__('Glossary', 'rrze-faq'), 'desc'=>__('Glossarbegriffe verwalten', 'rrze-faq')],
-            ['slug'=>'rrze_answers_synonym',  'title'=>__('Synonym', 'rrze-faq'),  'desc'=>__('Synonyme & Gruppen', 'rrze-faq')],
+            ['slug'=>'rrze-answers_faq',      'title'=>__('FAQ', 'rrze-faq'),      'desc'=>__('Fragen & Antworten verwalten', 'rrze-faq')],
+            ['slug'=>'rrze-answers_glossary', 'title'=>__('Glossary', 'rrze-faq'), 'desc'=>__('Glossarbegriffe verwalten', 'rrze-faq')],
+            ['slug'=>'rrze-answers_synonym',  'title'=>__('Synonym', 'rrze-faq'),  'desc'=>__('Synonyme & Gruppen', 'rrze-faq')],
         ];
         foreach ($cards as $c) {
             printf(
@@ -138,13 +138,13 @@ class AdminMenu {
 
         // Setze das “aktive” Submenü auf unseren Hub
         if ($screen->post_type === $this->faq_pt || in_array($screen->taxonomy ?? '', [$this->faq_cat, $this->faq_tag], true)) {
-            return 'rrze_answers_faq';
+            return 'rrze-answers_faq';
         }
         if ($screen->post_type === $this->glossary_pt || in_array($screen->taxonomy ?? '', [$this->glossary_cat, $this->glossary_tag], true)) {
-            return 'rrze_answers_glossary';
+            return 'rrze-answers_glossary';
         }
         if ($screen->post_type === $this->synonym_pt || in_array($screen->taxonomy ?? '', [$this->syn_group, $this->syn_tag], true)) {
-            return 'rrze_answers_synonym';
+            return 'rrze-answers_synonym';
         }
         return $submenu_file;
     }

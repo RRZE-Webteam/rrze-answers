@@ -55,6 +55,7 @@ abstract class CPT
         // 2DO: adjust to faq, glossary, synonym
         add_action('init', [$this, 'maybeFlushRewriteRules'], 20);
         add_action('update_option_rrze-answers', [$this, 'checkSlugChange'], 10, 2);
+        add_action('register_post_type_args', [$this, 'activateAPI'], 10, 2);
 
         add_action('template_redirect', [$this, 'maybe_disable_canonical_redirect'], 1);
         add_action('template_redirect', [$this, 'custom_cpt_404_message']);
@@ -62,15 +63,27 @@ abstract class CPT
     }
 
 
-    
+// 2DO: doesn't work -> pre update options
+    public function activateAPI($args, $post_type)
+    {
+        if ('rrze_faq' === $post_type) {
+            $options = get_option('rrze-answers');
+
+
+            $args['show_in_rest'] = true;
+        }
+
+        return $args;
+    }
+
+
+
     public function registerPostType()
     {
-        $options = get_option('rrze_answers');
+        $options = get_option('rrze-answers');
         $slug_option_key = $this->slug_options['slug_option_key'];
         $default_slug = $this->slug_options['default_slug'];
         $slug = !empty($options[$slug_option_key]) ? sanitize_title($options[$slug_option_key]) : $default_slug;
-
-        $show_in_rest  = ($options['api_active_' . $this->post_type] ?? false);
 
         $args = [
             'label' => $this->labels['name'] ?? __('Entries', 'rrze-answers'),
@@ -84,7 +97,7 @@ abstract class CPT
             'publicly_queryable' => true,
             'query_var' => $this->rest_base,
             'rewrite' => ['slug' => $slug, 'with_front' => true],
-            'show_in_rest' => $show_in_rest,
+            'show_in_rest' => false,
             'rest_base' => $this->rest_base,
             'rest_controller_class' => 'WP_REST_Posts_Controller',
         ];
@@ -94,7 +107,7 @@ abstract class CPT
 
     public function registerTaxonomies()
     {
-        $options = get_option('rrze_answers');
+        $options = get_option('rrze-answers');
 
         foreach ($this->taxonomies as $t) {
             $slug = !empty($options[$t['slug_option_key'] ?? ''])
@@ -188,7 +201,7 @@ abstract class CPT
     public function filter_single_template($template)
     {
         global $post;
-        if ($post->post_type == $this->post_type){
+        if ($post->post_type == $this->post_type) {
             $template = plugin()->getPath() . 'templates/' . $this->templates['single'];
         }
         return $template;
@@ -199,7 +212,7 @@ abstract class CPT
     public function filter_archive_template($template)
     {
         global $post;
-        if ($post->post_type == $this->post_type){
+        if ($post->post_type == $this->post_type) {
             $template = plugin()->getPath() . 'templates/' . $this->templates['archive'];
         }
         return $template;
@@ -342,5 +355,5 @@ abstract class CPT
             }
             // Andernfalls keine Weiterleitung, Archiv anzeigen lassen
         }
-    }    
+    }
 }

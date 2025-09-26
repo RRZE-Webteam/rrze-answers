@@ -27,7 +27,7 @@ class Sync
         $domains = $api->getDomains();
 
         // get stored options because they are generated and not defined in config.php
-        $storedOptions = get_option('rrze_answers');
+        $storedOptions = get_option('rrze-answers');
         if (is_array($storedOptions)) {
             $options = array_merge($storedOptions, $options);
         }
@@ -109,7 +109,7 @@ class Sync
     {
         date_default_timezone_set('Europe/Berlin');
 
-        $options = get_option('rrze_answers');
+        $options = get_option('rrze-answers');
 
         if ($options['synonymsync_autosync'] != 'on') {
             wp_clear_scheduled_hook('rrze_synonym_auto_sync');
@@ -144,7 +144,7 @@ class Sync
         $iCnt = 0;
         $api = new SyncAPI();
         $domains = $api->getDomains();
-        $options = get_option('rrze_answers');
+        $options = get_option('rrze-answers');
         $allowSettingsError = ($mode == 'manual' ? true : false);
         $syncRan = false;
 

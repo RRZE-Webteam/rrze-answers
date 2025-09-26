@@ -53,7 +53,7 @@ class API {
 
     public function getDomains(){
         $domains = array();
-        $options = get_option( 'rrze_answers' );
+        $options = get_option( 'rrze-answers' );
         if ( isset( $options['registeredDomains'] ) ){
             foreach( $options['registeredDomains'] as $shortname => $url ){
                 $domains[$shortname] = $url;

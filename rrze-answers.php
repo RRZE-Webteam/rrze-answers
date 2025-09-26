@@ -237,7 +237,7 @@ function rrze_update_synonym_cpt()
 // 1. activate rrze-answers on all websites where rrze-faq, rrze-glossary or rrze-synonym is active
 // 2. deaktivate rrze-faq, rrze-glossary and rrze-synonym
 function rrze_answers_migrate_multisite() {
-    if ( get_site_option('rrze_answers_migrate_multisite_done') ) return;
+    if ( get_site_option('rrze-answers_migrate_multisite_done') ) return;
     if ( ! is_multisite() || ! is_network_admin() || ! current_user_can('manage_network_plugins') ) return;
     if ( ! function_exists('is_plugin_active') ) require_once ABSPATH . 'wp-admin/includes/plugin.php';
     if ( ! function_exists('activate_plugin') ) require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -297,7 +297,7 @@ function rrze_answers_migrate_multisite() {
         }
     });
 
-    update_site_option('rrze_answers_migrate_multisite_done', 1);
+    update_site_option('rrze-answers_migrate_multisite_done', 1);
 }
 
 
@@ -376,5 +376,5 @@ function loaded()
     add_action('init', __NAMESPACE__ . '\register_blocks');
     add_action('init', __NAMESPACE__ . '\rrze_update_glossary_cpt');
     add_action('init', __NAMESPACE__ . '\rrze_update_synonym_cpt');
-    add_action('network_admin_init', __NAMESPACE__ . '\rrze_answers_migrate_multisite');
+    add_action('network_admin_init', __NAMESPACE__ . '\rrze-answers_migrate_multisite');
 }

@@ -70,7 +70,7 @@ class Main
 
     function activateImport()
     {
-        $options = get_option('rrze_answers');
+        $options = get_option('rrze-answers');
         $isAllowed = (bool) ($options['api_active_faq'] ?? false);
         if ($isAllowed) {
             $restAPI = new RESTAPI();

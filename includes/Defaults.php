@@ -42,10 +42,10 @@ class Defaults
     private function load(): array
     {
         return apply_filters(
-            'rrze_answers_defaults',
+            'rrze-answers_defaults',
             [
                 'settings' => [
-                    'option_name' => 'rrze_answers',
+                    'option_name' => 'rrze-answers',
                     'menu_title' => __('RRZE Answers', 'rrze-answers'),
                     'page_title' => __('RRZE Answers Settings', 'rrze-answers'),
                     'capability' => 'manage_options',
@@ -64,19 +64,19 @@ class Defaults
                 'fields' => [
                     'permissions' => [
                         [
-                            'name' => 'api_active_faq',
+                            'name' => 'api_active_rrze_faq',
                             'label' => __('Allow to import FAQ', 'rrze-answers'),
                             'description' => __('Allow other websites to import your FAQ. Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
                             'type' => 'checkbox',
                         ],
                         [
-                            'name' => 'api_active_glossary',
+                            'name' => 'api_active_rrze_glossary',
                             'label' => __('Allow to import glossary', 'rrze-answers'),
                             'description' => __('Allow other websites to import your glossary. Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
                             'type' => 'checkbox',
                         ],
                         [
-                            'name' => 'api_active_synonym',
+                            'name' => 'api_active_rrze_synonym',
                             'label' => __('Allow to import synonym', 'rrze-answers'),
                             'description' => __('Allow other websites to import your synonym. Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
                             'type' => 'checkbox',
