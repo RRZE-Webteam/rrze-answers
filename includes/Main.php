@@ -55,7 +55,7 @@ class Main
     public function onInit()
     {
         $this->defaults = new Defaults();
-        $restAPI = new RESTAPI();
+        $this->activateImport();
         $this->settings();
         // $this->settingsAll();
         $this->adminInterface = new AdminInterfaces('rrze_faq');
@@ -67,6 +67,15 @@ class Main
 
         $this->shortcode();
         // $this->blocks();
+    }
+
+    function activateImport()
+    {
+        $options = get_option('rrze-answers');
+        $isAllowed = (bool) ($this->options['permissions_api_active_faq'] ?? false);
+        if ($isAllowed) {
+            $restAPI = new RESTAPI();
+        }
     }
 
     /**
