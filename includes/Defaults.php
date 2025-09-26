@@ -54,7 +54,7 @@ class Defaults
                     'select_default' => 'none',
                 ],
                 'sections' => [
-                    ['id' => 'faq_settings', 'title' => __('FAQ Settings', 'rrze-answers')],
+                    ['id' => 'permalink_settings', 'title' => __('Permalink Settings', 'rrze-answers')],
                     ['id' => 'faq_import', 'title' => __('Import', 'rrze-answers')],
                     ['id' => 'faqsync', 'title' => __('Import Settings', 'rrze-answers')],
                     ['id' => 'faqlog', 'title' => __('Logfile', 'rrze-answers')]
@@ -129,7 +129,7 @@ class Defaults
                             'type' => 'select'
                         ],
                     ],
-                    'faq_settings' => [
+                    'permalink_settings' => [
                         [
                             'name' => 'redirect_archivpage_uri',
                             'label' => __('Archive page', 'rrze-answers'),
