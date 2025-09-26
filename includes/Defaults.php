@@ -54,12 +54,33 @@ class Defaults
                     'select_default' => 'none',
                 ],
                 'sections' => [
+                    ['id' => 'permissions', 'title' => __('Permissions', 'rrze-answers')],
                     ['id' => 'permalink_settings', 'title' => __('Permalink Settings', 'rrze-answers')],
                     ['id' => 'faq_import', 'title' => __('Import', 'rrze-answers')],
                     ['id' => 'faqsync', 'title' => __('Import Settings', 'rrze-answers')],
                     ['id' => 'faqlog', 'title' => __('Logfile', 'rrze-answers')]
                 ],
                 'fields' => [
+                    'permissions' => [
+                        [
+                            'name' => 'api_active_faq',
+                            'label' => __('Allow to import FAQ', 'rrze-answers'),
+                            'description' => __('Allow other websites to import your FAQ. Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
+                            'type' => 'checkbox',
+                        ],
+                        [
+                            'name' => 'api_active_glossary',
+                            'label' => __('Allow to import glossary', 'rrze-answers'),
+                            'description' => __('Allow other websites to import your glossary. Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
+                            'type' => 'checkbox',
+                        ],
+                        [
+                            'name' => 'api_active_synonym',
+                            'label' => __('Allow to import synonym', 'rrze-answers'),
+                            'description' => __('Allow other websites to import your synonym. Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
+                            'type' => 'checkbox',
+                        ],
+                    ],                    
                     'faq_import' => [
                         [
                             'name' => 'remote_api_url',
@@ -131,12 +152,6 @@ class Defaults
                     ],
                     'permalink_settings' => [
                         [
-                            'name' => 'api_active_faq',
-                            'label' => __('Allow import', 'rrze-answers'),
-                            'description' => __('Allow other websites to import your FAQ. Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
-                            'type' => 'checkbox',
-                        ],
-                        [
                             'name' => 'redirect_archivpage_uri_faq',
                             'label' => __('Archive page', 'rrze-answers'),
                             'description' => '',
@@ -170,12 +185,6 @@ class Defaults
                             'placeholder' => 'faq_tag'
                         ],
                         [
-                            'name' => 'api_active_glossary',
-                            'label' => __('Allow other websites to import my glossary.', 'rrze-answers'),
-                            'description' => __('Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
-                            'type' => 'checkbox',
-                        ],
-                        [
                             'name' => 'redirect_archivpage_uri_glossary',
                             'label' => __('Archive page', 'rrze-answers'),
                             'description' => '',
@@ -207,12 +216,6 @@ class Defaults
                             'type' => 'text',
                             'default' => 'glossary_tag',
                             'placeholder' => 'glossary_tag'
-                        ],
-                        [
-                            'name' => 'api_active_synonym',
-                            'label' => __('Allow other websites to import my FAQ.', 'rrze-answers'),
-                            'description' => __('Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
-                            'type' => 'checkbox',
                         ],
                         [
                             'name' => 'redirect_archivpage_uri_synonym',
