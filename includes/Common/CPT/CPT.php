@@ -77,6 +77,27 @@ abstract class CPT
 
 
     // 2DO: doesn't work -> pre update options
+
+    add_filter('rest_authentication_errors', function($result) {
+    if (!empty($result)) {
+        return $result;
+    }
+    $opts = (array) get_option('rrze-answers');
+    $enabled = (($opts['api_active_' . $this->post_type] ?? 'off') === 'on');
+
+    if (!$enabled) {
+        $request = rest_get_server()->get_current_request();
+        if ($request) {
+            $route = $request->get_route();
+            if (strpos($route, ENDPOINT) === 0) {
+                return new WP_Error('forbidden', __('API für ist deaktiviert.', 'rrze-answers'), ['status' => 403]);
+            }
+        }
+    }
+    return $result;
+});
+
+
     public function activateAPI($old, $new) {
     $enabled = (($new['api_active_' . $this->post_type] ?? 'off') === 'on');
 
