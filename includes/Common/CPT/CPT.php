@@ -25,6 +25,20 @@ abstract class CPT
     protected $slug_options = ['slug_option_key' => '', 'default_slug' => ''];
     protected $textdomain;
 
+    protected $args = [
+            'label' => $this->labels['name'] ?? __('Entries', 'rrze-answers'),
+            'description' => $this->labels['name'] ?? __('Entries', 'rrze-answers'),
+            'labels' => $this->labels,
+            'supports' => $this->supports,
+            'public' => true,
+            'show_ui' => true,
+            'menu_icon' => $this->menu_icon,
+            'has_archive' => $this->has_archive,
+            'publicly_queryable' => true,
+            'query_var' => $this->rest_base,
+        ];
+
+
     public function __construct($posttype)
     {
         $this->post_type = $posttype;
@@ -55,7 +69,6 @@ abstract class CPT
         // 2DO: adjust to faq, glossary, synonym
         add_action('init', [$this, 'maybeFlushRewriteRules'], 20);
         add_action('update_option_rrze-answers', [$this, 'checkSlugChange'], 10, 2);
-        add_filter('register_post_type_args', [$this, 'activateAPI'], 0, 2);
 
         add_action('template_redirect', [$this, 'maybe_disable_canonical_redirect'], 1);
         add_action('template_redirect', [$this, 'custom_cpt_404_message']);
@@ -64,52 +77,42 @@ abstract class CPT
 
 
     // 2DO: doesn't work -> pre update options
-    public function activateAPI(array $args, string $post_type): array
-    {
-        if ($post_type !== $this->post_type) {
-            return $args;
-        }
+    public function activateAPI($old, $new) {
+    $enabled = (($new['api_active_' . $this->post_type] ?? 'off') === 'on');
 
-        $opts = (array) get_option('rrze-answers');
-
-        $enabled = (($opts['api_active_' . $post_type] ?? 'off') === 'on');
-        $args['show_in_rest'] = $enabled;
-
-        if ($enabled) {
-            $args['rest_base'] = $this->rest_base;
-            $args['rest_controller_class'] = 'WP_REST_Posts_Controller';
-        }
-
-        return $args;
+    if ( post_type_exists($this->post_type) ) {
+        unregister_post_type($this->post_type);
     }
 
-
-
-    public function registerPostType()
-    {
         $options = get_option('rrze-answers');
         $slug_option_key = $this->slug_options['slug_option_key'];
         $default_slug = $this->slug_options['default_slug'];
         $slug = !empty($options[$slug_option_key]) ? sanitize_title($options[$slug_option_key]) : $default_slug;
 
-        $args = [
-            'label' => $this->labels['name'] ?? __('Entries', 'rrze-answers'),
-            'description' => $this->labels['name'] ?? __('Entries', 'rrze-answers'),
-            'labels' => $this->labels,
-            'supports' => $this->supports,
-            'public' => true,
-            'show_ui' => true,
-            'menu_icon' => $this->menu_icon,
-            'has_archive' => $this->has_archive,
-            'publicly_queryable' => true,
-            'query_var' => $this->rest_base,
-            'rewrite' => ['slug' => $slug, 'with_front' => true],
-            // 'show_in_rest' => true,
-            // 'rest_base' => $this->rest_base,
-            // 'rest_controller_class' => 'WP_REST_Posts_Controller',
-        ];
 
-        register_post_type($this->post_type, $args);
+    $args = [
+        'label'        => 'Mein Posttype',
+        'public'       => true,
+        'show_in_rest' => $enabled,
+        'rewrite' => ['slug' => $slug, 'with_front' => true],
+        'show_in_rest' => $enabled
+    ];
+
+
+        if ($enabled) {
+            $args['rest_base'] = $this->rest_base;
+            $args['rest_controller_class'] = 'WP_REST_Posts_Controller';
+        }    
+
+    register_post_type('mein_posttype', $args);
+}
+
+
+
+    public function registerPostType()
+    {
+
+        register_post_type($this->post_type, $this->args);
     }
 
     public function registerTaxonomies()
