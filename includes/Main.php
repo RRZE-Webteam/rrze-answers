@@ -35,8 +35,8 @@ defined('ABSPATH') || exit;
  */
 class Main
 {
-    private $textdomain = 'rrze-answers';
     public $defaults;
+    public $restapi;
     public $settings;
     // public $settingsFAQ;
 
@@ -55,8 +55,9 @@ class Main
     public function onInit()
     {
         $this->defaults = new Defaults();
-        $this->activateImport();
         $this->settings();
+        $this->restapi = new RESTAPI();
+
         $this->adminInterface = new AdminInterfaces('rrze_faq');
         $this->adminInterface = new AdminInterfaces('rrze_glossary');
         $this->adminInterface = new AdminInterfacesSynonym();
@@ -66,15 +67,6 @@ class Main
 
         $this->shortcode();
         // $this->blocks();
-    }
-
-    function activateImport()
-    {
-        $options = get_option('rrze-answers');
-        $isAllowed = (bool) ($options['api_active_faq'] ?? false);
-        if ($isAllowed) {
-            $restAPI = new RESTAPI();
-        }
     }
 
     /**

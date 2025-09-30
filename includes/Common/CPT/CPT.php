@@ -72,50 +72,6 @@ abstract class CPT
         add_action('template_redirect', [$this, 'maybe_disable_canonical_redirect'], 1);
         add_action('template_redirect', [$this, 'custom_cpt_404_message']);
 
-        // allow or forbid API for others to import 
-        add_filter('rest_authentication_errors', [$this, 'activateAPI'], 10, 1);
-
-    }
-
-
-    public function activateAPI($result)
-    {
-        if (!empty($result) || !(defined('REST_REQUEST') && REST_REQUEST)) {
-            return $result;
-        }
-
-        $route = (string) ($GLOBALS['wp']->query_vars['rest_route'] ?? '');
-        $route = ltrim($route, '/');
-
-        if (preg_match('#^wp/v2/([^/]+)#', $route, $m)) {
-            $base = $m[1];
-
-            $post_type = get_post_type_object($base) ? $base : null;
-            if (!$post_type) {
-                foreach (get_post_types([], 'objects') as $ptype => $obj) {
-                    $rest_base = $obj->rest_base ?: $ptype;
-                    if ($rest_base === $base) {
-                        $post_type = $ptype;
-                        break;
-                    }
-                }
-            }
-
-            if ($post_type) {
-                $opts = (array) get_option('rrze-answers');
-                $active = $opts['api_active_' . $post_type] ?? '';
-
-                if ($active !== '1') {
-                    return new \WP_Error(
-                        'forbidden',
-                        sprintf(__('API is deactivated for %s. Contact website owner %s', 'rrze-answers'), $post_type, '[email]'),
-                        ['status' => 403]
-                    );
-                }
-            }
-        }
-
-        return $result;
     }
 
     public function registerPostType()
