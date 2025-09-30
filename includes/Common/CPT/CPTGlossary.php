@@ -27,25 +27,24 @@ class CPTGlossary extends CPT
 
     protected $labels = [];
     protected $taxonomies = [];
-    protected $textdomain;
 
     public function __construct()
     {
         $this->labels = [
-            'name' => _x('Glossary', 'Glossary entries', $this->textdomain),
-            'singular_name' => _x('Glossary', 'Single glossary ', $this->textdomain),
-            'menu_name' => __('Glossary', $this->textdomain),
-            'add_new' => __('Add glossary', $this->textdomain),
-            'add_new_item' => __('Add new glossary', $this->textdomain),
-            'edit_item' => __('Edit glossary', $this->textdomain),
-            'all_items' => __('All glossaries', $this->textdomain),
-            'search_items' => __('Search glossary', $this->textdomain),
+            'name' => _x('Glossary', 'Glossary entries', 'rrze-answers'),
+            'singular_name' => _x('Glossary', 'Single glossary ', 'rrze-answers'),
+            'menu_name' => __('Glossary', 'rrze-answers'),
+            'add_new' => __('Add glossary', 'rrze-answers'),
+            'add_new_item' => __('Add new glossary', 'rrze-answers'),
+            'edit_item' => __('Edit glossary', 'rrze-answers'),
+            'all_items' => __('All glossaries', 'rrze-answers'),
+            'search_items' => __('Search glossary', 'rrze-answers'),
         ];
 
         $this->taxonomies = [
             [
                 'name'            => 'rrze_glossary_category',
-                'label'           => __('Glossary Categories', $this->textdomain),
+                'label'           => __('Glossary Categories', 'rrze-answers'),
                 'slug_option_key' => 'website_custom_glossary_category_slug',
                 'default_slug'    => 'glossary_category',
                 'rest_base'       => 'rrze_glossary_category',
@@ -53,7 +52,7 @@ class CPTGlossary extends CPT
             ],
             [
                 'name'            => 'rrze_glossary_tag',
-                'label'           => __('Glossary Tags', $this->textdomain),
+                'label'           => __('Glossary Tags', 'rrze-answers'),
                 'slug_option_key' => 'website_custom_glossary_tag_slug',
                 'default_slug'    => 'glossary_tag',
                 'rest_base'       => 'rrze_glossary_tag',

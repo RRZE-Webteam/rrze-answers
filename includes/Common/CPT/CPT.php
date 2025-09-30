@@ -90,25 +90,25 @@ abstract class CPT
         if (preg_match('#^wp/v2/([^/]+)#', $route, $m)) {
             $base = $m[1];
 
-            $pt = get_post_type_object($base) ? $base : null;
-            if (!$pt) {
+            $post_type = get_post_type_object($base) ? $base : null;
+            if (!$post_type) {
                 foreach (get_post_types([], 'objects') as $ptype => $obj) {
                     $rest_base = $obj->rest_base ?: $ptype;
                     if ($rest_base === $base) {
-                        $pt = $ptype;
+                        $post_type = $ptype;
                         break;
                     }
                 }
             }
 
-            if ($pt) {
+            if ($post_type) {
                 $opts = (array) get_option('rrze-answers');
-                $active = $opts['api_active_' . $pt] ?? '';
+                $active = $opts['api_active_' . $post_type] ?? '';
 
                 if ($active !== '1') {
                     return new \WP_Error(
                         'forbidden',
-                        __('API is deactivated. Contact website owner [email]', 'rrze-answers'),
+                        sprintf(__('API is deactivated for %s. Contact website owner %s', 'rrze-answers'), $post_type, '[email]'),
                         ['status' => 403]
                     );
                 }
@@ -143,7 +143,7 @@ abstract class CPT
             'query_var' => $this->rest_base,
             'rewrite' => $rewrite,
             'show_in_rest' => true,
-            'rest_base' => 'faq',
+            'rest_base' => $this->rest_base,
             'rest_controller_class' => 'WP_REST_Posts_Controller',
         ];
 

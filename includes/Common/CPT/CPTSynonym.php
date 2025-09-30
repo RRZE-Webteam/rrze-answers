@@ -31,14 +31,14 @@ class CPTSynonym extends CPT
     public function __construct()
     {
         $this->labels = [
-            'name' => _x('Synonym', 'Synonyms', $this->textdomain),
-            'singular_name' => _x('Synonym', 'Single synonym', $this->textdomain),
-            'menu_name' => __('Synonyms', $this->textdomain),
-            'add_new' => __('Add synonym', $this->textdomain),
-            'add_new_item' => __('Add new synonym', $this->textdomain),
-            'edit_item' => __('Edit synonym', $this->textdomain),
-            'all_items' => __('All synonyms', $this->textdomain),
-            'search_items' => __('Search synonym', $this->textdomain),
+            'name' => _x('Synonym', 'Synonyms', 'rrze-answers'),
+            'singular_name' => _x('Synonym', 'Single synonym', 'rrze-answers'),
+            'menu_name' => __('Synonyms', 'rrze-answers'),
+            'add_new' => __('Add synonym', 'rrze-answers'),
+            'add_new_item' => __('Add new synonym', 'rrze-answers'),
+            'edit_item' => __('Edit synonym', 'rrze-answers'),
+            'all_items' => __('All synonyms', 'rrze-answers'),
+            'search_items' => __('Search synonym', 'rrze-answers'),
         ];
 
         parent::__construct($this->post_type);
