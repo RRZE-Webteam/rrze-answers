@@ -5,7 +5,7 @@ namespace RRZE\Answers\Common\API;
 defined('ABSPATH') || exit;
 
 /**
- * REST API for the 'rrze_faq' object type
+ * REST API for the 'rrze_faq', 'rrze_glossary' and 'rrze_synomym' object type
  */
 class RESTAPI
 {
