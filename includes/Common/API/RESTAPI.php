@@ -51,7 +51,7 @@ class RESTAPI
                 }
             }
 
-            if ($post_type) {
+            if (in_array($post_type, ['rrze_faq', 'rrze_synonym', 'rrze_glossary'])) {
                 $obj = get_post_type_object($post_type);
                 if (is_user_logged_in() && $obj && current_user_can($obj->cap->edit_posts)) {
                     return $result;
