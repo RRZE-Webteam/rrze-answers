@@ -14,7 +14,8 @@ use RRZE\Answers\Common\Settings\Options\{
     Select,
     SelectMultiple,
     Text,
-    Textarea
+    Textarea,
+    HR
 };
 
 class Option
@@ -70,7 +71,8 @@ class Option
             'select' => Select::class,
             'select-multiple' => SelectMultiple::class,
             'text' => Text::class,
-            'textarea' => Textarea::class
+            'textarea' => Textarea::class,
+            'hr' => HR::class
         ]);
 
         if (isset($typeMap[$this->type])) {

@@ -320,6 +320,9 @@ class Defaults
                             'placeholder' => 'faq_tag'
                         ],
                         [
+                            'type' => 'hr',
+                        ],
+                        [
                             'name' => 'redirect_archivpage_uri_glossary',
                             'label' => __('Archive page', 'rrze-answers'),
                             'description' => '',
@@ -351,6 +354,9 @@ class Defaults
                             'type' => 'text',
                             'default' => 'glossary_tag',
                             'placeholder' => 'glossary_tag'
+                        ],
+                        [
+                            'type' => 'hr',
                         ],
                         [
                             'name' => 'redirect_archivpage_uri_synonym',
