@@ -23,20 +23,19 @@ abstract class CPT
     protected $taxonomies = [];
     protected $templates = [];
     protected $slug_options = ['slug_option_key' => '', 'default_slug' => ''];
-    protected $textdomain;
 
     protected $args = [
-            'label' => $this->labels['name'] ?? __('Entries', 'rrze-answers'),
-            'description' => $this->labels['name'] ?? __('Entries', 'rrze-answers'),
-            'labels' => $this->labels,
-            'supports' => $this->supports,
-            'public' => true,
-            'show_ui' => true,
-            'menu_icon' => $this->menu_icon,
-            'has_archive' => $this->has_archive,
-            'publicly_queryable' => true,
-            'query_var' => $this->rest_base,
-        ];
+        'label' => $this->labels['name'] ?? __('Entries', 'rrze-answers'),
+        'description' => $this->labels['name'] ?? __('Entries', 'rrze-answers'),
+        'labels' => $this->labels,
+        'supports' => $this->supports,
+        'public' => true,
+        'show_ui' => true,
+        'menu_icon' => $this->menu_icon,
+        'has_archive' => $this->has_archive,
+        'publicly_queryable' => true,
+        'query_var' => $this->rest_base,
+    ];
 
 
     public function __construct($posttype)
@@ -61,7 +60,7 @@ abstract class CPT
             }
         }
 
-        add_filter('single_template', [$this, 'filter_single_template']);   
+        add_filter('single_template', [$this, 'filter_single_template']);
         add_filter('archive_template', [$this, 'filter_archive_template']);
         add_filter('taxonomy_template', [$this, 'filter_taxonomy_template']);
 
@@ -73,65 +72,69 @@ abstract class CPT
         add_action('template_redirect', [$this, 'maybe_disable_canonical_redirect'], 1);
         add_action('template_redirect', [$this, 'custom_cpt_404_message']);
 
+        // allow or forbid API for others to import 
+        add_filter('rest_authentication_errors', [$this, 'activateAPI']);
+
     }
 
 
-    // 2DO: doesn't work -> pre update options
+    public function activateAPI($result)
+    {
+        if (!empty($result)) {
+            return $result;
+        }
+        $opts = (array) get_option('rrze-answers');
+        $enabled = (($opts['api_active_' . $this->post_type] ?? 'off') === 'on');
 
-    add_filter('rest_authentication_errors', function($result) {
-    if (!empty($result)) {
-        return $result;
-    }
-    $opts = (array) get_option('rrze-answers');
-    $enabled = (($opts['api_active_' . $this->post_type] ?? 'off') === 'on');
-
-    if (!$enabled) {
-        $request = rest_get_server()->get_current_request();
-        if ($request) {
-            $route = $request->get_route();
-            if (strpos($route, ENDPOINT) === 0) {
-                return new WP_Error('forbidden', __('API für ist deaktiviert.', 'rrze-answers'), ['status' => 403]);
+        if (!$enabled) {
+            $request = rest_get_server()->get_current_request();
+            if ($request) {
+                $route = $request->get_route();
+                if (strpos($route, ENDPOINT) === 0) {
+                    return new WP_Error('forbidden', __('API is deactivated. Contact website owner [email]', 'rrze-answers'), ['status' => 403]);
+                }
             }
         }
-    }
-    return $result;
-});
-
-
-    public function activateAPI($old, $new) {
-    $enabled = (($new['api_active_' . $this->post_type] ?? 'off') === 'on');
-
-    if ( post_type_exists($this->post_type) ) {
-        unregister_post_type($this->post_type);
+        return $result;
     }
 
-        $options = get_option('rrze-answers');
-        $slug_option_key = $this->slug_options['slug_option_key'];
-        $default_slug = $this->slug_options['default_slug'];
-        $slug = !empty($options[$slug_option_key]) ? sanitize_title($options[$slug_option_key]) : $default_slug;
 
-
-    $args = [
-        'label'        => 'Mein Posttype',
-        'public'       => true,
-        'show_in_rest' => $enabled,
-        'rewrite' => ['slug' => $slug, 'with_front' => true],
-        'show_in_rest' => $enabled
-    ];
-
-
-        if ($enabled) {
-            $args['rest_base'] = $this->rest_base;
-            $args['rest_controller_class'] = 'WP_REST_Posts_Controller';
-        }    
-
-    register_post_type('mein_posttype', $args);
-}
 
 
 
     public function registerPostType()
     {
+        $options = get_option('rrze-answers');
+        $slug = !empty($options[$this->slug_options['slug_option_key']]) ? sanitize_title($options[$this->slug_options['slug_option_key']]) : $this->slug_options['default_slug'];
+
+        $rewrite = array(
+            'slug' => $slug, // dynamic slug
+            'with_front' => true,
+            'pages' => true,
+            'feeds' => true,
+        );
+        // $args = array(
+        //     'label' => __('FAQ', 'rrze-faq'),
+        //     'description' => __('FAQ informations', 'rrze-faq'),
+        //     'labels' => $labels,
+        //     'supports' => array('title', 'editor'),
+        //     'hierarchical' => false,
+        //     'public' => true,
+        //     'show_ui' => true,
+        //     'show_in_menu' => true,
+        //     'show_in_nav_menus' => false,
+        //     'show_in_admin_bar' => true,
+        //     'menu_icon' => 'dashicons-editor-help',
+        //     'can_export' => true,
+        //     'has_archive' => true,
+        //     'exclude_from_search' => false,
+        //     'publicly_queryable' => true,
+        //     'query_var' => 'faq',
+        //     'rewrite' => $rewrite,
+        //     'show_in_rest' => true,
+        //     'rest_base' => $this->rest_base,
+        //     'rest_controller_class' => 'WP_REST_Posts_Controller',
+        // );
 
         register_post_type($this->post_type, $this->args);
     }
