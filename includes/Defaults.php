@@ -8,6 +8,8 @@ use RRZE\Answers\Common\Tools;
 
 defined('ABSPATH') || exit;
 
+define('ENDPOINT', 'wp/v2/faq');
+
 /**
  * Class Defaults
  *

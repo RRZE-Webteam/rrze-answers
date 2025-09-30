@@ -7,7 +7,6 @@ defined('ABSPATH') || exit;
 
 use function RRZE\Answers\plugin;
 
-
 /**
  * Base class for custom post types
  */
@@ -22,36 +21,37 @@ abstract class CPT
     protected $labels = [];
     protected $taxonomies = [];
     protected $templates = [];
+    protected $textdomain;
     protected $slug_options = ['slug_option_key' => '', 'default_slug' => ''];
+    protected $args = [];
 
-    protected $args = [
-        'label' => $this->labels['name'] ?? __('Entries', 'rrze-answers'),
-        'description' => $this->labels['name'] ?? __('Entries', 'rrze-answers'),
-        'labels' => $this->labels,
-        'supports' => $this->supports,
-        'public' => true,
-        'show_ui' => true,
-        'menu_icon' => $this->menu_icon,
-        'has_archive' => $this->has_archive,
-        'publicly_queryable' => true,
-        'query_var' => $this->rest_base,
-    ];
+
 
 
     public function __construct($posttype)
     {
         $this->post_type = $posttype;
         $this->lang = substr(get_locale(), 0, 2) ?: 'en';
+        $this->args = [
+            'label' => $this->labels['name'] ?? __('Entries', 'rrze-answers'),
+            'description' => $this->labels['name'] ?? __('Entries', 'rrze-answers'),
+            'labels' => $this->labels,
+            'supports' => $this->supports,
+            'public' => true,
+            'show_ui' => true,
+            'menu_icon' => $this->menu_icon,
+            'has_archive' => $this->has_archive,
+            'publicly_queryable' => true,
+            'query_var' => $this->rest_base,
+        ];
 
         add_action('init', [$this, 'registerPostType'], 0);
         add_action('init', [$this, 'registerTaxonomies'], 0);
 
         add_action("publish_{$this->post_type}", [$this, 'setPostMeta'], 10, 1);
-        foreach ($this->taxonomies as $tx) {
-            add_action("create_{$tx['name']}", [$this, 'setTermMeta'], 10, 1);
-        }
 
         foreach ($this->taxonomies as $tx) {
+            add_action("create_{$tx['name']}", [$this, 'setTermMeta'], 10, 1);
             if (!empty($tx['hierarchical'])) {
                 add_action("{$tx['name']}_add_form_fields", [$this, 'add_category_page_field']);
                 add_action("{$tx['name']}_edit_form_fields", [$this, 'edit_category_page_field']);
@@ -73,34 +73,50 @@ abstract class CPT
         add_action('template_redirect', [$this, 'custom_cpt_404_message']);
 
         // allow or forbid API for others to import 
-        add_filter('rest_authentication_errors', [$this, 'activateAPI']);
+        add_filter('rest_authentication_errors', [$this, 'activateAPI'], 10, 1);
 
     }
 
 
     public function activateAPI($result)
     {
-        if (!empty($result)) {
+        if (!empty($result) || !(defined('REST_REQUEST') && REST_REQUEST)) {
             return $result;
         }
-        $opts = (array) get_option('rrze-answers');
-        $enabled = (($opts['api_active_' . $this->post_type] ?? 'off') === 'on');
 
-        if (!$enabled) {
-            $request = rest_get_server()->get_current_request();
-            if ($request) {
-                $route = $request->get_route();
-                if (strpos($route, ENDPOINT) === 0) {
-                    return new WP_Error('forbidden', __('API is deactivated. Contact website owner [email]', 'rrze-answers'), ['status' => 403]);
+        $route = (string) ($GLOBALS['wp']->query_vars['rest_route'] ?? '');
+        $route = ltrim($route, '/');
+
+        if (preg_match('#^wp/v2/([^/]+)#', $route, $m)) {
+            $base = $m[1];
+
+            $pt = get_post_type_object($base) ? $base : null;
+            if (!$pt) {
+                foreach (get_post_types([], 'objects') as $ptype => $obj) {
+                    $rest_base = $obj->rest_base ?: $ptype;
+                    if ($rest_base === $base) {
+                        $pt = $ptype;
+                        break;
+                    }
+                }
+            }
+
+            if ($pt) {
+                $opts = (array) get_option('rrze-answers');
+                $active = $opts['api_active_' . $pt] ?? '';
+
+                if ($active !== '1') {
+                    return new \WP_Error(
+                        'forbidden',
+                        __('API is deactivated. Contact website owner [email]', 'rrze-answers'),
+                        ['status' => 403]
+                    );
                 }
             }
         }
+
         return $result;
     }
-
-
-
-
 
     public function registerPostType()
     {
@@ -113,30 +129,25 @@ abstract class CPT
             'pages' => true,
             'feeds' => true,
         );
-        // $args = array(
-        //     'label' => __('FAQ', 'rrze-faq'),
-        //     'description' => __('FAQ informations', 'rrze-faq'),
-        //     'labels' => $labels,
-        //     'supports' => array('title', 'editor'),
-        //     'hierarchical' => false,
-        //     'public' => true,
-        //     'show_ui' => true,
-        //     'show_in_menu' => true,
-        //     'show_in_nav_menus' => false,
-        //     'show_in_admin_bar' => true,
-        //     'menu_icon' => 'dashicons-editor-help',
-        //     'can_export' => true,
-        //     'has_archive' => true,
-        //     'exclude_from_search' => false,
-        //     'publicly_queryable' => true,
-        //     'query_var' => 'faq',
-        //     'rewrite' => $rewrite,
-        //     'show_in_rest' => true,
-        //     'rest_base' => $this->rest_base,
-        //     'rest_controller_class' => 'WP_REST_Posts_Controller',
-        // );
 
-        register_post_type($this->post_type, $this->args);
+        $args = [
+            'label' => $this->labels['name'] ?? __('Entries', 'rrze-answers'),
+            'description' => $this->labels['name'] ?? __('Entries', 'rrze-answers'),
+            'labels' => $this->labels,
+            'supports' => $this->supports,
+            'public' => true,
+            'show_ui' => true,
+            'menu_icon' => $this->menu_icon,
+            'has_archive' => $this->has_archive,
+            'publicly_queryable' => true,
+            'query_var' => $this->rest_base,
+            'rewrite' => $rewrite,
+            'show_in_rest' => true,
+            'rest_base' => 'faq',
+            'rest_controller_class' => 'WP_REST_Posts_Controller',
+        ];
+
+        register_post_type($this->post_type, $args);
     }
 
     public function registerTaxonomies()
