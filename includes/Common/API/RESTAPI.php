@@ -52,6 +52,11 @@ class RESTAPI
             }
 
             if ($post_type) {
+                $obj = get_post_type_object($post_type);
+                if (is_user_logged_in() && $obj && current_user_can($obj->cap->edit_posts)) {
+                    return $result;
+                }
+
                 $opts = (array) get_option('rrze-answers');
                 $active = $opts['api_active_' . $post_type] ?? '';
 
