@@ -375,6 +375,11 @@ class Tools
             }
         }
 
+        if (empty($result)){
+            $result[] = __('No website with activated plugin found.', 'rrze-answers');
+
+        }
+
         return $result;
     }
 

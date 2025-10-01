@@ -392,37 +392,6 @@ class Defaults
                     'ru' => __('Russian', 'rrze-answers'),
                     'zh' => __('Chinese', 'rrze-answers')
                     ],
-
-                // 'lang' => [
-                //     // [
-                //     //     'id' => '',
-                //     //     'val' => __('All languages', 'rrze-answers')
-                //     // ],
-                //     [
-                //         'id' => 'de',
-                //         'val' => __('German', 'rrze-answers'),
-                //     ],
-                //     [
-                //         'id' => 'en',
-                //         'val' => __('English', 'rrze-answers'),
-                //     ],
-                //     [
-                //         'id' => 'es',
-                //         'val' => __('Spanish', 'rrze-answers'),
-                //     ],
-                //     [
-                //         'id' => 'fr',
-                //         'val' => __('French', 'rrze-answers'),
-                //     ],
-                //     [
-                //         'id' => 'ru',
-                //         'val' => __('Russian', 'rrze-answers'),
-                //     ],
-                //     [
-                //         'id' => 'zh',
-                //         'val' => __('Chinese', 'rrze-answers')
-                //     ],
-                // ],
             ]
         );
     }
