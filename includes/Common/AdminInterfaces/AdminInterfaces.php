@@ -208,6 +208,8 @@ class AdminInterfaces
 
     public function addColumns($columns)
     {
+        $title = ($this->post_type == 'rrze_faq' ? __('Question', 'rrze-answers') : __('Glossary', 'rrze-answers'));
+        $columns['title'] = $title;
         $columns['lang'] = __('Language', 'rrze-answers');
         $columns['sortfield'] = __('Sort criterion', 'rrze-answers');
 
