@@ -6,6 +6,7 @@ namespace RRZE\Answers\Common\CPT;
 defined('ABSPATH') || exit;
 
 use function RRZE\Answers\plugin;
+use function RRZE\Answers\Common\Settings\getOptions as getOptions;
 
 /**
  * Base class for custom post types
@@ -69,8 +70,8 @@ abstract class CPT
         add_action('init', [$this, 'maybeFlushRewriteRules'], 20);
         add_action('update_option_rrze-answers', [$this, 'checkSlugChange'], 10, 2);
 
-        add_action('template_redirect', [$this, 'maybe_disable_canonical_redirect'], 1);
-        add_action('template_redirect', [$this, 'custom_cpt_404_message']);
+        // add_action('template_redirect', [$this, 'maybe_disable_canonical_redirect'], 1);
+        // add_action('template_redirect', [$this, 'custom_cpt_404_message']);
 
     }
 
@@ -306,7 +307,7 @@ abstract class CPT
 
     public function maybe_disable_canonical_redirect(): void
     {
-        $this->options = $this->getOptions();
+        $this->options = getOptions();
         $slug = !empty($this->options['permalink_settings_custom_faq_slug']) ? sanitize_title($this->options['permalink_settings_custom_faq_slug']) : 'rrze_faq';
 
         // Nur deaktivieren, wenn eine Weiterleitungsseite gesetzt ist UND exakt der Slug aufgerufen wird
@@ -330,7 +331,7 @@ abstract class CPT
     {
         global $wp_query;
 
-        $this->options = $this->getOptions();
+        $this->options = getOptions();
         $slug = !empty($this->options['permalink_settings_custom_faq_slug']) ? sanitize_title($this->options['permalink_settings_custom_faq_slug']) : 'rrze_faq';
 
         // CPT-Single 404

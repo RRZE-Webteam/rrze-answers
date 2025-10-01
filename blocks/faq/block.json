@@ -61,5 +61,7 @@
 	},
 	"textdomain": "rrze-answers",
   	"editorScript": "file:../../build/faq.js",
+	"style": "file:../../build/css/rrze-faq.css",
+  	"editorStyle": "file:../../build/css/rrze-faq.css",
 	"render": "file:./render.php"
 }
