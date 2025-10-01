@@ -6,6 +6,8 @@ namespace RRZE\Answers\Common\AdminInterfaces;
 defined('ABSPATH') || exit;
 
 use RRZE\Answers\Common\Tools;
+use RRZE\Answers\Defaults;
+
 
 /**
  * Shared admin UI for rrze_faq and rrze_glossary.
@@ -18,11 +20,11 @@ class AdminUI_QA extends AdminUIBase
     public function __construct(string $post_type)
     {
         parent::__construct($post_type, [
-            'has_taxonomies'     => true,
-            'default_orderby'    => 'title',
-            'default_order'      => 'ASC',
+            'has_taxonomies' => true,
+            'default_orderby' => 'title',
+            'default_order' => 'ASC',
             'sortable_meta_keys' => ['sortfield'],
-            'sync_readonly'      => true,
+            'sync_readonly' => true,
             'show_shortcode_box' => true,
         ]);
     }
@@ -42,34 +44,51 @@ class AdminUI_QA extends AdminUIBase
     {
         return [
             [
-                'id'       => 'langbox',
-                'title'    => __('Language', 'rrze-answers'),
+                'id' => 'langbox',
+                'title' => __('Language', 'rrze-answers'),
                 'callback' => [$this, 'langboxCallback'],
-                'context'  => 'side',
+                'context' => 'side',
             ],
             [
-                'id'       => 'sortbox',
-                'title'    => __('Sort', 'rrze-answers'),
+                'id' => 'sortbox',
+                'title' => __('Sort', 'rrze-answers'),
                 'callback' => [$this, 'sortboxCallback'],
-                'context'  => 'side',
+                'context' => 'side',
             ],
             [
-                'id'       => 'anchorbox',
-                'title'    => __('Anchor', 'rrze-answers'),
+                'id' => 'anchorbox',
+                'title' => __('Anchor', 'rrze-answers'),
                 'callback' => [$this, 'anchorboxCallback'],
-                'context'  => 'side',
+                'context' => 'side',
             ],
         ];
     }
 
-    public function langboxCallback(\WP_Post $post): void
+     public function langboxCallback($meta_id)
     {
-        // Single nonce for all QA meta fields
-        wp_nonce_field($this->post_type . '_save_meta', $this->post_type . '_meta_nonce');
+        $current = get_post_meta($meta_id->ID, 'lang', true);
+        if (empty($current)) {
+            $current = substr(get_locale(), 0, 2);
+        }
 
-        $lang = (string) get_post_meta($post->ID, 'lang', true);
-        echo '<input type="text" name="lang" id="lang" class="lang" value="' . esc_attr($lang) . '">';
-        echo '<p class="description">' . esc_html__('Language of this entry', 'rrze-answers') . '</p>';
+        $defaults = new Defaults();
+        $langlist = $defaults->get('lang');
+
+
+        $output = '<select name="lang" id="lang" class="lang">';
+        foreach ($langlist as $code => $label) {
+            $selected = selected($current, $code, false);
+            $output .= sprintf(
+                '<option value="%s" %s>%s</option>',
+                esc_attr($code),
+                $selected,
+                esc_html($label)
+            );
+        }
+        $output .= '</select>';
+        $output .= '<p class="description">' . esc_html__('Language of this FAQ', 'rrze-faq') . '</p>';
+
+        echo wp_kses_post($output);
     }
 
     public function sortboxCallback(\WP_Post $post): void
@@ -110,7 +129,7 @@ class AdminUI_QA extends AdminUIBase
         // Build taxonomy slug lists (comma separated)
         foreach (["{$this->post_type}_category", "{$this->post_type}_tag"] as $tax) {
             $terms = wp_get_post_terms($post->ID, $tax);
-            $list  = '';
+            $list = '';
             foreach ($terms as $t) {
                 $list .= $t->slug . ', ';
             }
@@ -175,8 +194,8 @@ class AdminUI_QA extends AdminUIBase
     protected function listTableColumns(array $cols): array
     {
         // Rename title column depending on CPT
-        $cols['title']     = ($this->post_type === 'rrze_faq') ? __('Question', 'rrze-answers') : __('Glossary', 'rrze-answers');
-        $cols['lang']      = __('Language', 'rrze-answers');
+        $cols['title'] = ($this->post_type === 'rrze_faq') ? __('Question', 'rrze-answers') : __('Glossary', 'rrze-answers');
+        $cols['lang'] = __('Language', 'rrze-answers');
         $cols['sortfield'] = __('Sort criterion', 'rrze-answers');
 
         if ((new Tools())->hasSync()) {
@@ -188,8 +207,8 @@ class AdminUI_QA extends AdminUIBase
     protected function listTableSortableColumns(array $cols): array
     {
         $cols["taxonomy-{$this->post_type}_category"] = __('Category', 'rrze-answers');
-        $cols["taxonomy-{$this->post_type}_tag"]      = __('Tag', 'rrze-answers');
-        $cols['lang']      = __('Language', 'rrze-answers');
+        $cols["taxonomy-{$this->post_type}_tag"] = __('Tag', 'rrze-answers');
+        $cols['lang'] = __('Language', 'rrze-answers');
         $cols['sortfield'] = 'sortfield';
 
         if ((new Tools())->hasSync()) {

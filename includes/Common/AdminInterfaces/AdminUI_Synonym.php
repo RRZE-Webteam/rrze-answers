@@ -5,6 +5,8 @@ namespace RRZE\Answers\Common\AdminInterfaces;
 
 defined('ABSPATH') || exit;
 
+use RRZE\Answers\Common\Tools;
+
 /**
  * Admin UI for rrze_synonym.
  * - Custom properties metabox (synonym, titleLang)
@@ -171,15 +173,17 @@ class AdminUI_Synonym extends AdminUIBase
     protected function listTableColumns(array $cols): array
     {
         $cols['title'] = __('Synonym', 'rrze-answers');
-        $cols['source'] = __('Source', 'rrze-answers');
-        $cols['id'] = __('ID', 'rrze-answers');
+
+        if ((new Tools())->hasSync()) {
+            $cols['source'] = __('Source', 'rrze-answers');
+        }
+
         return $cols;
     }
 
     protected function listTableSortableColumns(array $cols): array
     {
         $cols['source'] = __('Source', 'rrze-answers');
-        $cols['id'] = __('ID', 'rrze-answers');
         return $cols;
     }
 
