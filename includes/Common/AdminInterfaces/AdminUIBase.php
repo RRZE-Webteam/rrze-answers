@@ -34,11 +34,11 @@ abstract class AdminUIBase
     {
         $this->post_type = $post_type;
         $this->features = array_merge([
-            'has_taxonomies'     => false,          // *_category / *_tag
-            'default_orderby'    => 'title',
-            'default_order'      => 'ASC',
+            'has_taxonomies' => false,          // *_category / *_tag
+            'default_orderby' => 'title',
+            'default_order' => 'ASC',
             'sortable_meta_keys' => [],             // e.g. ['sortfield']
-            'sync_readonly'      => true,           // make synced items read-only
+            'sync_readonly' => true,           // make synced items read-only
             'show_shortcode_box' => false,          // render shortcode box in classic editor
         ], $features);
 
@@ -257,19 +257,32 @@ abstract class AdminUIBase
     }
 
     /** Columns for the post list table. */
-    protected function listTableColumns(array $cols): array { return $cols; }
+    protected function listTableColumns(array $cols): array
+    {
+        return $cols;
+    }
 
     /** Sortable columns for the post list table. */
-    protected function listTableSortableColumns(array $cols): array { return $cols; }
+    protected function listTableSortableColumns(array $cols): array
+    {
+        return $cols;
+    }
 
     /** Render values for custom columns. */
-    protected function renderListTableColumn(string $col, int $post_id): void {}
+    protected function renderListTableColumn(string $col, int $post_id): void
+    {
+    }
 
     /** Taxonomy list-table columns. */
-    protected function taxonomyColumns(array $cols): array { return $cols; }
+    protected function taxonomyColumns(array $cols): array
+    {
+        return $cols;
+    }
 
     /** Render values for taxonomy list-table custom columns. */
-    protected function renderTaxonomyColumn(string $col, int $term_id): void {}
+    protected function renderTaxonomyColumn(string $col, int $term_id): void
+    {
+    }
 
     /** Render filter UI above list table (categories/tags + source). */
     protected function listFiltersUI(): void
@@ -284,14 +297,14 @@ abstract class AdminUIBase
             $selected = isset($_GET[$slug]) ? sanitize_text_field(wp_unslash((string) $_GET[$slug])) : '';
             wp_dropdown_categories([
                 'show_option_all' => $taxonomy->labels->all_items,
-                'taxonomy'        => $slug,
-                'name'            => $slug,
-                'orderby'         => 'name',
-                'value_field'     => 'slug',   // store slug (we’ll handle in parse_query)
-                'selected'        => $selected,
-                'hierarchical'    => true,
-                'hide_empty'      => true,
-                'show_count'      => true,
+                'taxonomy' => $slug,
+                'name' => $slug,
+                'orderby' => 'name',
+                'value_field' => 'slug',   // store slug (we’ll handle in parse_query)
+                'selected' => $selected,
+                'hierarchical' => true,
+                'hide_empty' => true,
+                'show_count' => true,
             ]);
         }
 
@@ -299,12 +312,12 @@ abstract class AdminUIBase
         $selectedVal = isset($_GET['source']) ? sanitize_text_field(wp_unslash((string) $_GET['source'])) : '';
 
         $posts = get_posts([
-            'post_type'   => $this->post_type,
+            'post_type' => $this->post_type,
             'post_status' => 'publish',
             'numberposts' => -1,
-            'fields'      => 'ids',
-            'meta_key'    => 'source',
-            'orderby'     => 'meta_value',
+            'fields' => 'ids',
+            'meta_key' => 'source',
+            'orderby' => 'meta_value',
         ]);
 
         $sources = [];
@@ -339,8 +352,8 @@ abstract class AdminUIBase
             if ($val !== '') {
                 $tax_query[] = [
                     'taxonomy' => $slug,
-                    'field'    => 'slug',
-                    'terms'    => $val,
+                    'field' => 'slug',
+                    'terms' => $val,
                 ];
             }
         }
@@ -351,24 +364,31 @@ abstract class AdminUIBase
 
         $source = isset($_GET['source']) ? sanitize_text_field(wp_unslash((string) $_GET['source'])) : '';
         if ($source !== '') {
-            $q->query_vars['meta_query'] = [[
-                'key'     => 'source',
-                'value'   => $source,
-                'compare' => '=',
-            ]];
+            $q->query_vars['meta_query'] = [
+                [
+                    'key' => 'source',
+                    'value' => $source,
+                    'compare' => '=',
+                ]
+            ];
         }
 
         return $q;
     }
 
     /** Metabox definitions for this CPT. */
-    protected function metaboxes(): array { return []; }
+    protected function metaboxes(): array
+    {
+        return [];
+    }
 
     /**
      * Save post meta (subclasses MUST implement nonce + capability checks).
      * @param int $post_id
      */
-    public function savePostMeta(int $post_id): void {}
+    public function savePostMeta(int $post_id): void
+    {
+    }
 
     /* -----------------------------------------------------------------
      * Utilities
@@ -380,8 +400,8 @@ abstract class AdminUIBase
      */
     protected function sourceEditLink(int $post_id): ?string
     {
-        $source    = (string) get_post_meta($post_id, 'source', true);
-        $remoteID  = (string) get_post_meta($post_id, 'remoteID', true);
+        $source = (string) get_post_meta($post_id, 'source', true);
+        $remoteID = (string) get_post_meta($post_id, 'remoteID', true);
         if ($source === '' || $source === 'website' || $remoteID === '') {
             return null;
         }

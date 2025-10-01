@@ -20,11 +20,11 @@ class AdminUI_Synonym extends AdminUIBase
     public function __construct()
     {
         parent::__construct('rrze_synonym', [
-            'has_taxonomies'     => false,
-            'default_orderby'    => 'title',
-            'default_order'      => 'ASC',
+            'has_taxonomies' => false,
+            'default_orderby' => 'title',
+            'default_order' => 'ASC',
             'sortable_meta_keys' => [],
-            'sync_readonly'      => true,
+            'sync_readonly' => true,
             'show_shortcode_box' => true,
         ]);
 
@@ -43,10 +43,10 @@ class AdminUI_Synonym extends AdminUIBase
     {
         return [
             [
-                'id'       => 'postmetabox',
-                'title'    => __('Properties', 'rrze-answers'),
+                'id' => 'postmetabox',
+                'title' => __('Properties', 'rrze-answers'),
                 'callback' => [$this, 'postmetaCallback'],
-                'context'  => 'normal',
+                'context' => 'normal',
                 'priority' => 'high',
             ],
         ];
@@ -57,8 +57,8 @@ class AdminUI_Synonym extends AdminUIBase
         // Nonce
         wp_nonce_field('rrze_synonym_save_meta', 'rrze_synonym_meta_nonce');
 
-        $source    = (string) get_post_meta($post->ID, 'source', true);
-        $synonym   = (string) get_post_meta($post->ID, 'synonym', true);
+        $source = (string) get_post_meta($post->ID, 'source', true);
+        $synonym = (string) get_post_meta($post->ID, 'synonym', true);
         $titleLang = (string) get_post_meta($post->ID, 'titleLang', true);
 
         // Properties
@@ -129,7 +129,7 @@ class AdminUI_Synonym extends AdminUIBase
 
     public function fillContentBoxSynonym(\WP_Post $post): void
     {
-        $synonym   = (string) get_post_meta($post->ID, 'synonym', true);
+        $synonym = (string) get_post_meta($post->ID, 'synonym', true);
         $titleLang = (string) get_post_meta($post->ID, 'titleLang', true);
         $langLabel = $this->langChoices[$titleLang] ?? $titleLang;
 
@@ -170,15 +170,16 @@ class AdminUI_Synonym extends AdminUIBase
 
     protected function listTableColumns(array $cols): array
     {
+        $cols['title'] = __('Synonym', 'rrze-answers');
         $cols['source'] = __('Source', 'rrze-answers');
-        $cols['id']     = __('ID', 'rrze-answers');
+        $cols['id'] = __('ID', 'rrze-answers');
         return $cols;
     }
 
     protected function listTableSortableColumns(array $cols): array
     {
         $cols['source'] = __('Source', 'rrze-answers');
-        $cols['id']     = __('ID', 'rrze-answers');
+        $cols['id'] = __('ID', 'rrze-answers');
         return $cols;
     }
 
