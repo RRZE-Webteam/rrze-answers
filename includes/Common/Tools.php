@@ -357,7 +357,7 @@ class Tools
 
         $pluginFile = 'rrze-answers/rrze-answers.php'; 
         $sites = get_sites(['public' => 1, 'archived' => 0, 'deleted' => 0]);
-        $result = [];
+        $result = ['' => __('--Choose a website --', 'rrze-answers')];
 
         foreach ($sites as $site) {
             $blog_id = (int) $site->blog_id;
@@ -373,11 +373,6 @@ class Tools
 
                 $result[$site_url] = $site_name;
             }
-        }
-
-        if (empty($result)){
-            $result[] = __('No website with activated plugin found.', 'rrze-answers');
-
         }
 
         return $result;

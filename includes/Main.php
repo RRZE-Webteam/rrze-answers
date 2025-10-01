@@ -69,8 +69,9 @@ class Main
         $this->adminUI = new AdminUI_Synonym();
 
         // $this->adminMenue = new AdminMenu(); // in admin menu there is a maximum of 2 levels. Deactivated this workaround because it wouldn't be best practice.
-        add_action('wp_enqueue_scripts', [$this, 'enqueueScripts']);
-        add_action('enqueue_block_assets', [$this, 'enqueueScripts']);
+        add_action('wp_enqueue_scripts', [$this, 'enqueueAssets']);
+        add_action('enqueue_block_assets', [$this, 'enqueueAssets']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueueImportAssets']);
 
         $this->shortcode();
         $this->blocks();
@@ -269,7 +270,7 @@ class Main
     /**
      * Enqueue der globale Skripte.
      */
-    public function enqueueScripts()
+    public function enqueueAssets()
     {
         wp_register_style(
             'rrze-faq-css',
@@ -292,6 +293,36 @@ class Main
             filemtime(plugin()->getPath() . 'build/rrze-faq-accordion.js'),
             true
         );
+    }
+
+
+    public function enqueueImportAssets(string $hook): void
+    {
+        if (strpos($hook, $this->page_slug) === false) {
+            return;
+        }
+
+        wp_register_script(
+            $this->script_handle,
+            plugins_url('assets/js/import-ui.js', dirname(__FILE__, 2)), // adjust path if needed
+            ['jquery'],
+            '1.0.0',
+            true
+        );
+
+        wp_localize_script($this->script_handle, 'RRZEAnswersSync', [
+            'ajaxUrl'      => admin_url('admin-ajax.php'),
+            'nonce'        => wp_create_nonce('rrze_answers_sync'),
+            'optionName'   => $this->option_name,
+            'i18n'         => [
+                'loading'          => __('Loading categories…', 'rrze-answers'),
+                'none'             => __('No categories found.', 'rrze-answers'),
+                'error'            => __('Error while loading categories.', 'rrze-answers'),
+                'selectCategories' => __('Hold Ctrl/Cmd to select multiple categories.', 'rrze-answers'),
+            ],
+        ]);
+
+        wp_enqueue_script($this->script_handle);
     }
 
 }
