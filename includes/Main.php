@@ -309,7 +309,7 @@ class Main
         wp_localize_script('rrze-answers-import-ui', 'RRZEAnswersSync', [
             'ajaxUrl'      => admin_url('admin-ajax.php'),
             'nonce'        => wp_create_nonce('rrze_answers_sync'),
-            'optionName'   => '$this->option_name',
+            'optionName'   => 'rrze-answers',
             'i18n'         => [
                 'loading'          => __('Loading categories…', 'rrze-answers'),
                 'none'             => __('No categories found.', 'rrze-answers'),

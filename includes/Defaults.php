@@ -94,24 +94,10 @@ class Defaults
                             'default' => ''
                         ],
                         [
-                            'name' => 'shortname',
-                            'label' => __('Short name', 'rrze-answers'),
-                            'description' => __('Use this name as attribute \'domain\' in shortcode [faq]', 'rrze-answers'),
-                            'type' => 'plaintext',
-                            'default' => ''
-                        ],
-                        [
-                            'name' => 'url',
-                            'label' => __('URL', 'rrze-answers'),
-                            'description' => '',
-                            'type' => 'plaintext',
-                            'default' => ''
-                        ],
-                        [
                             'name' => 'categories',
                             'label' => __('Categories', 'rrze-answers'),
                             'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
-                            'type' => 'multiselect',
+                            'type' => 'select-multiple',
                             'options' => []
                         ],
                         [
@@ -161,24 +147,10 @@ class Defaults
                             'default' => ''
                         ],
                         [
-                            'name' => 'shortname',
-                            'label' => __('Short name', 'rrze-answers'),
-                            'description' => __('Use this name as attribute \'domain\' in shortcode [faq]', 'rrze-answers'),
-                            'type' => 'plaintext',
-                            'default' => ''
-                        ],
-                        [
-                            'name' => 'url',
-                            'label' => __('URL', 'rrze-answers'),
-                            'description' => '',
-                            'type' => 'plaintext',
-                            'default' => ''
-                        ],
-                        [
                             'name' => 'categories',
                             'label' => __('Categories', 'rrze-answers'),
                             'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
-                            'type' => 'multiselect',
+                            'type' => 'select-multiple',
                             'options' => []
                         ],
                         [
@@ -228,24 +200,10 @@ class Defaults
                             'default' => ''
                         ],
                         [
-                            'name' => 'shortname',
-                            'label' => __('Short name', 'rrze-answers'),
-                            'description' => __('Use this name as attribute \'domain\' in shortcode [faq]', 'rrze-answers'),
-                            'type' => 'plaintext',
-                            'default' => ''
-                        ],
-                        [
-                            'name' => 'url',
-                            'label' => __('URL', 'rrze-answers'),
-                            'description' => '',
-                            'type' => 'plaintext',
-                            'default' => ''
-                        ],
-                        [
                             'name' => 'categories',
                             'label' => __('Categories', 'rrze-answers'),
                             'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
-                            'type' => 'multiselect',
+                            'type' => 'select-multiple',
                             'options' => []
                         ],
                         [
