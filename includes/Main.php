@@ -300,7 +300,7 @@ class Main
     {
         wp_register_script(
             'rrze-answers-import-ui',
-            plugins_url('assets/js/import-ui.js', dirname(__FILE__, 2)), // adjust path if needed
+            plugins_url('build/import-ui.js', dirname(__FILE__, 2)),
             ['jquery'],
             '1.0.0',
             true
