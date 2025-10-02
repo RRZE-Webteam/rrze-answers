@@ -298,22 +298,18 @@ class Main
 
     public function enqueueImportAssets(string $hook): void
     {
-        if (strpos($hook, $this->page_slug) === false) {
-            return;
-        }
-
         wp_register_script(
-            $this->script_handle,
+            'rrze-answers-import-ui',
             plugins_url('assets/js/import-ui.js', dirname(__FILE__, 2)), // adjust path if needed
             ['jquery'],
             '1.0.0',
             true
         );
 
-        wp_localize_script($this->script_handle, 'RRZEAnswersSync', [
+        wp_localize_script('rrze-answers-import-ui', 'RRZEAnswersSync', [
             'ajaxUrl'      => admin_url('admin-ajax.php'),
             'nonce'        => wp_create_nonce('rrze_answers_sync'),
-            'optionName'   => $this->option_name,
+            'optionName'   => '$this->option_name',
             'i18n'         => [
                 'loading'          => __('Loading categories…', 'rrze-answers'),
                 'none'             => __('No categories found.', 'rrze-answers'),
@@ -322,7 +318,7 @@ class Main
             ],
         ]);
 
-        wp_enqueue_script($this->script_handle);
+        wp_enqueue_script('rrze-answers-import-ui');
     }
 
 }
