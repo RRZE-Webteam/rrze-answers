@@ -101,13 +101,6 @@ class Defaults
                             'options' => []
                         ],
                         [
-                            'name' => 'info',
-                            'label' => __('Info', 'rrze-answers'),
-                            'description' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-answers'),
-                            'type' => 'plaintext',
-                            'default' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-answers'),
-                        ],
-                        [
                             'name' => 'frequency',
                             'label' => __('Synchronize automatically', 'rrze-answers'),
                             'description' => '',
@@ -137,36 +130,12 @@ class Defaults
                             'options' => []
                         ],
                         [
-                            'name' => 'donotsync',
-                            'label' => __('Synchronize', 'rrze-answers'),
-                            'description' => __('Do not synchronize', 'rrze-answers'),
-                            'type' => 'checkbox',
-                        ],
-                        [
-                            'name' => 'hr',
-                            'label' => '',
-                            'description' => '',
-                            'type' => 'line'
-                        ],
-                        [
-                            'name' => 'info',
-                            'label' => __('Info', 'rrze-answers'),
-                            'description' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-answers'),
-                            'type' => 'plaintext',
-                            'default' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-answers'),
-                        ],
-                        [
-                            'name' => 'autosync',
-                            'label' => __('Mode', 'rrze-answers'),
-                            'description' => __('Synchronize automatically', 'rrze-answers'),
-                            'type' => 'checkbox',
-                        ],
-                        [
                             'name' => 'frequency',
-                            'label' => __('Frequency', 'rrze-answers'),
+                            'label' => __('Synchronize automatically', 'rrze-answers'),
                             'description' => '',
-                            'default' => 'daily',
+                            'default' => '',
                             'options' => [
+                                '' => __('deactivated', 'rrze-answers'),
                                 'daily' => __('daily', 'rrze-answers'),
                                 'twicedaily' => __('twicedaily', 'rrze-answers')
                             ],
@@ -190,36 +159,12 @@ class Defaults
                             'options' => []
                         ],
                         [
-                            'name' => 'donotsync',
-                            'label' => __('Synchronize', 'rrze-answers'),
-                            'description' => __('Do not synchronize', 'rrze-answers'),
-                            'type' => 'checkbox',
-                        ],
-                        [
-                            'name' => 'hr',
-                            'label' => '',
-                            'description' => '',
-                            'type' => 'line'
-                        ],
-                        [
-                            'name' => 'info',
-                            'label' => __('Info', 'rrze-answers'),
-                            'description' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-answers'),
-                            'type' => 'plaintext',
-                            'default' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-answers'),
-                        ],
-                        [
-                            'name' => 'autosync',
-                            'label' => __('Mode', 'rrze-answers'),
-                            'description' => __('Synchronize automatically', 'rrze-answers'),
-                            'type' => 'checkbox',
-                        ],
-                        [
                             'name' => 'frequency',
-                            'label' => __('Frequency', 'rrze-answers'),
+                            'label' => __('Synchronize automatically', 'rrze-answers'),
                             'description' => '',
-                            'default' => 'daily',
+                            'default' => '',
                             'options' => [
+                                '' => __('deactivated', 'rrze-answers'),
                                 'daily' => __('daily', 'rrze-answers'),
                                 'twicedaily' => __('twicedaily', 'rrze-answers')
                             ],
