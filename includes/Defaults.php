@@ -228,6 +228,10 @@ class Defaults
                     ],
                     'permalink_settings' => [
                         [
+                            'label' => __('FAQ', 'rrze-answers'),
+                            'type' => 'hr',
+                        ],
+                        [
                             'name' => 'redirect_archivpage_uri_faq',
                             'label' => __('Archive page', 'rrze-answers'),
                             'description' => '',
@@ -245,7 +249,7 @@ class Defaults
                         ],
                         [
                             'name' => 'custom_faq_category_slug',
-                            'label' => __('FAQ Category Slug', 'rrze-answers'),
+                            'label' => __('Category Slug', 'rrze-answers'),
                             'description' => '',
                             'type' => 'text',
                             'default' => 'faq_category',
@@ -254,13 +258,14 @@ class Defaults
                         ],
                         [
                             'name' => 'custom_faq_tag_slug',
-                            'label' => __('FAQ Tag Slug', 'rrze-answers'),
+                            'label' => __('Tag Slug', 'rrze-answers'),
                             'description' => '',
                             'type' => 'text',
                             'default' => 'faq_tag',
                             'placeholder' => 'faq_tag'
                         ],
                         [
+                            'label' => __('Glossary', 'rrze-answers'),
                             'type' => 'hr',
                         ],
                         [
@@ -281,7 +286,7 @@ class Defaults
                         ],
                         [
                             'name' => 'custom_glossary_category_slug',
-                            'label' => __('Glossary Category Slug', 'rrze-answers'),
+                            'label' => __('Category Slug', 'rrze-answers'),
                             'description' => '',
                             'type' => 'text',
                             'default' => 'glossary_category',
@@ -290,13 +295,14 @@ class Defaults
                         ],
                         [
                             'name' => 'custom_glossary_tag_slug',
-                            'label' => __('Glossary Tag Slug', 'rrze-answers'),
+                            'label' => __('Tag Slug', 'rrze-answers'),
                             'description' => '',
                             'type' => 'text',
                             'default' => 'glossary_tag',
                             'placeholder' => 'glossary_tag'
                         ],
                         [
+                            'label' => __('Synonym', 'rrze-answers'),
                             'type' => 'hr',
                         ],
                         [

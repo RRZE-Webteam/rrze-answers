@@ -4,8 +4,8 @@ namespace RRZE\Answers\Common\Settings;
 
 defined('ABSPATH') || exit;
 ?>
-<tr valign="top">
+<tr>
     <td colspan="2">
-        <hr>
+        <h3><?php echo $option->getLabel(); ?></h3><hr>
     </td>
-</tr>
+</tr>    
