@@ -173,6 +173,7 @@ class Defaults
                     ],
                     'permalink_settings' => [
                         [
+                            'name' => 'label_faq',
                             'label' => __('FAQ', 'rrze-answers'),
                             'type' => 'hr',
                         ],
@@ -210,6 +211,7 @@ class Defaults
                             'placeholder' => 'faq_tag'
                         ],
                         [
+                            'name' => 'label_glossary',
                             'label' => __('Glossary', 'rrze-answers'),
                             'type' => 'hr',
                         ],
@@ -247,6 +249,7 @@ class Defaults
                             'placeholder' => 'glossary_tag'
                         ],
                         [
+                            'name' => 'label_synonym',
                             'label' => __('Synonym', 'rrze-answers'),
                             'type' => 'hr',
                         ],

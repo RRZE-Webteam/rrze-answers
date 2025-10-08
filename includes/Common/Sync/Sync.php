@@ -12,10 +12,10 @@ class Sync
     public function __construct()
     {
         // Actions: sync, add domain, delete domain, delete logfile
-        add_action('update_option_rrze-synonym', [$this, 'checkSync']);
-        add_filter('pre_update_option_rrze-synonym', [$this, 'switchTask'], 10, 1);
+        add_action('update_option_rrze-answers', [$this, 'checkSync']);
+        add_filter('pre_update_option_rrze-answers', [$this, 'switchTask'], 10, 1);
 
-        add_action('rrze_synonym_auto_sync', [$this, 'runsynonymCronjob']);
+        add_action('rrze_answers_auto_sync', [$this, 'runsynonymCronjob']);
     }
 
     /**
@@ -25,6 +25,11 @@ class Sync
     {
         $api = new API();
         $domains = $api->getDomains();
+
+        echo '<pre>';
+        echo 'here we are';
+        var_dump($domains);
+        exit;
 
         // get stored options because they are generated and not defined in config.php
         $storedOptions = get_option('rrze-answers');

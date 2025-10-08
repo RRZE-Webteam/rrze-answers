@@ -18,6 +18,7 @@ use RRZE\Answers\Common\{
     CPT\CPTFAQ,
     CPT\CPTGlossary,
     CPT\CPTSynonym,
+    Sync\Sync,
     Blocks\Blocks,
     Shortcode\ShortcodeFAQ,
     Shortcode\ShortcodeGlossary,
@@ -47,6 +48,7 @@ class Main
     private $adminMenu;
     // private $adminInterface;
     private $adminUI;
+    private $sync;
 
     public function __construct()
     {
@@ -72,9 +74,14 @@ class Main
         add_action('wp_enqueue_scripts', [$this, 'enqueueAssets']);
         add_action('enqueue_block_assets', [$this, 'enqueueAssets']);
         add_action('admin_enqueue_scripts', [$this, 'enqueueImportAssets']);
+        add_action('wp_ajax_rrze_answers_get_categories', 'rrze_answers_get_categories_cb');
+
 
         $this->shortcode();
         $this->blocks();
+
+        $this->sync = new Sync();
+
     }
 
     /**
