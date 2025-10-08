@@ -86,7 +86,7 @@ class Defaults
                     ],                    
                     'import_faq' => [
                         [
-                            'name' => 'remote_api_url',
+                            'name' => 'remote_url_faq',
                             'label' => __('Remote site', 'rrze-answers'),
                             'description' => __('Select the site you want to synchronize with.', 'rrze-answers'),
                             'type' => 'select',
@@ -94,14 +94,14 @@ class Defaults
                             'default' => ''
                         ],
                         [
-                            'name' => 'remote_categories',
+                            'name' => 'remote_categories_faq',
                             'label' => __('Categories', 'rrze-answers'),
                             'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
                             'type' => 'select-multiple',
                             'options' => []
                         ],
                         [
-                            'name' => 'remote_frequency',
+                            'name' => 'remote_frequency_faq',
                             'label' => __('Synchronize automatically', 'rrze-answers'),
                             'description' => '',
                             'default' => '',
@@ -115,7 +115,7 @@ class Defaults
                     ],
                     'import_glossary' => [
                         [
-                            'name' => 'remote_api_url',
+                            'name' => 'remote_api_glossary',
                             'label' => __('Remote site', 'rrze-answers'),
                             'description' => __('Select the site you want to synchronize with.', 'rrze-answers'),
                             'type' => 'select',
@@ -123,14 +123,14 @@ class Defaults
                             'default' => ''
                         ],
                         [
-                            'name' => 'categories',
+                            'name' => 'remote_categories_glossary',
                             'label' => __('Categories', 'rrze-answers'),
                             'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
                             'type' => 'select-multiple',
                             'options' => []
                         ],
                         [
-                            'name' => 'frequency',
+                            'name' => 'remote_frequency_glossary',
                             'label' => __('Synchronize automatically', 'rrze-answers'),
                             'description' => '',
                             'default' => '',
@@ -144,7 +144,7 @@ class Defaults
                     ],
                     'import_synonym' => [
                         [
-                            'name' => 'remote_api_url',
+                            'name' => 'remote_api_synonym',
                             'label' => __('Remote site', 'rrze-answers'),
                             'description' => __('Select the site you want to synchronize with.', 'rrze-answers'),
                             'type' => 'select',
@@ -152,14 +152,14 @@ class Defaults
                             'default' => ''
                         ],
                         [
-                            'name' => 'categories',
+                            'name' => 'remote_categories_synonym',
                             'label' => __('Categories', 'rrze-answers'),
                             'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
                             'type' => 'select-multiple',
                             'options' => []
                         ],
                         [
-                            'name' => 'frequency',
+                            'name' => 'remote_frequency_synonym',
                             'label' => __('Synchronize automatically', 'rrze-answers'),
                             'description' => '',
                             'default' => '',

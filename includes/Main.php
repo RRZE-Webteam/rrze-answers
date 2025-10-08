@@ -18,7 +18,7 @@ use RRZE\Answers\Common\{
     CPT\CPTFAQ,
     CPT\CPTGlossary,
     CPT\CPTSynonym,
-    // Sync\Sync,
+    Sync\Sync,
     Blocks\Blocks,
     Shortcode\ShortcodeFAQ,
     Shortcode\ShortcodeGlossary,
@@ -48,7 +48,7 @@ class Main
     private $adminMenu;
     // private $adminInterface;
     private $adminUI;
-    // private $sync;
+    private $sync;
 
     public function __construct()
     {
@@ -80,7 +80,7 @@ class Main
         $this->shortcode();
         $this->blocks();
 
-        // $this->sync = new Sync();
+        $this->sync = new Sync();
 
     }
 
