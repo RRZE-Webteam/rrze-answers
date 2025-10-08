@@ -94,14 +94,14 @@ class Defaults
                             'default' => ''
                         ],
                         [
-                            'name' => 'categories',
+                            'name' => 'remote_categories',
                             'label' => __('Categories', 'rrze-answers'),
                             'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
                             'type' => 'select-multiple',
                             'options' => []
                         ],
                         [
-                            'name' => 'frequency',
+                            'name' => 'remote_frequency',
                             'label' => __('Synchronize automatically', 'rrze-answers'),
                             'description' => '',
                             'default' => '',

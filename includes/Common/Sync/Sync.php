@@ -26,11 +26,6 @@ class Sync
         $api = new API();
         $domains = $api->getDomains();
 
-        echo '<pre>';
-        echo 'here we are';
-        var_dump($domains);
-        exit;
-
         // get stored options because they are generated and not defined in config.php
         $storedOptions = get_option('rrze-answers');
         if (is_array($storedOptions)) {

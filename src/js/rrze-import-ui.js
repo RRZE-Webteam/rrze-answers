@@ -38,7 +38,7 @@
   }
 
   function loadCategories(shortname) {
-    var $select = $('#rrze-answers-cats');
+    var $select = $('#rrze-answers_remote_categories_');
     setSelectName($select, shortname);
 
     if (!shortname) {
@@ -51,6 +51,18 @@
     setStatus(RRZEAnswersSync.i18n.loading, false);
     setHelp('');
 
+     var url = RRZEAnswersSync.ajaxUrl;
+  var payload = {
+    action: 'rrze_answers_get_categories',
+    _ajax_nonce: RRZEAnswersSync.nonce,
+    shortname: shortname
+  };
+
+    console.group('loadCategories debug');
+  console.log('AJAX URL:', url);
+  console.log('Payload:', payload);
+  console.log('Full URL (GET-style):', url + '?' + jQuery.param(payload));
+
     $.ajax({
       url: RRZEAnswersSync.ajaxUrl,
       type: 'POST',
@@ -62,6 +74,11 @@
       }
     })
       .done(function (resp) {
+
+
+          console.log('resp', resp);
+
+
         if (!resp || !resp.success) {
           setStatus((resp && resp.data && resp.data.message) || RRZEAnswersSync.i18n.error, true);
           return;
@@ -86,7 +103,7 @@
   }
 
   $(function () {
-    var $site = $('#rrze-answers-site');
+    var $site = $('#rrze-answers_remote_api_url');
     var initial = $site.val() || '';
 
     // Initial load (use currently selected site if present)

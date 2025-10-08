@@ -1,1 +1,109 @@
-!function(e){"use strict";function n(n,r){e("#rrze-answers-cats-status").text(n||"").css({color:r?"#b32d2e":"#1d2327"})}function r(n){e("#rrze-answers-cats-help").text(n||"")}function s(n,r,s){n.empty();var t=Object.keys(r||{});t.sort((function(e,n){return(r[e]||"").toLowerCase().localeCompare((r[n]||"").toLowerCase())})),t.forEach((function(t){var a=e("<option/>",{value:t,text:r[t]||t});Array.isArray(s)&&-1!==s.indexOf(t)&&a.prop("selected",!0),n.append(a)}))}function t(t){var a=e("#rrze-answers-cats");if(function(e,n){var r=RRZEAnswersSync.optionName||"rrze-answers",s="import_faq_categories"+(n?"_"+n:"");e.attr("name",r+"["+s+"][]")}(a,t),!t)return a.empty(),n("",!1),void r("");n(RRZEAnswersSync.i18n.loading,!1),r(""),e.ajax({url:RRZEAnswersSync.ajaxUrl,type:"POST",dataType:"json",data:{action:"rrze_answers_get_categories",_ajax_nonce:RRZEAnswersSync.nonce,shortname:t}}).done((function(e){if(e&&e.success){var t=e.data.categories||{},o=e.data.selected||[];if(0===Object.keys(t).length)return s(a,{},[]),n(RRZEAnswersSync.i18n.none,!1),void r("");s(a,t,o),n("",!1),r(RRZEAnswersSync.i18n.selectCategories)}else n(e&&e.data&&e.data.message||RRZEAnswersSync.i18n.error,!0)})).fail((function(){n(RRZEAnswersSync.i18n.error,!0)}))}e((function(){var n=e("#rrze-answers-site");t(n.val()||""),n.on("change",(function(){t(e(this).val()||"")}))}))}(jQuery);
+/******/ (() => { // webpackBootstrap
+/*!**********************************!*\
+  !*** ./src/js/rrze-import-ui.js ***!
+  \**********************************/
+/* global jQuery, RRZEAnswersSync */
+(function ($) {
+  'use strict';
+
+  // Helper: set the correct "name" attribute on the multiselect based on current site
+  function setSelectName($select, shortname) {
+    var optionName = RRZEAnswersSync.optionName || 'rrze-answers';
+    var key = 'import_faq_categories' + (shortname ? '_' + shortname : '');
+    $select.attr('name', optionName + '[' + key + '][]');
+  }
+  function setStatus(msg, isError) {
+    $('#rrze-answers-cats-status').text(msg || '').css({
+      color: isError ? '#b32d2e' : '#1d2327'
+    });
+  }
+  function setHelp(msg) {
+    $('#rrze-answers-cats-help').text(msg || '');
+  }
+  function populateCategories($select, map, selected) {
+    $select.empty();
+
+    // map: {slug: "Name", ...}
+    var keys = Object.keys(map || {});
+    keys.sort(function (a, b) {
+      return (map[a] || '').toLowerCase().localeCompare((map[b] || '').toLowerCase());
+    });
+    keys.forEach(function (slug) {
+      var opt = $('<option/>', {
+        value: slug,
+        text: map[slug] || slug
+      });
+      if (Array.isArray(selected) && selected.indexOf(slug) !== -1) {
+        opt.prop('selected', true);
+      }
+      $select.append(opt);
+    });
+  }
+  function loadCategories(shortname) {
+    var $select = $('#rrze-answers_remote_categories_');
+    setSelectName($select, shortname);
+    if (!shortname) {
+      $select.empty();
+      setStatus('', false);
+      setHelp('');
+      return;
+    }
+    setStatus(RRZEAnswersSync.i18n.loading, false);
+    setHelp('');
+    var url = RRZEAnswersSync.ajaxUrl;
+    var payload = {
+      action: 'rrze_answers_get_categories',
+      _ajax_nonce: RRZEAnswersSync.nonce,
+      shortname: shortname
+    };
+    console.group('loadCategories debug');
+    console.log('AJAX URL:', url);
+    console.log('Payload:', payload);
+    console.log('Full URL (GET-style):', url + '?' + jQuery.param(payload));
+    $.ajax({
+      url: RRZEAnswersSync.ajaxUrl,
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        action: 'rrze_answers_get_categories',
+        _ajax_nonce: RRZEAnswersSync.nonce,
+        shortname: shortname
+      }
+    }).done(function (resp) {
+      console.log('resp', resp);
+      if (!resp || !resp.success) {
+        setStatus(resp && resp.data && resp.data.message || RRZEAnswersSync.i18n.error, true);
+        return;
+      }
+      var cats = resp.data.categories || {};
+      var selected = resp.data.selected || [];
+      if (Object.keys(cats).length === 0) {
+        populateCategories($select, {}, []);
+        setStatus(RRZEAnswersSync.i18n.none, false);
+        setHelp('');
+        return;
+      }
+      populateCategories($select, cats, selected);
+      setStatus('', false);
+      setHelp(RRZEAnswersSync.i18n.selectCategories);
+    }).fail(function () {
+      setStatus(RRZEAnswersSync.i18n.error, true);
+    });
+  }
+  $(function () {
+    var $site = $('#rrze-answers_remote_api_url');
+    var initial = $site.val() || '';
+
+    // Initial load (use currently selected site if present)
+    loadCategories(initial);
+
+    // On change: fetch & populate
+    $site.on('change', function () {
+      var shortname = $(this).val() || '';
+      loadCategories(shortname);
+    });
+  });
+})(jQuery);
+/******/ })()
+;
+//# sourceMappingURL=rrze-import-ui.js.map

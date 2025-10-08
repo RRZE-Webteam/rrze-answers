@@ -18,7 +18,7 @@ use RRZE\Answers\Common\{
     CPT\CPTFAQ,
     CPT\CPTGlossary,
     CPT\CPTSynonym,
-    Sync\Sync,
+    // Sync\Sync,
     Blocks\Blocks,
     Shortcode\ShortcodeFAQ,
     Shortcode\ShortcodeGlossary,
@@ -48,7 +48,7 @@ class Main
     private $adminMenu;
     // private $adminInterface;
     private $adminUI;
-    private $sync;
+    // private $sync;
 
     public function __construct()
     {
@@ -74,15 +74,63 @@ class Main
         add_action('wp_enqueue_scripts', [$this, 'enqueueAssets']);
         add_action('enqueue_block_assets', [$this, 'enqueueAssets']);
         add_action('admin_enqueue_scripts', [$this, 'enqueueImportAssets']);
-        add_action('wp_ajax_rrze_answers_get_categories', 'rrze_answers_get_categories_cb');
+        add_action('wp_ajax_rrze_answers_get_categories', [$this, 'rrze_answers_get_categories_cb']);
 
 
         $this->shortcode();
         $this->blocks();
 
-        $this->sync = new Sync();
+        // $this->sync = new Sync();
 
     }
+
+    function rrze_answers_get_categories_cb()
+    {
+        check_ajax_referer('rrze_answers_sync', '_ajax_nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Unauthorized'], 403);
+        }
+
+        $shortname = isset($_POST['shortname']) ? trim(wp_unslash($_POST['shortname'])) : '';
+        if ($shortname === '') {
+            wp_send_json_error(['message' => 'Missing parameter: shortname'], 400);
+        }
+
+        if (strpos($shortname, '/wp-json/wp/v2/') !== false) {
+            $endpoint = trailingslashit(esc_url_raw($shortname)) . 'rrze_faq_category';
+            $res = wp_remote_get($endpoint, ['timeout' => 10, 'headers' => ['Accept' => 'application/json']]);
+
+            if (is_wp_error($res)) {
+                wp_send_json_error(['message' => $res->get_error_message()], 500);
+            }
+
+            $code = wp_remote_retrieve_response_code($res);
+            $body = wp_remote_retrieve_body($res);
+            if ($code !== 200) {
+                wp_send_json_error(['message' => "Remote $code", 'body' => $body], $code);
+            }
+
+            $items = json_decode($body, true);
+            if (!is_array($items)) {
+                wp_send_json_error(['message' => 'Invalid JSON from remote'], 500);
+            }
+
+            $cats = [];
+            foreach ($items as $it) {
+                if (!empty($it['slug']) && isset($it['name'])) {
+                    $cats[$it['slug']] = $it['name'];
+                }
+            }
+
+            wp_send_json_success([
+                'categories' => $cats,
+                'selected' => [],
+            ]);
+        }
+    }
+
+
 
     /**
      * Allow needed HTML on post content sanitized by wp_kses_post().
@@ -307,20 +355,20 @@ class Main
     {
         wp_register_script(
             'rrze-answers-import-ui',
-            plugins_url('build/import-ui.js', dirname(__FILE__, 2)),
+            plugins_url('build/rrze-import-ui.js', plugin()->getBasename()),
             ['jquery'],
             '1.0.0',
             true
         );
 
         wp_localize_script('rrze-answers-import-ui', 'RRZEAnswersSync', [
-            'ajaxUrl'      => admin_url('admin-ajax.php'),
-            'nonce'        => wp_create_nonce('rrze_answers_sync'),
-            'optionName'   => 'rrze-answers',
-            'i18n'         => [
-                'loading'          => __('Loading categories…', 'rrze-answers'),
-                'none'             => __('No categories found.', 'rrze-answers'),
-                'error'            => __('Error while loading categories.', 'rrze-answers'),
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('rrze_answers_sync'),
+            'optionName' => 'rrze-answers_remote_api_url',
+            'i18n' => [
+                'loading' => __('Loading categories…', 'rrze-answers'),
+                'none' => __('No categories found.', 'rrze-answers'),
+                'error' => __('Error while loading categories.', 'rrze-answers'),
                 'selectCategories' => __('Hold Ctrl/Cmd to select multiple categories.', 'rrze-answers'),
             ],
         ]);
