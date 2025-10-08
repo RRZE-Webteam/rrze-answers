@@ -38,8 +38,11 @@
   }
 
   function loadCategories(shortname) {
-    var $select = $('#rrze-answers_remote_categories_');
+    console.log('loadCategories');
+    var $select = $('#rrze-answers_remote_categories_faq_');
     setSelectName($select, shortname);
+
+    console.log('loadCategories 2');
 
     if (!shortname) {
       $select.empty();
@@ -103,15 +106,18 @@
   }
 
   $(function () {
-    var $site = $('#rrze-answers_remote_api_url');
+    var $site = $('rrze-answers_remote_url_faq');
     var initial = $site.val() || '';
 
+    console.log('$site', $site);
+
     // Initial load (use currently selected site if present)
-    loadCategories(initial);
+    // loadCategories(initial);
 
     // On change: fetch & populate
     $site.on('change', function () {
       var shortname = $(this).val() || '';
+    console.log('shortname', shortname);
       loadCategories(shortname);
     });
   });
