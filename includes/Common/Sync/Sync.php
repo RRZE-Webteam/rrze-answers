@@ -15,15 +15,13 @@ class Sync
 
     public function __construct()
     {
-        // Actions: sync, add domain, delete domain, delete logfile
-        add_action('update_option_rrze-answers', [$this, 'checkSync']);
-        add_filter('pre_update_option_rrze-answers', [$this, 'switchTask'], 10, 1);
+        add_action('update_option_rrze-answers', [$this, 'switchTask']);
 
-foreach (['faq', 'glossary', 'synonym'] as $type) {
-    add_action("rrze_answers_auto_sync_{$type}", function () use ($type) {
-        $this->runCronjob($type);
-    });
-}
+        foreach (['faq', 'glossary', 'synonym'] as $type) {
+            add_action("rrze_answers_auto_sync_{$type}", function () use ($type) {
+                $this->runCronjob($type);
+            });
+        }
     }
 
     /**
@@ -31,15 +29,15 @@ foreach (['faq', 'glossary', 'synonym'] as $type) {
      */
     public function switchTask($options)
     {
-        $tab = (!empty($_GET['tab']) ? $_GET['tab'] :'');
+        $tab = (!empty($_GET['tab']) ? $_GET['tab'] : '');
 
-        $this->type = substr(strrchr($tab, '-'), 1); // "faq"
-        $this->frequency = (!empty($options['remote_frequency_' . $this->type]) ? $options['remote_frequency_' . $this->type] : ''); 
 
         switch ($tab) {
             case 'import-faq':
             case 'import-synonym':
             case 'import-glossary':
+                $this->type = substr(strrchr($tab, '-'), 1); // "faq"
+                $this->frequency = (!empty($options['remote_frequency_' . $this->type]) ? $options['remote_frequency_' . $this->type] : '');
                 $mode = (!empty($this->frequency) ? 'automatic' : 'manual');
                 $this->doSync($mode);
                 $this->setCronjob();
