@@ -349,34 +349,58 @@ class Tools
         }
         return $options;
     }
-    public static function getSitesWithPlugin(): array
-    {
-        if (!is_multisite()) {
-            return [];
-        }
 
-        $pluginFile = 'rrze-answers/rrze-answers.php'; 
-        $sites = get_sites(['public' => 1, 'archived' => 0, 'deleted' => 0]);
-        $result = ['' => __('--Choose a website --', 'rrze-answers')];
 
-        foreach ($sites as $site) {
-            $blog_id = (int) $site->blog_id;
-
-            $active_plugins = get_blog_option($blog_id, 'active_plugins', []);
-            if (in_array($pluginFile, $active_plugins, true)) {
-                switch_to_blog($blog_id);
-
-                $site_name = get_bloginfo('name');
-                $site_url = home_url('/wp-json/wp/v2/');
-
-                restore_current_blog();
-
-                $result[$site_url] = $site_name;
-            }
-        }
-
-        return $result;
+public static function getSitesForSelect(): array
+{
+    if (!is_multisite()) {
+        return [];
     }
+
+    $pluginFile = 'rrze-answers/rrze-answers.php';
+    $sites      = get_sites(['public' => 1, 'archived' => 0, 'deleted' => 0]);
+
+    // First option: placeholder
+    $result = ['' => __('-- Choose a website --', 'rrze-answers')];
+
+    foreach ($sites as $site) {
+        $blog_id = (int) $site->blog_id;
+
+        // Only include sites where the plugin is active
+        $active_plugins = get_blog_option($blog_id, 'active_plugins', []);
+        if (!in_array($pluginFile, $active_plugins, true)) {
+            continue;
+        }
+
+        // ----- Identifier logic (inline, simplified)
+        $home_url = get_home_url($blog_id);
+        $host     = parse_url($home_url, PHP_URL_HOST) ?: '';
+        $host     = preg_replace('/^www\./i', '', $host); // remove www.
+
+        // Use the first domain segment (e.g., "phil" from phil.fau.eu)
+        $identifier = explode('.', $host)[0];
+
+        // Fallback: if no subdomain (e.g., fau.eu) use the second-to-last segment
+        if (empty($identifier) || $identifier === $host) {
+            $parts = explode('.', $host);
+            $identifier = $parts[count($parts) - 2] ?? $host;
+        }
+        // ----- /Identifier
+
+        // Get the site name directly from options
+        $site_name = get_blog_option($blog_id, 'blogname');
+
+        // Get REST API base URL for the site
+        $api_url = trailingslashit(get_rest_url($blog_id, 'wp/v2'));
+
+        // Human-readable label for the <select>
+        $label = sprintf('%s — %s', $identifier, $site_name);
+
+        $result[$api_url] = $label;
+    }
+
+    return $result;
+}
 
 
     public static function getPronunciation($post_id){

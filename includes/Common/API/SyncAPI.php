@@ -4,7 +4,7 @@ namespace RRZE\Answers\Common\API;
 
 defined('ABSPATH') || exit;
 
-define('ENDPOINT', 'wp-json/wp/v2/faq');
+// define('ENDPOINT', 'wp-json/wp/v2/faq');
 
 use RRZE\Answers\Common\Config;
 

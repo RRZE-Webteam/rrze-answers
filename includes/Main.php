@@ -76,13 +76,39 @@ class Main
         add_action('admin_enqueue_scripts', [$this, 'enqueueImportAssets']);
         add_action('wp_ajax_rrze_answers_get_categories', [$this, 'rrze_answers_get_categories_cb']);
 
+        add_action('update_option_rrze-answers', [$this, 'switchTask'], 10, 3);
+
+
 
         $this->shortcode();
         $this->blocks();
 
-        $this->sync = new Sync();
-
     }
+
+    public function switchTask($old, $new, $option)
+    {
+        $tab = (!empty($_GET['tab']) ? $_GET['tab'] : '');
+
+        switch ($tab) {
+            case 'import-faq':
+            case 'import-synonym':
+            case 'import-glossary':
+                $type = substr(strrchr($tab, '-'), 1); // "faq"
+                $frequency = (!empty($new['remote_frequency_' . $type]) ? $new['remote_frequency_' . $type] : '');
+                $mode = (!empty($frequency) ? 'automatic' : 'manual');
+                $sync = new Sync($type, $frequency);
+                $sync->doSync($mode);
+                $sync->setCronjob();
+                break;
+            case 'del':
+                deleteLogfile();
+                break;
+        }
+
+
+        // return $options;
+    }
+
 
     function rrze_answers_get_categories_cb()
     {

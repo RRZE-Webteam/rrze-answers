@@ -90,7 +90,7 @@ class Defaults
                             'label' => __('Remote site', 'rrze-answers'),
                             'description' => __('Select the site you want to synchronize with.', 'rrze-answers'),
                             'type' => 'select',
-                            'options' => Tools::getSitesWithPlugin(),
+                            'options' => Tools::getSitesForSelect(),
                             'default' => ''
                         ],
                         [
@@ -106,7 +106,7 @@ class Defaults
                             'description' => '',
                             'default' => '',
                             'options' => [
-                                '' => __('deactivated', 'rrze-answers'),
+                                '' => __('-- off --', 'rrze-answers'),
                                 'daily' => __('daily', 'rrze-answers'),
                                 'twicedaily' => __('twicedaily', 'rrze-answers')
                             ],
@@ -119,7 +119,7 @@ class Defaults
                             'label' => __('Remote site', 'rrze-answers'),
                             'description' => __('Select the site you want to synchronize with.', 'rrze-answers'),
                             'type' => 'select',
-                            'options' => Tools::getSitesWithPlugin(),
+                            'options' => Tools::getSitesForSelect(),
                             'default' => ''
                         ],
                         [
@@ -135,7 +135,7 @@ class Defaults
                             'description' => '',
                             'default' => '',
                             'options' => [
-                                '' => __('deactivated', 'rrze-answers'),
+                                '' => __('-- off --', 'rrze-answers'),
                                 'daily' => __('daily', 'rrze-answers'),
                                 'twicedaily' => __('twicedaily', 'rrze-answers')
                             ],
@@ -148,7 +148,7 @@ class Defaults
                             'label' => __('Remote site', 'rrze-answers'),
                             'description' => __('Select the site you want to synchronize with.', 'rrze-answers'),
                             'type' => 'select',
-                            'options' => Tools::getSitesWithPlugin(),
+                            'options' => Tools::getSitesForSelect(),
                             'default' => ''
                         ],
                         [
@@ -164,7 +164,7 @@ class Defaults
                             'description' => '',
                             'default' => '',
                             'options' => [
-                                '' => __('deactivated', 'rrze-answers'),
+                                '' => __('-- off --', 'rrze-answers'),
                                 'daily' => __('daily', 'rrze-answers'),
                                 'twicedaily' => __('twicedaily', 'rrze-answers')
                             ],

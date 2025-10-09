@@ -13,42 +13,16 @@ class Sync
 
     protected $frequency = '';
 
-    public function __construct()
+    public function __construct($type, $frequency)
     {
-        add_action('update_option_rrze-answers', [$this, 'switchTask']);
-
+        $this->type = $type;
+        $this->frequency = $frequency;
+        
         foreach (['faq', 'glossary', 'synonym'] as $type) {
             add_action("rrze_answers_auto_sync_{$type}", function () use ($type) {
                 $this->runCronjob($type);
             });
         }
-    }
-
-    /**
-     * Click on buttons "sync", "add domain", "delete domain" or "delete logfile"
-     */
-    public function switchTask($options)
-    {
-        $tab = (!empty($_GET['tab']) ? $_GET['tab'] : '');
-
-
-        switch ($tab) {
-            case 'import-faq':
-            case 'import-synonym':
-            case 'import-glossary':
-                $this->type = substr(strrchr($tab, '-'), 1); // "faq"
-                $this->frequency = (!empty($options['remote_frequency_' . $this->type]) ? $options['remote_frequency_' . $this->type] : '');
-                $mode = (!empty($this->frequency) ? 'automatic' : 'manual');
-                $this->doSync($mode);
-                $this->setCronjob();
-                break;
-            case 'del':
-                deleteLogfile();
-                break;
-        }
-
-
-        return $options;
     }
 
     public function runCronjob($type)
@@ -90,6 +64,15 @@ class Sync
 
     public function doSync($mode)
     {
+
+        echo 'in doSync<pre>';
+        var_dump($this->type);
+        var_dump($this->frequency);
+                $options = get_option('rrze-answers');
+
+                var_dump($options);
+        exit;
+
         $tStart = microtime(true);
         $max_exec_time = ini_get('max_execution_time') - 40; // ini_get('max_execution_time') is not the correct value perhaps due to load-balancer or proxy or other fancy things I've no clue of. But this workaround works for now.
         $iCnt = 0;

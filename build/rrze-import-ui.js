@@ -93,17 +93,15 @@
     });
   }
   $(function () {
-    var $site = $('rrze-answers_remote_url_faq');
+    var $site = $('#rrze-answers_remote_url_faq');
     var initial = $site.val() || '';
-    console.log('$site', $site);
 
     // Initial load (use currently selected site if present)
-    // loadCategories(initial);
+    loadCategories(initial);
 
     // On change: fetch & populate
     $site.on('change', function () {
       var shortname = $(this).val() || '';
-      console.log('shortname', shortname);
       loadCategories(shortname);
     });
   });
