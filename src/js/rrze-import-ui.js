@@ -40,7 +40,7 @@
   function loadCategories(site_url) {
     console.log('loadCategories');
     var $select = $('#rrze-answers_remote_categories_faq_');
-    setSelectName($select, site_url);
+    // setSelectName($select, site_url);
 
     console.log('loadCategories 2');
 

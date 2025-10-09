@@ -10,6 +10,8 @@ defined('ABSPATH') || exit;
 
 define('ENDPOINT', 'wp/v2/faq');
 
+define('RRZEANSWERSLOGFILE', 'rrze-answers.log');
+
 /**
  * Class Defaults
  *

@@ -440,20 +440,20 @@ public static function getIdentifier($url){
 
 		$msg = wp_date("Y-m-d H:i:s") . ' | ' . $msg;
 
-		if ($wp_filesystem->exists(FAQLOGFILE)) {
-			$content = $wp_filesystem->get_contents(FAQLOGFILE);
+		if ($wp_filesystem->exists(RRZEANSWERSLOGFILE)) {
+			$content = $wp_filesystem->get_contents(RRZEANSWERSLOGFILE);
 			$content = $msg . "\n" . $content;
 		} else {
 			$content = $msg;
 		}
 
-		$wp_filesystem->put_contents(FAQLOGFILE, $content, FS_CHMOD_FILE);
+		$wp_filesystem->put_contents(RRZEANSWERSLOGFILE, $content, FS_CHMOD_FILE);
 	}
 
 	public static function deleteLogfile(): void
 	{
-		if (file_exists(FAQLOGFILE)) {
-			wp_delete_file(FAQLOGFILE);
+		if (file_exists(RRZEANSWERSLOGFILE)) {
+			wp_delete_file(RRZEANSWERSLOGFILE);
 		}
 	}
 

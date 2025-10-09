@@ -82,7 +82,12 @@ class Sync
 
         foreach ($domains as $site_url) {
             $tStartDetail = microtime(true);
-            $categories = (isset($options['import_faq_categories_' . $site_url]) ? implode(',', $options['import_faq_categories_' . $site_url]) : false);
+            // $categories = (isset($options['remote_categories_faq' . $site_url]) ? implode(',', $options['remote_categories_faq' . $site_url]) : false);
+
+            // 2DO: rrze-answers[remote_categories_faq][host][]
+
+
+            $categories = (isset($options['remote_categories_faq']) ? implode(',', $options['remote_categories_faq']) : false);
             if ($categories) {
                 $identifier = Tools::getIdentifier($site_url);
                 $aCnt = $api->setFAQ($identifier, $categories, $site_url);
