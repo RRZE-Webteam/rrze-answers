@@ -7,9 +7,9 @@
   'use strict';
 
   // Helper: set the correct "name" attribute on the multiselect based on current site
-  function setSelectName($select, shortname) {
+  function setSelectName($select, site_url) {
     var optionName = RRZEAnswersSync.optionName || 'rrze-answers';
-    var key = 'import_faq_categories' + (shortname ? '_' + shortname : '');
+    var key = 'import_faq_categories' + (site_url ? '_' + site_url : '');
     $select.attr('name', optionName + '[' + key + '][]');
   }
   function setStatus(msg, isError) {
@@ -39,12 +39,12 @@
       $select.append(opt);
     });
   }
-  function loadCategories(shortname) {
+  function loadCategories(site_url) {
     console.log('loadCategories');
     var $select = $('#rrze-answers_remote_categories_faq_');
-    setSelectName($select, shortname);
+    setSelectName($select, site_url);
     console.log('loadCategories 2');
-    if (!shortname) {
+    if (!site_url) {
       $select.empty();
       setStatus('', false);
       setHelp('');
@@ -56,7 +56,7 @@
     var payload = {
       action: 'rrze_answers_get_categories',
       _ajax_nonce: RRZEAnswersSync.nonce,
-      shortname: shortname
+      site_url: site_url
     };
     console.group('loadCategories debug');
     console.log('AJAX URL:', url);
@@ -69,7 +69,7 @@
       data: {
         action: 'rrze_answers_get_categories',
         _ajax_nonce: RRZEAnswersSync.nonce,
-        shortname: shortname
+        site_url: site_url
       }
     }).done(function (resp) {
       console.log('resp', resp);
@@ -101,8 +101,8 @@
 
     // On change: fetch & populate
     $site.on('change', function () {
-      var shortname = $(this).val() || '';
-      loadCategories(shortname);
+      var site_url = $(this).val() || '';
+      loadCategories(site_url);
     });
   });
 })(jQuery);

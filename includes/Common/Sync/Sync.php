@@ -4,6 +4,8 @@ namespace RRZE\Answers\Common\Sync;
 
 use RRZE\Answers\Common\API\SyncAPI;
 
+use RRZE\Answers\Common\Tools;
+
 defined('ABSPATH') || exit;
 
 class Sync
@@ -17,7 +19,7 @@ class Sync
     {
         $this->type = $type;
         $this->frequency = $frequency;
-        
+
         foreach (['faq', 'glossary', 'synonym'] as $type) {
             add_action("rrze_answers_auto_sync_{$type}", function () use ($type) {
                 $this->runCronjob($type);
@@ -64,47 +66,42 @@ class Sync
 
     public function doSync($mode)
     {
-
-        echo 'in doSync<pre>';
-        var_dump($this->type);
-        var_dump($this->frequency);
-                $options = get_option('rrze-answers');
-
-                var_dump($options);
-        exit;
-
         $tStart = microtime(true);
         $max_exec_time = ini_get('max_execution_time') - 40; // ini_get('max_execution_time') is not the correct value perhaps due to load-balancer or proxy or other fancy things I've no clue of. But this workaround works for now.
         $iCnt = 0;
-        $api = new SyncAPI();
-        $domains = $api->getDomains();
+     
         $options = get_option('rrze-answers');
+
+        $domains = [
+            $options['remote_url_faq']
+        ];
+
         $allowSettingsError = ($mode == 'manual' ? true : false);
         $syncRan = false;
+        $api = new SyncAPI();
 
-        foreach ($domains as $shortname => $url) {
+        foreach ($domains as $site_url) {
             $tStartDetail = microtime(true);
-            if (isset($options['import_faq_donotsync_' . $shortname]) && $options['import_faq_donotsync_' . $shortname] != 'on') {
-                $categories = (isset($options['import_faq_categories_' . $shortname]) ? implode(',', $options['import_faq_categories_' . $shortname]) : false);
-                if ($categories) {
-                    $aCnt = $api->setFAQ($url, $categories, $shortname);
-                    $syncRan = true;
+            $categories = (isset($options['import_faq_categories_' . $site_url]) ? implode(',', $options['import_faq_categories_' . $site_url]) : false);
+            if ($categories) {
+                $identifier = Tools::getIdentifier($site_url);
+                $aCnt = $api->setFAQ($identifier, $categories, $site_url);
+                $syncRan = true;
 
-                    foreach ($aCnt['URLhasSlider'] as $URLhasSlider) {
-                        $error_msg = __('Domain', 'rrze-answers') . ' "' . $shortname . '": ' . __('Synchronization error. This FAQ contains sliders ([gallery]) and cannot be synchronized:', 'rrze-answers') . ' ' . $URLhasSlider;
-                        logIt($error_msg . ' | ' . $mode);
-
-                        if ($allowSettingsError) {
-                            add_settings_error('Synchronization error', 'syncerror', $error_msg, 'error');
-                        }
-                    }
-
-                    $sync_msg = __('Domain', 'rrze-answers') . ' "' . $shortname . '": ' . __('Synchronization completed.', 'rrze-answers') . ' ' . $aCnt['iNew'] . ' ' . __('new', 'rrze-answers') . ', ' . $aCnt['iUpdated'] . ' ' . __('updated', 'rrze-answers') . ' ' . __('and', 'rrze-answers') . ' ' . $aCnt['iDeleted'] . ' ' . __('deleted', 'rrze-answers') . '. ' . __('Required time:', 'rrze-answers') . ' ' . sprintf('%.1f ', microtime(true) - $tStartDetail) . __('seconds', 'rrze-answers');
-                    logIt($sync_msg . ' | ' . $mode);
+                foreach ($aCnt['URLhasSlider'] as $URLhasSlider) {
+                    $error_msg = __('Domain', 'rrze-answers') . ' "' . $site_url . '": ' . __('Synchronization error. This FAQ contains sliders ([gallery]) and cannot be synchronized:', 'rrze-answers') . ' ' . $URLhasSlider;
+                    Tools::logIt($error_msg . ' | ' . $mode);
 
                     if ($allowSettingsError) {
-                        add_settings_error('Synchronization completed', 'synccompleted', $sync_msg, 'success');
+                        add_settings_error('Synchronization error', 'syncerror', $error_msg, 'error');
                     }
+                }
+
+                $sync_msg = __('Domain', 'rrze-answers') . ' "' . $site_url . '": ' . __('Synchronization completed.', 'rrze-answers') . ' ' . $aCnt['iNew'] . ' ' . __('new', 'rrze-answers') . ', ' . $aCnt['iUpdated'] . ' ' . __('updated', 'rrze-answers') . ' ' . __('and', 'rrze-answers') . ' ' . $aCnt['iDeleted'] . ' ' . __('deleted', 'rrze-answers') . '. ' . __('Required time:', 'rrze-answers') . ' ' . sprintf('%.1f ', microtime(true) - $tStartDetail) . __('seconds', 'rrze-answers');
+                Tools::logIt($sync_msg . ' | ' . $mode);
+
+                if ($allowSettingsError) {
+                    add_settings_error('Synchronization completed', 'synccompleted', $sync_msg, 'success');
                 }
             }
         }
@@ -120,7 +117,7 @@ class Sync
             settings_errors();
         }
 
-        logIt($sync_msg . ' | ' . $mode);
+        Tools::logIt($sync_msg . ' | ' . $mode);
         return;
     }
 }

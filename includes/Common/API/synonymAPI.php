@@ -10,18 +10,18 @@ class API {
 
     private $aAllCats = array();
 
-    public function setDomain( $shortname, $url, $domains ){
-        // returns array('status' => TRUE, 'ret' => array(cleanShortname, cleanUrl)
+    public function setDomain( $site_url, $url, $domains ){
+        // returns array('status' => TRUE, 'ret' => array(cleansite_url, cleanUrl)
         // on error returns array('status' => FALSE, 'ret' => error-message)
         $aRet = array( 'status' => FALSE, 'ret' => '' );
         $cleanUrl = trailingslashit( preg_replace( "/^((http|https):\/\/)?/i", "https://", $url ) );
-        $cleanShortname = strtolower( preg_replace('/[^A-Za-z0-9]/', '', $shortname ) );
+        $cleansite_url = strtolower( preg_replace('/[^A-Za-z0-9]/', '', $site_url ) );
 
         if ( in_array( $cleanUrl, $domains )){
             $aRet['ret'] = $url . ' ' . __( 'is already in use.', 'rrze-answers' );
             return $aRet;
-        }elseif ( array_key_exists( $cleanShortname, $domains )){
-            $aRet['ret'] = $cleanShortname . ' ' . __( 'is already in use.', 'rrze-answers' );
+        }elseif ( array_key_exists( $cleansite_url, $domains )){
+            $aRet['ret'] = $cleansite_url . ' ' . __( 'is already in use.', 'rrze-answers' );
             return $aRet;
         }else{
             $request = wp_remote_get( $cleanUrl . SYNONYM_ENDPOINT . '?per_page=1' );
@@ -43,7 +43,7 @@ class API {
         }
 
         $aRet['status'] = TRUE;
-        $aRet['ret'] = array( 'cleanShortname' => $cleanShortname, 'cleanUrl' => $cleanUrl );
+        $aRet['ret'] = array( 'cleansite_url' => $cleansite_url, 'cleanUrl' => $cleanUrl );
         return $aRet;
     }
 
@@ -55,8 +55,8 @@ class API {
         $domains = array();
         $options = get_option( 'rrze-answers' );
         if ( isset( $options['registeredDomains'] ) ){
-            foreach( $options['registeredDomains'] as $shortname => $url ){
-                $domains[$shortname] = $url;
+            foreach( $options['registeredDomains'] as $site_url => $url ){
+                $domains[$site_url] = $url;
             }	
         }
         asort( $domains );
@@ -183,13 +183,13 @@ class API {
         return $aRet;
     }
 
-    public function setSynonyms( $url, $shortname ){
+    public function setSynonyms( $url, $site_url ){
         $iNew = 0;
         $iUpdated = 0;
         $iDeleted = 0;
 
         // get all remoteIDs of stored synonyms to this source ( key = remoteID, value = postID )
-        $aRemoteIDs = $this->getSynonymsRemoteIDs( $shortname );
+        $aRemoteIDs = $this->getSynonymsRemoteIDs( $site_url );
 
         // get all synonyms
         $aSynonym = $this->getSynonyms( $url );
@@ -204,7 +204,7 @@ class API {
                         'post_name' => sanitize_title( $synonym['title'] ),
                         'post_title' => $synonym['title'],
                         'meta_input' => array(
-                            'source' => $shortname,
+                            'source' => $site_url,
                             'lang' => $synonym['lang'],
                             'synonym' => $synonym['synonym'],
                             'titleLang' => $synonym['titleLang'],
@@ -224,7 +224,7 @@ class API {
                     'ping_status' => 'closed',
                     'post_status' => 'publish',
                     'meta_input' => array(
-                        'source' => $shortname,
+                        'source' => $site_url,
                         'lang' => $synonym['lang'],
                         'synonym' => $synonym['synonym'],
                         'titleLang' => $synonym['titleLang'],

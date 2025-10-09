@@ -18,20 +18,20 @@ class SyncAPI
     {
             }
 
-    public function setDomain($shortname, $url, $domains)
+    public function setDomain($site_url, $url, $domains)
     {
-        // returns array('status' => TRUE, 'ret' => array(cleanShortname, cleanUrl)
+        // returns array('status' => TRUE, 'ret' => array(cleansite_url, cleanUrl)
         // on error returns array('status' => FALSE, 'ret' => error-message)
         try {
             $aRet = array('status' => false, 'ret' => '');
             $cleanUrl = trailingslashit(preg_replace("/^((http|https):\/\/)?/i", "https://", $url));
-            $cleanShortname = strtolower(preg_replace('/[^A-Za-z0-9]/', '', $shortname));
+            $cleansite_url = strtolower(preg_replace('/[^A-Za-z0-9]/', '', $site_url));
 
             if (in_array($cleanUrl, $domains)) {
                 $aRet['ret'] = $url . __(' is already in use.', 'rrze-answers');
                 return $aRet;
-            } elseif (array_key_exists($cleanShortname, $domains)) {
-                $aRet['ret'] = $cleanShortname . __(' is already in use.', 'rrze-answers');
+            } elseif (array_key_exists($cleansite_url, $domains)) {
+                $aRet['ret'] = $cleansite_url . __(' is already in use.', 'rrze-answers');
                 return $aRet;
             } else {
                 $request = $this->remoteGet($cleanUrl . ENDPOINT . '?per_page=1');
@@ -53,7 +53,7 @@ class SyncAPI
             }
 
             $aRet['status'] = true;
-            $aRet['ret'] = array('cleanShortname' => $cleanShortname, 'cleanUrl' => $cleanUrl);
+            $aRet['ret'] = array('cleansite_url' => $cleansite_url, 'cleanUrl' => $cleanUrl);
             return $aRet;
         } catch (CustomException $e) {
             return new \WP_Error('setDomain_error', __('Error in setDomain().', 'rrze-answers'));
@@ -70,8 +70,8 @@ class SyncAPI
         $domains = array();
         $options = get_option('rrze-answers');
         if (isset($options['registeredDomains'])) {
-            foreach ($options['registeredDomains'] as $shortname => $url) {
-                $domains[$shortname] = $url;
+            foreach ($options['registeredDomains'] as $site_url => $url) {
+                $domains[$site_url] = $url;
             }
         }
         asort($domains);
@@ -161,7 +161,7 @@ class SyncAPI
         $this->deleteTaxonomies($source, 'rrze_faq_tag');
     }
 
-    protected function setCategories(&$aCategories, &$shortname)
+    protected function setCategories(&$aCategories, &$site_url)
     {
         try {
             $aTmp = $aCategories;
@@ -170,12 +170,12 @@ class SyncAPI
                 if (!$term) {
                     $term = wp_insert_term($name, 'rrze_faq_category');
                 }
-                update_term_meta($term['term_id'], 'source', $shortname);
+                update_term_meta($term['term_id'], 'source', $site_url);
                 foreach ($aDetails as $childname => $tmp) {
                     $childterm = term_exists($childname, 'rrze_faq_category');
                     if (!$childterm) {
                         $childterm = wp_insert_term($childname, 'rrze_faq_category', array('parent' => $term['term_id']));
-                        update_term_meta($childterm['term_id'], 'source', $shortname);
+                        update_term_meta($childterm['term_id'], 'source', $site_url);
                     }
                 }
                 if ($aDetails) {
@@ -251,17 +251,17 @@ class SyncAPI
         }
     }
 
-    public function getCategories($url, $shortname, $categories = '')
+    public function getCategories($url, $site_url, $categories = '')
     {
         $aRet = array();
         $aCategories = $this->getTaxonomies($url, 'rrze_faq_category', $categories);
-        $this->setCategories($aCategories, $shortname);
+        $this->setCategories($aCategories, $site_url);
         $categories = get_terms(array(
             'taxonomy' => 'rrze_faq_category',
             'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
                 array(
                     'key' => 'source',
-                    'value' => $shortname,
+                    'value' => $site_url,
                 )
             ),
             'hide_empty' => false,
@@ -386,7 +386,7 @@ class SyncAPI
         }
     }
 
-    public function setTags($terms, $shortname)
+    public function setTags($terms, $site_url)
     {
         try {
             if ($terms) {
@@ -396,7 +396,7 @@ class SyncAPI
                         $term = term_exists($name, 'rrze_faq_tag');
                         if (!$term) {
                             $term = wp_insert_term($name, 'rrze_faq_tag');
-                            update_term_meta($term['term_id'], 'source', $shortname);
+                            update_term_meta($term['term_id'], 'source', $site_url);
                         }
                     }
                 }
@@ -425,7 +425,7 @@ class SyncAPI
         }
     }
 
-    public function setFAQ($url, $categories, $shortname)
+    public function setFAQ($url, $categories, $site_url)
     {
         try {
             $iNew = 0;
@@ -434,18 +434,18 @@ class SyncAPI
             $aURLhasSlider = array();
 
             // get all remoteIDs of stored FAQ to this source ( key = remoteID, value = postID )
-            $aRemoteIDs = $this->getFAQRemoteIDs($shortname);
+            $aRemoteIDs = $this->getFAQRemoteIDs($site_url);
 
-            // $this->deleteTags( $shortname );
-            // $this->deleteCategories( $shortname );
-            // $this->getCategories( $url, $shortname );
+            // $this->deleteTags( $site_url );
+            // $this->deleteCategories( $site_url );
+            // $this->getCategories( $url, $site_url );
 
             // get all FAQ
             $aFaq = $this->getFAQ($url, $categories);
 
             // set FAQ
             foreach ($aFaq as $faq) {
-                $this->setTags($faq['rrze_faq_tag'], $shortname);
+                $this->setTags($faq['rrze_faq_tag'], $site_url);
 
                 $aCategoryIDs = array();
                 foreach ($faq['rrze_faq_category'] as $name) {
@@ -465,7 +465,7 @@ class SyncAPI
                                 'post_title' => $faq['title'],
                                 'post_content' => $faq['content'],
                                 'meta_input' => array(
-                                    'source' => $shortname,
+                                    'source' => $site_url,
                                     'lang' => $faq['lang'],
                                     'remoteID' => $faq['remoteID'],
                                 ),
@@ -488,7 +488,7 @@ class SyncAPI
                             'ping_status' => 'closed',
                             'post_status' => 'publish',
                             'meta_input' => array(
-                                'source' => $shortname,
+                                'source' => $site_url,
                                 'lang' => $faq['lang'],
                                 'remoteID' => $faq['id'],
                                 'remoteChanged' => $faq['remoteChanged'],

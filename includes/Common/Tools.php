@@ -391,17 +391,33 @@ public static function getSitesForSelect(): array
         $site_name = get_blog_option($blog_id, 'blogname');
 
         // Get REST API base URL for the site
-        $api_url = trailingslashit(get_rest_url($blog_id, 'wp/v2'));
+        $site_url = trailingslashit(get_home_url($blog_id));
 
         // Human-readable label for the <select>
-        $label = sprintf('%s — %s', $identifier, $site_name);
+        // $label = sprintf('%s — %s - %s', $identifier, $site_name, $site_url);
 
-        $result[$api_url] = $label;
+        $result[$site_url] = $site_name;
     }
 
     return $result;
 }
 
+public static function getIdentifier($url){
+        $host     = parse_url($url, PHP_URL_HOST) ?: '';
+        $host     = preg_replace('/^www\./i', '', $host); // remove www.
+
+        // Use the first domain segment (e.g., "phil" from phil.fau.eu)
+        $identifier = explode('.', $host)[0];
+
+        // Fallback: if no subdomain (e.g., fau.eu) use the second-to-last segment
+        if (empty($identifier) || $identifier === $host) {
+            $parts = explode('.', $host);
+            $identifier = $parts[count($parts) - 2] ?? $host;
+        }
+
+        return $identifier;
+
+}
 
     public static function getPronunciation($post_id){
         // returns the language in which the long form is pronounced 
@@ -411,5 +427,34 @@ public static function getSitesForSelect(): array
         $lang = get_post_meta($post_id, 'titleLang', TRUE);
         return ($lang == substr( get_locale(), 0, 2) ? '' : ' (' . __('Pronunciation', 'rrze-answers') . ': ' . $langlist[$lang] . ')');
     }
+
+
+    	public static function logIt(string $msg): void
+	{
+		global $wp_filesystem;
+
+		if (!function_exists('WP_Filesystem')) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+		WP_Filesystem();
+
+		$msg = wp_date("Y-m-d H:i:s") . ' | ' . $msg;
+
+		if ($wp_filesystem->exists(FAQLOGFILE)) {
+			$content = $wp_filesystem->get_contents(FAQLOGFILE);
+			$content = $msg . "\n" . $content;
+		} else {
+			$content = $msg;
+		}
+
+		$wp_filesystem->put_contents(FAQLOGFILE, $content, FS_CHMOD_FILE);
+	}
+
+	public static function deleteLogfile(): void
+	{
+		if (file_exists(FAQLOGFILE)) {
+			wp_delete_file(FAQLOGFILE);
+		}
+	}
 
 }

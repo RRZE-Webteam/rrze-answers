@@ -118,13 +118,12 @@ class Main
             wp_send_json_error(['message' => 'Unauthorized'], 403);
         }
 
-        $shortname = isset($_POST['shortname']) ? trim(wp_unslash($_POST['shortname'])) : '';
-        if ($shortname === '') {
-            wp_send_json_error(['message' => 'Missing parameter: shortname'], 400);
+        $site_url = isset($_POST['site_url']) ? trim(wp_unslash($_POST['site_url'])) : '';
+        if ($site_url === '') {
+            wp_send_json_error(['message' => 'Missing parameter: site_url'], 400);
         }
 
-        if (strpos($shortname, '/wp-json/wp/v2/') !== false) {
-            $endpoint = trailingslashit(esc_url_raw($shortname)) . 'rrze_faq_category';
+            $endpoint = esc_url_raw($site_url) . '/wp-json/wp/v2/rrze_faq_category';
             $res = wp_remote_get($endpoint, ['timeout' => 10, 'headers' => ['Accept' => 'application/json']]);
 
             if (is_wp_error($res)) {
@@ -153,7 +152,6 @@ class Main
                 'categories' => $cats,
                 'selected' => [],
             ]);
-        }
     }
 
 
