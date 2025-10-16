@@ -9,20 +9,20 @@ use RRZE\Answers\Defaults;
 use RRZE\Answers\Common\{
     API\RESTAPI,
     AdminInterfaces\AdminUI_QA,
-    AdminInterfaces\AdminUI_Synonym,
+    AdminInterfaces\AdminUI_Placeholder,
     // AdminInterfaces\AdminMenu,
     // AdminInterfaces\AdminInterfaces,
-    // AdminInterfaces\AdminInterfacesSynonym,
+    // AdminInterfaces\AdminInterfacesPlaceholder,
     Settings\Settings,
     // Settings\SettingsFAQ,
     CPT\CPTFAQ,
     CPT\CPTGlossary,
-    CPT\CPTSynonym,
+    CPT\CPTPlaceholder,
     Sync\Sync,
     Blocks\Blocks,
     Shortcode\ShortcodeFAQ,
     Shortcode\ShortcodeGlossary,
-    Shortcode\ShortcodeSynonym
+    Shortcode\ShortcodePlaceholder
 };
 
 defined('ABSPATH') || exit;
@@ -65,10 +65,10 @@ class Main
 
         // $this->adminInterface = new AdminInterfaces('rrze_faq');
         // $this->adminInterface = new AdminInterfaces('rrze_glossary');
-        // $this->adminInterface = new AdminInterfacesSynonym();
+        // $this->adminInterface = new AdminInterfacesPlaceholder();
         $this->adminUI = new AdminUI_QA('rrze_faq');
         $this->adminUI = new AdminUI_QA('rrze_glossary');
-        $this->adminUI = new AdminUI_Synonym();
+        $this->adminUI = new AdminUI_Placeholder();
 
         // $this->adminMenue = new AdminMenu(); // in admin menu there is a maximum of 2 levels. Deactivated this workaround because it wouldn't be best practice.
         add_action('wp_enqueue_scripts', [$this, 'enqueueAssets']);
@@ -91,7 +91,7 @@ class Main
 
         switch ($tab) {
             case 'import-faq':
-            case 'import-synonym':
+            case 'import-placeholder':
             case 'import-glossary':
                 $type = substr(strrchr($tab, '-'), 1); // "faq"
                 $frequency = (!empty($new['remote_frequency_' . $type]) ? $new['remote_frequency_' . $type] : '');
@@ -272,7 +272,7 @@ class Main
     {
         $this->cpt = new CPTFAQ();
         $this->cpt = new CPTGlossary();
-        $this->cpt = new CPTSynonym();
+        $this->cpt = new CPTPlaceholder();
     }
 
 
@@ -288,7 +288,7 @@ class Main
     {
         $this->shortcode = new ShortcodeFAQ();
         $this->shortcode = new ShortcodeGlossary();
-        $this->shortcode = new ShortcodeSynonym();
+        $this->shortcode = new ShortcodePlaceholder();
     }
 
     /**
@@ -358,10 +358,10 @@ class Main
         );
 
         wp_register_style(
-            'rrze-synonym-css',
-            plugins_url('build/css/rrze-synonym.css', plugin()->getBasename()),
+            'rrze-placeholder-css',
+            plugins_url('build/css/rrze-placeholder.css', plugin()->getBasename()),
             [],
-            filemtime(plugin()->getPath() . 'build/css/rrze-synonym.css')
+            filemtime(plugin()->getPath() . 'build/css/rrze-placeholder.css')
         );
 
         wp_register_script(

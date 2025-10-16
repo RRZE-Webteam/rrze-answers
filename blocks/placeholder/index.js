@@ -4,13 +4,13 @@
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
 import { registerBlockType } from '@wordpress/blocks';
-import './synonym-format.js'; // <-- registers the toolbar-button to use it inline
+import './placeholder-format.js'; // <-- registers the toolbar-button to use it inline
 
 /**
  * Internal dependencies
  */
 import metadata from './block.json';
-import Edit from './edit'; // <-- we need the block to output the list of synonyms
+import Edit from './edit'; // <-- we need the block to output the list of placeholders
 import save from './save';
 
 registerBlockType( metadata.name, {

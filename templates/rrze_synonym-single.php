@@ -1,6 +1,6 @@
 <?php
 /* 
-Template Name: CPT synonym Single Template
+Template Name: CPT placeholder Single Template
 */
 
 use RRZE\Answers\Common\Tools;
@@ -21,7 +21,7 @@ echo 'TEST SYNONYM ';
 
 echo '<div id="post-' . get_the_ID() . '" class="' . implode(' ', get_post_class()) .'">';
 echo '<strong>' . $post->post_title . '</strong><br>';
-echo get_post_meta( $post->ID, 'synonym', TRUE ) . Tools::getPronunciation($post->ID);
+echo get_post_meta( $post->ID, 'placeholder', TRUE ) . Tools::getPronunciation($post->ID);
 echo '</div>';
 ?>
 

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: RRZE Synonym\n"
+"Project-Id-Version: RRZE Placeholder\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: English (United States)\n"
@@ -14,12 +14,12 @@ msgstr ""
 "X-Generator: Loco https://localise.biz/\n"
 "X-Loco-Version: 2.4.0; wp-5.4.2\n"
 
-#: rrze-synonym.php:83
+#: rrze-placeholder.php:83
 #, php-format
 msgid "The server is running PHP version %1$s. The Plugin requires at least PHP version %2$s."
 msgstr ""
 
-#: rrze-synonym.php:86
+#: rrze-placeholder.php:86
 #, php-format
 msgid "The server is running WordPress version %1$s. The Plugin requires at least WordPress version %2$s."
 msgstr ""
@@ -27,11 +27,11 @@ msgstr ""
 #. Name of the plugin
 #: config/config.php:22
 #: config/config.php:23
-msgid "RRZE Synonym"
+msgid "RRZE Placeholder"
 msgstr ""
 
 #: config/config.php:26
-msgid "RRZE Synonym Settings"
+msgid "RRZE Placeholder Settings"
 msgstr ""
 
 #: config/config.php:39
@@ -78,11 +78,11 @@ msgid "URL"
 msgstr ""
 
 #: config/config.php:86
-msgid "Enter the domain's URL you want to receive synonyms from."
+msgid "Enter the domain's URL you want to receive placeholders from."
 msgstr ""
 
 #: config/config.php:94
-msgid "Use this name as attribute 'domain' in shortcode [synonym]"
+msgid "Use this name as attribute 'domain' in shortcode [placeholder]"
 msgstr ""
 
 #: config/config.php:108
@@ -95,7 +95,7 @@ msgstr ""
 
 #: config/config.php:120
 #: config/config.php:122
-msgid "All synonyms will be updated or inserted. Synonyms that have been deleted at the remote website will be deleted on this website, too."
+msgid "All placeholders will be updated or inserted. Placeholders that have been deleted at the remote website will be deleted on this website, too."
 msgstr ""
 
 #: config/config.php:126
@@ -127,7 +127,7 @@ msgid "Slug"
 msgstr ""
 
 #: config/config.php:178
-msgid "Synonym"
+msgid "Placeholder"
 msgstr ""
 
 #: config/config.php:183
@@ -153,45 +153,45 @@ msgid "is not valid."
 msgstr ""
 
 #: includes/CPT.php:24
-msgctxt "synonyms"
-msgid "synonym"
+msgctxt "placeholders"
+msgid "placeholder"
 msgstr ""
 
 #: includes/CPT.php:25
-msgctxt "Single synonym"
-msgid "synonym"
+msgctxt "Single placeholder"
+msgid "placeholder"
 msgstr ""
 
 #: includes/CPT.php:26
-msgid "Synonyms"
+msgid "Placeholders"
 msgstr ""
 
 #: includes/CPT.php:27
-msgid "Add synonym"
+msgid "Add placeholder"
 msgstr ""
 
 #: includes/CPT.php:28
-msgid "Add new synonym"
+msgid "Add new placeholder"
 msgstr ""
 
 #: includes/CPT.php:29
-msgid "Edit synonym"
+msgid "Edit placeholder"
 msgstr ""
 
 #: includes/CPT.php:30
-msgid "All synonyms"
+msgid "All placeholders"
 msgstr ""
 
 #: includes/CPT.php:31
-msgid "Search synonym"
+msgid "Search placeholder"
 msgstr ""
 
 #: includes/CPT.php:40
-msgid "synonym"
+msgid "placeholder"
 msgstr ""
 
 #: includes/CPT.php:41
-msgid "Synonym informations"
+msgid "Placeholder informations"
 msgstr ""
 
 #: includes/Layout.php:10
@@ -236,7 +236,7 @@ msgid "Integration in pages and posts"
 msgstr ""
 
 #: includes/Layout.php:151
-msgid "This synonym cannot be edited because it is synchronized"
+msgid "This placeholder cannot be edited because it is synchronized"
 msgstr ""
 
 #: includes/Layout.php:151
@@ -254,7 +254,7 @@ msgid "ID"
 msgstr ""
 
 #: includes/Layout.php:189
-msgid "Enter here the long, written form of the synonym. This text will later replace the shortcode. Attention: Breaks or HTML statements are not accepted."
+msgid "Enter here the long, written form of the placeholder. This text will later replace the shortcode. Attention: Breaks or HTML statements are not accepted."
 msgstr ""
 
 #: includes/Layout.php:199
@@ -274,7 +274,7 @@ msgid "Delete logfile"
 msgstr ""
 
 #: includes/Settings.php:340
-msgid "Please note: \"Delete selected domains\" will DELETE every synonym on this website that has been fetched from the selected domains."
+msgid "Please note: \"Delete selected domains\" will DELETE every placeholder on this website that has been fetched from the selected domains."
 msgstr ""
 
 #: includes/Settings.php:341
@@ -333,11 +333,11 @@ msgid "Settings updated"
 msgstr ""
 
 #. Description of the plugin
-msgid "Plugin, um Synonyme zu erstellen, von Websites aus dem FAU-Netzwerk zu synchronisieren und mittels Shortcodes ([synonym ...] und [fau_abbr ...]) oder als Gutenberg Editor Block (Synonym oder Abkürzung = Dropdown) einzubinden."
+msgid "Plugin, um Placeholdere zu erstellen, von Websites aus dem FAU-Netzwerk zu synchronisieren und mittels Shortcodes ([placeholder ...] und [fau_abbr ...]) oder als Gutenberg Editor Block (Placeholder oder Abkürzung = Dropdown) einzubinden."
 msgstr ""
 
 #. URI of the plugin
-msgid "https://gitlab.rrze.fau.de/rrze-webteam/rrze-synonym"
+msgid "https://gitlab.rrze.fau.de/rrze-webteam/rrze-placeholder"
 msgstr ""
 
 #. Author of the plugin

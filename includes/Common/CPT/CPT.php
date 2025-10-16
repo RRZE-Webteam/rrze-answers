@@ -66,7 +66,7 @@ abstract class CPT
         add_filter('taxonomy_template', [$this, 'filter_taxonomy_template']);
 
 
-        // 2DO: adjust to faq, glossary, synonym
+        // 2DO: adjust to faq, glossary, placeholder
         add_action('init', [$this, 'maybeFlushRewriteRules'], 20);
         add_action('update_option_rrze-answers', [$this, 'checkSlugChange'], 10, 2);
 

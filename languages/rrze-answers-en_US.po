@@ -241,12 +241,12 @@ msgid " is not valid."
 msgstr ""
 
 #: includes/CPT.php:26
-msgctxt "FAQ, synonym or glossary entries"
+msgctxt "FAQ, placeholder or glossary entries"
 msgid "FAQ"
 msgstr ""
 
 #: includes/CPT.php:27
-msgctxt "Single FAQ, synonym or glossary "
+msgctxt "Single FAQ, placeholder or glossary "
 msgid "FAQ"
 msgstr ""
 

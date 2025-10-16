@@ -1,10 +1,10 @@
 <?php
 
-namespace RRZE\Synonym;
+namespace RRZE\Placeholder;
 
 defined('ABSPATH') || exit;
 
-define ('SYNONYM_ENDPOINT', 'wp-json/wp/v2/synonym' );
+define ('SYNONYM_ENDPOINT', 'wp-json/wp/v2/placeholder' );
 
 class API {
 
@@ -34,7 +34,7 @@ class API {
                 $content = json_decode( wp_remote_retrieve_body( $request ), TRUE );
 
                 if ($content){
-                    $cleanUrl = substr( $content[0]['link'], 0 , strpos( $content[0]['link'], '/synonym' ) ) . '/';
+                    $cleanUrl = substr( $content[0]['link'], 0 , strpos( $content[0]['link'], '/placeholder' ) ) . '/';
                 }else{
                     $aRet['ret'] = $cleanUrl . ' ' . __( 'is not valid.', 'rrze-answers' );
                     return $aRet;    
@@ -67,13 +67,13 @@ class API {
 
 
 
-    public function deleteSynonyms( $source ){
-        // deletes all synonyms by source
+    public function deletePlaceholders( $source ){
+        // deletes all placeholders by source
         $iDel = 0;
-        $allSynonyms = get_posts( array( 'post_type' => 'synonym', 'meta_key' => 'source', 'meta_value' => $source, 'numberposts' => -1 ) );
+        $allPlaceholders = get_posts( array( 'post_type' => 'placeholder', 'meta_key' => 'source', 'meta_value' => $source, 'numberposts' => -1 ) );
 
-        foreach ( $allSynonyms as $synonym ) {
-            wp_delete_post( $synonym->ID, TRUE );
+        foreach ( $allPlaceholders as $placeholder ) {
+            wp_delete_post( $placeholder->ID, TRUE );
             $iDel++;
         } 
         return $iDel;
@@ -125,8 +125,8 @@ class API {
         return $txt;
       }
 
-    protected function getSynonyms( &$url ){
-            $synonyms = array();
+    protected function getPlaceholders( &$url ){
+            $placeholders = array();
         $aCategoryRelation = array();
         $page = 1;
 
@@ -141,10 +141,10 @@ class API {
                     }
                     foreach( $entries as $entry ){
                         if ( $entry['source'] == 'website' ){
-                            $synonyms[$entry['id']] = array(
+                            $placeholders[$entry['id']] = array(
                                 'id' => $entry['id'],
                                 'title' => $entry['title']['rendered'],
-                                'synonym' => $entry['synonym'],
+                                'placeholder' => $entry['placeholder'],
                                 'titleLang' => $entry['titleLang'],
                                 'lang' => $entry['lang'],
                                 'remoteID' => $entry['remoteID'],
@@ -157,14 +157,14 @@ class API {
             $page++;   
         } while ( ( $status_code == 200 ) && ( !empty( $entries ) ) );
 
-        return $synonyms;
+        return $placeholders;
     }
 
-    public function getSynonymsRemoteIDs( $source ){
+    public function getPlaceholdersRemoteIDs( $source ){
         $aRet = array();
-        // $allSynonyms = get_posts( array( 'post_type' => 'synonym', 'meta_key' => 'source', 'meta_value' => $source, 'fields' => 'ids', 'numberposts' => -1 ) );
-        $allSynonyms = get_posts(
-            ['post_type' => 'synonym',
+        // $allPlaceholders = get_posts( array( 'post_type' => 'placeholder', 'meta_key' => 'source', 'meta_value' => $source, 'fields' => 'ids', 'numberposts' => -1 ) );
+        $allPlaceholders = get_posts(
+            ['post_type' => 'placeholder',
             'meta_key' => 'source',
             'meta_value' => $source,
             'nopaging' => true, 
@@ -172,7 +172,7 @@ class API {
             ]
         );
     
-        foreach ( $allSynonyms as $postID ){
+        foreach ( $allPlaceholders as $postID ){
             $remoteID = get_post_meta( $postID, 'remoteID', TRUE );
             $remoteChanged = get_post_meta( $postID, 'remoteChanged', TRUE );
             $aRet[$remoteID] = array(
@@ -183,60 +183,60 @@ class API {
         return $aRet;
     }
 
-    public function setSynonyms( $url, $site_url ){
+    public function setPlaceholders( $url, $site_url ){
         $iNew = 0;
         $iUpdated = 0;
         $iDeleted = 0;
 
-        // get all remoteIDs of stored synonyms to this source ( key = remoteID, value = postID )
-        $aRemoteIDs = $this->getSynonymsRemoteIDs( $site_url );
+        // get all remoteIDs of stored placeholders to this source ( key = remoteID, value = postID )
+        $aRemoteIDs = $this->getPlaceholdersRemoteIDs( $site_url );
 
-        // get all synonyms
-        $aSynonym = $this->getSynonyms( $url );
+        // get all placeholders
+        $aPlaceholder = $this->getPlaceholders( $url );
 
-        // set synonyms
-        foreach ( $aSynonym as $synonym ){
-            if ( isset( $aRemoteIDs[$synonym['remoteID']] ) ) {
-                if ( $aRemoteIDs[$synonym['remoteID']]['remoteChanged'] < $synonym['remoteChanged'] ){
-                    // update synonyms
+        // set placeholders
+        foreach ( $aPlaceholder as $placeholder ){
+            if ( isset( $aRemoteIDs[$placeholder['remoteID']] ) ) {
+                if ( $aRemoteIDs[$placeholder['remoteID']]['remoteChanged'] < $placeholder['remoteChanged'] ){
+                    // update placeholders
                     $post_id = wp_update_post( array(
-                        'ID' => $aRemoteIDs[$synonym['remoteID']]['postID'],
-                        'post_name' => sanitize_title( $synonym['title'] ),
-                        'post_title' => $synonym['title'],
+                        'ID' => $aRemoteIDs[$placeholder['remoteID']]['postID'],
+                        'post_name' => sanitize_title( $placeholder['title'] ),
+                        'post_title' => $placeholder['title'],
                         'meta_input' => array(
                             'source' => $site_url,
-                            'lang' => $synonym['lang'],
-                            'synonym' => $synonym['synonym'],
-                            'titleLang' => $synonym['titleLang'],
-                            'remoteID' => $synonym['remoteID']
+                            'lang' => $placeholder['lang'],
+                            'placeholder' => $placeholder['placeholder'],
+                            'titleLang' => $placeholder['titleLang'],
+                            'remoteID' => $placeholder['remoteID']
                             ),
                         ) ); 
                     $iUpdated++;
                 }
-                unset( $aRemoteIDs[$synonym['remoteID']] );
+                unset( $aRemoteIDs[$placeholder['remoteID']] );
             } else {
-                // insert synonyms
+                // insert placeholders
                 $post_id = wp_insert_post( array(
-                    'post_type' => 'synonym',
-                    'post_name' => sanitize_title( $synonym['title'] ),
-                    'post_title' => $synonym['title'],
+                    'post_type' => 'placeholder',
+                    'post_name' => sanitize_title( $placeholder['title'] ),
+                    'post_title' => $placeholder['title'],
                     'comment_status' => 'closed',
                     'ping_status' => 'closed',
                     'post_status' => 'publish',
                     'meta_input' => array(
                         'source' => $site_url,
-                        'lang' => $synonym['lang'],
-                        'synonym' => $synonym['synonym'],
-                        'titleLang' => $synonym['titleLang'],
-                        'remoteID' => $synonym['id'],
-                        'remoteChanged' => $synonym['remoteChanged']
+                        'lang' => $placeholder['lang'],
+                        'placeholder' => $placeholder['placeholder'],
+                        'titleLang' => $placeholder['titleLang'],
+                        'remoteID' => $placeholder['id'],
+                        'remoteChanged' => $placeholder['remoteChanged']
                         ),
                     ) );
                 $iNew++;
             }
         }
 
-        // delete all other synonyms to this source
+        // delete all other placeholders to this source
         foreach( $aRemoteIDs as $remoteID => $aDetails ){
             wp_delete_post( $aDetails['postID'], TRUE );
             $iDeleted++;

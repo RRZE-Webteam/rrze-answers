@@ -1,8 +1,8 @@
 <?php
 /* 
-Template Name: CPT synonym Archive Template
+Template Name: CPT placeholder Archive Template
 */
-use RRZE\Synonym\Layout;
+use RRZE\Placeholder\Layout;
 
 $bFAUTheme = Layout::isFAUTheme();
 
@@ -29,14 +29,14 @@ if ($bFAUTheme) {
 		<main id="main" class="site-main">
 <?php }
 
-echo '<h2>'. __('Synonyms','rrze-answers') . '</h2>';
+echo '<h2>'. __('Placeholders','rrze-answers') . '</h2>';
 if (have_posts()) {
-    echo '<table class="synonym">';
+    echo '<table class="placeholder">';
     while ( have_posts() ){
         the_post();
         echo '<tr>';
         echo '<th scope="row">' . get_the_title() . '</th>' ;
-        echo '<td>' . get_post_meta( $post->ID, 'synonym', TRUE ) . Layout::getPronunciation($post->ID) . '</td>';
+        echo '<td>' . get_post_meta( $post->ID, 'placeholder', TRUE ) . Layout::getPronunciation($post->ID) . '</td>';
         echo '</tr>';
     }
     echo '</table>';

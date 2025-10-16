@@ -32,8 +32,8 @@ class CPTFAQ extends CPT
     public function __construct()
     {
         $this->labels = [
-            'name' => _x('FAQ', 'FAQ, synonym or glossary entries', 'rrze-answers'),
-            'singular_name' => _x('FAQ', 'Single FAQ, synonym or glossary ', 'rrze-answers'),
+            'name' => _x('FAQ', 'FAQ, placeholder or glossary entries', 'rrze-answers'),
+            'singular_name' => _x('FAQ', 'Single FAQ, placeholder or glossary ', 'rrze-answers'),
             'menu_name' => __('FAQ', 'rrze-answers'),
             'add_new' => __('Add FAQ', 'rrze-answers'),
             'add_new_item' => __('Add new FAQ', 'rrze-answers'),

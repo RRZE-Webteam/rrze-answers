@@ -62,7 +62,7 @@ class Defaults
                     ['id' => 'permalink_settings', 'title' => __('Permalink Settings', 'rrze-answers')],
                     ['id' => 'import_faq', 'title' => __('Import FAQ', 'rrze-answers')],
                     ['id' => 'import_glossary', 'title' => __('Import Glossary', 'rrze-answers')],
-                    ['id' => 'import_synonym', 'title' => __('Import Synonym', 'rrze-answers')],
+                    ['id' => 'import_placeholder', 'title' => __('Import Placeholder', 'rrze-answers')],
                     ['id' => 'faqlog', 'title' => __('Logfile', 'rrze-answers')]
                 ],
                 'fields' => [
@@ -80,9 +80,9 @@ class Defaults
                             'type' => 'checkbox',
                         ],
                         [
-                            'name' => 'api_active_rrze_synonym',
-                            'label' => __('Allow to import synonym', 'rrze-answers'),
-                            'description' => __('Allow other websites to import your synonym. Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
+                            'name' => 'api_active_rrze_placeholder',
+                            'label' => __('Allow to import placeholder', 'rrze-answers'),
+                            'description' => __('Allow other websites to import your placeholder. Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
                             'type' => 'checkbox',
                         ],
                     ],                    
@@ -144,9 +144,9 @@ class Defaults
                             'type' => 'select'
                         ],
                     ],
-                    'import_synonym' => [
+                    'import_placeholder' => [
                         [
-                            'name' => 'remote_api_synonym',
+                            'name' => 'remote_api_placeholder',
                             'label' => __('Remote site', 'rrze-answers'),
                             'description' => __('Select the site you want to synchronize with.', 'rrze-answers'),
                             'type' => 'select',
@@ -154,14 +154,14 @@ class Defaults
                             'default' => ''
                         ],
                         [
-                            'name' => 'remote_categories_synonym',
+                            'name' => 'remote_categories_placeholder',
                             'label' => __('Categories', 'rrze-answers'),
                             'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
                             'type' => 'select-multiple',
                             'options' => []
                         ],
                         [
-                            'name' => 'remote_frequency_synonym',
+                            'name' => 'remote_frequency_placeholder',
                             'label' => __('Synchronize automatically', 'rrze-answers'),
                             'description' => '',
                             'default' => '',
@@ -251,12 +251,12 @@ class Defaults
                             'placeholder' => 'glossary_tag'
                         ],
                         [
-                            'name' => 'label_synonym',
-                            'label' => __('Synonym', 'rrze-answers'),
+                            'name' => 'label_placeholder',
+                            'label' => __('Placeholder', 'rrze-answers'),
                             'type' => 'hr',
                         ],
                         [
-                            'name' => 'redirect_archivpage_uri_synonym',
+                            'name' => 'redirect_archivpage_uri_placeholder',
                             'label' => __('Archive page', 'rrze-answers'),
                             'description' => '',
                             'type' => 'select',
@@ -264,12 +264,12 @@ class Defaults
                             'default' => ''
                         ],
                         [
-                            'name' => 'custom_synonym_slug',
-                            'label' => __('Synonym Slug', 'rrze-answers'),
+                            'name' => 'custom_placeholder_slug',
+                            'label' => __('Placeholder Slug', 'rrze-answers'),
                             'description' => '',
                             'type' => 'text',
-                            'default' => 'rrze_synonym',
-                            'placeholder' => 'rrze_synonym'
+                            'default' => 'rrze_placeholder',
+                            'placeholder' => 'rrze_placeholder'
                         ],
                     ],
                     'faqlog' => [

@@ -20,7 +20,7 @@ class Sync
         $this->type = $type;
         $this->frequency = $frequency;
 
-        foreach (['faq', 'glossary', 'synonym'] as $type) {
+        foreach (['faq', 'glossary', 'placeholder'] as $type) {
             add_action("rrze_answers_auto_sync_{$type}", function () use ($type) {
                 $this->runCronjob($type);
             });

@@ -3,8 +3,8 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            0.0.52
-Description:        Explain your content with FAQ, glossary and synonyms. 
+Version:            0.0.53
+Description:        Explain your content with FAQ, glossary and placeholders. 
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
 License:            GNU General Public License Version 3
@@ -168,7 +168,7 @@ function register_blocks()
 {
     register_block_type_from_metadata(__DIR__ . '/blocks/faq');
     register_block_type_from_metadata(__DIR__ . '/blocks/glossary');
-    register_block_type_from_metadata(__DIR__ . '/blocks/synonym');
+    register_block_type_from_metadata(__DIR__ . '/blocks/placeholder');
 
     // $script_handle = generate_block_asset_handle('rrze-answers/faq', 'editorScript');
     // wp_set_script_translations($script_handle, 'rrze-answers', plugin_dir_path(__FILE__) . 'languages');
@@ -213,29 +213,29 @@ function rrze_update_glossary_cpt()
     update_option('rrze_update_glossary_cpt_done', 1);
 }
 
-function rrze_update_synonym_cpt()
+function rrze_update_placeholder_cpt()
 {
     global $wpdb;
 
-    if (get_option('rrze_update_synonym_cpt_done')) {
+    if (get_option('rrze_update_placeholder_cpt_done')) {
         return;
     }
 
     $wpdb->update(
         $wpdb->posts,
-        ['post_type' => 'rrze_synonym'],
-        ['post_type' => 'synonym']
+        ['post_type' => 'rrze_placeholder'],
+        ['post_type' => 'placeholder']
     );
 
     wp_cache_flush();
     flush_rewrite_rules();
 
-    update_option('rrze_update_synonym_cpt_done', 1);
+    update_option('rrze_update_placeholder_cpt_done', 1);
 }
 
 
-// 1. activate rrze-answers on all websites where rrze-faq, rrze-glossary or rrze-synonym is active
-// 2. deaktivate rrze-faq, rrze-glossary and rrze-synonym
+// 1. activate rrze-answers on all websites where rrze-faq, rrze-glossary or rrze-placeholder is active
+// 2. deaktivate rrze-faq, rrze-glossary and rrze-placeholder
 function rrze_answers_migrate_multisite() {
     if ( get_site_option('rrze-answers_migrate_multisite_done') ) return;
     if ( ! is_multisite() || ! is_network_admin() || ! current_user_can('manage_network_plugins') ) return;
@@ -246,7 +246,7 @@ function rrze_answers_migrate_multisite() {
     $targets = [
         'rrze-faq/rrze-faq.php',
         'rrze-glossary/rrze-glossary.php',
-        'rrze-synonym/rrze-synonym.php',
+        'rrze-placeholder/rrze-placeholder.php',
     ];
     $answers = 'rrze-answers/rrze-answers.php';
     $report  = [];
@@ -375,6 +375,6 @@ function loaded()
 
     add_action('init', __NAMESPACE__ . '\register_blocks');
     add_action('init', __NAMESPACE__ . '\rrze_update_glossary_cpt');
-    add_action('init', __NAMESPACE__ . '\rrze_update_synonym_cpt');
+    add_action('init', __NAMESPACE__ . '\rrze_update_placeholder_cpt');
     add_action('network_admin_init', __NAMESPACE__ . '\rrze-answers_migrate_multisite');
 }

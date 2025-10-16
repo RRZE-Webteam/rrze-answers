@@ -330,12 +330,12 @@ msgid " is not valid."
 msgstr " ist nicht gültig."
 
 #: includes/CPT.php:29
-msgctxt "FAQ, synonym or glossary entries"
+msgctxt "FAQ, placeholder or glossary entries"
 msgid "FAQ"
 msgstr "FAQ"
 
 #: includes/CPT.php:30
-msgctxt "Single FAQ, synonym or glossary "
+msgctxt "Single FAQ, placeholder or glossary "
 msgid "FAQ"
 msgstr "FAQ"
 

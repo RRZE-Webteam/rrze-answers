@@ -51,7 +51,7 @@ class RESTAPI
                 }
             }
 
-            if (in_array($post_type, ['rrze_faq', 'rrze_synonym', 'rrze_glossary'])) {
+            if (in_array($post_type, ['rrze_faq', 'rrze_placeholder', 'rrze_glossary'])) {
                 $obj = get_post_type_object($post_type);
                 if (is_user_logged_in() && $obj && current_user_can($obj->cap->edit_posts)) {
                     return $result;
@@ -78,20 +78,20 @@ class RESTAPI
         return get_post_meta($object['id'], $attr, TRUE);
     }
 
-    // make API deliver source and lang for synonyms
+    // make API deliver source and lang for placeholders
     public function createPostMeta()
     {
         $fields = array(
             'source',
             'lang',
-            'synonym',
+            'placeholder',
             'titleLang',
             'remoteID',
             'remoteChanged'
         );
 
         foreach ($fields as $field) {
-            register_rest_field('rrze_synonym', $field, array(
+            register_rest_field('rrze_placeholder', $field, array(
                 'get_callback' => [$this, 'getMyPostMeta'],
                 'schema' => null,
             ));
@@ -100,7 +100,7 @@ class RESTAPI
 
     public function addFilters()
     {
-        add_filter('rest_synonym_query', [$this, 'addFilterParam'], 10, 2);
+        add_filter('rest_placeholder_query', [$this, 'addFilterParam'], 10, 2);
     }
 
     /**

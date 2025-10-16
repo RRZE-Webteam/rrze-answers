@@ -3,7 +3,7 @@
  * Admin-Menüstruktur für Answers
  *
  * - Top-Level: "Answers"
- * - Submenüs: "FAQ", "Glossary", "Synonym"
+ * - Submenüs: "FAQ", "Glossary", "Placeholder"
  * - Jede Subseite zeigt 4 Links: All, Add, Categories, Tags
  *
  * Wichtig:
@@ -19,7 +19,7 @@ class AdminMenu {
     // CPT-Slugs
     private $faq_pt       = 'rrze_faq';
     private $glossary_pt  = 'rrze_glossary';
-    private $synonym_pt   = 'rrze_synonym';
+    private $placeholder_pt   = 'rrze_placeholder';
 
     // Taxonomy-Slugs (anpassen falls abweichend)
     private $faq_cat      = 'rrze_faq_category';
@@ -28,8 +28,8 @@ class AdminMenu {
     private $glossary_cat = 'rrze_glossary_category';
     private $glossary_tag = 'rrze_glossary_tag';
 
-    private $syn_group    = 'rrze_synonym_group';
-    private $syn_tag      = 'rrze_synonym_tag';
+    private $syn_group    = 'rrze_placeholder_group';
+    private $syn_tag      = 'rrze_placeholder_tag';
 
     // Menü-Slug des Top-Level-Punktes
     private $parent_slug  = 'rrze-answers';
@@ -47,7 +47,7 @@ class AdminMenu {
     }
 
     public function hideCptMenus(array $args, string $post_type): array {
-        $targets = [$this->faq_pt, $this->glossary_pt, $this->synonym_pt];
+        $targets = [$this->faq_pt, $this->glossary_pt, $this->placeholder_pt];
         if (in_array($post_type, $targets, true)) {
             // eigenes Menü → Standard-CPT-Menüs verstecken
             $args['show_in_menu']       = false;
@@ -68,10 +68,10 @@ class AdminMenu {
             25
         );
 
-        // Sub: FAQ / Glossary / Synonym
+        // Sub: FAQ / Glossary / Placeholder
         add_submenu_page($this->parent_slug, __('FAQ', 'rrze-faq'), __('FAQ', 'rrze-faq'), 'edit_posts', 'rrze-answers_faq',      function () { $this->renderHub($this->faq_pt, $this->faq_cat, $this->faq_tag, __('FAQ', 'rrze-faq')); });
         add_submenu_page($this->parent_slug, __('Glossary', 'rrze-faq'), __('Glossary', 'rrze-faq'), 'edit_posts', 'rrze-answers_glossary', function () { $this->renderHub($this->glossary_pt, $this->glossary_cat, $this->glossary_tag, __('Glossary', 'rrze-faq')); });
-        add_submenu_page($this->parent_slug, __('Synonym', 'rrze-faq'), __('Synonym', 'rrze-faq'), 'edit_posts', 'rrze-answers_synonym', function () { $this->renderHub($this->synonym_pt, $this->syn_group, $this->syn_tag, __('Synonym', 'rrze-faq')); });
+        add_submenu_page($this->parent_slug, __('Placeholder', 'rrze-faq'), __('Placeholder', 'rrze-faq'), 'edit_posts', 'rrze-answers_placeholder', function () { $this->renderHub($this->placeholder_pt, $this->syn_group, $this->syn_tag, __('Placeholder', 'rrze-faq')); });
     }
 
     public function renderAnswersDashboard(): void {
@@ -81,7 +81,7 @@ class AdminMenu {
         $cards = [
             ['slug'=>'rrze-answers_faq',      'title'=>__('FAQ', 'rrze-faq'),      'desc'=>__('Fragen & Antworten verwalten', 'rrze-faq')],
             ['slug'=>'rrze-answers_glossary', 'title'=>__('Glossary', 'rrze-faq'), 'desc'=>__('Glossarbegriffe verwalten', 'rrze-faq')],
-            ['slug'=>'rrze-answers_synonym',  'title'=>__('Synonym', 'rrze-faq'),  'desc'=>__('Synonyme & Gruppen', 'rrze-faq')],
+            ['slug'=>'rrze-answers_placeholder',  'title'=>__('Placeholder', 'rrze-faq'),  'desc'=>__('Placeholdere & Gruppen', 'rrze-faq')],
         ];
         foreach ($cards as $c) {
             printf(
@@ -125,7 +125,7 @@ class AdminMenu {
         $screen = get_current_screen();
         if (!$screen) return $parent_file;
 
-        $targets = [$this->faq_pt, $this->glossary_pt, $this->synonym_pt];
+        $targets = [$this->faq_pt, $this->glossary_pt, $this->placeholder_pt];
         if (in_array($screen->post_type, $targets, true) || in_array($screen->taxonomy ?? '', [$this->faq_cat, $this->faq_tag, $this->glossary_cat, $this->glossary_tag, $this->syn_group, $this->syn_tag], true)) {
             return $this->parent_slug;
         }
@@ -143,8 +143,8 @@ class AdminMenu {
         if ($screen->post_type === $this->glossary_pt || in_array($screen->taxonomy ?? '', [$this->glossary_cat, $this->glossary_tag], true)) {
             return 'rrze-answers_glossary';
         }
-        if ($screen->post_type === $this->synonym_pt || in_array($screen->taxonomy ?? '', [$this->syn_group, $this->syn_tag], true)) {
-            return 'rrze-answers_synonym';
+        if ($screen->post_type === $this->placeholder_pt || in_array($screen->taxonomy ?? '', [$this->syn_group, $this->syn_tag], true)) {
+            return 'rrze-answers_placeholder';
         }
         return $submenu_file;
     }

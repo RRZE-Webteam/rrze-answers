@@ -8,20 +8,20 @@ defined('ABSPATH') || exit;
 use RRZE\Answers\Common\Tools;
 
 /**
- * Admin UI for rrze_synonym.
- * - Custom properties metabox (synonym, titleLang)
+ * Admin UI for rrze_placeholder.
+ * - Custom properties metabox (placeholder, titleLang)
  * - Read-only mode for synced items
  * - Shortcode helper box
  * - Custom list table columns (Source, ID)
  */
-class AdminUI_Synonym extends AdminUIBase
+class AdminUI_Placeholder extends AdminUIBase
 {
     /** @var array<string,string> */
     protected array $langChoices = [];
 
     public function __construct()
     {
-        parent::__construct('rrze_synonym', [
+        parent::__construct('rrze_placeholder', [
             'has_taxonomies' => false,
             'default_orderby' => 'title',
             'default_order' => 'ASC',
@@ -36,7 +36,7 @@ class AdminUI_Synonym extends AdminUIBase
 
     protected function titlePlaceholder(): string
     {
-        return __('Enter synonym here', 'rrze-answers');
+        return __('Enter placeholder here', 'rrze-answers');
     }
 
     /* ---------------- Metaboxes ---------------- */
@@ -57,16 +57,16 @@ class AdminUI_Synonym extends AdminUIBase
     public function postmetaCallback(\WP_Post $post): void
     {
         // Nonce
-        wp_nonce_field('rrze_synonym_save_meta', 'rrze_synonym_meta_nonce');
+        wp_nonce_field('rrze_placeholder_save_meta', 'rrze_placeholder_meta_nonce');
 
         $source = (string) get_post_meta($post->ID, 'source', true);
-        $synonym = (string) get_post_meta($post->ID, 'synonym', true);
+        $placeholder = (string) get_post_meta($post->ID, 'placeholder', true);
         $titleLang = (string) get_post_meta($post->ID, 'titleLang', true);
 
         // Properties
-        echo '<p><label for="synonym">' . esc_html__('Full form', 'rrze-answers') . '</label></p>';
-        echo '<textarea rows="3" cols="60" name="synonym" id="synonym">' . esc_textarea($synonym) . '</textarea>';
-        echo '<p class="description">' . esc_html__('Enter the long, written form of the synonym. This text replaces the shortcode. Note: line breaks or HTML are not accepted.', 'rrze-answers') . '</p>';
+        echo '<p><label for="placeholder">' . esc_html__('Full form', 'rrze-answers') . '</label></p>';
+        echo '<textarea rows="3" cols="60" name="placeholder" id="placeholder">' . esc_textarea($placeholder) . '</textarea>';
+        echo '<p class="description">' . esc_html__('Enter the long, written form of the placeholder. This text replaces the shortcode. Note: line breaks or HTML are not accepted.', 'rrze-answers') . '</p>';
 
         // Language dropdown
         $selectedLang = $titleLang !== '' ? $titleLang : substr(get_locale(), 0, 2);
@@ -94,9 +94,9 @@ class AdminUI_Synonym extends AdminUIBase
         }
 
         $ret = '';
-        $ret .= '<p>[synonym id="' . (int) $post->ID . '"]</p>';
+        $ret .= '<p>[placeholder id="' . (int) $post->ID . '"]</p>';
         if ($post->post_name) {
-            $ret .= '<p>[synonym slug="' . esc_html($post->post_name) . '"]</p>';
+            $ret .= '<p>[placeholder slug="' . esc_html($post->post_name) . '"]</p>';
         }
         $ret .= '<p>[fau_abbr id="' . (int) $post->ID . '"]</p>';
         if ($post->post_name) {
@@ -105,7 +105,7 @@ class AdminUI_Synonym extends AdminUIBase
         echo wp_kses_post($ret);
     }
 
-    /* ---------------- Read-only UI for synced synonyms ---------------- */
+    /* ---------------- Read-only UI for synced placeholders ---------------- */
 
     protected function makeReadOnlyUI(int $post_id): void
     {
@@ -119,25 +119,25 @@ class AdminUI_Synonym extends AdminUIBase
             'read_only_content_box',
             sprintf(
                 '%1$s. %2$s',
-                esc_html__('This synonym cannot be edited because it is synchronized', 'rrze-answers'),
+                esc_html__('This placeholder cannot be edited because it is synchronized', 'rrze-answers'),
                 $link ? '<a href="' . esc_url($link) . '" target="_blank">' . esc_html__('You can edit it at the source', 'rrze-answers') . '</a>' : ''
             ),
-            [$this, 'fillContentBoxSynonym'],
+            [$this, 'fillContentBoxPlaceholder'],
             $this->post_type,
             'normal',
             'high'
         );
     }
 
-    public function fillContentBoxSynonym(\WP_Post $post): void
+    public function fillContentBoxPlaceholder(\WP_Post $post): void
     {
-        $synonym = (string) get_post_meta($post->ID, 'synonym', true);
+        $placeholder = (string) get_post_meta($post->ID, 'placeholder', true);
         $titleLang = (string) get_post_meta($post->ID, 'titleLang', true);
         $langLabel = $this->langChoices[$titleLang] ?? $titleLang;
 
         echo '<h1>' . esc_html($post->post_title) . '</h1><br>';
         echo '<strong>' . esc_html__('Full form', 'rrze-answers') . ':</strong>';
-        echo '<p>' . esc_html($synonym) . '</p>';
+        echo '<p>' . esc_html($placeholder) . '</p>';
         if ($langLabel) {
             echo '<p><i>' . esc_html__('Pronunciation', 'rrze-answers') . ': ' . esc_html($langLabel) . '</i></p>';
         }
@@ -151,15 +151,15 @@ class AdminUI_Synonym extends AdminUIBase
             return;
         }
 
-        if (!isset($_POST['rrze_synonym_meta_nonce']) || !wp_verify_nonce(wp_unslash((string) $_POST['rrze_synonym_meta_nonce']), 'rrze_synonym_save_meta')) {
+        if (!isset($_POST['rrze_placeholder_meta_nonce']) || !wp_verify_nonce(wp_unslash((string) $_POST['rrze_placeholder_meta_nonce']), 'rrze_placeholder_save_meta')) {
             return;
         }
 
-        update_post_meta($post_id, 'source', 'website'); // synonyms are authored locally by default
+        update_post_meta($post_id, 'source', 'website'); // placeholders are authored locally by default
         update_post_meta($post_id, 'remoteID', $post_id);
 
-        if (isset($_POST['synonym'])) {
-            update_post_meta($post_id, 'synonym', sanitize_text_field(wp_unslash((string) $_POST['synonym'])));
+        if (isset($_POST['placeholder'])) {
+            update_post_meta($post_id, 'placeholder', sanitize_text_field(wp_unslash((string) $_POST['placeholder'])));
         }
         if (isset($_POST['titleLang'])) {
             update_post_meta($post_id, 'titleLang', sanitize_text_field(wp_unslash((string) $_POST['titleLang'])));
@@ -172,7 +172,7 @@ class AdminUI_Synonym extends AdminUIBase
 
     protected function listTableColumns(array $cols): array
     {
-        $cols['title'] = __('Synonym', 'rrze-answers');
+        $cols['title'] = __('Placeholder', 'rrze-answers');
 
         if ((new Tools())->hasSync()) {
             $cols['source'] = __('Source', 'rrze-answers');
