@@ -16,9 +16,6 @@ global $post;
 		<main id="main" class="site-main">
 <?php
 
-echo 'TEST SYNONYM ';
-
-
 echo '<div id="post-' . get_the_ID() . '" class="' . implode(' ', get_post_class()) .'">';
 echo '<strong>' . $post->post_title . '</strong><br>';
 echo get_post_meta( $post->ID, 'placeholder', TRUE ) . Tools::getPronunciation($post->ID);

@@ -33,7 +33,7 @@ class CPTPlaceholder extends CPT
         $this->labels = [
             'name' => _x('Placeholder', 'Placeholders', 'rrze-answers'),
             'singular_name' => _x('Placeholder', 'Single placeholder', 'rrze-answers'),
-            'menu_name' => __('Placeholders', 'rrze-answers'),
+            'menu_name' => __('Placeholder', 'rrze-answers'),
             'add_new' => __('Add placeholder', 'rrze-answers'),
             'add_new_item' => __('Add new placeholder', 'rrze-answers'),
             'edit_item' => __('Edit placeholder', 'rrze-answers'),
