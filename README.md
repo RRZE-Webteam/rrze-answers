@@ -1,146 +1,167 @@
-[![Aktuelle Version](https://img.shields.io/github/package-json/v/rrze-webteam/rrze-answers/main?label=Version)](https://github.com/RRZE-Webteam/rrze-answers)
-[![Release Version](https://img.shields.io/github/v/release/rrze-webteam/rrze-answers?label=Release+Version)](https://github.com/rrze-webteam/rrze-answers/releases/)
+# RRZE Answers
+
+[![Version](https://img.shields.io/github/package-json/v/rrze-webteam/rrze-answers/main?label=Version)](https://github.com/RRZE-Webteam/rrze-answers)
+[![Release Version](https://img.shields.io/github/v/release/rrze-webteam/rrze-answers?label=Release+Version)](https://github.com/RRZE-Webteam/rrze-answers/releases/)
 [![GitHub License](https://img.shields.io/github/license/rrze-webteam/rrze-answers)](https://github.com/RRZE-Webteam/rrze-answers)
-[![GitHub issues](https://img.shields.io/github/issues/RRZE-Webteam/rrze-answers)](https://github.com/RRZE-Webteam/rrze-answers/issues)
-# RRZE FAQ
+[![GitHub issues](https://img.shields.io/github/issues/rrze-webteam/rrze-answers)](https://github.com/RRZE-Webteam/rrze-answers/issues)
 
-Plugin for creating FAQs and synchronizing them with other FAU websites. Usable as a shortcode, block, or widget.
+---
 
-## General Information
+## Overview
 
-The plugin can be used to create FAQs and to synchronize FAQs from websites within the FAU network.  
-You can filter by categories and tags.  
-The layout can be configured to display an A–Z index, categories or tags as links, or as a tag cloud.  
-Categories and tags are grouped into accordions. It is also possible to output individual FAQs directly.
+**RRZE Answers** combines the functionalities of the former plugins **RRZE FAQ**, **RRZE Glossary**, and **RRZE Synonym** into a single solution.
 
-A widget is also available. You can configure the display duration and whether to show a specific or a random FAQ from a selected category.
+It allows you to:
+- Create and display FAQs, glossary entries, and placeholders  
+- Synchronize content between websites in the FAU network  
+- Display entries using shortcodes, Gutenberg blocks, or widgets  
+- Filter and group entries by categories, tags, or domains  
+- Integrate with the WordPress REST API (v2)
 
-## Using the Shortcode
+---
+
+## Features
+
+- **Unified content management:** FAQs, Glossary entries, and Placeholders are managed in one place.  
+- **Flexible display options:** Accordion view, A–Z index, tabs, or tag cloud.  
+- **Cross-domain synchronization:** Share and import entries from other FAU sites.  
+- **REST API support:** Access entries programmatically.  
+- **Multilingual and SEO-friendly:** Uses [`schema.org/DefinedTerm`](https://schema.org/DefinedTerm) for glossary entries and `<abbr>` tags for placeholders.  
+
+---
+
+## Shortcodes
+
+### FAQ Shortcode
 
 ```html
-[faq id="456, 123"]
-[faq category="category-1, category-2"]
-[faq tag="tag-1, tag-2"]
-[faq category="category-1" tag="tag-1, tag-2"]
-[faq category="category-1" domain="domain-1, domain-2"]
+[faq id="456,123"]
+[faq category="category-1"]
+[faq tag="tag-1,tag-2"]
+[faq category="category-1" tag="tag-2"]
 ```
 
-## All Shortcode Attributes
+**Attributes:**
+- `glossary` – Grouping type (`category`, `tag`, or display style: `a-z`, `tabs`, `tagcloud`)
+- `category` – One or more category slugs  
+- `tag` – One or more tag slugs  
+- `domain` – Filter by domain(s)  
+- `id` – Specific FAQ IDs  
+- `hide` – Hide elements (`accordion`, `title`, `glossary`)  
+- `masonry` – Grid layout (`true`/`false`)  
+- `class` – Faculty or custom CSS classes (`fau`, `med`, `nat`, etc.)  
+- `sort` – Sort by `title`, `id`, or `sortfield`  
+- `order` – Sort direction (`asc`, `desc`)  
+- `hstart` – Heading level (default: 2)
+
+---
+
+### Glossary Shortcode
 
 ```html
-[faq 
-glossary=".."
-category=".."
-tag=".."
-domain=".."
-id=".."
-hide=".."
-show=".."
-class=".."
-sort=".."
-order=".."
-hstart=".."
-]
+[glossary id="123,456"]
+[glossary category="kategorie-1"]
+[glossary tag="schlagwort-1,schlagwort-2"]
 ```
 
-All attributes are optional.
+**Attributes:**
+- `register` – Grouping type (`category`, `tag`) and style (`a-z`, `tabs`, `tagcloud`)
+- `category` – One or more categories  
+- `tag` – One or more tags  
+- `id` – Specific entries by ID  
+- `hide` – Hide output elements (`accordion`, `title`, `register`)  
+- `show` – Display options (`expand-all-link`, `load-open`)  
+- `class` – Border color / CSS classes  
+- `sort`, `order`, `hstart` – As above  
 
-## Explanation and Values for Shortcode Attributes
+---
 
-All attributes are optional.
+### Placeholder Shortcodes
 
-**glossary**: Defines how the FAQ items are grouped. Possible values are `"category"` or `"tag"`.  
-If omitted, no grouping is applied. You can also define the visual style of the glossary:  
-- `"a-z"`: Alphabetical index (default)  
-- `"tabs"`: Glossary terms as tabs  
-- `"tagcloud"`: Terms shown with font size proportional to their frequency
+```html
+[placeholder id="123"]
+[placeholder slug="bildungsministerium"]
+[fau_abbr id="987"]
+[fau_abbr slug="url"]
+```
 
-**category**: Specifies the categories for which matching FAQs should be displayed.  
-Multiple categories can be listed using their slugs (as found under `FAQ → Categories`) and separated by commas.  
-You can also filter by data source:  
-Example: `category="rrze:general, info"` filters for the "general" category from the "rrze" source and any "info" category regardless of source.
+**Attributes:**
+- `id` – Display a specific placeholder or abbreviation  
+- `slug` – Use the entry’s slug  
+- No attributes → list all placeholders  
 
-**tag**: Specifies the tags for which matching FAQs should be shown.  
-Use the tag slugs from `FAQ → Tags`, separated by commas.  
-Filtering by source is also possible:  
-Example: `tag="rrze:keyword1, keyword2"` filters for "keyword1" from source "rrze", and "keyword2" from any source.
+The `[fau_abbr]` shortcode outputs abbreviations as `<abbr>` HTML tags, including language and pronunciation details if specified.
 
-**domain**: Filters FAQs by their data source.  
-Multiple domains can be listed, separated by commas.
+Example:
+```html
+<abbr title="Universal Resource Locator" lang="en">URL</abbr>
+```
 
-**id**: Outputs one or more specific FAQs by ID.  
-You can find the ID in the admin panel under `FAQ → All FAQs` or in the "Insert into pages/posts" box when editing an FAQ.  
-The output order follows the order of the IDs listed.
+---
 
-**hide**: Controls which default elements should be hidden.  
-- `"accordion"`: Shows FAQs as plain question/answer instead of collapsible panels  
-- `"title"`: Hides the FAQ question  
-- `"glossary"`: Disables the glossary display  
-Default: accordion view is enabled
+## Synchronization Across Domains
 
-**masonry**:  
-- `"true"`: Displays FAQs in a grid (masonry) layout  
-- `"false"`: Displays FAQs in the default stacked layout  
-By default, the grid layout is disabled.
+External domains can be added and synchronized via:
 
-**class**: Allows you to set the color of the left border of the accordion.  
-Possible values: `"fau"` (default), or faculty identifiers like `"med"`, `"nat"`, `"rw"`, `"phil"`, or `"tf"`.  
-You can also add additional CSS classes separated by spaces.
+```
+Settings → RRZE Answers → Domains
+Settings → RRZE Answers → Synchronization
+```
 
-**sort**: Controls sorting of the output.  
-- `"title"`: Sort alphabetically by title (default)  
-- `"id"`: Sort by FAQ ID  
-- `"sortfield"`: Sort using the custom field defined per FAQ, then by title
+Entries from synchronized domains behave like local entries and can be displayed via shortcode, block, or widget.
 
-**order**: Determines the sort direction.  
-- `"asc"`: Ascending (default)  
-- `"desc"`: Descending
+---
 
-**hstart**: Defines the heading level for the first title.  
-Default is `2`, which renders headings as `<h2>`.
+## Widgets
+
+In `/wp-admin/widgets.php`, you can find the following widgets:
+- **Answers Widget:** Show a specific or random FAQ, glossary entry, or placeholder.  
+- Configurable options include display duration, layout, and category selection.
+
+---
 
 ## Examples
 
 ```html
 [faq glossary="tag tagcloud"]
-[faq category="slug-of-category"]
-[faq category="category" tag="Tag1, Tag2"]
-[faq id="456, 987, 123" hide="glossary"]
-[faq glossary="category tabs" tag="Tag1" show="expand-all-link" order="desc"]
+[glossary register="category tabs" tag="Tag1" show="expand-all-link"]
+[placeholder slug="fau"]
+[fau_abbr id="123"]
 ```
 
-## FAQs from Other Domains
+---
 
-External domains must be added under  
-**Settings → RRZE FAQ → "Domains" tab**.  
-Synchronization is carried out via the **"Synchronization"** tab.
+## REST API (v2)
 
-## Using the Widget
+### FAQs
+- All:  
+  `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/faq`
+- Filtered:  
+  `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/faq?filter[faq_tag]=Matrix`
 
-In `/wp-admin/widgets.php`, the widget is available as **"FAQ Widget"**.  
-You can configure:
+### Glossary
+- All:  
+  `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/glossary`
+- Category + Tag:  
+  `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/glossary?filter[glossary_category]=Dienste&filter[glossary_tag]=Sprache`
 
-- Display duration
-- A specific or a random FAQ from a category
+### Placeholders
+- All:  
+  `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/placeholder`
 
-## Using the REST API (v2)
+**Pagination:**  
+Refer to [WordPress REST API Pagination](https://developer.wordpress.org/rest-api/using-the-rest-api/pagination/)
 
-**Examples:**
+---
 
-- All FAQs:  
-  https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/faq
+## License
 
-- Filtered by tag:  
-  https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/faq?filter[faq_tag]=Matrix
+Licensed under the [GNU General Public License v2.0](https://www.gnu.org/licenses/gpl-2.0.html).
 
-- Multiple tags:  
-  https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/faq?filter[faq_tag]=Matrix%2BAccounts
+---
 
-- Category:  
-  https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/faq?filter[faq_category]=Dienste
+## Credits
 
-- Category + tag:  
-  https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/faq?filter[faq_category]=Dienste&filter[faq_tag]=Sprache
-
-- Pagination:  
-  https://developer.wordpress.org/rest-api/using-the-rest-api/pagination/
+Developed and maintained by the  
+**RRZE Webteam, Friedrich-Alexander-Universität Erlangen-Nürnberg (FAU)**  
+👉 [https://github.com/RRZE-Webteam/rrze-answers](https://github.com/RRZE-Webteam/rrze-answers)
