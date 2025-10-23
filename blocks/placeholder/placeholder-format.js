@@ -132,7 +132,7 @@ const PlaceholderUI = ( props ) => {
 			<span ref={ anchorRef }>
 				<RichTextToolbarButton
 					icon="translation"
-					title={ __('Placeholder/Acronym','rrze-placeholder') }
+					title={ __('Placeholder','rrze-placeholder') }
 					onClick={ () => setIsOpen( (o) => !o ) }
 					isActive={ isActive }
 				/>
@@ -195,7 +195,7 @@ const PlaceholderUI = ( props ) => {
 
 // Register the format: renders <abbr class="rrze-syn" ...>…</abbr>
 registerFormatType( FORMAT_NAME, {
-	title: __('Placeholder/Acronym','rrze-placeholder'),
+	title: __('Placeholder','rrze-placeholder'),
 	tagName: TAG_NAME,
 	className: CLASS_NAME,
 	attributes: {

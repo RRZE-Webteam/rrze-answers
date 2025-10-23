@@ -62,7 +62,6 @@ class Defaults
                     ['id' => 'permalink_settings', 'title' => __('Permalink Settings', 'rrze-answers')],
                     ['id' => 'import_faq', 'title' => __('Import FAQ', 'rrze-answers')],
                     ['id' => 'import_glossary', 'title' => __('Import Glossary', 'rrze-answers')],
-                    ['id' => 'import_placeholder', 'title' => __('Import Placeholder', 'rrze-answers')],
                     ['id' => 'faqlog', 'title' => __('Logfile', 'rrze-answers')]
                 ],
                 'fields' => [
@@ -78,13 +77,7 @@ class Defaults
                             'label' => __('Allow to import glossary', 'rrze-answers'),
                             'description' => __('Allow other websites to import your glossary. Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
                             'type' => 'checkbox',
-                        ],
-                        [
-                            'name' => 'api_active_rrze_placeholder',
-                            'label' => __('Allow to import placeholder', 'rrze-answers'),
-                            'description' => __('Allow other websites to import your placeholder. Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
-                            'type' => 'checkbox',
-                        ],
+                        ]
                     ],                    
                     'import_faq' => [
                         [
@@ -133,35 +126,6 @@ class Defaults
                         ],
                         [
                             'name' => 'remote_frequency_glossary',
-                            'label' => __('Synchronize automatically', 'rrze-answers'),
-                            'description' => '',
-                            'default' => '',
-                            'options' => [
-                                '' => __('-- off --', 'rrze-answers'),
-                                'daily' => __('daily', 'rrze-answers'),
-                                'twicedaily' => __('twicedaily', 'rrze-answers')
-                            ],
-                            'type' => 'select'
-                        ],
-                    ],
-                    'import_placeholder' => [
-                        [
-                            'name' => 'remote_api_placeholder',
-                            'label' => __('Remote site', 'rrze-answers'),
-                            'description' => __('Select the site you want to synchronize with.', 'rrze-answers'),
-                            'type' => 'select',
-                            'options' => Tools::getSitesForSelect(),
-                            'default' => ''
-                        ],
-                        [
-                            'name' => 'remote_categories_placeholder',
-                            'label' => __('Categories', 'rrze-answers'),
-                            'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
-                            'type' => 'select-multiple',
-                            'options' => []
-                        ],
-                        [
-                            'name' => 'remote_frequency_placeholder',
                             'label' => __('Synchronize automatically', 'rrze-answers'),
                             'description' => '',
                             'default' => '',
