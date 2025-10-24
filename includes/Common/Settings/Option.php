@@ -2,6 +2,7 @@
 
 namespace RRZE\Answers\Common\Settings;
 
+
 defined('ABSPATH') || exit;
 
 use RRZE\Answers\Common\Settings\Section;
@@ -15,7 +16,8 @@ use RRZE\Answers\Common\Settings\Options\{
     SelectMultiple,
     Text,
     Textarea,
-    HR
+    HR,
+    Logfile
 };
 
 class Option
@@ -72,7 +74,8 @@ class Option
             'select-multiple' => SelectMultiple::class,
             'text' => Text::class,
             'textarea' => Textarea::class,
-            'hr' => HR::class
+            'hr' => HR::class,
+            'logfile' => Logfile::class
         ]);
 
         if (isset($typeMap[$this->type])) {

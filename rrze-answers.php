@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            0.0.55
+Version:            0.0.57
 Description:        Explain your content with FAQ, glossary and placeholders. 
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
@@ -36,7 +36,7 @@ $r = array(
     '-',
 );
 
-define('ANSWERSLOGFILE', plugin_dir_path(__FILE__) . 'rrze-faq-' . preg_replace($s, $r, get_bloginfo('url')) . '.log');
+define('ANSWERSLOGFILE', plugin_dir_path(__FILE__) . 'rrze-answers-' . preg_replace($s, $r, get_bloginfo('url')) . '.log');
 
 
 /**
