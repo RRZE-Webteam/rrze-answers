@@ -72,6 +72,7 @@ class Sync
      
         $options = get_option('rrze-answers');
 
+
         $domains = [
             $options['remote_url_faq']
         ];
@@ -89,8 +90,14 @@ class Sync
 
             $categories = (isset($options['remote_categories_faq']) ? implode(',', $options['remote_categories_faq']) : false);
             if ($categories) {
+
+
                 $identifier = Tools::getIdentifier($site_url);
+
                 $aCnt = $api->setFAQ($identifier, $categories, $site_url);
+
+
+
                 $syncRan = true;
 
                 foreach ($aCnt['URLhasSlider'] as $URLhasSlider) {

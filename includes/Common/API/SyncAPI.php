@@ -427,6 +427,7 @@ class SyncAPI
 
     public function setFAQ($url, $categories, $site_url)
     {
+
         try {
             $iNew = 0;
             $iUpdated = 0;
@@ -441,7 +442,11 @@ class SyncAPI
             // $this->getCategories( $url, $site_url );
 
             // get all FAQ
-            $aFaq = $this->getFAQ($url, $categories);
+            $aFaq = $this->getFAQ($site_url, $categories);
+
+            // echo '<pre>';
+            // var_dump($aFaq);
+            // exit;
 
             // set FAQ
             foreach ($aFaq as $faq) {
