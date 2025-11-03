@@ -12,71 +12,12 @@ use RRZE\Answers\Common\Config;
 class SyncAPI
 {
     private $aAllCats = array();
-    
+
 
     public function __construct()
     {
-            }
-
-    public function setDomain($site_url, $url, $domains)
-    {
-        // returns array('status' => TRUE, 'ret' => array(cleansite_url, cleanUrl)
-        // on error returns array('status' => FALSE, 'ret' => error-message)
-        try {
-            $aRet = array('status' => false, 'ret' => '');
-            $cleanUrl = trailingslashit(preg_replace("/^((http|https):\/\/)?/i", "https://", $url));
-            $cleansite_url = strtolower(preg_replace('/[^A-Za-z0-9]/', '', $site_url));
-
-            if (in_array($cleanUrl, $domains)) {
-                $aRet['ret'] = $url . __(' is already in use.', 'rrze-answers');
-                return $aRet;
-            } elseif (array_key_exists($cleansite_url, $domains)) {
-                $aRet['ret'] = $cleansite_url . __(' is already in use.', 'rrze-answers');
-                return $aRet;
-            } else {
-                $request = $this->remoteGet($cleanUrl . ENDPOINT . 'faq?per_page=1');
-                $status_code = wp_remote_retrieve_response_code($request);
-
-                if ($status_code != '200') {
-                    $aRet['ret'] = $cleanUrl . __(' is not valid.', 'rrze-answers');
-                    return $aRet;
-                } else {
-                    $content = json_decode(wp_remote_retrieve_body($request), true);
-
-                    if ($content) {
-                        $cleanUrl = substr($content[0]['link'], 0, strpos($content[0]['link'], '/faq')) . '/';
-                    } else {
-                        $aRet['ret'] = $cleanUrl . __(' is not valid.', 'rrze-answers');
-                        return $aRet;
-                    }
-                }
-            }
-
-            $aRet['status'] = true;
-            $aRet['ret'] = array('cleansite_url' => $cleansite_url, 'cleanUrl' => $cleanUrl);
-            return $aRet;
-        } catch (CustomException $e) {
-            return new \WP_Error('setDomain_error', __('Error in setDomain().', 'rrze-answers'));
-        }
     }
 
-    protected function isRegisteredDomain(&$url)
-    {
-        return in_array($url, $this->getDomains());
-    }
-
-    public function getDomains()
-    {
-        $domains = array();
-        $options = get_option('rrze-answers');
-        if (isset($options['registeredDomains'])) {
-            foreach ($options['registeredDomains'] as $site_url => $url) {
-                $domains[$site_url] = $url;
-            }
-        }
-        asort($domains);
-        return $domains;
-    }
 
     protected function getTaxonomies($url, $field, &$filter)
     {
@@ -251,18 +192,18 @@ class SyncAPI
         }
     }
 
-    public function getCategories($url, $site_url, $categories = '')
+    public function getCategories($source, $site_url, $categories = '')
     {
         $aRet = array();
         $aCategories = $this->getTaxonomies($site_url, 'rrze_faq_category', $categories);
 
-        $this->setCategories($aCategories, $site_url);
+        $this->setCategories($aCategories, $source);
         $categories = get_terms(array(
             'taxonomy' => 'rrze_faq_category',
             'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
                 array(
                     'key' => 'source',
-                    'value' => $site_url,
+                    'value' => $source,
                 )
             ),
             'hide_empty' => false,
@@ -425,7 +366,7 @@ class SyncAPI
         }
     }
 
-    public function setFAQ($url, $categories, $site_url)
+    public function setFAQ($source, $categories, $site_url)
     {
 
         try {
@@ -439,7 +380,7 @@ class SyncAPI
 
             // $this->deleteTags( $site_url );
             // $this->deleteCategories( $site_url );
-            $this->getCategories( $url, $site_url, $categories);
+            $this->getCategories($source, $site_url, $categories);
 
             // get all FAQ
             $aFaq = $this->getFAQ($site_url, $categories);
@@ -467,7 +408,7 @@ class SyncAPI
                                 'post_title' => $faq['title'],
                                 'post_content' => $faq['content'],
                                 'meta_input' => array(
-                                    'source' => $site_url,
+                                    'source' => $source,
                                     'lang' => $faq['lang'],
                                     'remoteID' => $faq['remoteID'],
                                 ),
@@ -490,7 +431,7 @@ class SyncAPI
                             'ping_status' => 'closed',
                             'post_status' => 'publish',
                             'meta_input' => array(
-                                'source' => $site_url,
+                                'source' => $source,
                                 'lang' => $faq['lang'],
                                 'remoteID' => $faq['id'],
                                 'remoteChanged' => $faq['remoteChanged'],
