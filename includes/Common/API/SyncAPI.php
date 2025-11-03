@@ -34,7 +34,7 @@ class SyncAPI
                 $aRet['ret'] = $cleansite_url . __(' is already in use.', 'rrze-answers');
                 return $aRet;
             } else {
-                $request = $this->remoteGet($cleanUrl . ENDPOINT . '?per_page=1');
+                $request = $this->remoteGet($cleanUrl . ENDPOINT . 'faq?per_page=1');
                 $status_code = wp_remote_retrieve_response_code($request);
 
                 if ($status_code != '200') {
@@ -81,7 +81,7 @@ class SyncAPI
     protected function getTaxonomies($url, $field, &$filter)
     {
         $aRet = array();
-        $url .= ENDPOINT . '_' . $field;
+        $url .= ENDPOINT . $field;
         $slug = ($filter ? '&slug=' . $filter : '');
         $page = 1;
 
@@ -254,7 +254,8 @@ class SyncAPI
     public function getCategories($url, $site_url, $categories = '')
     {
         $aRet = array();
-        $aCategories = $this->getTaxonomies($url, 'rrze_faq_category', $categories);
+        $aCategories = $this->getTaxonomies($site_url, 'rrze_faq_category', $categories);
+
         $this->setCategories($aCategories, $site_url);
         $categories = get_terms(array(
             'taxonomy' => 'rrze_faq_category',
@@ -340,12 +341,11 @@ class SyncAPI
     {
         try {
             $faqs = array();
-            $aCategoryRelation = array();
-            $filter = '&filter[faq_category]=' . $categories;
+            $filter = '&filter[rrze_faq_category]=' . $categories;
             $page = 1;
 
             do {
-                $request = $this->remoteGet($url . ENDPOINT . '?page=' . $page . $filter);
+                $request = $this->remoteGet($url . ENDPOINT . 'faq?page=' . $page . $filter);
                 $status_code = wp_remote_retrieve_response_code($request);
                 if ($status_code == 200) {
                     $entries = json_decode(wp_remote_retrieve_body($request), true);
@@ -439,21 +439,18 @@ class SyncAPI
 
             // $this->deleteTags( $site_url );
             // $this->deleteCategories( $site_url );
-            // $this->getCategories( $url, $site_url );
+            $this->getCategories( $url, $site_url, $categories);
 
             // get all FAQ
             $aFaq = $this->getFAQ($site_url, $categories);
-
-            // echo '<pre>';
-            // var_dump($aFaq);
-            // exit;
 
             // set FAQ
             foreach ($aFaq as $faq) {
                 $this->setTags($faq['rrze_faq_tag'], $site_url);
 
                 $aCategoryIDs = array();
-                foreach ($faq['rrze_faq_category'] as $name) {
+
+                foreach ($faq['rrze_faq_category'] as $nr => $name) {
                     $term = get_term_by('name', $name, 'rrze_faq_category');
                     $aCategoryIDs[] = $term->term_id;
                 }

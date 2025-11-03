@@ -8,7 +8,7 @@ use RRZE\Answers\Common\Tools;
 
 defined('ABSPATH') || exit;
 
-define('ENDPOINT', 'wp-json/wp/v2/faq');
+define('ENDPOINT', 'wp-json/wp/v2/');
 
 define('RRZEANSWERSLOGFILE', 'rrze-answers.log');
 
