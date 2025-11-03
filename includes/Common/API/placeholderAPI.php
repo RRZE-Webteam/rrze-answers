@@ -10,58 +10,58 @@ class API {
 
     private $aAllCats = array();
 
-    public function setDomain( $site_url, $url, $domains ){
-        // returns array('status' => TRUE, 'ret' => array(cleansite_url, cleanUrl)
-        // on error returns array('status' => FALSE, 'ret' => error-message)
-        $aRet = array( 'status' => FALSE, 'ret' => '' );
-        $cleanUrl = trailingslashit( preg_replace( "/^((http|https):\/\/)?/i", "https://", $url ) );
-        $cleansite_url = strtolower( preg_replace('/[^A-Za-z0-9]/', '', $site_url ) );
+    // public function setDomain( $site_url, $url, $domains ){
+    //     // returns array('status' => TRUE, 'ret' => array(cleansite_url, cleanUrl)
+    //     // on error returns array('status' => FALSE, 'ret' => error-message)
+    //     $aRet = array( 'status' => FALSE, 'ret' => '' );
+    //     $cleanUrl = trailingslashit( preg_replace( "/^((http|https):\/\/)?/i", "https://", $url ) );
+    //     $cleansite_url = strtolower( preg_replace('/[^A-Za-z0-9]/', '', $site_url ) );
 
-        if ( in_array( $cleanUrl, $domains )){
-            $aRet['ret'] = $url . ' ' . __( 'is already in use.', 'rrze-answers' );
-            return $aRet;
-        }elseif ( array_key_exists( $cleansite_url, $domains )){
-            $aRet['ret'] = $cleansite_url . ' ' . __( 'is already in use.', 'rrze-answers' );
-            return $aRet;
-        }else{
-            $request = wp_remote_get( $cleanUrl . SYNONYM_ENDPOINT . '?per_page=1' );
-            $status_code = wp_remote_retrieve_response_code( $request );
+    //     if ( in_array( $cleanUrl, $domains )){
+    //         $aRet['ret'] = $url . ' ' . __( 'is already in use.', 'rrze-answers' );
+    //         return $aRet;
+    //     }elseif ( array_key_exists( $cleansite_url, $domains )){
+    //         $aRet['ret'] = $cleansite_url . ' ' . __( 'is already in use.', 'rrze-answers' );
+    //         return $aRet;
+    //     }else{
+    //         $request = wp_remote_get( $cleanUrl . SYNONYM_ENDPOINT . '?per_page=1' );
+    //         $status_code = wp_remote_retrieve_response_code( $request );
 
-            if ( $status_code != '200' ){
-                $aRet['ret'] = $cleanUrl . ' ' . __( 'is not valid.', 'rrze-answers' );
-                return $aRet;
-            }else{
-                $content = json_decode( wp_remote_retrieve_body( $request ), TRUE );
+    //         if ( $status_code != '200' ){
+    //             $aRet['ret'] = $cleanUrl . ' ' . __( 'is not valid.', 'rrze-answers' );
+    //             return $aRet;
+    //         }else{
+    //             $content = json_decode( wp_remote_retrieve_body( $request ), TRUE );
 
-                if ($content){
-                    $cleanUrl = substr( $content[0]['link'], 0 , strpos( $content[0]['link'], '/placeholder' ) ) . '/';
-                }else{
-                    $aRet['ret'] = $cleanUrl . ' ' . __( 'is not valid.', 'rrze-answers' );
-                    return $aRet;    
-                }
-            } 
-        }
+    //             if ($content){
+    //                 $cleanUrl = substr( $content[0]['link'], 0 , strpos( $content[0]['link'], '/placeholder' ) ) . '/';
+    //             }else{
+    //                 $aRet['ret'] = $cleanUrl . ' ' . __( 'is not valid.', 'rrze-answers' );
+    //                 return $aRet;    
+    //             }
+    //         } 
+    //     }
 
-        $aRet['status'] = TRUE;
-        $aRet['ret'] = array( 'cleansite_url' => $cleansite_url, 'cleanUrl' => $cleanUrl );
-        return $aRet;
-    }
+    //     $aRet['status'] = TRUE;
+    //     $aRet['ret'] = array( 'cleansite_url' => $cleansite_url, 'cleanUrl' => $cleanUrl );
+    //     return $aRet;
+    // }
 
-    protected function isRegisteredDomain( &$url ){
-        return in_array( $url, $this->getDomains() );
-    }
+    // protected function isRegisteredDomain( &$url ){
+    //     return in_array( $url, $this->getDomains() );
+    // }
 
-    public function getDomains(){
-        $domains = array();
-        $options = get_option( 'rrze-answers' );
-        if ( isset( $options['registeredDomains'] ) ){
-            foreach( $options['registeredDomains'] as $site_url => $url ){
-                $domains[$site_url] = $url;
-            }	
-        }
-        asort( $domains );
-        return $domains;
-    }
+    // public function getDomains(){
+    //     $domains = array();
+    //     $options = get_option( 'rrze-answers' );
+    //     if ( isset( $options['registeredDomains'] ) ){
+    //         foreach( $options['registeredDomains'] as $site_url => $url ){
+    //             $domains[$site_url] = $url;
+    //         }	
+    //     }
+    //     asort( $domains );
+    //     return $domains;
+    // }
     
 
 
