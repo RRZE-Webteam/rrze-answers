@@ -351,60 +351,56 @@ class Tools
     }
 
 
-public static function getSitesForSelect(): array
-{
-    if (!is_multisite()) {
-        return [];
-    }
-
-    $pluginFile = 'rrze-answers/rrze-answers.php';
-    $sites      = get_sites(['public' => 1, 'archived' => 0, 'deleted' => 0]);
-
-    // First option: placeholder
-    $result = ['' => __('-- Choose a website --', 'rrze-answers')];
-
-    foreach ($sites as $site) {
-        $blog_id = (int) $site->blog_id;
-
-        // Only include sites where the plugin is active
-        $active_plugins = get_blog_option($blog_id, 'active_plugins', []);
-        if (!in_array($pluginFile, $active_plugins, true)) {
-            continue;
+    public static function getSitesForSelect(): array
+    {
+        if (!is_multisite()) {
+            return [];
         }
 
-        // ----- Identifier logic (inline, simplified)
-        $home_url = get_home_url($blog_id);
-        $host     = parse_url($home_url, PHP_URL_HOST) ?: '';
-        $host     = preg_replace('/^www\./i', '', $host); // remove www.
+        $pluginFile = 'rrze-answers/rrze-answers.php';
+        $sites = get_sites(['public' => 1, 'archived' => 0, 'deleted' => 0]);
+        $current_blog_id = get_current_blog_id();
+        $result = ['' => __('-- Choose a website --', 'rrze-answers')];
 
-        // Use the first domain segment (e.g., "phil" from phil.fau.eu)
-        $identifier = explode('.', $host)[0];
+        foreach ($sites as $site) {
+            $blog_id = (int) $site->blog_id;
 
-        // Fallback: if no subdomain (e.g., fau.eu) use the second-to-last segment
-        if (empty($identifier) || $identifier === $host) {
-            $parts = explode('.', $host);
-            $identifier = $parts[count($parts) - 2] ?? $host;
+            // Skip current site by blog ID
+            if ($blog_id === $current_blog_id) {
+                continue;
+            }
+
+            // Only include sites where the plugin is active
+            $active_plugins = get_blog_option($blog_id, 'active_plugins', []);
+            if (!in_array($pluginFile, $active_plugins, true)) {
+                continue;
+            }
+
+            $home_url = get_home_url($blog_id);
+            $host = parse_url($home_url, PHP_URL_HOST) ?: '';
+            $host = preg_replace('/^www\./i', '', $host); // remove www.
+
+            $identifier = explode('.', $host)[0];
+
+            if (empty($identifier) || $identifier === $host) {
+                $parts = explode('.', $host);
+                $identifier = $parts[count($parts) - 2] ?? $host;
+            }
+
+            $site_name = get_blog_option($blog_id, 'blogname');
+
+            $site_url = trailingslashit(get_home_url($blog_id));
+
+            $result[$site_url] = $site_name;
         }
-        // ----- /Identifier
 
-        // Get the site name directly from options
-        $site_name = get_blog_option($blog_id, 'blogname');
-
-        // Get REST API base URL for the site
-        $site_url = trailingslashit(get_home_url($blog_id));
-
-        // Human-readable label for the <select>
-        // $label = sprintf('%s — %s - %s', $identifier, $site_name, $site_url);
-
-        $result[$site_url] = $site_name;
+        return $result;
     }
 
-    return $result;
-}
-
-public static function getIdentifier($url){
-        $host     = parse_url($url, PHP_URL_HOST) ?: '';
-        $host     = preg_replace('/^www\./i', '', $host); // remove www.
+    public static function getIdentifier($url)
+    {
+        $host = parse_url($url, PHP_URL_HOST) ?: '';
+        $host = preg_replace('/^www\./i', '', $host); // remove www.
 
         // Use the first domain segment (e.g., "phil" from phil.fau.eu)
         $identifier = explode('.', $host)[0];
@@ -417,44 +413,45 @@ public static function getIdentifier($url){
 
         return $identifier;
 
-}
+    }
 
-    public static function getPronunciation($post_id){
+    public static function getPronunciation($post_id)
+    {
         // returns the language in which the long form is pronounced 
         $defaults = new Defaults();
         $langlist = $defaults->get('lang');
 
         $lang = get_post_meta($post_id, 'titleLang', TRUE);
-        return ($lang == substr( get_locale(), 0, 2) ? '' : ' (' . __('Pronunciation', 'rrze-answers') . ': ' . $langlist[$lang] . ')');
+        return ($lang == substr(get_locale(), 0, 2) ? '' : ' (' . __('Pronunciation', 'rrze-answers') . ': ' . $langlist[$lang] . ')');
     }
 
 
-    	public static function logIt(string $msg): void
-	{
-		global $wp_filesystem;
+    public static function logIt(string $msg): void
+    {
+        global $wp_filesystem;
 
-		if (!function_exists('WP_Filesystem')) {
-			require_once ABSPATH . 'wp-admin/includes/file.php';
-		}
-		WP_Filesystem();
+        if (!function_exists('WP_Filesystem')) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+        WP_Filesystem();
 
-		$msg = wp_date("Y-m-d H:i:s") . ' | ' . $msg;
+        $msg = wp_date("Y-m-d H:i:s") . ' | ' . $msg;
 
-		if ($wp_filesystem->exists(RRZEANSWERSLOGFILE)) {
-			$content = $wp_filesystem->get_contents(RRZEANSWERSLOGFILE);
-			$content = $msg . "\n" . $content;
-		} else {
-			$content = $msg;
-		}
+        if ($wp_filesystem->exists(RRZEANSWERSLOGFILE)) {
+            $content = $wp_filesystem->get_contents(RRZEANSWERSLOGFILE);
+            $content = $msg . "\n" . $content;
+        } else {
+            $content = $msg;
+        }
 
-		$wp_filesystem->put_contents(RRZEANSWERSLOGFILE, $content, FS_CHMOD_FILE);
-	}
+        $wp_filesystem->put_contents(RRZEANSWERSLOGFILE, $content, FS_CHMOD_FILE);
+    }
 
-	public static function deleteLogfile(): void
-	{
-		if (file_exists(RRZEANSWERSLOGFILE)) {
-			wp_delete_file(RRZEANSWERSLOGFILE);
-		}
-	}
+    public static function deleteLogfile(): void
+    {
+        if (file_exists(RRZEANSWERSLOGFILE)) {
+            wp_delete_file(RRZEANSWERSLOGFILE);
+        }
+    }
 
 }
