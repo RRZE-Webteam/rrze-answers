@@ -38,11 +38,7 @@
   }
 
   function loadCategories(site_url) {
-    console.log('loadCategories');
     var $select = $('#rrze-answers_remote_categories_faq_');
-    // setSelectName($select, site_url);
-
-    console.log('loadCategories 2');
 
     if (!site_url) {
       $select.empty();
@@ -54,17 +50,12 @@
     setStatus(RRZEAnswersSync.i18n.loading, false);
     setHelp('');
 
-     var url = RRZEAnswersSync.ajaxUrl;
-  var payload = {
-    action: 'rrze_answers_get_categories',
-    _ajax_nonce: RRZEAnswersSync.nonce,
-    site_url: site_url
-  };
-
-    console.group('loadCategories debug');
-  console.log('AJAX URL:', url);
-  console.log('Payload:', payload);
-  console.log('Full URL (GET-style):', url + '?' + jQuery.param(payload));
+    var url = RRZEAnswersSync.ajaxUrl;
+    var payload = {
+      action: 'rrze_answers_get_categories',
+      _ajax_nonce: RRZEAnswersSync.nonce,
+      site_url: site_url
+    };
 
     $.ajax({
       url: RRZEAnswersSync.ajaxUrl,
@@ -77,11 +68,6 @@
       }
     })
       .done(function (resp) {
-
-
-          console.log('resp', resp);
-
-
         if (!resp || !resp.success) {
           setStatus((resp && resp.data && resp.data.message) || RRZEAnswersSync.i18n.error, true);
           return;

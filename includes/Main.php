@@ -141,15 +141,24 @@ class Main
             }
 
             $cats = [];
-            foreach ($items as $it) {
-                if (!empty($it['slug']) && isset($it['name'])) {
-                    $cats[$it['slug']] = $it['name'];
+            $selected = [];
+            $options = get_option('rrze-answers');
+            $remote_cats = $options['remote_categories_faq'];
+
+            foreach ($items as $item) {
+                if (!empty($item['slug']) && isset($item['name'])) {
+                    $cats[$item['slug']] = $item['name'];
+                    if (in_array($item['slug'], $remote_cats)){
+                        $selected[] = $item['slug'];
+                        unset($remote_cats[$item['slug']]);
+                    }
                 }
             }
 
             wp_send_json_success([
                 'categories' => $cats,
-                'selected' => [],
+                'selected' => $selected,
+                'test' => $options
             ]);
     }
 
