@@ -122,46 +122,76 @@ class Main
             wp_send_json_error(['message' => 'Missing parameter: site_url'], 400);
         }
 
-            $endpoint = esc_url_raw($site_url) . '/wp-json/wp/v2/rrze_faq_category';
-            $res = wp_remote_get($endpoint, ['timeout' => 10, 'headers' => ['Accept' => 'application/json']]);
+        // Fetch remote categories
+        $endpoint = esc_url_raw($site_url) . '/wp-json/wp/v2/rrze_faq_category';
+        $res = wp_remote_get($endpoint, ['timeout' => 10, 'headers' => ['Accept' => 'application/json']]);
 
-            if (is_wp_error($res)) {
-                wp_send_json_error(['message' => $res->get_error_message()], 500);
-            }
+        if (is_wp_error($res)) {
+            wp_send_json_error(['message' => $res->get_error_message()], 500);
+        }
 
-            $code = wp_remote_retrieve_response_code($res);
-            $body = wp_remote_retrieve_body($res);
-            if ($code !== 200) {
-                wp_send_json_error(['message' => "Remote $code", 'body' => $body], $code);
-            }
+        $code = wp_remote_retrieve_response_code($res);
+        $body = wp_remote_retrieve_body($res);
+        if ($code !== 200) {
+            wp_send_json_error(['message' => "Remote $code", 'body' => $body], $code);
+        }
 
-            $items = json_decode($body, true);
-            if (!is_array($items)) {
-                wp_send_json_error(['message' => 'Invalid JSON from remote'], 500);
-            }
+        $items = json_decode($body, true);
+        if (!is_array($items)) {
+            wp_send_json_error(['message' => 'Invalid JSON from remote'], 500);
+        }
 
-            $cats = [];
-            $selected = [];
-            $options = get_option('rrze-answers');
-            $remote_cats = $options['remote_categories_faq'];
+        // Load plugin options safely
+        $options = get_option('rrze-answers');
+        if (!is_array($options)) {
+            $options = [];
+        }
 
-            foreach ($items as $item) {
-                if (!empty($item['slug']) && isset($item['name'])) {
-                    $cats[$item['slug']] = $item['name'];
-                    if (in_array($item['slug'], $remote_cats)){
-                        $selected[] = $item['slug'];
-                        unset($remote_cats[$item['slug']]);
-                    }
+        $cats = [];
+        $selected = [];
+        $remote_cats_all = isset($options['remote_categories_faq']) && is_array($options['remote_categories_faq'])
+            ? $options['remote_categories_faq']
+            : [];
+
+        // Selected categories for the current site_url (if previously stored)
+        $remote_cats_for_site = [];
+        if (isset($remote_cats_all[$site_url]) && is_array($remote_cats_all[$site_url])) {
+            $remote_cats_for_site = $remote_cats_all[$site_url];
+        }
+
+        foreach ($items as $item) {
+            if (!empty($item['slug']) && isset($item['name'])) {
+                $cats[$item['slug']] = $item['name'];
+                if (in_array($item['slug'], $remote_cats_for_site, true)) {
+                    $selected[] = $item['slug'];
                 }
             }
+        }
 
-            wp_send_json_success([
-                'categories' => $cats,
-                'selected' => $selected,
-                'test' => $options
-            ]);
+        // Build remaining site URLs for the secondary dropdown
+        // Expect all configured site URLs in option 'remote_url_faq' (array of strings)
+        $all_urls = [];
+        if (isset($options['remote_url_faq'])) {
+            if (is_array($options['remote_url_faq'])) {
+                $all_urls = $options['remote_url_faq'];
+            } elseif (is_string($options['remote_url_faq']) && $options['remote_url_faq'] !== '') {
+                // Accept single string for backward compatibility
+                $all_urls = [$options['remote_url_faq']];
+            }
+        }
+
+        // Remove current site_url and duplicates
+        $remaining_urls = array_values(array_unique(array_filter($all_urls, function ($u) use ($site_url) {
+            return is_string($u) && $u !== '' && $u !== $site_url;
+        })));
+
+        wp_send_json_success([
+            'categories' => $cats,
+            'selected' => $selected,
+            'remaining_urls' => $remaining_urls,
+            'current_url' => $site_url,
+        ]);
     }
-
 
 
     /**
