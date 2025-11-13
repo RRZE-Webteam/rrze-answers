@@ -1,147 +1,167 @@
-# RRZE Plugin Blueprint
+# RRZE Answers
 
-**RRZE Plugin Blueprint** is a modern, modular starter framework for building custom WordPress plugins with best practices in mind. It provides a robust foundation with PSR-4 autoloading, advanced options and settings management, block support, internationalization (i18n) for both PHP and JavaScript, and system requirements checks—so you can focus on your plugin’s unique features.
-
----
-
-## Key Features
-
-- **PSR-4 Autoloading**  
-  All PHP classes under the `RRZE\PluginBlueprint` namespace are autoloaded from the `includes/` directory.
-
-- **Activation & Deactivation Hooks**  
-  Easily add setup or cleanup routines using the provided `activation()` and `deactivation()` methods.
-
-- **System Requirements Check**  
-  The plugin checks for minimum WordPress and PHP versions before initializing, displaying admin notices if requirements are not met.
-
-- **Singleton Initialization**  
-  Access the main plugin instance anywhere via the `plugin()` and `main()` helper functions.
-
-- **Centralized Defaults**  
-  The `Defaults` class manages all plugin default values, which can be filtered and reused throughout your code.
-
-- **Advanced Settings API Integration**  
-  The `Settings` class lets you easily create settings pages, sections, and fields with validation and sanitization.  
-  👉 [See the Settings class README](includes/Common/Settings/README.md)
-
-- **Custom Post Types & Taxonomies**  
-  Generic `CPT` and `Taxonomy` classes make it easy to register custom post types and taxonomies.
-
-- **Shortcode Registration**  
-  A generic `Shortcode` class allows for quick and clean shortcode registration.
-
-- **Gutenberg Block Support**  
-  Example: Includes a structure for both static and dynamic blocks, each with their own build process and assets.  
-  👉 [Static Block README](blocks/block-static/README.md)  
-  👉 [Dynamic Block README](blocks/block-dynamic/README.md)
-
-- **Internationalization (i18n) for PHP and JS**  
-  All user-facing strings are translatable. The build process and scripts support extracting and generating `.pot`, `.po`, `.mo`, and `.json` files for both PHP and JS translations.
+[![Version](https://img.shields.io/github/package-json/v/rrze-webteam/rrze-answers/main?label=Version)](https://github.com/RRZE-Webteam/rrze-answers)
+[![Release Version](https://img.shields.io/github/v/release/rrze-webteam/rrze-answers?label=Release+Version)](https://github.com/RRZE-Webteam/rrze-answers/releases/)
+[![GitHub License](https://img.shields.io/github/license/rrze-webteam/rrze-answers)](https://github.com/RRZE-Webteam/rrze-answers)
+[![GitHub issues](https://img.shields.io/github/issues/rrze-webteam/rrze-answers)](https://github.com/RRZE-Webteam/rrze-answers/issues)
 
 ---
 
-## Directory Structure
+## Overview
 
-```
-rrze-plugin-blueprint/
-│
-├── blocks/
-│   ├── block-dynamic/
-│   │   ├── README.md
-│   │   └── src/
-│   └── block-static/
-│       ├── README.md
-│       └── src/
-├── build/
-│   └── blocks/
-│       ├── block-dynamic/
-│       └── block-static/
-├── includes/
-│   ├── Defaults.php
-│   ├── Main.php
-│   └── Common/
-│       ├── Blocks/
-│       ├── CPT/
-│       ├── Plugin/
-│       ├── Settings/
-│       └── Shortcode/
-├── languages/
-│   └── rrze-plugin-blueprint.pot
-├── package.json
-├── rrze-plugin-blueprint.php
-├── README.md
-├── readme.txt
-├── build-plugin.js
-├── webpack.config.js
+**RRZE Answers** combines the functionalities of the former plugins **RRZE FAQ**, **RRZE Glossary**, and **RRZE Synonym** into a single solution.
+
+It allows you to:
+- Create and display FAQs, glossary entries, and placeholders  
+- Synchronize content between websites in the FAU network  
+- Display entries using shortcodes, Gutenberg blocks, or widgets  
+- Filter and group entries by categories, tags, or domains  
+- Integrate with the WordPress REST API (v2)
+
+---
+
+## Features
+
+- **Unified content management:** FAQs, Glossary entries, and Placeholders are managed in one place.  
+- **Flexible display options:** Accordion view, A–Z index, tabs, or tag cloud.  
+- **Cross-domain synchronization:** Share and import entries from other FAU sites.  
+- **REST API support:** Access entries programmatically.  
+- **Multilingual and SEO-friendly:** Uses [`schema.org/DefinedTerm`](https://schema.org/DefinedTerm) for glossary entries and `<abbr>` tags for placeholders.  
+
+---
+
+## Shortcodes
+
+### FAQ Shortcode
+
+```html
+[faq id="456,123"]
+[faq category="category-1"]
+[faq tag="tag-1,tag-2"]
+[faq category="category-1" tag="tag-2"]
 ```
 
----
-
-## Development Workflow
-
-1. **Install dependencies:**
-   ```sh
-   npm install
-   ```
-
-2. **Build all blocks:**
-   ```sh
-   npm run build
-   ```
-   Each block will have its own build directory with compiled assets and static files.
-
-3. **Internationalization:**
-   - Extract PHP and JS strings:
-     ```sh
-     wp i18n make-pot . languages/rrze-plugin-blueprint.pot --domain=rrze-plugin-blueprint --exclude=node_modules,vendor,build
-     ```
-   - Generate JS translation JSON files:
-     ```sh
-     wp i18n make-json languages/rrze-plugin-blueprint-LOCALE.po --no-purge
-     ```
+**Attributes:**
+- `glossary` – Grouping type (`category`, `tag`, or display style: `a-z`, `tabs`, `tagcloud`)
+- `category` – One or more category slugs  
+- `tag` – One or more tag slugs  
+- `domain` – Filter by domain(s)  
+- `id` – Specific FAQ IDs  
+- `hide` – Hide elements (`accordion`, `title`, `glossary`)  
+- `masonry` – Grid layout (`true`/`false`)  
+- `class` – Faculty or custom CSS classes (`fau`, `med`, `nat`, etc.)  
+- `sort` – Sort by `title`, `id`, or `sortfield`  
+- `order` – Sort direction (`asc`, `desc`)  
+- `hstart` – Heading level (default: 2)
 
 ---
 
-## Customization
+### Glossary Shortcode
 
-- **Register a new block:**  
-  Add a folder under `blocks/`, create a `src/` and `block.json`, and add a build script in `package.json`.
+```html
+[glossary id="123,456"]
+[glossary category="kategorie-1"]
+[glossary tag="schlagwort-1,schlagwort-2"]
+```
 
-- **Override default values:**  
-  Edit `Defaults.php` or use the `rrze_plugin_blueprint_defaults` filter.
-
-- **Change the PHP namespace:**  
-  You can update the PHP namespace throughout the plugin by running:
-  ```sh
-  npm run update:namespace
-  ```
-  This will replace the namespace in all PHP files (except in the `build/` directory).
-
-- **Change the text domain**
-  You can update the text domain throughout the plugin by running:
-  ```sh
-  npm run update:textdomain
-  ```
-  This will replace the textdomain in all PHP and JS files (except in the `build/` directory).
-
-- **Change the plugin slug**
-  You can update the plugin slug throughout the plugin by running:
-  ```sh
-  npm run update:slug
-  ```
-  This will replace the plugin slug in all PHP and JS files (except in the `build/` directory).
-
-  Note: Don’t forget to change the plugin directory and file names accordingly.
+**Attributes:**
+- `register` – Grouping type (`category`, `tag`) and style (`a-z`, `tabs`, `tagcloud`)
+- `category` – One or more categories  
+- `tag` – One or more tags  
+- `id` – Specific entries by ID  
+- `hide` – Hide output elements (`accordion`, `title`, `register`)  
+- `show` – Display options (`expand-all-link`, `load-open`)  
+- `class` – Border color / CSS classes  
+- `sort`, `order`, `hstart` – As above  
 
 ---
 
-## Internationalization
+### Placeholder Shortcodes
 
-- All strings use the `rrze-plugin-blueprint` text domain.
-- Translation files (`.pot`, `.po`, `.mo`, `.json`) are in the `languages/` directory.
-- JS translations are loaded using `wp_set_script_translations()`.
+```html
+[placeholder id="123"]
+[placeholder slug="bildungsministerium"]
+[fau_abbr id="987"]
+[fau_abbr slug="url"]
+```
+
+**Attributes:**
+- `id` – Display a specific placeholder or abbreviation  
+- `slug` – Use the entry’s slug  
+- No attributes → list all placeholders  
+
+The `[fau_abbr]` shortcode outputs abbreviations as `<abbr>` HTML tags, including language and pronunciation details if specified.
+
+Example:
+```html
+<abbr title="Universal Resource Locator" lang="en">URL</abbr>
+```
 
 ---
 
-Clone, customize, and start building professional WordPress plugins with RRZE Plugin Blueprint!
+## Synchronization Across Domains
+
+External domains can be added and synchronized via:
+
+```
+Settings → RRZE Answers → Domains
+Settings → RRZE Answers → Synchronization
+```
+
+Entries from synchronized domains behave like local entries and can be displayed via shortcode, block, or widget.
+
+---
+
+## Widgets
+
+In `/wp-admin/widgets.php`, you can find the following widgets:
+- **Answers Widget:** Show a specific or random FAQ, glossary entry, or placeholder.  
+- Configurable options include display duration, layout, and category selection.
+
+---
+
+## Examples
+
+```html
+[faq glossary="tag tagcloud"]
+[glossary register="category tabs" tag="Tag1" show="expand-all-link"]
+[placeholder slug="fau"]
+[fau_abbr id="123"]
+```
+
+---
+
+## REST API (v2)
+
+### FAQs
+- All:  
+  `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/faq`
+- Filtered:  
+  `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/faq?filter[faq_tag]=Matrix`
+
+### Glossary
+- All:  
+  `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/glossary`
+- Category + Tag:  
+  `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/glossary?filter[glossary_category]=Dienste&filter[glossary_tag]=Sprache`
+
+### Placeholders
+- All:  
+  `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/placeholder`
+
+**Pagination:**  
+Refer to [WordPress REST API Pagination](https://developer.wordpress.org/rest-api/using-the-rest-api/pagination/)
+
+---
+
+## License
+
+Licensed under the [GNU General Public License v2.0](https://www.gnu.org/licenses/gpl-2.0.html).
+
+---
+
+## Credits
+
+Developed and maintained by the  
+**RRZE Webteam, Friedrich-Alexander-Universität Erlangen-Nürnberg (FAU)**  
+👉 [https://github.com/RRZE-Webteam/rrze-answers](https://github.com/RRZE-Webteam/rrze-answers)
