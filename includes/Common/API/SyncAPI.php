@@ -539,6 +539,7 @@ class SyncAPI
                 }
             }
         }
+                $identifier = Tools::getIdentifier($site_url);
 
         $aRet['status'] = TRUE;
         $aRet['ret'] = array('cleansite_url' => $cleansite_url, 'cleanUrl' => $cleanUrl);

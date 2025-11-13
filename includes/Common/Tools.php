@@ -377,21 +377,13 @@ class Tools
             }
 
             $home_url = get_home_url($blog_id);
-            $host = parse_url($home_url, PHP_URL_HOST) ?: '';
-            $host = preg_replace('/^www\./i', '', $host); // remove www.
-
-            $identifier = explode('.', $host)[0];
-
-            if (empty($identifier) || $identifier === $host) {
-                $parts = explode('.', $host);
-                $identifier = $parts[count($parts) - 2] ?? $host;
-            }
+            $identifier = self::getIdentifier($home_url);
 
             $site_name = get_blog_option($blog_id, 'blogname');
 
             $site_url = trailingslashit(get_home_url($blog_id));
 
-            $result[$site_url] = $site_name;
+            $result[$site_url] = $identifier . '(' . $site_name . ')';
         }
 
         return $result;

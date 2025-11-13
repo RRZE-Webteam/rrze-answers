@@ -95,12 +95,16 @@ class Main
                 $api = new SyncAPI();
                 $domains = $api->getDomains();
 
+                // echo '<pre>';
+                // var_dump($domains);
+                // exit;
+
                 if ($new['new_name'] && $new['new_url']) {
                     // add new domain
                     $aRet = $api->setDomain($new['new_name'], $new['new_url'], $domains);
                     if ($aRet['status']) {
                         // url is correct, RRZE-FAQ at given url is in use and shortname is new
-                        $domains[$aRet['ret']['cleanShortname']] = $aRet['ret']['cleanUrl'];
+                        // $domains[$aRet['ret']['cleanShortname']] = $aRet['ret']['cleanUrl'];
                     } else {
                         add_settings_error('doms_new_url', 'doms_new_error', $aRet['ret'], 'error');
                     }
