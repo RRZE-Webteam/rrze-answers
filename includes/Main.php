@@ -8,6 +8,7 @@ use RRZE\Answers\Defaults;
 
 use RRZE\Answers\Common\{
     API\RESTAPI,
+    API\SyncAPI,
     AdminInterfaces\AdminUI_QA,
     AdminInterfaces\AdminUI_Placeholder,
     // AdminInterfaces\AdminMenu,
@@ -90,6 +91,35 @@ class Main
         $tab = (!empty($_GET['tab']) ? $_GET['tab'] : '');
 
         switch ($tab) {
+            case 'domains':
+                $api = new SyncAPI();
+                $domains = $api->getDomains();
+
+                if ($new['new_name'] && $new['new_url']) {
+                    // add new domain
+                    $aRet = $api->setDomain($new['new_name'], $new['new_url'], $domains);
+                    if ($aRet['status']) {
+                        // url is correct, RRZE-FAQ at given url is in use and shortname is new
+                        $domains[$aRet['ret']['cleanShortname']] = $aRet['ret']['cleanUrl'];
+                    } else {
+                        add_settings_error('doms_new_url', 'doms_new_error', $aRet['ret'], 'error');
+                    }
+                } else {
+                    // delete domain(s)
+                    foreach ($_POST as $key => $url) {
+                        if (substr($key, 0, 11) === "del_domain_") {
+                            if (($shortname = array_search($url, $domains)) !== false) {
+                                unset($domains[$shortname]);
+                                $api->deleteFAQ($shortname);
+                                $api->deleteCategories($shortname);
+                                $api->deleteTags($shortname);
+                            }
+                            unset($options['faqsync_categories_' . $shortname]);
+                            unset($options['faqsync_donotsync_' . $shortname]);
+                        }
+                    }
+                }
+                break;
             case 'import-faq':
             case 'import-placeholder':
             case 'import-glossary':

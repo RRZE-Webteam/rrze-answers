@@ -60,6 +60,9 @@ class Defaults
                 'sections' => [
                     ['id' => 'permissions', 'title' => __('Permissions', 'rrze-answers')],
                     ['id' => 'permalink_settings', 'title' => __('Permalink Settings', 'rrze-answers')],
+                    ['id' => 'doms', 'title' => __('Domains', 'rrze-answers')],
+                    ['id' => 'faqsync', 'title' => __('FAQ Syncronization', 'rrze-answers')],
+
                     ['id' => 'import_faq', 'title' => __('Import FAQ', 'rrze-answers')],
                     ['id' => 'import_glossary', 'title' => __('Import Glossary', 'rrze-answers')],
                     ['id' => 'faqlog', 'title' => __('Logfile', 'rrze-answers')]
@@ -78,7 +81,81 @@ class Defaults
                             'description' => __('Allow other websites to import your glossary. Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
                             'type' => 'checkbox',
                         ]
-                    ],                    
+                    ],
+                    'doms' => [
+                        [
+                            'name' => 'new_name',
+                            'label' => __('Short name', 'rrze-faq'),
+                            'desc' => __('Enter a short name for this domain.', 'rrze-faq'),
+                            'type' => 'text'
+                        ],
+                        [
+                            'name' => 'new_url',
+                            'label' => __('URL', 'rrze-faq'),
+                            'desc' => __('Enter the domain\'s URL you want to receive FAQ from.', 'rrze-faq'),
+                            'type' => 'text'
+                        ]
+                    ],
+                    'faqsync' => [
+                        [
+                            'name' => 'shortname',
+                            'label' => __('Short name', 'rrze-faq'),
+                            'desc' => __('Use this name as attribute \'domain\' in shortcode [faq]', 'rrze-faq'),
+                            'type' => 'plaintext',
+                            'default' => ''
+                        ],
+                        [
+                            'name' => 'url',
+                            'label' => __('URL', 'rrze-faq'),
+                            'desc' => '',
+                            'type' => 'plaintext',
+                            'default' => ''
+                        ],
+                        [
+                            'name' => 'categories',
+                            'label' => __('Categories', 'rrze-faq'),
+                            'desc' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-faq'),
+                            'type' => 'multiselect',
+                            'options' => []
+                        ],
+                        [
+                            'name' => 'donotsync',
+                            'label' => __('Synchronize', 'rrze-faq'),
+                            'desc' => __('Do not synchronize', 'rrze-faq'),
+                            'type' => 'checkbox',
+                        ],
+                        [
+                            'name' => 'hr',
+                            'label' => '',
+                            'desc' => '',
+                            'type' => 'line'
+                        ],
+                        [
+                            'name' => 'info',
+                            'label' => __('Info', 'rrze-faq'),
+                            'desc' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-faq'),
+                            'type' => 'plaintext',
+                            'default' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-faq'),
+                        ],
+                        [
+                            'name' => 'autosync',
+                            'label' => __('Mode', 'rrze-faq'),
+                            'desc' => __('Synchronize automatically', 'rrze-faq'),
+                            'type' => 'checkbox',
+                        ],
+                        [
+                            'name' => 'frequency',
+                            'label' => __('Frequency', 'rrze-faq'),
+                            'desc' => '',
+                            'default' => 'daily',
+                            'options' => [
+                                'daily' => __('daily', 'rrze-faq'),
+                                'twicedaily' => __('twice daily', 'rrze-faq')
+                            ],
+                            'type' => 'select'
+                        ],
+                    ],
+
                     'import_faq' => [
                         [
                             'name' => 'remote_url_faq',
@@ -245,14 +322,14 @@ class Defaults
                     ]
                 ],
                 'lang' => [
-                    '' =>  __('All languages', 'rrze-answers'),
-                    'de'  => __('German', 'rrze-answers'),
+                    '' => __('All languages', 'rrze-answers'),
+                    'de' => __('German', 'rrze-answers'),
                     'en' => __('English', 'rrze-answers'),
                     'es' => __('Spanish', 'rrze-answers'),
                     'fr' => __('French', 'rrze-answers'),
                     'ru' => __('Russian', 'rrze-answers'),
                     'zh' => __('Chinese', 'rrze-answers')
-                    ],
+                ],
             ]
         );
     }
