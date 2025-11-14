@@ -17,7 +17,8 @@ use RRZE\Answers\Common\Settings\Options\{
     Text,
     Textarea,
     HR,
-    Logfile
+    Logfile,
+    DomainsTable
 };
 
 class Option

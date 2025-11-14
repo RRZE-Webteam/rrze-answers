@@ -410,25 +410,6 @@ class Main
         );
     }
 
-    public function domainOutput()
-    {
-        $api = new SyncAPI();
-        $aDomains = $api->getDomains();
-
-        if (count($aDomains) > 0) {
-            $i = 1;
-            echo '<style> .settings_page_rrze-faq #log .form-table th {width:0;}</style>';
-            echo '<table class="wp-list-table widefat striped"><thead><tr><th colspan="3">' . esc_html__('Domains:', 'rrze-faq') . '</th></tr></thead><tbody>';
-            foreach ($aDomains as $name => $url) {
-                echo '<tr><td><input type="checkbox" name="del_domain_' . esc_attr($i) . '" value="' . esc_url($url) . '"></td><td>' . esc_html($name) . '</td><td>' . esc_url($url) . '</td></tr>';
-                $i++;
-            }
-            echo '</tbody></table>';
-            echo '<p>' . esc_html__('Please note: "Delete selected domains" will DELETE every FAQ on this website that has been fetched from the selected domains.', 'rrze-faq') . '</p>';
-            // submit_button(esc_html__('Delete selected domains', 'rrze-faq'));
-        }
-    }
-
 
     /**
      * Settings method
@@ -462,11 +443,6 @@ class Main
                     array_flip(['name', 'label', 'description', 'options', 'default', 'sanitize', 'validate', 'placeholder'])
                 ));
             }
-
-            if ($section['id'] == 'domains') {
-                $this->domainOutput();
-            }
-
         }
 
         $this->settings->build();

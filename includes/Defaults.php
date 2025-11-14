@@ -88,7 +88,14 @@ class Defaults
                             'label' => __('URL', 'rrze-faq'),
                             'desc' => __('Enter the domain\'s URL you want to receive FAQ from.', 'rrze-faq'),
                             'type' => 'text'
+                        ],
+                        [
+                            'name' => 'domains',
+                            'label' => __('Domains', 'rrze-faq'),
+                            'desc' => __('Enter the domain\'s URL you want to receive FAQ from.', 'rrze-faq'),
+                            'type' => 'domains-table'
                         ]
+
                     ],
                     'faqsync' => [
                         [
