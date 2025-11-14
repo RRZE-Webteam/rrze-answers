@@ -59,7 +59,7 @@
       $select.prop('disabled', false).show();
     } else {
       // No remaining URLs -> hide/disable
-      $select.prop('disabled', true).hide();
+      // $select.prop('disabled', true).hide();
     }
   }
 

@@ -384,7 +384,7 @@ class Tools
 
             $site_url = trailingslashit(get_home_url($blog_id));
 
-            $result[$site_url] = $identifier . '(' . $site_name . ')';
+            $result[$site_url] = $identifier . ' (' . $site_name . ')';
         }
 
         return $result;

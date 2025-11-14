@@ -169,7 +169,7 @@ class Main
     }
 
 
-    function rrze_answers_get_categories_cb()
+    public function rrze_answers_get_categories_cb()
     {
         check_ajax_referer('rrze_answers_sync', '_ajax_nonce');
 
