@@ -392,7 +392,7 @@ class Tools
 
     public static function getIdentifier($url)
     {
-        $host = parse_url($url, PHP_URL_HOST) ?: '';
+        $host = self::getHost($url);
         $host = preg_replace('/^www\./i', '', $host); // remove www.
 
         // Use the first domain segment (e.g., "phil" from phil.fau.eu)
@@ -405,6 +405,16 @@ class Tools
         }
 
         return $identifier;
+
+    }
+
+
+    public static function getHost($url)
+    {
+        if (!preg_match('~^https?://~i', $url)) {
+            $url = 'https://' . $url;
+        }
+        return wp_parse_url($url, PHP_URL_HOST);
 
     }
 

@@ -495,60 +495,48 @@ class SyncAPI
         $domains = array();
         $options = get_option('rrze-answers');
         if (isset($options['registeredDomains'])) {
-            foreach ($options['registeredDomains'] as $site_url => $url) {
-                $domains[$site_url] = $url;
+            foreach ($options['registeredDomains'] as $identifier => $url) {
+                $domains[$identifier] = $url;
             }
         }
         asort($domains);
         return $domains;
     }
 
-    public function setDomain($site_url, $url, $domains)
+    public function checkDomain($identifier, $url, $domains)
     {
-        // returns array('status' => TRUE, 'ret' => array(cleansite_url, cleanUrl)
+        // returns array('status' => TRUE, 'msg' => '')
         // on error returns array('status' => FALSE, 'ret' => error-message)
-        $aRet = array('status' => FALSE, 'ret' => '');
-        $cleanUrl = trailingslashit(preg_replace("/^((http|https):\/\/)?/i", "https://", $url));
-        $cleansite_url = strtolower(preg_replace('/[^A-Za-z0-9]/', '', $site_url));
+        $aRet = array('status' => FALSE, 'msg' => '');
 
-        if (in_array($cleanUrl, $domains)) {
-            $aRet['ret'] = $url . ' ' . __('is already in use.', 'rrze-answers');
+        if (in_array($url, $domains)) {
+            $aRet['msg'] = $url . ' ' . __('is already in use.', 'rrze-answers');
             return $aRet;
-        } elseif (array_key_exists($cleansite_url, $domains)) {
-            $aRet['ret'] = $cleansite_url . ' ' . __('is already in use.', 'rrze-answers');
+        } elseif (array_key_exists($identifier, $domains)) {
+            $aRet['msg'] = $identifier . ' ' . __('is already in use.', 'rrze-answers');
             return $aRet;
-        } else {
-            // $aSubEndpoints = ['faq/', 'synonym/', 'glossary/'];
+        }
+        
+        $aSubEndpoints = ['faq', 'synonym', 'glossary'];
 
-            // foreach ($aSubEndpoints as $sub){
-
-            $request = wp_remote_get($cleanUrl . ENDPOINT . 'faq?per_page=1');
+        foreach ($aSubEndpoints as $sub){
+            $request = wp_remote_get($url . '/' . ENDPOINT . $sub . '?per_page=1');
             $status_code = wp_remote_retrieve_response_code($request);
 
             if ($status_code != '200') {
-                $aRet['ret'] = $cleanUrl . ' ' . __('is not valid.', 'rrze-answers');
-                return $aRet;
+                $aRet['msg'] = $url . ' ' . __('is not valid.', 'rrze-answers');
             } else {
                 $content = json_decode(wp_remote_retrieve_body($request), TRUE);
 
-                if ($content) {
-                    $cleanUrl = substr($content[0]['link'], 0, strpos($content[0]['link'], '/faq')) . '/';
+                if (!$content) {
+                    $aRet['ret'] = $url . ' ' . __('is not valid.', 'rrze-answers');
                 } else {
-                    $aRet['ret'] = $cleanUrl . ' ' . __('is not valid.', 'rrze-answers');
-                    return $aRet;
+                    $aRet['status'] = TRUE;
+                    break;
                 }
             }
         }
-                $identifier = Tools::getIdentifier($site_url);
 
-        $aRet['status'] = TRUE;
-        $aRet['ret'] = array('cleansite_url' => $cleansite_url, 'cleanUrl' => $cleanUrl, 'identifier' => $identifier);
-
-        echo '<pre>';
-        var_dump($aRet);
-        exit;
         return $aRet;
     }
-
-
 }

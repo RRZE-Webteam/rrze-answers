@@ -60,7 +60,7 @@ class Defaults
                 'sections' => [
                     ['id' => 'permissions', 'title' => __('Permissions', 'rrze-answers')],
                     ['id' => 'permalink_settings', 'title' => __('Permalink Settings', 'rrze-answers')],
-                    ['id' => 'doms', 'title' => __('Domains', 'rrze-answers')],
+                    ['id' => 'domains', 'title' => __('Domains', 'rrze-answers')],
                     ['id' => 'faqsync', 'title' => __('FAQ Syncronization', 'rrze-answers')],
 
                     ['id' => 'import_faq', 'title' => __('Import FAQ', 'rrze-answers')],
@@ -82,13 +82,7 @@ class Defaults
                             'type' => 'checkbox',
                         ]
                     ],
-                    'doms' => [
-                        [
-                            'name' => 'new_name',
-                            'label' => __('Short name', 'rrze-faq'),
-                            'desc' => __('Enter a short name for this domain.', 'rrze-faq'),
-                            'type' => 'text'
-                        ],
+                    'domains' => [
                         [
                             'name' => 'new_url',
                             'label' => __('URL', 'rrze-faq'),
