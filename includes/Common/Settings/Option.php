@@ -76,7 +76,8 @@ class Option
             'text' => Text::class,
             'textarea' => Textarea::class,
             'hr' => HR::class,
-            'logfile' => Logfile::class
+            'logfile' => Logfile::class,
+            'domains-table' => DomainsTable::class            
         ]);
 
         if (isset($typeMap[$this->type])) {
