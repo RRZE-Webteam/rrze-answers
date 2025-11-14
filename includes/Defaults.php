@@ -45,9 +45,10 @@ class Defaults
      */
     private function load(): array
     {
-        return apply_filters(
-            'rrze-answers_defaults',
-            [
+                                    $storedOptions = get_option('rrze-faq');
+                                    $registeredDomains = (!empty($storedOptions['registeredDomains']) ? $storedOptions['registeredDomains'] : []);
+
+                                    $defaults =             [
                 'settings' => [
                     'option_name' => 'rrze-answers',
                     'menu_title' => __('RRZE Answers', 'rrze-answers'),
@@ -152,36 +153,6 @@ class Defaults
                             'options' => [
                                 'daily' => __('daily', 'rrze-faq'),
                                 'twicedaily' => __('twice daily', 'rrze-faq')
-                            ],
-                            'type' => 'select'
-                        ],
-                    ],
-
-                    'import_faq' => [
-                        [
-                            'name' => 'remote_url_faq',
-                            'label' => __('Remote site', 'rrze-answers'),
-                            'description' => __('Select the site you want to synchronize with.', 'rrze-answers'),
-                            'type' => 'select',
-                            'options' => Tools::getSitesForSelect(),
-                            'default' => ''
-                        ],
-                        [
-                            'name' => 'remote_categories_faq',
-                            'label' => __('Categories', 'rrze-answers'),
-                            'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
-                            'type' => 'select-multiple',
-                            'options' => []
-                        ],
-                        [
-                            'name' => 'remote_frequency_faq',
-                            'label' => __('Synchronize automatically', 'rrze-answers'),
-                            'description' => '',
-                            'default' => '',
-                            'options' => [
-                                '' => __('-- off --', 'rrze-answers'),
-                                'daily' => __('daily', 'rrze-answers'),
-                                'twicedaily' => __('twicedaily', 'rrze-answers')
                             ],
                             'type' => 'select'
                         ],
@@ -331,8 +302,46 @@ class Defaults
                     'ru' => __('Russian', 'rrze-answers'),
                     'zh' => __('Chinese', 'rrze-answers')
                 ],
-            ]
-        );
+            ];
+            
+            $defaults['import_faq'] = [];
+
+        foreach ($registeredDomains as $identifier => $url){
+
+                    $aCategories = $this->getTaxonomies($site_url, 'rrze_faq_category', $categories);
+
+                    
+                        $defaults['import_faq'][] = [
+                        [
+                            'name' => 'remote_url_faq',
+                            'label' => __('Remote site', 'rrze-answers'),
+                            'type' => 'header',
+                            'default' => $identifier . ' (' . $url . ')'
+                        ],
+                        [
+                            'name' => 'remote_categories_faq',
+                            'label' => __('Categories', 'rrze-answers'),
+                            'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
+                            'type' => 'select-multiple',
+                            'options' => Tools::
+                        ],
+                        [
+                            'name' => 'remote_frequency_faq',
+                            'label' => __('Synchronize automatically', 'rrze-answers'),
+                            'description' => '',
+                            'default' => '',
+                            'options' => [
+                                '' => __('-- off --', 'rrze-answers'),
+                                'daily' => __('daily', 'rrze-answers'),
+                                'twicedaily' => __('twicedaily', 'rrze-answers')
+                            ],
+                            'type' => 'select'
+                        ],
+                    ];
+
+        }
+
+        return apply_filters('rrze-answers_defaults', $defaults);
     }
 
     /**

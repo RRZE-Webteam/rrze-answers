@@ -96,13 +96,13 @@ class Main
             $options = array_merge($storedOptions, $options);
         }
 
+        $api = new SyncAPI();
+        $domains = $api->getDomains();
+
         $tab = (!empty($_GET['tab']) ? $_GET['tab'] : '');
 
         switch ($tab) {
             case 'domains':
-                $api = new SyncAPI();
-                $domains = $api->getDomains();
-
                 if ($options['new_url']) {
                     $identifier = Tools::getIdentifier($options['new_url']);
                     $url = 'https://' . Tools::getHost($options['new_url']);
