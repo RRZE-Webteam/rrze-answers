@@ -101,11 +101,12 @@ class Tools
      * @param bool   $useSchema Whether to output Schema.org Question/Answer markup.
      * @return string           The complete HTML string for the FAQ item.
      */
-    public static function renderFAQItem(string $question, string $answer, int $hstart, bool $useSchema): string
+    public static function renderFAQItem(string $question, string $answer, int $hstart, bool $useSchema, bool $hide_title): string
     {
         if ($useSchema) {
+            $title = ($hide_title ? '' : '<h' . $hstart . ' itemprop="name">' . esc_html($question) . '</h' . $hstart . '>');
             return '<div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">'
-                . '<h' . $hstart . ' itemprop="name">' . esc_html($question) . '</h' . $hstart . '>'
+                . $title
                 . '<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text">' . $answer . '</div></div>'
                 . '</div>';
         }

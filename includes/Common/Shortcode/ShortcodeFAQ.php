@@ -405,7 +405,7 @@ class ShortcodeFAQ
                 }
 
                 if ($hide_accordion) {
-                    $content .= Tools::renderFAQItem($question, $answer, $hstart, $useSchema);
+                    $content .= Tools::renderFAQItem($question, $answer, $hstart, $useSchema, $hide_title);
                 } else {
                     $content .= Tools::renderFAQItemAccordion($anchorfield, $question, $answer, $color, $load_open, $useSchema);
                 }
@@ -633,7 +633,7 @@ class ShortcodeFAQ
 
                         $content .= Tools::renderFAQItemAccordion($anchorfield, $question, $answer, $color, $load_open, $useSchema);
                     } else {
-                        $content .= Tools::renderFAQItem($question, $answer, $hstart, $useSchema);
+                        $content .= Tools::renderFAQItem($question, $answer, $hstart, $useSchema, $hide_title);
                     }
                     $last_anchor = $letter;
                 }

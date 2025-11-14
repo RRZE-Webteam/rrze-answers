@@ -4,7 +4,7 @@ namespace RRZE\Answers\Common\API;
 
 defined('ABSPATH') || exit;
 
-// define('ENDPOINT', 'wp-json/wp/v2/faq');
+use RRZE\Answers\Common\Tools;
 
 use RRZE\Answers\Common\Config;
 
@@ -542,7 +542,11 @@ class SyncAPI
                 $identifier = Tools::getIdentifier($site_url);
 
         $aRet['status'] = TRUE;
-        $aRet['ret'] = array('cleansite_url' => $cleansite_url, 'cleanUrl' => $cleanUrl);
+        $aRet['ret'] = array('cleansite_url' => $cleansite_url, 'cleanUrl' => $cleanUrl, 'identifier' => $identifier);
+
+        echo '<pre>';
+        var_dump($aRet);
+        exit;
         return $aRet;
     }
 
