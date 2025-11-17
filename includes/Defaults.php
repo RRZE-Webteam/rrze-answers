@@ -192,7 +192,7 @@ class Defaults
                         'placeholder' => 'rrze_placeholder'
                     ],
                 ],
-                'import_faq' => [],
+                'import' => [],
                 'faqlog' => [
                     [
                         'name' => 'ANSWERSLOGFILE',

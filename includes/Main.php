@@ -75,8 +75,8 @@ class Main
         // $this->adminMenue = new AdminMenu(); // in admin menu there is a maximum of 2 levels. Deactivated this workaround because it wouldn't be best practice.
         add_action('wp_enqueue_scripts', [$this, 'enqueueAssets']);
         add_action('enqueue_block_assets', [$this, 'enqueueAssets']);
-        add_action('admin_enqueue_scripts', [$this, 'enqueueImportAssets']);
-        add_action('wp_ajax_rrze_answers_get_categories', [$this, 'rrze_answers_get_categories_cb']);
+        // add_action('admin_enqueue_scripts', [$this, 'enqueueImportAssets']);
+        // add_action('wp_ajax_rrze_answers_get_categories', [$this, 'rrze_answers_get_categories_cb']);
 
         add_action('pre_update_option_rrze-answers', [$this, 'switchTask'], 10, 1);
 
@@ -103,7 +103,7 @@ class Main
 
         switch ($tab) {
             case 'domains':
-                if ($options['new_url']) {
+                if ($options['new_url'] && ($options['new_url'] != 'https://')) {
                     // add new domain
                     $identifier = Tools::getIdentifier($options['new_url']);
                     $url = 'https://' . Tools::getHost($options['new_url']);
@@ -121,9 +121,12 @@ class Main
                         if (substr($key, 0, 11) === "del_domain_") {
                             if (($shortname = array_search($url, $domains)) !== false) {
                                 unset($domains[$shortname]);
-                                $api->deleteFAQ($shortname);
-                                $api->deleteCategories($shortname);
-                                $api->deleteTags($shortname);
+                                $api->deleteEntries($url, 'faq');
+                                $api->deleteCategories($url, 'faq');
+                                $api->deleteTags($url, 'faq');
+                                $api->deleteEntries($url, 'glossary');
+                                $api->deleteCategories($url, 'glossary');
+                                $api->deleteTags($url, 'glossary');
                             }
                             unset($options['faqsync_categories_' . $shortname]);
                             unset($options['faqsync_donotsync_' . $shortname]);
@@ -131,10 +134,8 @@ class Main
                     }
                 }
                 break;
-            case 'import-faq':
-            case 'import-placeholder':
-            case 'import-glossary':
-                $type = substr(strrchr($tab, '-'), 1); // "faq"
+            case 'import':
+                $type = substr(strrchr($tab, '-'), 1);
                 $frequency = (!empty($options['remote_frequency_' . $type]) ? $options['remote_frequency_' . $type] : '');
                 $mode = (!empty($frequency) ? 'automatic' : 'manual');
                 $sync = new Sync($type, $frequency);
@@ -169,89 +170,89 @@ class Main
     }
 
 
-    public function rrze_answers_get_categories_cb()
-    {
-        check_ajax_referer('rrze_answers_sync', '_ajax_nonce');
+    // public function rrze_answers_get_categories_cb()
+    // {
+    //     check_ajax_referer('rrze_answers_sync', '_ajax_nonce');
 
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Unauthorized'], 403);
-        }
+    //     if (!current_user_can('manage_options')) {
+    //         wp_send_json_error(['message' => 'Unauthorized'], 403);
+    //     }
 
-        $site_url = isset($_POST['site_url']) ? trim(wp_unslash($_POST['site_url'])) : '';
-        if ($site_url === '') {
-            wp_send_json_error(['message' => 'Missing parameter: site_url'], 400);
-        }
+    //     $site_url = isset($_POST['site_url']) ? trim(wp_unslash($_POST['site_url'])) : '';
+    //     if ($site_url === '') {
+    //         wp_send_json_error(['message' => 'Missing parameter: site_url'], 400);
+    //     }
 
-        // Fetch remote categories
-        $endpoint = esc_url_raw($site_url) . '/wp-json/wp/v2/rrze_faq_category';
-        $res = wp_remote_get($endpoint, ['timeout' => 10, 'headers' => ['Accept' => 'application/json']]);
+    //     // Fetch remote categories
+    //     $endpoint = esc_url_raw($site_url) . '/wp-json/wp/v2/rrze_faq_category';
+    //     $res = wp_remote_get($endpoint, ['timeout' => 10, 'headers' => ['Accept' => 'application/json']]);
 
-        if (is_wp_error($res)) {
-            wp_send_json_error(['message' => $res->get_error_message()], 500);
-        }
+    //     if (is_wp_error($res)) {
+    //         wp_send_json_error(['message' => $res->get_error_message()], 500);
+    //     }
 
-        $code = wp_remote_retrieve_response_code($res);
-        $body = wp_remote_retrieve_body($res);
-        if ($code !== 200) {
-            wp_send_json_error(['message' => "Remote $code", 'body' => $body], $code);
-        }
+    //     $code = wp_remote_retrieve_response_code($res);
+    //     $body = wp_remote_retrieve_body($res);
+    //     if ($code !== 200) {
+    //         wp_send_json_error(['message' => "Remote $code", 'body' => $body], $code);
+    //     }
 
-        $items = json_decode($body, true);
-        if (!is_array($items)) {
-            wp_send_json_error(['message' => 'Invalid JSON from remote'], 500);
-        }
+    //     $items = json_decode($body, true);
+    //     if (!is_array($items)) {
+    //         wp_send_json_error(['message' => 'Invalid JSON from remote'], 500);
+    //     }
 
-        // Load plugin options safely
-        $options = get_option('rrze-answers');
-        if (!is_array($options)) {
-            $options = [];
-        }
+    //     // Load plugin options safely
+    //     $options = get_option('rrze-answers');
+    //     if (!is_array($options)) {
+    //         $options = [];
+    //     }
 
-        $cats = [];
-        $selected = [];
-        $remote_cats_all = isset($options['remote_categories_faq']) && is_array($options['remote_categories_faq'])
-            ? $options['remote_categories_faq']
-            : [];
+    //     $cats = [];
+    //     $selected = [];
+    //     $remote_cats_all = isset($options['remote_categories_faq']) && is_array($options['remote_categories_faq'])
+    //         ? $options['remote_categories_faq']
+    //         : [];
 
-        // Selected categories for the current site_url (if previously stored)
-        $remote_cats_for_site = [];
-        if (isset($remote_cats_all[$site_url]) && is_array($remote_cats_all[$site_url])) {
-            $remote_cats_for_site = $remote_cats_all[$site_url];
-        }
+    //     // Selected categories for the current site_url (if previously stored)
+    //     $remote_cats_for_site = [];
+    //     if (isset($remote_cats_all[$site_url]) && is_array($remote_cats_all[$site_url])) {
+    //         $remote_cats_for_site = $remote_cats_all[$site_url];
+    //     }
 
-        foreach ($items as $item) {
-            if (!empty($item['slug']) && isset($item['name'])) {
-                $cats[$item['slug']] = $item['name'];
-                if (in_array($item['slug'], $remote_cats_for_site, true)) {
-                    $selected[] = $item['slug'];
-                }
-            }
-        }
+    //     foreach ($items as $item) {
+    //         if (!empty($item['slug']) && isset($item['name'])) {
+    //             $cats[$item['slug']] = $item['name'];
+    //             if (in_array($item['slug'], $remote_cats_for_site, true)) {
+    //                 $selected[] = $item['slug'];
+    //             }
+    //         }
+    //     }
 
-        // Build remaining site URLs for the secondary dropdown
-        // Expect all configured site URLs in option 'remote_url_faq' (array of strings)
-        $all_urls = [];
-        if (isset($options['remote_url_faq'])) {
-            if (is_array($options['remote_url_faq'])) {
-                $all_urls = $options['remote_url_faq'];
-            } elseif (is_string($options['remote_url_faq']) && $options['remote_url_faq'] !== '') {
-                // Accept single string for backward compatibility
-                $all_urls = [$options['remote_url_faq']];
-            }
-        }
+    //     // Build remaining site URLs for the secondary dropdown
+    //     // Expect all configured site URLs in option 'remote_url_faq' (array of strings)
+    //     $all_urls = [];
+    //     if (isset($options['remote_url_faq'])) {
+    //         if (is_array($options['remote_url_faq'])) {
+    //             $all_urls = $options['remote_url_faq'];
+    //         } elseif (is_string($options['remote_url_faq']) && $options['remote_url_faq'] !== '') {
+    //             // Accept single string for backward compatibility
+    //             $all_urls = [$options['remote_url_faq']];
+    //         }
+    //     }
 
-        // Remove current site_url and duplicates
-        $remaining_urls = array_values(array_unique(array_filter($all_urls, function ($u) use ($site_url) {
-            return is_string($u) && $u !== '' && $u !== $site_url;
-        })));
+    //     // Remove current site_url and duplicates
+    //     $remaining_urls = array_values(array_unique(array_filter($all_urls, function ($u) use ($site_url) {
+    //         return is_string($u) && $u !== '' && $u !== $site_url;
+    //     })));
 
-        wp_send_json_success([
-            'categories' => $cats,
-            'selected' => $selected,
-            'remaining_urls' => $remaining_urls,
-            'current_url' => $site_url,
-        ]);
-    }
+    //     wp_send_json_success([
+    //         'categories' => $cats,
+    //         'selected' => $selected,
+    //         'remaining_urls' => $remaining_urls,
+    //         'current_url' => $site_url,
+    //     ]);
+    // }
 
 
     /**
@@ -422,7 +423,6 @@ class Main
      */
 
 
-    // BK 2DO: hier setFields von rrze-faq einbauen
     public function settings()
     {
         $this->settings = new Settings($this->defaults->get('settings')['page_title']);
@@ -477,30 +477,30 @@ class Main
     }
 
 
-    public function enqueueImportAssets(string $hook): void
-    {
-        wp_register_script(
-            'rrze-answers-import-ui',
-            plugins_url('build/rrze-import-ui.js', plugin()->getBasename()),
-            ['jquery'],
-            '1.0.0',
-            true
-        );
+    // public function enqueueImportAssets(string $hook): void
+    // {
+    //     wp_register_script(
+    //         'rrze-answers-import-ui',
+    //         plugins_url('build/rrze-import-ui.js', plugin()->getBasename()),
+    //         ['jquery'],
+    //         '1.0.0',
+    //         true
+    //     );
 
-        wp_localize_script('rrze-answers-import-ui', 'RRZEAnswersSync', [
-            'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('rrze_answers_sync'),
-            'optionName' => 'rrze-answers_remote_api_url',
-            'i18n' => [
-                'loading' => __('Loading categories…', 'rrze-answers'),
-                'none' => __('No categories found.', 'rrze-answers'),
-                'error' => __('Error while loading categories.', 'rrze-answers'),
-                'selectCategories' => __('Hold Ctrl/Cmd to select multiple categories.', 'rrze-answers'),
-            ],
-        ]);
+    //     wp_localize_script('rrze-answers-import-ui', 'RRZEAnswersSync', [
+    //         'ajaxUrl' => admin_url('admin-ajax.php'),
+    //         'nonce' => wp_create_nonce('rrze_answers_sync'),
+    //         'optionName' => 'rrze-answers_remote_api_url',
+    //         'i18n' => [
+    //             'loading' => __('Loading categories…', 'rrze-answers'),
+    //             'none' => __('No categories found.', 'rrze-answers'),
+    //             'error' => __('Error while loading categories.', 'rrze-answers'),
+    //             'selectCategories' => __('Hold Ctrl/Cmd to select multiple categories.', 'rrze-answers'),
+    //         ],
+    //     ]);
 
-        wp_enqueue_script('rrze-answers-import-ui');
-    }
+    //     wp_enqueue_script('rrze-answers-import-ui');
+    // }
 
 }
 
