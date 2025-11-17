@@ -81,11 +81,8 @@ class Main
 
         add_action('pre_update_option_rrze-answers', [$this, 'switchTask'], 10, 1);
 
-
-
         $this->shortcode();
         $this->blocks();
-
     }
 
     public function switchTask($options)
@@ -107,7 +104,7 @@ class Main
                     // add new domain
                     $identifier = Tools::getIdentifier($options['new_url']);
                     $url = 'https://' . Tools::getHost($options['new_url']);
-                    $aRet = $api->checkDomain($identifier, $url, $domains);
+                    $aRet = $this->sync->checkDomain($identifier, $url, $domains);
 
                     if ($aRet['status']) {
                         // url is correct, RRZE-FAQ at given url is in use and shortname is new
@@ -121,12 +118,12 @@ class Main
                         if (substr($key, 0, 11) === "del_domain_") {
                             if (($shortname = array_search($url, $domains)) !== false) {
                                 unset($domains[$shortname]);
-                                $api->deleteEntries($url, 'faq');
-                                $api->deleteCategories($url, 'faq');
-                                $api->deleteTags($url, 'faq');
-                                $api->deleteEntries($url, 'glossary');
-                                $api->deleteCategories($url, 'glossary');
-                                $api->deleteTags($url, 'glossary');
+                                $this->sync->deleteEntries($url, 'faq');
+                                $this->sync->deleteCategories($url, 'faq');
+                                $this->sync->deleteTags($url, 'faq');
+                                $this->sync->deleteEntries($url, 'glossary');
+                                $this->sync->deleteCategories($url, 'glossary');
+                                $this->sync->deleteTags($url, 'glossary');
                             }
                             unset($options['faqsync_categories_' . $shortname]);
                             unset($options['faqsync_donotsync_' . $shortname]);
