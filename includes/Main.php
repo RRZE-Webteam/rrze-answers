@@ -64,6 +64,7 @@ class Main
         $this->defaults = new Defaults();
         $this->settings();
         $this->restapi = new RESTAPI();
+        $this->sync = new SyncAPI();
 
         // $this->adminInterface = new AdminInterfaces('rrze_faq');
         // $this->adminInterface = new AdminInterfaces('rrze_glossary');
@@ -96,8 +97,7 @@ class Main
             $options = array_merge($storedOptions, $options);
         }
 
-        $api = new SyncAPI();
-        $domains = $api->getDomains();
+        $domains = $this->sync->getDomains();
 
         $tab = (!empty($_GET['tab']) ? $_GET['tab'] : '');
 
