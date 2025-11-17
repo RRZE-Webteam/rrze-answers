@@ -135,7 +135,7 @@ class Main
             case 'import-placeholder':
             case 'import-glossary':
                 $type = substr(strrchr($tab, '-'), 1); // "faq"
-                $frequency = (!empty($new['remote_frequency_' . $type]) ? $new['remote_frequency_' . $type] : '');
+                $frequency = (!empty($options['remote_frequency_' . $type]) ? $options['remote_frequency_' . $type] : '');
                 $mode = (!empty($frequency) ? 'automatic' : 'manual');
                 $sync = new Sync($type, $frequency);
                 $sync->doSync($mode);
