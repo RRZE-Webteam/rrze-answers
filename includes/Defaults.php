@@ -46,302 +46,217 @@ class Defaults
      */
     private function load(): array
     {
-            $defaults =             [
-                'settings' => [
-                    'option_name' => 'rrze-answers',
-                    'menu_title' => __('RRZE Answers', 'rrze-answers'),
-                    'page_title' => __('RRZE Answers Settings', 'rrze-answers'),
-                    'capability' => 'manage_options',
-                    'checkbox_option' => false,
-                    'text_placeholder' => __('Enter your text here...', 'rrze-answers'),
-                    'select_default' => 'none',
-                ],
-                'sections' => [
-                    ['id' => 'permissions', 'title' => __('Permissions', 'rrze-answers')],
-                    ['id' => 'permalink_settings', 'title' => __('Permalink Settings', 'rrze-answers')],
-                    ['id' => 'domains', 'title' => __('Domains', 'rrze-answers')],
-                    ['id' => 'faqsync', 'title' => __('FAQ Syncronization', 'rrze-answers')],
-
-                    ['id' => 'import_faq', 'title' => __('Import FAQ', 'rrze-answers')],
-                    ['id' => 'import_glossary', 'title' => __('Import Glossary', 'rrze-answers')],
-                    ['id' => 'faqlog', 'title' => __('Logfile', 'rrze-answers')]
-                ],
-                'fields' => [
-                    'permissions' => [
-                        [
-                            'name' => 'api_active_rrze_faq',
-                            'label' => __('Allow to import FAQ', 'rrze-answers'),
-                            'description' => __('Allow other websites to import your FAQ. Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
-                            'type' => 'checkbox',
-                        ],
-                        [
-                            'name' => 'api_active_rrze_glossary',
-                            'label' => __('Allow to import glossary', 'rrze-answers'),
-                            'description' => __('Allow other websites to import your glossary. Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
-                            'type' => 'checkbox',
-                        ]
+        $defaults = [
+            'settings' => [
+                'option_name' => 'rrze-answers',
+                'menu_title' => __('RRZE Answers', 'rrze-answers'),
+                'page_title' => __('RRZE Answers Settings', 'rrze-answers'),
+                'capability' => 'manage_options',
+                'checkbox_option' => false,
+                'text_placeholder' => __('Enter your text here...', 'rrze-answers'),
+                'select_default' => 'none',
+            ],
+            'sections' => [
+                ['id' => 'permissions', 'title' => __('Permissions', 'rrze-answers')],
+                ['id' => 'permalink_settings', 'title' => __('Permalink Settings', 'rrze-answers')],
+                ['id' => 'domains', 'title' => __('Domains', 'rrze-answers')],
+                ['id' => 'import', 'title' => __('Import', 'rrze-answers')],
+                ['id' => 'faqlog', 'title' => __('Logfile', 'rrze-answers')]
+            ],
+            'fields' => [
+                'permissions' => [
+                    [
+                        'name' => 'api_active_rrze_faq',
+                        'label' => __('Allow to import FAQ', 'rrze-answers'),
+                        'description' => __('Allow other websites to import your FAQ. Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
+                        'type' => 'checkbox',
                     ],
-                    'domains' => [
-                        [
-                            'name' => 'domains',
-                            'label' => __('Domains', 'rrze-faq'),
-                            'desc' => __('Enter the domain\'s URL you want to receive FAQ from.', 'rrze-faq'),
-                            'type' => 'domains-table'
-                        ],
-                        [
-                            'name' => 'new_url',
-                            'label' => __('New Domain', 'rrze-faq'),
-                            'desc' => __('Enter the domain\'s URL you want to receive FAQ from.', 'rrze-faq'),
-                            'type' => 'text',
-                            'default' => 'https://', 
-                        ]
-                    ],
-                    'faqsync' => [
-                        [
-                            'name' => 'shortname',
-                            'label' => __('Short name', 'rrze-faq'),
-                            'desc' => __('Use this name as attribute \'domain\' in shortcode [faq]', 'rrze-faq'),
-                            'type' => 'plaintext',
-                            'default' => ''
-                        ],
-                        [
-                            'name' => 'url',
-                            'label' => __('URL', 'rrze-faq'),
-                            'desc' => '',
-                            'type' => 'plaintext',
-                            'default' => ''
-                        ],
-                        [
-                            'name' => 'categories',
-                            'label' => __('Categories', 'rrze-faq'),
-                            'desc' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-faq'),
-                            'type' => 'multiselect',
-                            'options' => []
-                        ],
-                        [
-                            'name' => 'donotsync',
-                            'label' => __('Synchronize', 'rrze-faq'),
-                            'desc' => __('Do not synchronize', 'rrze-faq'),
-                            'type' => 'checkbox',
-                        ],
-                        [
-                            'name' => 'hr',
-                            'label' => '',
-                            'desc' => '',
-                            'type' => 'line'
-                        ],
-                        [
-                            'name' => 'info',
-                            'label' => __('Info', 'rrze-faq'),
-                            'desc' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-faq'),
-                            'type' => 'plaintext',
-                            'default' => __('All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too.', 'rrze-faq'),
-                        ],
-                        [
-                            'name' => 'autosync',
-                            'label' => __('Mode', 'rrze-faq'),
-                            'desc' => __('Synchronize automatically', 'rrze-faq'),
-                            'type' => 'checkbox',
-                        ],
-                        [
-                            'name' => 'frequency',
-                            'label' => __('Frequency', 'rrze-faq'),
-                            'desc' => '',
-                            'default' => 'daily',
-                            'options' => [
-                                'daily' => __('daily', 'rrze-faq'),
-                                'twicedaily' => __('twice daily', 'rrze-faq')
-                            ],
-                            'type' => 'select'
-                        ],
-                    ],
-                    'import_glossary' => [
-                        [
-                            'name' => 'remote_api_glossary',
-                            'label' => __('Remote site', 'rrze-answers'),
-                            'description' => __('Select the site you want to synchronize with.', 'rrze-answers'),
-                            'type' => 'select',
-                            'options' => Tools::getSitesForSelect(),
-                            'default' => ''
-                        ],
-                        [
-                            'name' => 'remote_categories_glossary',
-                            'label' => __('Categories', 'rrze-answers'),
-                            'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
-                            'type' => 'select-multiple',
-                            'options' => []
-                        ],
-                        [
-                            'name' => 'remote_frequency_glossary',
-                            'label' => __('Synchronize automatically', 'rrze-answers'),
-                            'description' => '',
-                            'default' => '',
-                            'options' => [
-                                '' => __('-- off --', 'rrze-answers'),
-                                'daily' => __('daily', 'rrze-answers'),
-                                'twicedaily' => __('twicedaily', 'rrze-answers')
-                            ],
-                            'type' => 'select'
-                        ],
-                    ],
-                    'permalink_settings' => [
-                        [
-                            'name' => 'label_faq',
-                            'label' => __('FAQ', 'rrze-answers'),
-                            'type' => 'hr',
-                        ],
-                        [
-                            'name' => 'redirect_archivpage_uri_faq',
-                            'label' => __('Archive page', 'rrze-answers'),
-                            'description' => '',
-                            'type' => 'select',
-                            'options' => Tools::getPageList(),
-                            'default' => ''
-                        ],
-                        [
-                            'name' => 'custom_faq_slug',
-                            'label' => __('FAQ Slug', 'rrze-answers'),
-                            'description' => '',
-                            'type' => 'text',
-                            'default' => 'rrze_faq',
-                            'placeholder' => 'rrze_faq'
-                        ],
-                        [
-                            'name' => 'custom_faq_category_slug',
-                            'label' => __('Category Slug', 'rrze-answers'),
-                            'description' => '',
-                            'type' => 'text',
-                            'default' => 'faq_category',
-                            'placeholder' => 'faq_category'
-
-                        ],
-                        [
-                            'name' => 'custom_faq_tag_slug',
-                            'label' => __('Tag Slug', 'rrze-answers'),
-                            'description' => '',
-                            'type' => 'text',
-                            'default' => 'faq_tag',
-                            'placeholder' => 'faq_tag'
-                        ],
-                        [
-                            'name' => 'label_glossary',
-                            'label' => __('Glossary', 'rrze-answers'),
-                            'type' => 'hr',
-                        ],
-                        [
-                            'name' => 'redirect_archivpage_uri_glossary',
-                            'label' => __('Archive page', 'rrze-answers'),
-                            'description' => '',
-                            'type' => 'select',
-                            'options' => Tools::getPageList(),
-                            'default' => ''
-                        ],
-                        [
-                            'name' => 'custom_glossary_slug',
-                            'label' => __('Glossary Slug', 'rrze-answers'),
-                            'description' => '',
-                            'type' => 'text',
-                            'default' => 'rrze_glossary',
-                            'placeholder' => 'rrze_glossary'
-                        ],
-                        [
-                            'name' => 'custom_glossary_category_slug',
-                            'label' => __('Category Slug', 'rrze-answers'),
-                            'description' => '',
-                            'type' => 'text',
-                            'default' => 'glossary_category',
-                            'placeholder' => 'glossary_category'
-
-                        ],
-                        [
-                            'name' => 'custom_glossary_tag_slug',
-                            'label' => __('Tag Slug', 'rrze-answers'),
-                            'description' => '',
-                            'type' => 'text',
-                            'default' => 'glossary_tag',
-                            'placeholder' => 'glossary_tag'
-                        ],
-                        [
-                            'name' => 'label_placeholder',
-                            'label' => __('Placeholder', 'rrze-answers'),
-                            'type' => 'hr',
-                        ],
-                        [
-                            'name' => 'redirect_archivpage_uri_placeholder',
-                            'label' => __('Archive page', 'rrze-answers'),
-                            'description' => '',
-                            'type' => 'select',
-                            'options' => Tools::getPageList(),
-                            'default' => ''
-                        ],
-                        [
-                            'name' => 'custom_placeholder_slug',
-                            'label' => __('Placeholder Slug', 'rrze-answers'),
-                            'description' => '',
-                            'type' => 'text',
-                            'default' => 'rrze_placeholder',
-                            'placeholder' => 'rrze_placeholder'
-                        ],
-                    ],
-                    'faqlog' => [
-                        [
-                            'name' => 'ANSWERSLOGFILE',
-                            'type' => 'logfile',
-                            'default' => ANSWERSLOGFILE
-                        ]
+                    [
+                        'name' => 'api_active_rrze_glossary',
+                        'label' => __('Allow to import glossary', 'rrze-answers'),
+                        'description' => __('Allow other websites to import your glossary. Your SEO will not be affected. Structured data is used for your content only.', 'rrze-answers'),
+                        'type' => 'checkbox',
                     ]
                 ],
-                'lang' => [
-                    '' => __('All languages', 'rrze-answers'),
-                    'de' => __('German', 'rrze-answers'),
-                    'en' => __('English', 'rrze-answers'),
-                    'es' => __('Spanish', 'rrze-answers'),
-                    'fr' => __('French', 'rrze-answers'),
-                    'ru' => __('Russian', 'rrze-answers'),
-                    'zh' => __('Chinese', 'rrze-answers')
+                'domains' => [
+                    [
+                        'name' => 'domains',
+                        'label' => __('Domains', 'rrze-faq'),
+                        'desc' => __('Enter the domain\'s URL you want to receive FAQ from.', 'rrze-faq'),
+                        'type' => 'domains-table'
+                    ],
+                    [
+                        'name' => 'new_url',
+                        'label' => __('New Domain', 'rrze-faq'),
+                        'desc' => __('Enter the domain\'s URL you want to receive FAQ from.', 'rrze-faq'),
+                        'type' => 'text',
+                        'default' => 'https://',
+                    ]
                 ],
-            ];
-            
-            $storedOptions = get_option('rrze-faq');
-            $registeredDomains = (!empty($storedOptions['registeredDomains']) ? $storedOptions['registeredDomains'] : []);
+                'permalink_settings' => [
+                    [
+                        'name' => 'label_faq',
+                        'label' => __('FAQ', 'rrze-answers'),
+                        'type' => 'hr',
+                    ],
+                    [
+                        'name' => 'redirect_archivpage_uri_faq',
+                        'label' => __('Archive page', 'rrze-answers'),
+                        'description' => '',
+                        'type' => 'select',
+                        'options' => Tools::getPageList(),
+                        'default' => ''
+                    ],
+                    [
+                        'name' => 'custom_faq_slug',
+                        'label' => __('FAQ Slug', 'rrze-answers'),
+                        'description' => '',
+                        'type' => 'text',
+                        'default' => 'rrze_faq',
+                        'placeholder' => 'rrze_faq'
+                    ],
+                    [
+                        'name' => 'custom_faq_category_slug',
+                        'label' => __('Category Slug', 'rrze-answers'),
+                        'description' => '',
+                        'type' => 'text',
+                        'default' => 'faq_category',
+                        'placeholder' => 'faq_category'
+
+                    ],
+                    [
+                        'name' => 'custom_faq_tag_slug',
+                        'label' => __('Tag Slug', 'rrze-answers'),
+                        'description' => '',
+                        'type' => 'text',
+                        'default' => 'faq_tag',
+                        'placeholder' => 'faq_tag'
+                    ],
+                    [
+                        'name' => 'label_glossary',
+                        'label' => __('Glossary', 'rrze-answers'),
+                        'type' => 'hr',
+                    ],
+                    [
+                        'name' => 'redirect_archivpage_uri_glossary',
+                        'label' => __('Archive page', 'rrze-answers'),
+                        'description' => '',
+                        'type' => 'select',
+                        'options' => Tools::getPageList(),
+                        'default' => ''
+                    ],
+                    [
+                        'name' => 'custom_glossary_slug',
+                        'label' => __('Glossary Slug', 'rrze-answers'),
+                        'description' => '',
+                        'type' => 'text',
+                        'default' => 'rrze_glossary',
+                        'placeholder' => 'rrze_glossary'
+                    ],
+                    [
+                        'name' => 'custom_glossary_category_slug',
+                        'label' => __('Category Slug', 'rrze-answers'),
+                        'description' => '',
+                        'type' => 'text',
+                        'default' => 'glossary_category',
+                        'placeholder' => 'glossary_category'
+
+                    ],
+                    [
+                        'name' => 'custom_glossary_tag_slug',
+                        'label' => __('Tag Slug', 'rrze-answers'),
+                        'description' => '',
+                        'type' => 'text',
+                        'default' => 'glossary_tag',
+                        'placeholder' => 'glossary_tag'
+                    ],
+                    [
+                        'name' => 'label_placeholder',
+                        'label' => __('Placeholder', 'rrze-answers'),
+                        'type' => 'hr',
+                    ],
+                    [
+                        'name' => 'redirect_archivpage_uri_placeholder',
+                        'label' => __('Archive page', 'rrze-answers'),
+                        'description' => '',
+                        'type' => 'select',
+                        'options' => Tools::getPageList(),
+                        'default' => ''
+                    ],
+                    [
+                        'name' => 'custom_placeholder_slug',
+                        'label' => __('Placeholder Slug', 'rrze-answers'),
+                        'description' => '',
+                        'type' => 'text',
+                        'default' => 'rrze_placeholder',
+                        'placeholder' => 'rrze_placeholder'
+                    ],
+                ],
+                'import_faq' => [],
+                'faqlog' => [
+                    [
+                        'name' => 'ANSWERSLOGFILE',
+                        'type' => 'logfile',
+                        'default' => ANSWERSLOGFILE
+                    ]
+                ]
+            ],
+            'lang' => [
+                '' => __('All languages', 'rrze-answers'),
+                'de' => __('German', 'rrze-answers'),
+                'en' => __('English', 'rrze-answers'),
+                'es' => __('Spanish', 'rrze-answers'),
+                'fr' => __('French', 'rrze-answers'),
+                'ru' => __('Russian', 'rrze-answers'),
+                'zh' => __('Chinese', 'rrze-answers')
+            ],
+        ];
+
+        $storedOptions = get_option('rrze-faq');
+        $registeredDomains = (!empty($storedOptions['registeredDomains']) ? $storedOptions['registeredDomains'] : []);
 
 
-            $defaults['fields']['remote_faq'] = [];
-            $syncAPI = new SyncAPI();
+        $syncAPI = new SyncAPI();
+        $entries = [];
 
-        foreach ($registeredDomains as $identifier => $url){
+        foreach ($registeredDomains as $identifier => $url) {
 
             $cats = $syncAPI->getCategories($identifier, $url);
-                    
-                        $import_faq[] = [
-                        [
-                            'name' => 'remote_url_faq[]',
-                            'label' => __('Remote site', 'rrze-answers'),
-                            'type' => 'hr',
-                            'default' => $identifier . ' (' . $url . ')'
-                        ],
-                        [
-                            'name' => 'remote_categories_faq[]  a',
-                            'label' => __('Categories', 'rrze-answers'),
-                            'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
-                            'type' => 'select-multiple',
-                            'options' => $cats
-                        ],
-                        // [
-                        //     'name' => 'remote_frequency_faq',
-                        //     'label' => __('Synchronize automatically', 'rrze-answers'),
-                        //     'description' => '',
-                        //     'default' => '',
-                        //     'options' => [
-                        //         '' => __('-- off --', 'rrze-answers'),
-                        //         'daily' => __('daily', 'rrze-answers'),
-                        //         'twicedaily' => __('twicedaily', 'rrze-answers')
-                        //     ],
-                        //     'type' => 'select'
-                        // ],
-                    ];
-                    $defaults['fields']['remote_faq'][] = $import_faq;
 
+            $defaults['fields']['import'][] = [
+                'name' => 'hr_' . $identifier,
+                'label' => $identifier . ' (' . $url . ')',
+                'type' => 'hr',
+            ];
+
+            $defaults['fields']['import'][] = [
+                'name' => 'faq_categories[' . $url . ']',
+                'label' => __('FAQ Categories', 'rrze-answers'),
+                'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
+                'type' => 'select-multiple',
+                'options' => $cats,
+            ];
+
+
+            $defaults['fields']['import'][] = [
+                'name' => 'faq_categories[' . $url . ']',
+                'label' => __('Glossary Categories', 'rrze-answers'),
+                'description' => __('Please select the categories you\'d like to fetch glossary entries to.', 'rrze-answers'),
+                'type' => 'select-multiple',
+                'options' => $cats,
+            ];
+            // [
+            //     'name' => 'remote_frequency_faq',
+            //     'label' => __('Synchronize automatically', 'rrze-answers'),
+            //     'description' => '',
+            //     'default' => '',
+            //     'options' => [
+            //         '' => __('-- off --', 'rrze-answers'),
+            //         'daily' => __('daily', 'rrze-answers'),
+            //         'twicedaily' => __('twicedaily', 'rrze-answers')
+            //     ],
+            //     'type' => 'select'
+            // ],
         }
 
         return apply_filters('rrze-answers_defaults', $defaults);

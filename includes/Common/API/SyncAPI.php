@@ -11,7 +11,7 @@ use RRZE\Answers\Common\Config;
 
 class SyncAPI
 {
-    private $aAllCats = array();
+    private $aAllCats = [];
 
 
     public function __construct()
@@ -21,7 +21,7 @@ class SyncAPI
 
     protected function getTaxonomies($url, $field, &$filter)
     {
-        $aRet = array();
+        $aRet = [];
         $url .= ENDPOINT . $field;
         $slug = ($filter ? '&slug=' . $filter : '');
         $page = 1;
@@ -37,10 +37,10 @@ class SyncAPI
                             if ($entry['source'] == 'website') {
                                 if ($entry['children']) {
                                     foreach ($entry['children'] as $childname) {
-                                        $aRet[$entry['name']][$childname] = array();
+                                        $aRet[$entry['name']][$childname] = [];
                                     }
                                 } else {
-                                    $aRet[$entry['name']] = array();
+                                    $aRet[$entry['name']] = [];
                                 }
                             }
                         }
@@ -92,30 +92,31 @@ class SyncAPI
         }
     }
 
-    public function deleteCategories($source)
+    public function deleteCategories($url, $type)
     {
-        $this->deleteTaxonomies($source, 'rrze_faq_category');
+        $this->deleteTaxonomies($url, 'rrze_' . $type . '_category');
     }
 
-    public function deleteTags($source)
+    public function deleteTags($url, $type)
     {
-        $this->deleteTaxonomies($source, 'rrze_faq_tag');
+        $this->deleteTaxonomies($url, 'rrze_' . $type . '_tag');
     }
 
-    protected function setCategories(&$aCategories, &$site_url)
+    protected function setCategories(&$aCategories, &$site_url, $type)
     {
         try {
+            $field = 'rrze_' . $type . '_category';
             $aTmp = $aCategories;
             foreach ($aTmp as $name => $aDetails) {
-                $term = term_exists($name, 'rrze_faq_category');
+                $term = term_exists($name, $field);
                 if (!$term) {
-                    $term = wp_insert_term($name, 'rrze_faq_category');
+                    $term = wp_insert_term($name, $field);
                 }
                 update_term_meta($term['term_id'], 'source', $site_url);
                 foreach ($aDetails as $childname => $tmp) {
-                    $childterm = term_exists($childname, 'rrze_faq_category');
+                    $childterm = term_exists($childname, $field);
                     if (!$childterm) {
-                        $childterm = wp_insert_term($childname, 'rrze_faq_category', array('parent' => $term['term_id']));
+                        $childterm = wp_insert_term($childname, $field, array('parent' => $term['term_id']));
                         update_term_meta($childterm['term_id'], 'source', $site_url);
                     }
                 }
@@ -157,7 +158,7 @@ class SyncAPI
                 $this->aAllCats[$cat->term_id]['name'] = str_replace('~', '&nbsp;', str_pad(ltrim($prefix . ' ' . $cat->name), 100, '~'));
             }
             foreach ($into as $topCat) {
-                $topCat->children = array();
+                $topCat->children = [];
                 $this->sortCats($cats, $topCat->children, $topCat->term_id, $prefix);
             }
             if (!$cats) {
@@ -192,37 +193,38 @@ class SyncAPI
         }
     }
 
-    public function getCategories($identifier, $site_url, $categories = '')
+    public function getCategories($identifier, $url, $type, $categories = '')
     {
-        $aRet = array();
-        $aCategories = $this->getTaxonomies($site_url, 'rrze_faq_category', $categories);
+        $aRet = [];
+        $field = 'rrze_' . $type . '_category';
+        $aCategories = $this->getTaxonomies($url, $field, $categories);
 
-        $this->setCategories($aCategories, $identifier);
+        $this->setCategories($aCategories, $url, $type);
         $categories = get_terms(array(
-            'taxonomy' => 'rrze_faq_category',
+            'taxonomy' => $field,
             'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
                 array(
                     'key' => 'source',
-                    'value' => $identifier,
+                    'value' => $url,
                 )
             ),
             'hide_empty' => false,
         ));
-        $categoryHierarchy = array();
+        $categoryHierarchy = [];
         $this->sortCats($categories, $categoryHierarchy);
         $this->cleanCats();
         $this->getSlugNameCats($this->aAllCats, $aRet);
         return $aRet;
     }
 
-    public function deleteFAQ($source)
+    public function deleteEntries($url, $type)
     {
-        // deletes all FAQ by source
+        // deletes all Entries by url
         $iDel = 0;
-        $allFAQ = get_posts(array('post_type' => 'rrze_faq', 'meta_key' => 'source', 'meta_value' => $source, 'numberposts' => -1)); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+        $allEntries = get_posts(array('post_type' => 'rrze_' . $type, 'meta_key' => 'source', 'meta_value' => $url, 'numberposts' => -1)); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 
-        foreach ($allFAQ as $faq) {
-            wp_delete_post($faq->ID, true);
+        foreach ($allEntries as $entry) {
+            wp_delete_post($entry->ID, true);
             $iDel++;
         }
         return $iDel;
@@ -262,7 +264,7 @@ class SyncAPI
                 $len = strpos($txt, '"', $pos) - $pos;
                 $srcset = substr($txt, $pos, $len);
                 $aSrcset = explode(',', $srcset);
-                $aNewSrcset = array();
+                $aNewSrcset = [];
                 foreach ($aSrcset as $src) {
                     $src = trim($src);
                     if (substr($src, 0, 1) == '/') {
@@ -278,15 +280,17 @@ class SyncAPI
         }
     }
 
-    protected function getFAQ(&$url, &$categories)
+    protected function getEntries(&$url, &$categories, $type)
     {
         try {
-            $faqs = array();
+            $ret = [];
+            $field_cat = 'rrze_' . $type . '_tag';
+            $field_tag = 'rrze_' . $type . '_tag';
             $filter = '&filter[rrze_faq_category]=' . $categories;
             $page = 1;
 
             do {
-                $request = $this->remoteGet($url . ENDPOINT . 'faq?page=' . $page . $filter);
+                $request = $this->remoteGet($url . ENDPOINT . $type . '?page=' . $page . $filter);
                 $status_code = wp_remote_retrieve_response_code($request);
                 if ($status_code == 200) {
                     $entries = json_decode(wp_remote_retrieve_body($request), true);
@@ -299,21 +303,21 @@ class SyncAPI
                                 $content = $entry['content']['rendered'];
                                 $content = $this->absoluteUrl($content, $url);
 
-                                $faqs[$entry['id']] = array(
+                                $ret[$entry['id']] = array(
                                     'id' => $entry['id'],
                                     'title' => $entry['title']['rendered'],
                                     'content' => $content,
                                     'lang' => $entry['lang'],
-                                    'rrze_faq_category' => $entry['rrze_faq_category'],
+                                    $field_cat => $entry[$field_cat],
                                     'remoteID' => $entry['remoteID'],
                                     'remoteChanged' => $entry['remoteChanged'],
                                 );
                                 $sTag = '';
-                                foreach ($entry['rrze_faq_tag'] as $tag) {
+                                foreach ($entry[$field_tag] as $tag) {
                                     $sTag .= $tag . ',';
                                 }
-                                $faqs[$entry['id']]['rrze_faq_tag'] = trim($sTag, ',');
-                                $faqs[$entry['id']]['URLhasSlider'] = ((strpos($content, 'slider') !== false) ? $entry['link'] : false); // we cannot handle sliders, see note in Shortcode.php shortcodeOutput()
+                                $ret[$entry['id']][$field_cat] = trim($sTag, ',');
+                                $ret[$entry['id']]['URLhasSlider'] = ((strpos($content, 'slider') !== false) ? $entry['link'] : false); // we cannot handle sliders, see note in Shortcode.php shortcodeOutput()
                             }
                         }
                     }
@@ -321,23 +325,23 @@ class SyncAPI
                 $page++;
             } while (($status_code == 200) && (!empty($entries)));
 
-            return $faqs;
+            return $ret;
         } catch (CustomException $e) {
-            return new \WP_Error('getFAQ_error', __('Error in getFAQ().', 'rrze-answers'));
+            return new \WP_Error('getEntry_error', __('Error in getEntry().', 'rrze-answers'));
         }
     }
 
-    public function setTags($terms, $site_url)
+    public function setTags($terms, $url, $type)
     {
         try {
             if ($terms) {
                 $aTerms = explode(',', $terms);
                 foreach ($aTerms as $name) {
                     if ($name) {
-                        $term = term_exists($name, 'rrze_faq_tag');
+                        $term = term_exists($name, 'rrze_' . $type . '_tag');
                         if (!$term) {
-                            $term = wp_insert_term($name, 'rrze_faq_tag');
-                            update_term_meta($term['term_id'], 'source', $site_url);
+                            $term = wp_insert_term($name, 'rrze_' . $type . '_tag');
+                            update_term_meta($term['term_id'], 'source', $url);
                         }
                     }
                 }
@@ -347,12 +351,12 @@ class SyncAPI
         }
     }
 
-    public function getFAQRemoteIDs($source)
+    public function getEntriesRemoteIDs($url, $type)
     {
         try {
-            $aRet = array();
-            $allFAQ = get_posts(array('post_type' => 'rrze_faq', 'meta_key' => 'source', 'meta_value' => $source, 'fields' => 'ids', 'numberposts' => -1));// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-            foreach ($allFAQ as $postID) {
+            $aRet = [];
+            $allEntries = get_posts(array('post_type' => 'rrze_' . $type, 'meta_key' => 'source', 'meta_value' => $url, 'fields' => 'ids', 'numberposts' => -1));// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+            foreach ($allEntries as $postID) {
                 $remoteID = get_post_meta($postID, 'remoteID', true);
                 $remoteChanged = get_post_meta($postID, 'remoteChanged', true);
                 $aRet[$remoteID] = array(
@@ -362,84 +366,88 @@ class SyncAPI
             }
             return $aRet;
         } catch (CustomException $e) {
-            return new \WP_Error('getFAQRemoteIDs_error', __('Error in getFAQRemoteIDs().', 'rrze-answers'));
+            return new \WP_Error('getEntriesRemoteIDs_error', __('Error in getEntriesRemoteIDs().', 'rrze-answers'));
         }
     }
 
-    public function setFAQ($source, $categories, $site_url)
+    public function setEntries($type, $identifier, $categories, $url)
     {
 
         try {
             $iNew = 0;
             $iUpdated = 0;
             $iDeleted = 0;
-            $aURLhasSlider = array();
+            $aURLhasSlider = [];
 
             // get all remoteIDs of stored FAQ to this source ( key = remoteID, value = postID )
-            $aRemoteIDs = $this->getFAQRemoteIDs($site_url);
+            $aRemoteIDs = $this->getEntriesRemoteIDs($url);
 
-            $this->deleteTags( $site_url );
-            $this->deleteCategories( $site_url );
-            $this->getCategories($source, $site_url, $categories);
+            $this->deleteTags($url, $type);
+            $this->deleteCategories($url, $type);
+            $this->getCategories($identifier, $url, $type, $categories);
+
+            $field_cpt = 'rrze_' . $type;
+            $field_tag = 'rrze_' . $type . '_tag';
+            $field_cat = 'rrze_' . $type . '_category';
 
             // get all FAQ
-            $aFaq = $this->getFAQ($site_url, $categories);
+            $aEntries = $this->getEntries($site_url, $categories, $type);
 
             // set FAQ
-            foreach ($aFaq as $faq) {
-                $this->setTags($faq['rrze_faq_tag'], $site_url);
+            foreach ($aEntries as $entry) {
+                $this->setTags($entry[$field_tag], $site_url, $type);
 
-                $aCategoryIDs = array();
+                $aCategoryIDs = [];
 
-                foreach ($faq['rrze_faq_category'] as $nr => $name) {
-                    $term = get_term_by('name', $name, 'rrze_faq_category');
+                foreach ($entry[$field_cat] as $nr => $name) {
+                    $term = get_term_by('name', $name, $field_cat);
                     $aCategoryIDs[] = $term->term_id;
                 }
 
-                if ($faq['URLhasSlider']) {
-                    $aURLhasSlider[] = $faq['URLhasSlider'];
+                if ($entry['URLhasSlider']) {
+                    $aURLhasSlider[] = $entry['URLhasSlider'];
                 } else {
-                    if (isset($aRemoteIDs[$faq['remoteID']])) {
-                        if ($aRemoteIDs[$faq['remoteID']]['remoteChanged'] < $faq['remoteChanged']) {
+                    if (isset($aRemoteIDs[$entry['remoteID']])) {
+                        if ($aRemoteIDs[$entry['remoteID']]['remoteChanged'] < $entry['remoteChanged']) {
                             // update FAQ
                             $post_id = wp_update_post(array(
-                                'ID' => $aRemoteIDs[$faq['remoteID']]['postID'],
-                                'post_name' => sanitize_title($faq['title']),
-                                'post_title' => $faq['title'],
-                                'post_content' => $faq['content'],
+                                'ID' => $aRemoteIDs[$entry['remoteID']]['postID'],
+                                'post_name' => sanitize_title($entry['title']),
+                                'post_title' => $entry['title'],
+                                'post_content' => $entry['content'],
                                 'meta_input' => array(
-                                    'source' => $source,
-                                    'lang' => $faq['lang'],
-                                    'remoteID' => $faq['remoteID'],
+                                    'source' => $url,
+                                    'lang' => $entry['lang'],
+                                    'remoteID' => $entry['remoteID'],
                                 ),
                                 'tax_input' => array(
-                                    'rrze_faq_category' => $aCategoryIDs,
-                                    'rrze_faq_tag' => $faq['rrze_faq_tag'],
+                                    $field_cat => $aCategoryIDs,
+                                    $field_tag => $entry[$field_tag],
                                 ),
                             ));
                             $iUpdated++;
                         }
-                        unset($aRemoteIDs[$faq['remoteID']]);
+                        unset($aRemoteIDs[$entry['remoteID']]);
                     } else {
                         // insert FAQ
                         $post_id = wp_insert_post(array(
-                            'post_type' => 'rrze_faq',
-                            'post_name' => sanitize_title($faq['title']),
-                            'post_title' => $faq['title'],
-                            'post_content' => $faq['content'],
+                            'post_type' => $field_cpt,
+                            'post_name' => sanitize_title($entry['title']),
+                            'post_title' => $entry['title'],
+                            'post_content' => $entry['content'],
                             'comment_status' => 'closed',
                             'ping_status' => 'closed',
                             'post_status' => 'publish',
                             'meta_input' => array(
-                                'source' => $source,
-                                'lang' => $faq['lang'],
-                                'remoteID' => $faq['id'],
-                                'remoteChanged' => $faq['remoteChanged'],
+                                'source' => $url,
+                                'lang' => $entry['lang'],
+                                'remoteID' => $entry['id'],
+                                'remoteChanged' => $entry['remoteChanged'],
                                 'sortfield' => '',
                             ),
                             'tax_input' => array(
-                                'rrze_faq_category' => $aCategoryIDs,
-                                'rrze_faq_tag' => $faq['rrze_faq_tag'],
+                                $field_cat => $aCategoryIDs,
+                                $field_tag => $entry[$field_tag],
                             ),
                         ));
                         $iNew++;
@@ -460,7 +468,7 @@ class SyncAPI
                 'URLhasSlider' => $aURLhasSlider,
             );
         } catch (CustomException $e) {
-            return new \WP_Error('setFAQ_error', __('Error in setFAQ().', 'rrze-answers'));
+            return new \WP_Error('setFAQ_error', __('Error in setEntries().', 'rrze-answers'));
         }
     }
 
@@ -492,7 +500,7 @@ class SyncAPI
 
     public function getDomains()
     {
-        $domains = array();
+        $domains = [];
         $options = get_option('rrze-answers');
         if (isset($options['registeredDomains'])) {
             foreach ($options['registeredDomains'] as $identifier => $url) {

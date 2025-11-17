@@ -104,9 +104,9 @@ class Main
         switch ($tab) {
             case 'domains':
                 if ($options['new_url']) {
+                    // add new domain
                     $identifier = Tools::getIdentifier($options['new_url']);
                     $url = 'https://' . Tools::getHost($options['new_url']);
-                    // add new domain
                     $aRet = $api->checkDomain($identifier, $url, $domains);
 
                     if ($aRet['status']) {
