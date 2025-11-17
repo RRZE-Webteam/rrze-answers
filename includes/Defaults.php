@@ -2,6 +2,7 @@
 
 namespace RRZE\Answers;
 
+use RRZE\Answers\Common\API\SyncAPI;
 use function RRZE\Answers\plugin;
 use RRZE\Answers\Common\Tools;
 
@@ -45,10 +46,7 @@ class Defaults
      */
     private function load(): array
     {
-                                    $storedOptions = get_option('rrze-faq');
-                                    $registeredDomains = (!empty($storedOptions['registeredDomains']) ? $storedOptions['registeredDomains'] : []);
-
-                                    $defaults =             [
+            $defaults =             [
                 'settings' => [
                     'option_name' => 'rrze-answers',
                     'menu_title' => __('RRZE Answers', 'rrze-answers'),
@@ -304,40 +302,45 @@ class Defaults
                 ],
             ];
             
-            $defaults['import_faq'] = [];
+            $storedOptions = get_option('rrze-faq');
+            $registeredDomains = (!empty($storedOptions['registeredDomains']) ? $storedOptions['registeredDomains'] : []);
+
+
+            $defaults['fields']['remote_faq'] = [];
+            $syncAPI = new SyncAPI();
 
         foreach ($registeredDomains as $identifier => $url){
 
-                    $aCategories = $this->getTaxonomies($site_url, 'rrze_faq_category', $categories);
-
+            $cats = $syncAPI->getCategories($identifier, $url);
                     
-                        $defaults['import_faq'][] = [
+                        $import_faq[] = [
                         [
-                            'name' => 'remote_url_faq',
+                            'name' => 'remote_url_faq[]',
                             'label' => __('Remote site', 'rrze-answers'),
-                            'type' => 'header',
+                            'type' => 'hr',
                             'default' => $identifier . ' (' . $url . ')'
                         ],
                         [
-                            'name' => 'remote_categories_faq',
+                            'name' => 'remote_categories_faq[]  a',
                             'label' => __('Categories', 'rrze-answers'),
                             'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
                             'type' => 'select-multiple',
-                            'options' => Tools::
+                            'options' => $cats
                         ],
-                        [
-                            'name' => 'remote_frequency_faq',
-                            'label' => __('Synchronize automatically', 'rrze-answers'),
-                            'description' => '',
-                            'default' => '',
-                            'options' => [
-                                '' => __('-- off --', 'rrze-answers'),
-                                'daily' => __('daily', 'rrze-answers'),
-                                'twicedaily' => __('twicedaily', 'rrze-answers')
-                            ],
-                            'type' => 'select'
-                        ],
+                        // [
+                        //     'name' => 'remote_frequency_faq',
+                        //     'label' => __('Synchronize automatically', 'rrze-answers'),
+                        //     'description' => '',
+                        //     'default' => '',
+                        //     'options' => [
+                        //         '' => __('-- off --', 'rrze-answers'),
+                        //         'daily' => __('daily', 'rrze-answers'),
+                        //         'twicedaily' => __('twicedaily', 'rrze-answers')
+                        //     ],
+                        //     'type' => 'select'
+                        // ],
                     ];
+                    $defaults['fields']['remote_faq'][] = $import_faq;
 
         }
 

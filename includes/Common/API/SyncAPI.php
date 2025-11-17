@@ -192,18 +192,18 @@ class SyncAPI
         }
     }
 
-    public function getCategories($source, $site_url, $categories = '')
+    public function getCategories($identifier, $site_url, $categories = '')
     {
         $aRet = array();
         $aCategories = $this->getTaxonomies($site_url, 'rrze_faq_category', $categories);
 
-        $this->setCategories($aCategories, $source);
+        $this->setCategories($aCategories, $identifier);
         $categories = get_terms(array(
             'taxonomy' => 'rrze_faq_category',
             'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
                 array(
                     'key' => 'source',
-                    'value' => $source,
+                    'value' => $identifier,
                 )
             ),
             'hide_empty' => false,
