@@ -213,11 +213,10 @@ class Defaults
         ];
 
         $storedOptions = get_option('rrze-faq');
+
         $registeredDomains = (!empty($storedOptions['registeredDomains']) ? $storedOptions['registeredDomains'] : []);
 
-
         $syncAPI = new SyncAPI();
-        $entries = [];
 
         foreach ($registeredDomains as $identifier => $url) {
             $defaults['fields']['import'][] = [
@@ -244,7 +243,7 @@ class Defaults
                 }
 
                 $defaults['fields']['import'][] = [
-                    'name' => 'faq_categories[' . $url . ']',
+                    'name' => $type . '_categories[' . $url . ']',
                     'label' => $label . ' ' . __('Categories', 'rrze-answers'),
                     'description' => __('Please select the categories you\'d like to fetch ' . $label . ' to.', 'rrze-answers'),
                     'type' => $field_type,
@@ -264,10 +263,6 @@ class Defaults
             //     'type' => 'select'
             // ],
         }
-
-        // echo '<pre>';
-        // var_dump($defaults);
-        // exit;
 
         return apply_filters('rrze-answers_defaults', $defaults);
     }
