@@ -18,7 +18,8 @@ use RRZE\Answers\Common\Settings\Options\{
     Textarea,
     HR,
     Logfile,
-    DomainsTable
+    DomainsTable,
+    Msg
 };
 
 class Option
@@ -77,7 +78,8 @@ class Option
             'textarea' => Textarea::class,
             'hr' => HR::class,
             'logfile' => Logfile::class,
-            'domains-table' => DomainsTable::class            
+            'domains-table' => DomainsTable::class,
+            'msg' => Msg::class            
         ]);
 
         if (isset($typeMap[$this->type])) {

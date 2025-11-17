@@ -220,31 +220,37 @@ class Defaults
         $entries = [];
 
         foreach ($registeredDomains as $identifier => $url) {
-
-            $cats = $syncAPI->getCategories($identifier, $url);
-
             $defaults['fields']['import'][] = [
                 'name' => 'hr_' . $identifier,
                 'label' => $identifier . ' (' . $url . ')',
                 'type' => 'hr',
             ];
 
-            $defaults['fields']['import'][] = [
-                'name' => 'faq_categories[' . $url . ']',
-                'label' => __('FAQ Categories', 'rrze-answers'),
-                'description' => __('Please select the categories you\'d like to fetch FAQ to.', 'rrze-answers'),
-                'type' => 'select-multiple',
-                'options' => $cats,
+            $types = [
+                'faq' => 'FAQ',
+                'glossary' => __('Glossary', 'rrze-answers')
             ];
 
+            foreach ($types as $type => $label) {
+                $cats = $syncAPI->getCategories($identifier, $url, $type);
+                if (empty($cats)) {
+                    $field_type = 'msg';
+                    $val_type = 'placeholder';
+                    $val = __('Category not found.', 'rrze-answers');
+                } else {
+                    $field_type = 'select-multiple';
+                    $val_type = 'options';
+                    $val = $cats;
+                }
 
-            $defaults['fields']['import'][] = [
-                'name' => 'faq_categories[' . $url . ']',
-                'label' => __('Glossary Categories', 'rrze-answers'),
-                'description' => __('Please select the categories you\'d like to fetch glossary entries to.', 'rrze-answers'),
-                'type' => 'select-multiple',
-                'options' => $cats,
-            ];
+                $defaults['fields']['import'][] = [
+                    'name' => 'faq_categories[' . $url . ']',
+                    'label' => $label . ' ' . __('Categories', 'rrze-answers'),
+                    'description' => __('Please select the categories you\'d like to fetch ' . $label . ' to.', 'rrze-answers'),
+                    'type' => $field_type,
+                    $val_type => $val
+                ];
+            }
             // [
             //     'name' => 'remote_frequency_faq',
             //     'label' => __('Synchronize automatically', 'rrze-answers'),
@@ -258,6 +264,10 @@ class Defaults
             //     'type' => 'select'
             // ],
         }
+
+        // echo '<pre>';
+        // var_dump($defaults);
+        // exit;
 
         return apply_filters('rrze-answers_defaults', $defaults);
     }
