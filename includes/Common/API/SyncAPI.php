@@ -313,14 +313,15 @@ class SyncAPI
     {
         try {
             $ret = [];
-            $field_cat = 'rrze_' . $type . '_tag';
+            $field_cat = 'rrze_' . $type . '_category';
             $field_tag = 'rrze_' . $type . '_tag';
             $filter = '&filter[rrze_faq_category]=' . $categories;
             $page = 1;
 
             do {
-                $request = $this->remoteGet($url . ENDPOINT . $type . '?page=' . $page . $filter);
+                $request = $this->remoteGet($url . '/' . ENDPOINT . $type . '?page=' . $page . $filter);
                 $status_code = wp_remote_retrieve_response_code($request);
+
                 if ($status_code == 200) {
                     $entries = json_decode(wp_remote_retrieve_body($request), true);
                     if (!empty($entries)) {
@@ -409,7 +410,7 @@ class SyncAPI
             $aURLhasSlider = [];
 
             // get all remoteIDs of stored FAQ to this source ( key = remoteID, value = postID )
-            $aRemoteIDs = $this->getEntriesRemoteIDs($url);
+            $aRemoteIDs = $this->getEntriesRemoteIDs($url, $type);
 
             $this->deleteTags($url, $type);
             $this->deleteCategories($url, $type);
@@ -419,12 +420,11 @@ class SyncAPI
             $field_tag = 'rrze_' . $type . '_tag';
             $field_cat = 'rrze_' . $type . '_category';
 
-            // get all FAQ
-            $aEntries = $this->getEntries($site_url, $categories, $type);
+            $aEntries = $this->getEntries($url, $categories, $type);
 
             // set FAQ
             foreach ($aEntries as $entry) {
-                $this->setTags($entry[$field_tag], $site_url, $type);
+                $this->setTags($entry[$field_tag], $url, $type);
 
                 $aCategoryIDs = [];
 

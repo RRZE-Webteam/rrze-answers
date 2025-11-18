@@ -70,6 +70,7 @@ class Sync
         $iCnt = 0;
 
         $domains = $this->syncAPI->getDomains();
+        $options = get_option('rrze-answers');
 
         // echo '<pre>';
         // var_dump($domains);
@@ -97,7 +98,7 @@ class Sync
                 // exit;
 
                 if ($categories) {
-                    $aCnt = $api->setEntries($type, $identifier, $categories, $url);
+                    $aCnt = $this->syncAPI->setEntries($type, $identifier, $categories, $url);
                     $syncRan = true;
 
                     foreach ($aCnt['URLhasSlider'] as $URLhasSlider) {
