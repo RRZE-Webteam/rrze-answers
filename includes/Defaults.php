@@ -46,7 +46,7 @@ class Defaults
      */
     private function load(): array
     {
-$pagelist = Tools::getPageList();
+        $pagelist = Tools::getPageList();
 
         $defaults = [
             'settings' => [
@@ -252,6 +252,12 @@ $pagelist = Tools::getPageList();
                 }
             }
         }
+
+        $defaults['fields']['import'][] = [
+            'name' => 'hr_only',
+            'label' => '',
+            'type' => 'hr',
+        ];
 
         $defaults['fields']['import'][] = [
             'name' => 'frequency',
