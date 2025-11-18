@@ -4,10 +4,6 @@ namespace RRZE\Answers\Common\API;
 
 defined('ABSPATH') || exit;
 
-use RRZE\Answers\Common\Tools;
-
-use RRZE\Answers\Common\Config;
-
 
 class SyncAPI
 {
@@ -19,7 +15,7 @@ class SyncAPI
     }
 
 
-    protected function getTaxonomies($url, $field, &$filter)
+    public function getTaxonomies($url, $field, &$filter)
     {
         $aRet = [];
         $url .= ENDPOINT . $field;

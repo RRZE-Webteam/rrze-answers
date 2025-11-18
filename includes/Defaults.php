@@ -230,8 +230,14 @@ class Defaults
                 'glossary' => __('Glossary', 'rrze-answers')
             ];
 
+            $filter = '';
             foreach ($types as $type => $label) {
-                $cats = $syncAPI->getCategories($identifier, $url, $type);
+                $cats = $syncAPI->getCategories($identifier, $url, $type, '');
+
+                echo '<pre>';
+                var_dump($cats);
+                exit;
+                $cats = [];
                 if (empty($cats)) {
                     $field_type = 'msg';
                     $val_type = 'placeholder';
