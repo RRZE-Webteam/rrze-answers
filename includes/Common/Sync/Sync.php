@@ -11,40 +11,39 @@ defined('ABSPATH') || exit;
 class Sync
 {
 
-    protected $type = '';
+    protected $syncAPI;
 
-    protected $frequency = '';
-
-    public function __construct($type, $frequency)
+    public function __construct()
     {
-        $this->type = $type;
-        $this->frequency = $frequency;
+                $this->syncAPI = new SyncAPI();
 
-        foreach (['faq', 'glossary', 'placeholder'] as $type) {
-            add_action("rrze_answers_auto_sync_{$type}", function () use ($type) {
-                $this->runCronjob($type);
-            });
-        }
+        // $this->type = $type;
+        // $this->frequency = $frequency;
+
+        // foreach (['faq', 'glossary', 'placeholder'] as $type) {
+        //     add_action("rrze_answers_auto_sync_{$type}", function () use ($type) {
+        //         $this->runCronjob($type);
+        //     });
+        // }
     }
 
-    public function runCronjob($type)
+    public function runCronjob()
     {
-        $this->type = $type;
         $this->doSync('automatic');
     }
 
-    public function setCronjob()
+    public function setCronjob($frequency)
     {
         date_default_timezone_set('Europe/Berlin');
-        $hook = 'rrze_answers_auto_sync_' . $this->type;
+        $hook = 'rrze_answers_auto_sync';
 
-        if ($this->frequency == '') {
+        if ($frequency == '') {
             wp_clear_scheduled_hook($hook);
             return;
         }
 
         $nextcron = 0;
-        switch ($this->frequency) {
+        switch ($frequency) {
             case 'daily':
                 $nextcron = 86400;
                 break;
@@ -55,7 +54,7 @@ class Sync
 
         $nextcron += time();
         wp_clear_scheduled_hook($hook);
-        wp_schedule_event($nextcron, $this->frequency, $hook);
+        wp_schedule_event($nextcron, $frequency, $hook);
 
         $timestamp = wp_next_scheduled($hook);
         $message = __('Next automatically synchronization:', 'rrze-answers') . ' ' . date('d.m.Y H:i:s', $timestamp);
@@ -70,13 +69,14 @@ class Sync
         $max_exec_time = ini_get('max_execution_time') - 40; // ini_get('max_execution_time') is not the correct value perhaps due to load-balancer or proxy or other fancy things I've no clue of. But this workaround works for now.
         $iCnt = 0;
 
-        $options = get_option('rrze-answers');
+        $domains = $this->syncAPI->getDomains();
 
-        $domains = $options['registeredDomains'];
+        // echo '<pre>';
+        // var_dump($domains);
+
 
         $allowSettingsError = ($mode == 'manual' ? true : false);
         $syncRan = false;
-        $api = new SyncAPI();
 
         $types = [
             'faq' => 'FAQ',
@@ -87,12 +87,16 @@ class Sync
             $tStartDetail = microtime(true);
 
             foreach ($types as $type => $label) {
-                $fieldname = $type . '_categories[' . $url . '][]';
+                $fieldname = $type . '_categories_' . $identifier;
 
                 $categories = (!empty($options[$fieldname]) ? implode(',', $options[$fieldname]) : false);
 
+                // echo '<pre>';
+                // echo $fieldname;
+                // var_dump($categories);
+                // exit;
+
                 if ($categories) {
-                    $identifier = Tools::getIdentifier($url);
                     $aCnt = $api->setEntries($type, $identifier, $categories, $url);
                     $syncRan = true;
 

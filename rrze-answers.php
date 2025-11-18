@@ -234,8 +234,8 @@ function rrze_update_placeholder_cpt()
 }
 
 
-// 1. activate rrze-answers on all websites where rrze-faq, rrze-glossary or rrze-placeholder is active
-// 2. deaktivate rrze-faq, rrze-glossary and rrze-placeholder
+// 1. activate rrze-answers on all websites where rrze-answers, rrze-glossary or rrze-placeholder is active
+// 2. deaktivate rrze-answers, rrze-glossary and rrze-placeholder
 function rrze_answers_migrate_multisite() {
     if ( get_site_option('rrze-answers_migrate_multisite_done') ) return;
     if ( ! is_multisite() || ! is_network_admin() || ! current_user_can('manage_network_plugins') ) return;
@@ -244,7 +244,7 @@ function rrze_answers_migrate_multisite() {
     if ( ! function_exists('deactivate_plugins') ) require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
     $targets = [
-        'rrze-faq/rrze-faq.php',
+        'rrze-answers/rrze-answers.php',
         'rrze-glossary/rrze-glossary.php',
         'rrze-placeholder/rrze-placeholder.php',
     ];

@@ -18,7 +18,7 @@ window.addEventListener('load', setHeaderVar);
   'use strict';
 
   $(function () {
-    $('.rrze-faq[data-accordion="single"]').each(function () {
+    $('.rrze-answers[data-accordion="single"]').each(function () {
       var $group = $(this);
       var $items = $group.find('details.faq-item');
 

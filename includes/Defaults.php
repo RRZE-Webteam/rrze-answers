@@ -81,14 +81,14 @@ class Defaults
                 'domains' => [
                     [
                         'name' => 'domains',
-                        'label' => __('Domains', 'rrze-faq'),
-                        'desc' => __('Enter the domain\'s URL you want to receive FAQ from.', 'rrze-faq'),
+                        'label' => __('Domains', 'rrze-answers'),
+                        'desc' => __('Enter the domain\'s URL you want to receive FAQ from.', 'rrze-answers'),
                         'type' => 'domains-table'
                     ],
                     [
                         'name' => 'new_url',
-                        'label' => __('New Domain', 'rrze-faq'),
-                        'desc' => __('Enter the domain\'s URL you want to receive FAQ from.', 'rrze-faq'),
+                        'label' => __('New Domain', 'rrze-answers'),
+                        'desc' => __('Enter the domain\'s URL you want to receive FAQ from.', 'rrze-answers'),
                         'type' => 'text',
                         'default' => 'https://',
                     ]
@@ -212,13 +212,10 @@ class Defaults
             ],
         ];
 
-        $storedOptions = get_option('rrze-faq');
-
-        $registeredDomains = (!empty($storedOptions['registeredDomains']) ? $storedOptions['registeredDomains'] : []);
-
         $syncAPI = new SyncAPI();
+        $domains = $syncAPI->getDomains();
 
-        foreach ($registeredDomains as $identifier => $url) {
+        foreach ($domains as $identifier => $url) {
             $defaults['fields']['import'][] = [
                 'name' => 'hr_' . $identifier,
                 'label' => $identifier . ' (' . $url . ')',
@@ -234,37 +231,38 @@ class Defaults
             foreach ($types as $type => $label) {
                 $cats = $syncAPI->getCategories($identifier, $url, $type, '');
 
-                if (empty($cats)) {
-                    $field_type = 'msg';
-                    $val_type = 'placeholder';
-                    $val = __('Category not found.', 'rrze-answers');
+                if (!empty($cats)) {
+                    $defaults['fields']['import'][] = [
+                        'name' => $type . '_categories_' . $identifier,
+                        'label' => $label . ' ' . __('Categories', 'rrze-answers'),
+                        'description' => __('Please select the categories you\'d like to fetch ' . $label . ' to.', 'rrze-answers'),
+                        'type' => 'select-multiple',
+                        'options' => $cats
+                    ];
                 } else {
-                    $field_type = 'select-multiple';
-                    $val_type = 'options';
-                    $val = $cats;
+                    $defaults['fields']['import'][] = [
+                        'name' => $type . '_categories_' . $identifier,
+                        'label' => $label . ' ' . __('Categories', 'rrze-answers'),
+                        'description' => __('Please select the categories you\'d like to fetch ' . $label . ' to.', 'rrze-answers'),
+                        'type' => 'msg',
+                        'placeholder' => __('Category not found.', 'rrze-answers')
+                    ];
                 }
-
-                $defaults['fields']['import'][] = [
-                    'name' => $type . '_categories[' . $url . '][]',
-                    'label' => $label . ' ' . __('Categories', 'rrze-answers'),
-                    'description' => __('Please select the categories you\'d like to fetch ' . $label . ' to.', 'rrze-answers'),
-                    'type' => $field_type,
-                    $val_type => $val
-                ];
             }
-            // [
-            //     'name' => 'remote_frequency_faq',
-            //     'label' => __('Synchronize automatically', 'rrze-answers'),
-            //     'description' => '',
-            //     'default' => '',
-            //     'options' => [
-            //         '' => __('-- off --', 'rrze-answers'),
-            //         'daily' => __('daily', 'rrze-answers'),
-            //         'twicedaily' => __('twicedaily', 'rrze-answers')
-            //     ],
-            //     'type' => 'select'
-            // ],
         }
+
+        $defaults['fields']['import'][] = [
+            'name' => 'frequency',
+            'label' => __('Synchronize automatically', 'rrze-answers'),
+            'description' => '',
+            'default' => '',
+            'options' => [
+                '' => __('-- off --', 'rrze-answers'),
+                'daily' => __('daily', 'rrze-answers'),
+                'twicedaily' => __('twicedaily', 'rrze-answers')
+            ],
+            'type' => 'select'
+        ];
 
         return apply_filters('rrze-answers_defaults', $defaults);
     }

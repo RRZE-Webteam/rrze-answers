@@ -252,7 +252,7 @@ class ShortcodeGlossary
      * @param bool $gutenberg Whether Gutenberg is used
      * @param int $hstart HTML heading level
      * @param string $style Inline styles for the accordion
-     * @param bool $masonry Whether tiles should be displayed (fake masonry - see https://github.com/RRZE-Webteam/rrze-faq/issues/105#issuecomment-2873361435 )
+     * @param bool $masonry Whether tiles should be displayed (fake masonry - see https://github.com/RRZE-Webteam/rrze-answers/issues/105#issuecomment-2873361435 )
      * @param string $expand_all_link Attribute for “expand all” link
      * @param bool $hide_accordion Whether the accordion should be suppressed
      * @param bool $hide_title Whether the title should be suppressed
@@ -719,7 +719,7 @@ class ShortcodeGlossary
      */
     public function shortcodeOutput($atts, $content = null, $shortcode_tag = '')
     {
-        // Workaround - see: https://github.com/RRZE-Webteam/rrze-faq/issues/132#issuecomment-2839668060
+        // Workaround - see: https://github.com/RRZE-Webteam/rrze-answers/issues/132#issuecomment-2839668060
         if (($skip = Tools::preventGutenbergDoubleBracketBug($shortcode_tag)) !== false) {
             return $skip;
         }
@@ -768,8 +768,8 @@ class ShortcodeGlossary
         $postID = get_the_ID();
         $headerID = (new Tools())->getHeaderID($postID);
 
-        wp_enqueue_script('rrze-faq-accordion');
-        wp_enqueue_style('rrze-faq-css');
+        wp_enqueue_script('rrze-answers-accordion');
+        wp_enqueue_style('rrze-answers-css');
 
         $content = Tools::renderFAQWrapper($postID, $content, $headerID, $masonry, $color, $additional_class, $this->bSchema);
 

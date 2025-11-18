@@ -88,7 +88,7 @@ class Main
     public function switchTask($options)
     {
         // get stored options because they are generated and not defined in config.php
-        $storedOptions = get_option('rrze-faq');
+        $storedOptions = get_option('rrze-answers');
 
         if (is_array($storedOptions) && is_array($options)) {
             $options = array_merge($storedOptions, $options);
@@ -107,7 +107,7 @@ class Main
                     $aRet = $this->sync->checkDomain($identifier, $url, $domains);
 
                     if ($aRet['status']) {
-                        // url is correct, RRZE-FAQ at given url is in use and shortname is new
+                        // url is correct, rrze-answers at given url is in use and shortname is new
                         $domains[$identifier] = $url;
                     } else {
                         add_settings_error('new_url', 'domains_new_error', $aRet['msg'], 'error');
@@ -132,12 +132,14 @@ class Main
                 }
                 break;
             case 'import':
-                $type = substr(strrchr($tab, '-'), 1);
-                $frequency = (!empty($options['remote_frequency_' . $type]) ? $options['remote_frequency_' . $type] : '');
+                $frequency = (!empty($options['frequency']) ? $options['frequency'] : '');
+
+                // echo $type;
+                // exit;
                 $mode = (!empty($frequency) ? 'automatic' : 'manual');
-                $sync = new Sync($type, $frequency);
+                $sync = new Sync();
                 $sync->doSync($mode);
-                $sync->setCronjob();
+                // $sync->setCronjob();
                 break;
             case 'del':
                 // deleteLogfile();
@@ -451,10 +453,10 @@ class Main
     public function enqueueAssets()
     {
         wp_register_style(
-            'rrze-faq-css',
-            plugins_url('build/css/rrze-faq.css', plugin()->getBasename()),
+            'rrze-answers-css',
+            plugins_url('build/css/rrze-answers.css', plugin()->getBasename()),
             [],
-            filemtime(plugin()->getPath() . 'build/css/rrze-faq.css')
+            filemtime(plugin()->getPath() . 'build/css/rrze-answers.css')
         );
 
         wp_register_style(
@@ -465,10 +467,10 @@ class Main
         );
 
         wp_register_script(
-            'rrze-faq-accordion',
-            plugins_url('build/rrze-faq-accordion.js', plugin()->getBasename()),
+            'rrze-answers-accordion',
+            plugins_url('build/rrze-answers-accordion.js', plugin()->getBasename()),
             array('jquery'),
-            filemtime(plugin()->getPath() . 'build/rrze-faq-accordion.js'),
+            filemtime(plugin()->getPath() . 'build/rrze-answers-accordion.js'),
             true
         );
     }

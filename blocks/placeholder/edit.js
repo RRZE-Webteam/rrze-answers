@@ -96,34 +96,34 @@ export default function Edit({attributes, setAttributes}) {
 
     const langoptions = [
         {
-            label: __('all', 'rrze-faq'),
+            label: __('all', 'rrze-answers'),
             value: ''
         },
         {
-            label: __('German', 'rrze-faq'),
+            label: __('German', 'rrze-answers'),
             value: 'de'
         },
         {
 
-            label: __('English', 'rrze-faq'),
+            label: __('English', 'rrze-answers'),
             value: 'en'
         },
         {
 
-            label: __('French', 'rrze-faq'),
+            label: __('French', 'rrze-answers'),
             value: 'fr'
         },
         {
 
-            label: __('Spanish', 'rrze-faq'),
+            label: __('Spanish', 'rrze-answers'),
             value: 'es'
         },
         {
-            label: __('Russian', 'rrze-faq'),
+            label: __('Russian', 'rrze-answers'),
             value: 'ru'
         },
         {
-            label: __('Chinese', 'rrze-faq'),
+            label: __('Chinese', 'rrze-answers'),
             value: 'zh'
         }
     ];

@@ -117,7 +117,7 @@ class Tools
 
     public static function renderFAQWrapper(?int $postID = null, string &$content, string &$headerID, bool &$masonry, string &$color, string &$additional_class, bool &$bSchema): string
     {
-        $classes = 'rrze-faq';
+        $classes = 'rrze-answers';
         if ($masonry) {
             $classes .= ' faq-masonry';
         }
@@ -130,7 +130,7 @@ class Tools
             . ' data-accordion="single"'
             . ' data-scroll-offset="96"'
             . '>'
-            . '<h2 id="' . esc_attr($headerID) . '" class="screen-reader-text">' . esc_html(get_the_title($postID) ?: __('FAQ', 'rrze-faq')) . '</h2>'
+            . '<h2 id="' . esc_attr($headerID) . '" class="screen-reader-text">' . esc_html(get_the_title($postID) ?: __('FAQ', 'rrze-answers')) . '</h2>'
             . $content
             . '</div>';
     }

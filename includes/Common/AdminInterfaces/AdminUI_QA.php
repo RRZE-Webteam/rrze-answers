@@ -86,7 +86,7 @@ class AdminUI_QA extends AdminUIBase
             );
         }
         $output .= '</select>';
-        $output .= '<p class="description">' . esc_html__('Language of this FAQ', 'rrze-faq') . '</p>';
+        $output .= '<p class="description">' . esc_html__('Language of this FAQ', 'rrze-answers') . '</p>';
 
         echo wp_kses_post($output);
     }

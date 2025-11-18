@@ -94,7 +94,7 @@ export default function Edit({ attributes, setAttributes }) {
 
 	const categoryoptions = [
 		{
-			label: __('all', 'rrze-faq'),
+			label: __('all', 'rrze-answers'),
 			value: '',
 		},
 	];
@@ -115,7 +115,7 @@ export default function Edit({ attributes, setAttributes }) {
 
 	const tagoptions = [
 		{
-			label: __('all', 'rrze-faq'),
+			label: __('all', 'rrze-answers'),
 			value: '',
 		},
 	];
@@ -141,7 +141,7 @@ export default function Edit({ attributes, setAttributes }) {
 
 	const faqoptions = [
 		{
-			label: __('all', 'rrze-faq'),
+			label: __('all', 'rrze-answers'),
 			value: 0,
 		},
 	];
@@ -151,7 +151,7 @@ export default function Edit({ attributes, setAttributes }) {
 			faqoptions.push({
 				label: faq.title.rendered
 					? faq.title.rendered
-					: __('No title', 'rrze-faq'),
+					: __('No title', 'rrze-answers'),
 				value: faq.id,
 			});
 		});
@@ -159,65 +159,65 @@ export default function Edit({ attributes, setAttributes }) {
 
 	const langoptions = [
 		{
-			label: __('all', 'rrze-faq'),
+			label: __('all', 'rrze-answers'),
 			value: '',
 		},
 		{
-			label: __('German', 'rrze-faq'),
+			label: __('German', 'rrze-answers'),
 			value: 'de',
 		},
 		{
-			label: __('English', 'rrze-faq'),
+			label: __('English', 'rrze-answers'),
 			value: 'en',
 		},
 		{
-			label: __('French', 'rrze-faq'),
+			label: __('French', 'rrze-answers'),
 			value: 'fr',
 		},
 		{
-			label: __('Spanish', 'rrze-faq'),
+			label: __('Spanish', 'rrze-answers'),
 			value: 'es',
 		},
 		{
-			label: __('Russian', 'rrze-faq'),
+			label: __('Russian', 'rrze-answers'),
 			value: 'ru',
 		},
 		{
-			label: __('Chinese', 'rrze-faq'),
+			label: __('Chinese', 'rrze-answers'),
 			value: 'zh',
 		},
 	];
 
 	const glossaryoptions = [
 		{
-			label: __('none', 'rrze-faq'),
+			label: __('none', 'rrze-answers'),
 			value: '',
 		},
 		{
-			label: __('Categories', 'rrze-faq'),
+			label: __('Categories', 'rrze-answers'),
 			value: 'category',
 		},
 		{
-			label: __('Tags', 'rrze-faq'),
+			label: __('Tags', 'rrze-answers'),
 			value: 'tag',
 		},
 	];
 
 	const glossarystyleoptions = [
 		{
-			label: __('A - Z', 'rrze-faq'),
+			label: __('A - Z', 'rrze-answers'),
 			value: 'a-z',
 		},
 		{
-			label: __('Tagcloud', 'rrze-faq'),
+			label: __('Tagcloud', 'rrze-answers'),
 			value: 'tagcloud',
 		},
 		{
-			label: __('Tabs', 'rrze-faq'),
+			label: __('Tabs', 'rrze-answers'),
 			value: 'tabs',
 		},
 		{
-			label: __('-- hidden --', 'rrze-faq'),
+			label: __('-- hidden --', 'rrze-answers'),
 			value: '',
 		},
 	];
@@ -251,7 +251,7 @@ export default function Edit({ attributes, setAttributes }) {
 
 	const styleoptions = [
 		{
-			label: __('none', 'rrze-faq'),
+			label: __('none', 'rrze-answers'),
 			value: '',
 		},
 		{
@@ -266,26 +266,26 @@ export default function Edit({ attributes, setAttributes }) {
 
 	const sortoptions = [
 		{
-			label: __('Title', 'rrze-faq'),
+			label: __('Title', 'rrze-answers'),
 			value: 'title',
 		},
 		{
-			label: __('ID', 'rrze-faq'),
+			label: __('ID', 'rrze-answers'),
 			value: 'id',
 		},
 		{
-			label: __('Sort field', 'rrze-faq'),
+			label: __('Sort field', 'rrze-answers'),
 			value: 'sortfield',
 		},
 	];
 
 	const orderoptions = [
 		{
-			label: __('ASC', 'rrze-faq'),
+			label: __('ASC', 'rrze-answers'),
 			value: 'ASC',
 		},
 		{
-			label: __('DESC', 'rrze-faq'),
+			label: __('DESC', 'rrze-answers'),
 			value: 'DESC',
 		},
 	];
@@ -318,14 +318,14 @@ export default function Edit({ attributes, setAttributes }) {
 
 			<InspectorControls>
 				<PanelBody
-					title={__('Filter options', 'rrze-faq')}
-					header={__('Filter the FAQ-entries.', 'rrze-faq')}
+					title={__('Filter options', 'rrze-answers')}
+					header={__('Filter the FAQ-entries.', 'rrze-answers')}
 				>
 					<SelectControl
-						label={__('Categories', 'rrze-faq')}
+						label={__('Categories', 'rrze-answers')}
 						help={__(
 							'Only show FAQ-entries with these selected categories.',
-							'rrze-faq'
+							'rrze-answers'
 						)}
 						value={categorystate}
 						options={categoryoptions}
@@ -333,10 +333,10 @@ export default function Edit({ attributes, setAttributes }) {
 						multiple
 					/>
 					<SelectControl
-						label={__('Tags', 'rrze-faq')}
+						label={__('Tags', 'rrze-answers')}
 						help={__(
 							'Only show FAQ-entries with these selected tags.',
-							'rrze-faq'
+							'rrze-answers'
 						)}
 						value={tagstate}
 						options={tagoptions}
@@ -344,10 +344,10 @@ export default function Edit({ attributes, setAttributes }) {
 						multiple
 					/>
 					<SelectControl
-						label={__('Single FAQ-Entries', 'rrze-faq')}
+						label={__('Single FAQ-Entries', 'rrze-answers')}
 						help={__(
 							'Only show these FAQ-entries.',
-							'rrze-faq'
+							'rrze-answers'
 						)}
 						value={idstate}
 						options={faqoptions}
@@ -355,10 +355,10 @@ export default function Edit({ attributes, setAttributes }) {
 						multiple
 					/>
 					<SelectControl
-						label={__('Language', 'rrze-faq')}
+						label={__('Language', 'rrze-answers')}
 						help={__(
 							'Only show FAQ-entries in this language.',
-							'rrze-faq'
+							'rrze-answers'
 						)}
 						value={lang}
 						options={langoptions}
@@ -367,10 +367,10 @@ export default function Edit({ attributes, setAttributes }) {
 						}
 					/>
 					<SelectControl
-						label={__('Group Glossary Content by', 'rrze-faq')}
+						label={__('Group Glossary Content by', 'rrze-answers')}
 						help={__(
 							'Group FAQ-entries by categories or tags.',
-							'rrze-faq'
+							'rrze-answers'
 						)}
 						value={glossary}
 						options={glossaryoptions}
@@ -380,13 +380,13 @@ export default function Edit({ attributes, setAttributes }) {
 					/>
 				</PanelBody>
 				<PanelBody
-					title={__('Appearance', 'rrze-faq')}
-					name={__('Appearance', 'rrze-faq')}
+					title={__('Appearance', 'rrze-answers')}
+					name={__('Appearance', 'rrze-answers')}
 					icon="admin-appearance"
 					initialOpen={false}
 				>
 					<SelectControl
-						label={__('Glossary style', 'rrze-faq')}
+						label={__('Glossary style', 'rrze-answers')}
 						options={glossarystyleoptions}
 						onChange={(value) =>
 							setAttributes({ glossarystyle: value })
@@ -396,7 +396,7 @@ export default function Edit({ attributes, setAttributes }) {
 						<>
 							<ToggleControl
 								checked={!!hide_accordion}
-								label={__('Hide accordion', 'rrze-faq')}
+								label={__('Hide accordion', 'rrze-answers')}
 								onChange={() =>
 									setAttributes({
 										hide_accordion: !hide_accordion,
@@ -407,7 +407,7 @@ export default function Edit({ attributes, setAttributes }) {
 								<>
 									<ToggleControl
 										checked={!!masonry}
-										label={__('Grid', 'rrze-faq')}
+										label={__('Grid', 'rrze-answers')}
 										onChange={() =>
 											setAttributes({
 												masonry: !masonry,
@@ -417,7 +417,7 @@ export default function Edit({ attributes, setAttributes }) {
 									<SelectControl
 										label={__(
 											'Accordion-Style',
-											'rrze-faq'
+											'rrze-answers'
 										)}
 										options={styleoptions}
 										onChange={(value) =>
@@ -425,7 +425,7 @@ export default function Edit({ attributes, setAttributes }) {
 										}
 									/>
 									<SelectControl
-										label={__('Color', 'rrze-faq')}
+										label={__('Color', 'rrze-answers')}
 										options={coloroptions}
 										onChange={(value) =>
 											setAttributes({ color: value })
@@ -435,7 +435,7 @@ export default function Edit({ attributes, setAttributes }) {
 							) : (
 								<ToggleControl
 									checked={!!hide_title}
-									label={__('Hide title', 'rrze-faq')}
+									label={__('Hide title', 'rrze-answers')}
 									onChange={() =>
 										setAttributes({
 											hide_title: !hide_title,
@@ -446,16 +446,16 @@ export default function Edit({ attributes, setAttributes }) {
 						</>
 					)}
 				</PanelBody>
-				<PanelBody title={__('Sorting options', 'rrze-faq')}>
+				<PanelBody title={__('Sorting options', 'rrze-answers')}>
 					<SelectControl
-						label={__('Sort', 'rrze-faq')}
+						label={__('Sort', 'rrze-answers')}
 						options={sortoptions}
 						onChange={(value) =>
 							setAttributes({ sort: value })
 						}
 					/>
 					<SelectControl
-						label={__('Order', 'rrze-faq')}
+						label={__('Order', 'rrze-answers')}
 						options={orderoptions}
 						onChange={(value) =>
 							setAttributes({ order: value })

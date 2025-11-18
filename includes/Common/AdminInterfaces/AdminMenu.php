@@ -59,8 +59,8 @@ class AdminMenu {
     public function registerMenus(): void {
         // Top-Level "Answers"
         add_menu_page(
-            __('Answers', 'rrze-faq'),
-            __('Answers', 'rrze-faq'),
+            __('Answers', 'rrze-answers'),
+            __('Answers', 'rrze-answers'),
             'edit_posts',
             $this->parent_slug,
             [$this, 'renderAnswersDashboard'],
@@ -69,19 +69,19 @@ class AdminMenu {
         );
 
         // Sub: FAQ / Glossary / Placeholder
-        add_submenu_page($this->parent_slug, __('FAQ', 'rrze-faq'), __('FAQ', 'rrze-faq'), 'edit_posts', 'rrze-answers_faq',      function () { $this->renderHub($this->faq_pt, $this->faq_cat, $this->faq_tag, __('FAQ', 'rrze-faq')); });
-        add_submenu_page($this->parent_slug, __('Glossary', 'rrze-faq'), __('Glossary', 'rrze-faq'), 'edit_posts', 'rrze-answers_glossary', function () { $this->renderHub($this->glossary_pt, $this->glossary_cat, $this->glossary_tag, __('Glossary', 'rrze-faq')); });
-        add_submenu_page($this->parent_slug, __('Placeholder', 'rrze-faq'), __('Placeholder', 'rrze-faq'), 'edit_posts', 'rrze-answers_placeholder', function () { $this->renderHub($this->placeholder_pt, $this->syn_group, $this->syn_tag, __('Placeholder', 'rrze-faq')); });
+        add_submenu_page($this->parent_slug, __('FAQ', 'rrze-answers'), __('FAQ', 'rrze-answers'), 'edit_posts', 'rrze-answers_faq',      function () { $this->renderHub($this->faq_pt, $this->faq_cat, $this->faq_tag, __('FAQ', 'rrze-answers')); });
+        add_submenu_page($this->parent_slug, __('Glossary', 'rrze-answers'), __('Glossary', 'rrze-answers'), 'edit_posts', 'rrze-answers_glossary', function () { $this->renderHub($this->glossary_pt, $this->glossary_cat, $this->glossary_tag, __('Glossary', 'rrze-answers')); });
+        add_submenu_page($this->parent_slug, __('Placeholder', 'rrze-answers'), __('Placeholder', 'rrze-answers'), 'edit_posts', 'rrze-answers_placeholder', function () { $this->renderHub($this->placeholder_pt, $this->syn_group, $this->syn_tag, __('Placeholder', 'rrze-answers')); });
     }
 
     public function renderAnswersDashboard(): void {
-        echo '<div class="wrap"><h1>'.esc_html__('Answers', 'rrze-faq').'</h1>';
-        echo '<p>'.esc_html__('Wähle einen Bereich:', 'rrze-faq').'</p>';
+        echo '<div class="wrap"><h1>'.esc_html__('Answers', 'rrze-answers').'</h1>';
+        echo '<p>'.esc_html__('Wähle einen Bereich:', 'rrze-answers').'</p>';
         echo '<ul style="display:grid;gap:.5rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));max-width:900px">';
         $cards = [
-            ['slug'=>'rrze-answers_faq',      'title'=>__('FAQ', 'rrze-faq'),      'desc'=>__('Fragen & Antworten verwalten', 'rrze-faq')],
-            ['slug'=>'rrze-answers_glossary', 'title'=>__('Glossary', 'rrze-faq'), 'desc'=>__('Glossarbegriffe verwalten', 'rrze-faq')],
-            ['slug'=>'rrze-answers_placeholder',  'title'=>__('Placeholder', 'rrze-faq'),  'desc'=>__('Placeholdere & Gruppen', 'rrze-faq')],
+            ['slug'=>'rrze-answers_faq',      'title'=>__('FAQ', 'rrze-answers'),      'desc'=>__('Fragen & Antworten verwalten', 'rrze-answers')],
+            ['slug'=>'rrze-answers_glossary', 'title'=>__('Glossary', 'rrze-answers'), 'desc'=>__('Glossarbegriffe verwalten', 'rrze-answers')],
+            ['slug'=>'rrze-answers_placeholder',  'title'=>__('Placeholder', 'rrze-answers'),  'desc'=>__('Placeholdere & Gruppen', 'rrze-answers')],
         ];
         foreach ($cards as $c) {
             printf(
@@ -89,7 +89,7 @@ class AdminMenu {
                 esc_html($c['title']),
                 esc_html($c['desc']),
                 esc_url(admin_url('admin.php?page='.$c['slug'])),
-                esc_html__('Öffnen', 'rrze-faq')
+                esc_html__('Öffnen', 'rrze-answers')
             );
         }
         echo '</ul></div>';
@@ -105,10 +105,10 @@ class AdminMenu {
         printf('<h1>%s</h1>', esc_html($title));
         echo '<div class="rrze-hub" style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px">';
         $items = [
-            ['label'=>sprintf(__('All %s', 'rrze-faq'), $title), 'url'=>$all_url],
-            ['label'=>sprintf(__('Add %s', 'rrze-faq'), $title), 'url'=>$add_url],
-            ['label'=>__('Categories', 'rrze-faq'), 'url'=>$cat_url],
-            ['label'=>__('Tags', 'rrze-faq'), 'url'=>$tag_url],
+            ['label'=>sprintf(__('All %s', 'rrze-answers'), $title), 'url'=>$all_url],
+            ['label'=>sprintf(__('Add %s', 'rrze-answers'), $title), 'url'=>$add_url],
+            ['label'=>__('Categories', 'rrze-answers'), 'url'=>$cat_url],
+            ['label'=>__('Tags', 'rrze-answers'), 'url'=>$tag_url],
         ];
         foreach ($items as $i) {
             printf(

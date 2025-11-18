@@ -24,13 +24,12 @@ class SyncAPI
         }
 
         $aRet = [];
-        $url .= ENDPOINT . $field;
         $slug = ($filter ? '&slug=' . $filter : '');
         $page = 1;
 
         try {
             do {
-                $request = $this->remoteGet($url . '?page=' . $page . $slug);
+                $request = $this->remoteGet($url . '/' . ENDPOINT . $field . '?page=' . $page . $slug);
 
                 if (is_wp_error($request)) {
                     break;
@@ -90,49 +89,6 @@ class SyncAPI
             return new \WP_Error('getTaxonomies_error', __('Error in getTaxonomies().', 'rrze-answers'));
         }
     }
-
-
-    // public function getTaxonomies($url, $field, &$filter)
-    // {
-    //     $aRet = [];
-    //     $url .= ENDPOINT . $field;
-    //     $slug = ($filter ? '&slug=' . $filter : '');
-    //     $page = 1;
-
-    //     try {
-    //         do {
-    //             $request = $this->remoteGet($url . '?page=' . $page . $slug);
-    //             $status_code = wp_remote_retrieve_response_code($request);
-    //             if ($status_code == 200) {
-    //                 $entries = json_decode(wp_remote_retrieve_body($request), true);
-    //                 if (!empty($entries)) {
-    //                     foreach ($entries as $entry) {
-    //                         if ($entry['source'] == 'website') {
-    //                             if ($entry['children']) {
-    //                                 foreach ($entry['children'] as $childname) {
-    //                                     $aRet[$entry['name']][$childname] = [];
-    //                                 }
-    //                             } else {
-    //                                 $aRet[$entry['name']] = [];
-    //                             }
-    //                         }
-    //                     }
-    //                     foreach ($aRet as $name => $aChildren) {
-    //                         foreach ($aChildren as $childname => $val) {
-    //                             if (isset($aRet[$childname])) {
-    //                                 $aRet[$name][$childname] = $aRet[$childname];
-    //                             }
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //             $page++;
-    //         } while (($status_code == 200) && (!empty($entries)));
-    //         return $aRet;
-    //     } catch (CustomException $e) {
-    //         return new \WP_Error('getTaxonomies_error', __('Error in getTaxonomies().', 'rrze-answers'));
-    //     }
-    // }
 
     public function sortIt(&$arr)
     {
@@ -271,8 +227,8 @@ class SyncAPI
         $aRet = [];
         $field = 'rrze_' . $type . '_category';
         $aCategories = $this->getTaxonomies($url, $field, $categories);
-
         $this->setCategories($aCategories, $url, $type);
+
         $categories = get_terms(array(
             'taxonomy' => $field,
             'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
