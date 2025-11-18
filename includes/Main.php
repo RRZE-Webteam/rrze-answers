@@ -367,9 +367,9 @@ class Main
 
     public function cpt()
     {
-        $this->cpt = new CPTFAQ();
-        $this->cpt = new CPTGlossary();
-        $this->cpt = new CPTPlaceholder();
+        $cpt = new CPTFAQ();
+        $cpt = new CPTGlossary();
+        $cpt = new CPTPlaceholder();
     }
 
 
@@ -383,9 +383,9 @@ class Main
      */
     public function shortcode()
     {
-        $this->shortcode = new ShortcodeFAQ();
-        $this->shortcode = new ShortcodeGlossary();
-        $this->shortcode = new ShortcodePlaceholder();
+        $shortcode = new ShortcodeFAQ();
+        $shortcode = new ShortcodeGlossary();
+        $shortcode = new ShortcodePlaceholder();
     }
 
     /**
@@ -399,7 +399,7 @@ class Main
     public function blocks()
     {
 
-        $this->blocks = new Blocks(
+        $blocks = new Blocks(
             [                                  // Array of block names
                 'faq',
             ],

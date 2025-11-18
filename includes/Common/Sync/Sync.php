@@ -69,51 +69,48 @@ class Sync
         $tStart = microtime(true);
         $max_exec_time = ini_get('max_execution_time') - 40; // ini_get('max_execution_time') is not the correct value perhaps due to load-balancer or proxy or other fancy things I've no clue of. But this workaround works for now.
         $iCnt = 0;
-     
+
         $options = get_option('rrze-answers');
 
-
-        $domains = [
-            $options['remote_url_faq']
-        ];
+        $domains = $options['registeredDomains'];
 
         $allowSettingsError = ($mode == 'manual' ? true : false);
         $syncRan = false;
         $api = new SyncAPI();
 
-        foreach ($domains as $site_url) {
+        $types = [
+            'faq' => 'FAQ',
+            'glossary' => __('Glossary', 'rrze-answers')
+        ];
+
+        foreach ($domains as $identifier => $url) {
             $tStartDetail = microtime(true);
-            // $categories = (isset($options['remote_categories_faq' . $site_url]) ? implode(',', $options['remote_categories_faq' . $site_url]) : false);
 
-            // 2DO: rrze-answers[remote_categories_faq][host][]
+            foreach ($types as $type => $label) {
+                $fieldname = $type . '_categories[' . $url . '][]';
 
+                $categories = (!empty($options[$fieldname]) ? implode(',', $options[$fieldname]) : false);
 
-            $categories = (isset($options['remote_categories_faq']) ? implode(',', $options['remote_categories_faq']) : false);
-            if ($categories) {
+                if ($categories) {
+                    $identifier = Tools::getIdentifier($url);
+                    $aCnt = $api->setEntries($type, $identifier, $categories, $url);
+                    $syncRan = true;
 
+                    foreach ($aCnt['URLhasSlider'] as $URLhasSlider) {
+                        $error_msg = __('Domain', 'rrze-answers') . ' "' . $url . '": ' . __('Synchronization error. This ' . $label . ' contains sliders ([gallery]) and cannot be synchronized:', 'rrze-answers') . ' ' . $URLhasSlider;
+                        Tools::logIt($error_msg . ' | ' . $mode);
 
-                $identifier = Tools::getIdentifier($site_url);
+                        if ($allowSettingsError) {
+                            add_settings_error('Synchronization error', 'syncerror', $error_msg, 'error');
+                        }
+                    }
 
-                $aCnt = $api->setFAQ($identifier, $categories, $site_url);
-
-
-
-                $syncRan = true;
-
-                foreach ($aCnt['URLhasSlider'] as $URLhasSlider) {
-                    $error_msg = __('Domain', 'rrze-answers') . ' "' . $site_url . '": ' . __('Synchronization error. This FAQ contains sliders ([gallery]) and cannot be synchronized:', 'rrze-answers') . ' ' . $URLhasSlider;
-                    Tools::logIt($error_msg . ' | ' . $mode);
+                    $sync_msg = __('Domain', 'rrze-answers') . ' "' . $url . '": ' . $label . ' ' . __('Synchronization completed.', 'rrze-answers') . ' ' . $aCnt['iNew'] . ' ' . __('new', 'rrze-answers') . ', ' . $aCnt['iUpdated'] . ' ' . __('updated', 'rrze-answers') . ' ' . __('and', 'rrze-answers') . ' ' . $aCnt['iDeleted'] . ' ' . __('deleted', 'rrze-answers') . '. ' . __('Required time:', 'rrze-answers') . ' ' . sprintf('%.1f ', microtime(true) - $tStartDetail) . __('seconds', 'rrze-answers');
+                    Tools::logIt($sync_msg . ' | ' . $mode);
 
                     if ($allowSettingsError) {
-                        add_settings_error('Synchronization error', 'syncerror', $error_msg, 'error');
+                        add_settings_error('Synchronization completed', 'synccompleted', $sync_msg, 'success');
                     }
-                }
-
-                $sync_msg = __('Domain', 'rrze-answers') . ' "' . $site_url . '": ' . __('Synchronization completed.', 'rrze-answers') . ' ' . $aCnt['iNew'] . ' ' . __('new', 'rrze-answers') . ', ' . $aCnt['iUpdated'] . ' ' . __('updated', 'rrze-answers') . ' ' . __('and', 'rrze-answers') . ' ' . $aCnt['iDeleted'] . ' ' . __('deleted', 'rrze-answers') . '. ' . __('Required time:', 'rrze-answers') . ' ' . sprintf('%.1f ', microtime(true) - $tStartDetail) . __('seconds', 'rrze-answers');
-                Tools::logIt($sync_msg . ' | ' . $mode);
-
-                if ($allowSettingsError) {
-                    add_settings_error('Synchronization completed', 'synccompleted', $sync_msg, 'success');
                 }
             }
         }

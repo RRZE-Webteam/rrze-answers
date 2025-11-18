@@ -234,10 +234,6 @@ class Defaults
             foreach ($types as $type => $label) {
                 $cats = $syncAPI->getCategories($identifier, $url, $type, '');
 
-                echo '<pre>';
-                var_dump($cats);
-                exit;
-                $cats = [];
                 if (empty($cats)) {
                     $field_type = 'msg';
                     $val_type = 'placeholder';
@@ -249,7 +245,7 @@ class Defaults
                 }
 
                 $defaults['fields']['import'][] = [
-                    'name' => $type . '_categories[' . $url . ']',
+                    'name' => $type . '_categories[' . $url . '][]',
                     'label' => $label . ' ' . __('Categories', 'rrze-answers'),
                     'description' => __('Please select the categories you\'d like to fetch ' . $label . ' to.', 'rrze-answers'),
                     'type' => $field_type,

@@ -3,6 +3,7 @@
 namespace RRZE\Answers\Common\Settings;
 
 defined('ABSPATH') || exit;
+
 ?>
 <tr valign="top">
     <th scope="row" class="rrze-wp-form-label">
@@ -23,3 +24,5 @@ defined('ABSPATH') || exit;
         <?php } ?>
     </td>
 </tr>
+
+
