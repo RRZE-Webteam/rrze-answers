@@ -442,7 +442,7 @@ class ShortcodeFAQ
         $this->bSchema = false;
 
         // attribute category or tag is given or none of them
-        $aLetters = array();
+        $aLetters = [];
         $tax_query = '';
 
         $postQuery = array('post_type' => 'rrze_faq', 'post_status' => 'publish', 'numberposts' => -1, 'suppress_filters' => false);
@@ -504,12 +504,12 @@ class ShortcodeFAQ
             if ($glossary) {
                 // attribut glossary is given
                 // get all used tags or categories
-                $aUsedTerms = array();
-                $aPostIDs = array();
+                $aUsedTerms = [];
+                $aPostIDs = [];
                 foreach ($posts as $post) {
                     // get all tags for each post
-                    $aTermIds = array();
-                    $valid_term_ids = array();
+                    $aTermIds = [];
+                    $valid_term_ids = [];
                     if ($glossary == 'category' && $category) {
                         if (!is_array($category)) {
                             $aCats = array_map('trim', explode(',', $category));
@@ -659,7 +659,7 @@ class ShortcodeFAQ
         }
 
         if (empty($atts)) {
-            $atts = array();
+            $atts = [];
         } else {
             $atts = array_map('sanitize_text_field', $atts);
         }
@@ -667,7 +667,7 @@ class ShortcodeFAQ
         $this->translateNewAttributes($atts);
 
         // merge given attributes with default ones
-        $atts_default = array();
+        $atts_default = [];
         foreach ($this->settings as $k => $v) {
             if ($k != 'block') {
                 $atts_default[$k] = $v['default'];

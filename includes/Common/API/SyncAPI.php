@@ -16,12 +16,12 @@ class SyncAPI
 
     public function getTaxonomies($url, $field, &$filter)
     {
-        $cacheKey = 'rrze_answers_tax_' . md5($url . '|' . $field . '|' . (string) $filter);
-        $cached = get_transient($cacheKey);
+        // $cacheKey = 'rrze_answers_tax_' . md5($url . '|' . $field . '|' . (string) $filter);
+        // $cached = get_transient($cacheKey);
 
-        if ($cached !== false && is_array($cached)) {
-            return $cached;
-        }
+        // if ($cached !== false && is_array($cached)) {
+        //     return $cached;
+        // }
 
         $aRet = [];
         $slug = ($filter ? '&slug=' . $filter : '');
@@ -51,6 +51,7 @@ class SyncAPI
                     if (!isset($entry['source']) || $entry['source'] !== 'website') {
                         continue;
                     }
+
 
                     $name = $entry['name'] ?? null;
                     if (!$name) {
@@ -82,7 +83,12 @@ class SyncAPI
             }
 
             // Cache the result for 1 hour
-            set_transient($cacheKey, $aRet, HOUR_IN_SECONDS);
+            // set_transient($cacheKey, $aRet, HOUR_IN_SECONDS);
+
+                    //             echo '<pre>';
+                    // var_dump($aRet);
+                    // exit;
+
 
             return $aRet;
         } catch (\Throwable $e) {
@@ -412,9 +418,13 @@ class SyncAPI
             // get all remoteIDs of stored FAQ to this source ( key = remoteID, value = postID )
             $aRemoteIDs = $this->getEntriesRemoteIDs($url, $type);
 
-            // $this->deleteTags($identifier, $type);
-            // $this->deleteCategories($identifier, $type);
-            // $this->getCategories($identifier, $url, $type, $categories);
+            $this->deleteTags($identifier, $type);
+            $this->deleteCategories($identifier, $type);
+            $aCategories = $this->getCategories($identifier, $url, $type, $categories);
+
+            echo '<pre>';
+            var_dump($aCategories);
+            exit;
 
             $field_cpt = 'rrze_' . $type;
             $field_tag = 'rrze_' . $type . '_tag';
@@ -422,9 +432,10 @@ class SyncAPI
 
             $aEntries = $this->getEntries($url, $categories, $type);
 
+
             // set FAQ
             foreach ($aEntries as $entry) {
-                $this->setTags($entry[$field_tag], $url, $type);
+                $this->setTags($entry[$field_tag], $identifier, $type);
 
                 $aCategoryIDs = [];
 

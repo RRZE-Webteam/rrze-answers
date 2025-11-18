@@ -237,7 +237,7 @@ class RESTAPI
                 'parent' => $term['id'],
             )
         );
-        $aRet = array();
+        $aRet = [];
         foreach ($children as $child) {
             $aRet[] = $child->name;
         }

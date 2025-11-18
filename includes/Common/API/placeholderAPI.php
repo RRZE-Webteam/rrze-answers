@@ -8,7 +8,7 @@ define ('SYNONYM_ENDPOINT', 'wp-json/wp/v2/placeholder' );
 
 class API {
 
-    private $aAllCats = array();
+    private $aAllCats = [];
 
     public function setDomain( $site_url, $url, $domains ){
         // returns array('status' => TRUE, 'ret' => array(cleansite_url, cleanUrl)
@@ -52,7 +52,7 @@ class API {
     }
 
     public function getDomains(){
-        $domains = array();
+        $domains = [];
         $options = get_option( 'rrze-answers' );
         if ( isset( $options['registeredDomains'] ) ){
             foreach( $options['registeredDomains'] as $site_url => $url ){
@@ -112,7 +112,7 @@ class API {
             $len = strpos( $txt, '"', $pos ) - $pos;
             $srcset = substr( $txt, $pos, $len );
             $aSrcset = explode( ',', $srcset );
-            $aNewSrcset = array();
+            $aNewSrcset = [];
             foreach( $aSrcset as $src ){
                 $src = trim( $src );
                 if ( substr( $src, 0, 1 ) == '/' ){
@@ -126,8 +126,8 @@ class API {
       }
 
     protected function getPlaceholders( &$url ){
-            $placeholders = array();
-        $aCategoryRelation = array();
+            $placeholders = [];
+        $aCategoryRelation = [];
         $page = 1;
 
         do {
@@ -161,7 +161,7 @@ class API {
     }
 
     public function getPlaceholdersRemoteIDs( $source ){
-        $aRet = array();
+        $aRet = [];
         // $allPlaceholders = get_posts( array( 'post_type' => 'placeholder', 'meta_key' => 'source', 'meta_value' => $source, 'fields' => 'ids', 'numberposts' => -1 ) );
         $allPlaceholders = get_posts(
             ['post_type' => 'placeholder',

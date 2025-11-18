@@ -179,12 +179,12 @@ class Tools
         $ret = '';
         $smallest = 12;
         $largest = 22;
-        $aCounts = array();
+        $aCounts = [];
         foreach ($aTerms as $name => $aDetails) {
             $aCounts[$aDetails['ID']] = count($aPostIDs[$aDetails['ID']]);
         }
         $iMax = max($aCounts);
-        $aSizes = array();
+        $aSizes = [];
         foreach ($aCounts as $ID => $cnt) {
             $aSizes[$ID] = round(($cnt / $iMax) * $largest, 0);
             $aSizes[$ID] = ($aSizes[$ID] < $smallest ? $smallest : $aSizes[$ID]);
@@ -198,11 +198,11 @@ class Tools
 
     public static function getTaxQuery(&$aTax)
     {
-        $ret = array();
+        $ret = [];
 
         foreach ($aTax as $taxfield => $aEntries) {
-            $term_queries = array();
-            $sources = array();
+            $term_queries = [];
+            $sources = [];
 
             foreach ($aEntries as $entry) {
                 $source = !empty($entry['source']) ? $entry['source'] : '';

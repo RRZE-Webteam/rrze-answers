@@ -101,7 +101,7 @@ class ShortcodePlaceholder
         }
 
         // merge given attributes with default ones
-        $atts_default = array();
+        $atts_default = [];
         foreach ($this->settings as $k => $v) {
             if ($k != 'block') {
                 $atts_default[$k] = $v['default'];

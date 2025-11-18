@@ -328,7 +328,7 @@ class ShortcodeGlossary
         $this->bSchema = false;
 
         // attribute category or tag is given or none of them
-        $aLetters = array();
+        $aLetters = [];
         $tax_query = '';
 
         $postQuery = array('post_type' => 'rrze_glossary', 'post_status' => 'publish', 'numberposts' => -1, 'suppress_filters' => false);
@@ -390,12 +390,12 @@ class ShortcodeGlossary
             if ($register) {
                 // attribut register is given
                 // get all used tags or categories
-                $aUsedTerms = array();
-                $aPostIDs = array();
+                $aUsedTerms = [];
+                $aPostIDs = [];
                 foreach ($posts as $post) {
                     // get all tags for each post
-                    $aTermIds = array();
-                    $valid_term_ids = array();
+                    $aTermIds = [];
+                    $valid_term_ids = [];
                     if ($register == 'category' && $category) {
                         if (!is_array($category)) {
                             $aCats = array_map('trim', explode(',', $category));
@@ -571,12 +571,12 @@ class ShortcodeGlossary
         $ret = '<div class="fau-glossar"><ul class="letters">';
         $smallest = 12;
         $largest = 22;
-        $aCounts = array();
+        $aCounts = [];
         foreach ($aTerms as $name => $aDetails) {
             $aCounts[$aDetails['ID']] = count($aPostIDs[$aDetails['ID']]);
         }
         $iMax = max($aCounts);
-        $aSizes = array();
+        $aSizes = [];
         foreach ($aCounts as $ID => $cnt) {
             $aSizes[$ID] = round(($cnt / $iMax) * $largest, 0);
             $aSizes[$ID] = ($aSizes[$ID] < $smallest ? $smallest : $aSizes[$ID]);
@@ -590,7 +590,7 @@ class ShortcodeGlossary
     private function getTaxQuery(&$aTax)
     {
         $ret = '';
-        $aTmp = array();
+        $aTmp = [];
         foreach ($aTax as $field => $aVal) {
             if ($aVal[0]) {
                 $aTmp[] = array(
@@ -725,7 +725,7 @@ class ShortcodeGlossary
         }
 
         if (empty($atts)) {
-            $atts = array();
+            $atts = [];
         } else {
             $atts = array_map('sanitize_text_field', $atts);
         }
@@ -733,7 +733,7 @@ class ShortcodeGlossary
         $this->translateNewAttributes($atts);
 
         // merge given attributes with default ones
-        $atts_default = array();
+        $atts_default = [];
         foreach ($this->settings as $k => $v) {
             if ($k != 'block') {
                 $atts_default[$k] = $v['default'];
