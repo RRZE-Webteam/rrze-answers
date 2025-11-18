@@ -14,9 +14,15 @@ class SyncAPI
     {
     }
 
-
     public function getTaxonomies($url, $field, &$filter)
     {
+        $cacheKey = 'rrze_answers_tax_' . md5($url . '|' . $field . '|' . (string) $filter);
+        $cached = get_transient($cacheKey);
+
+        if ($cached !== false && is_array($cached)) {
+            return $cached;
+        }
+
         $aRet = [];
         $url .= ENDPOINT . $field;
         $slug = ($filter ? '&slug=' . $filter : '');
@@ -25,37 +31,108 @@ class SyncAPI
         try {
             do {
                 $request = $this->remoteGet($url . '?page=' . $page . $slug);
+
+                if (is_wp_error($request)) {
+                    break;
+                }
+
                 $status_code = wp_remote_retrieve_response_code($request);
-                if ($status_code == 200) {
-                    $entries = json_decode(wp_remote_retrieve_body($request), true);
-                    if (!empty($entries)) {
-                        foreach ($entries as $entry) {
-                            if ($entry['source'] == 'website') {
-                                if ($entry['children']) {
-                                    foreach ($entry['children'] as $childname) {
-                                        $aRet[$entry['name']][$childname] = [];
-                                    }
-                                } else {
-                                    $aRet[$entry['name']] = [];
-                                }
-                            }
-                        }
-                        foreach ($aRet as $name => $aChildren) {
-                            foreach ($aChildren as $childname => $val) {
-                                if (isset($aRet[$childname])) {
-                                    $aRet[$name][$childname] = $aRet[$childname];
-                                }
+
+                if ($status_code !== 200) {
+                    break;
+                }
+
+                $entries = json_decode(wp_remote_retrieve_body($request), true);
+
+                if (empty($entries)) {
+                    break;
+                }
+
+                foreach ($entries as $entry) {
+                    if (!isset($entry['source']) || $entry['source'] !== 'website') {
+                        continue;
+                    }
+
+                    $name = $entry['name'] ?? null;
+                    if (!$name) {
+                        continue;
+                    }
+
+                    if (!isset($aRet[$name])) {
+                        $aRet[$name] = [];
+                    }
+
+                    if (!empty($entry['children']) && is_array($entry['children'])) {
+                        foreach ($entry['children'] as $childname) {
+                            if (!isset($aRet[$name][$childname])) {
+                                $aRet[$name][$childname] = [];
                             }
                         }
                     }
                 }
+
                 $page++;
-            } while (($status_code == 200) && (!empty($entries)));
+            } while (true);
+
+            foreach ($aRet as $name => $aChildren) {
+                foreach ($aChildren as $childname => $val) {
+                    if (isset($aRet[$childname])) {
+                        $aRet[$name][$childname] = $aRet[$childname];
+                    }
+                }
+            }
+
+            // Cache the result for 1 hour
+            set_transient($cacheKey, $aRet, HOUR_IN_SECONDS);
+
             return $aRet;
-        } catch (CustomException $e) {
+        } catch (\Throwable $e) {
             return new \WP_Error('getTaxonomies_error', __('Error in getTaxonomies().', 'rrze-answers'));
         }
     }
+
+
+    // public function getTaxonomies($url, $field, &$filter)
+    // {
+    //     $aRet = [];
+    //     $url .= ENDPOINT . $field;
+    //     $slug = ($filter ? '&slug=' . $filter : '');
+    //     $page = 1;
+
+    //     try {
+    //         do {
+    //             $request = $this->remoteGet($url . '?page=' . $page . $slug);
+    //             $status_code = wp_remote_retrieve_response_code($request);
+    //             if ($status_code == 200) {
+    //                 $entries = json_decode(wp_remote_retrieve_body($request), true);
+    //                 if (!empty($entries)) {
+    //                     foreach ($entries as $entry) {
+    //                         if ($entry['source'] == 'website') {
+    //                             if ($entry['children']) {
+    //                                 foreach ($entry['children'] as $childname) {
+    //                                     $aRet[$entry['name']][$childname] = [];
+    //                                 }
+    //                             } else {
+    //                                 $aRet[$entry['name']] = [];
+    //                             }
+    //                         }
+    //                     }
+    //                     foreach ($aRet as $name => $aChildren) {
+    //                         foreach ($aChildren as $childname => $val) {
+    //                             if (isset($aRet[$childname])) {
+    //                                 $aRet[$name][$childname] = $aRet[$childname];
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //             $page++;
+    //         } while (($status_code == 200) && (!empty($entries)));
+    //         return $aRet;
+    //     } catch (CustomException $e) {
+    //         return new \WP_Error('getTaxonomies_error', __('Error in getTaxonomies().', 'rrze-answers'));
+    //     }
+    // }
 
     public function sortIt(&$arr)
     {
@@ -520,10 +597,10 @@ class SyncAPI
             $aRet['msg'] = $identifier . ' ' . __('is already in use.', 'rrze-answers');
             return $aRet;
         }
-        
+
         $aSubEndpoints = ['faq', 'synonym', 'glossary'];
 
-        foreach ($aSubEndpoints as $sub){
+        foreach ($aSubEndpoints as $sub) {
             $request = wp_remote_get($url . '/' . ENDPOINT . $sub . '?per_page=1');
             $status_code = wp_remote_retrieve_response_code($request);
 
