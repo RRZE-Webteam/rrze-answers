@@ -87,11 +87,6 @@ class Sync
 
                 $categories = (!empty($options[$fieldname]) ? implode(',', $options[$fieldname]) : false);
 
-                // echo '<pre>';
-                // echo $fieldname;
-                // var_dump($categories);
-                // exit;
-
                 if ($categories) {
                     $aCnt = $this->syncAPI->setEntries($type, $identifier, $categories, $url);
                     $syncRan = true;

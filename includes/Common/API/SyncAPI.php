@@ -85,11 +85,6 @@ class SyncAPI
             // Cache the result for 1 hour
             set_transient($cacheKey, $aRet, HOUR_IN_SECONDS);
 
-                    //             echo '<pre>';
-                    // var_dump($aRet);
-                    // exit;
-
-
             return $aRet;
         } catch (\Throwable $e) {
             return new \WP_Error('getTaxonomies_error', __('Error in getTaxonomies().', 'rrze-answers'));
@@ -352,7 +347,7 @@ class SyncAPI
                                 foreach ($entry[$field_tag] as $tag) {
                                     $sTag .= $tag . ',';
                                 }
-                                $ret[$entry['id']][$field_cat] = trim($sTag, ',');
+                                $ret[$entry['id']][$field_tag] = trim($sTag, ',');
                                 $ret[$entry['id']]['URLhasSlider'] = ((strpos($content, 'slider') !== false) ? $entry['link'] : false); // we cannot handle sliders, see note in Shortcode.php shortcodeOutput()
                             }
                         }
@@ -422,10 +417,6 @@ class SyncAPI
             $this->deleteCategories($identifier, $type);
             $aCategories = $this->getCategories($identifier, $url, $type, $categories);
 
-            echo '<pre>';
-            var_dump($aCategories);
-            exit;
-
             $field_cpt = 'rrze_' . $type;
             $field_tag = 'rrze_' . $type . '_tag';
             $field_cat = 'rrze_' . $type . '_category';
@@ -441,6 +432,10 @@ class SyncAPI
 
                 foreach ($entry[$field_cat] as $nr => $name) {
                     $term = get_term_by('name', $name, $field_cat);
+                    if (!$term){
+                        var_dump($entry[$field_cat]);
+                        exit;
+                    }
                     $aCategoryIDs[] = $term->term_id;
                 }
 
