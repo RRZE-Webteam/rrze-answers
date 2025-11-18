@@ -72,10 +72,6 @@ class Sync
         $domains = $this->syncAPI->getDomains();
         $options = get_option('rrze-answers');
 
-        // echo '<pre>';
-        // var_dump($domains);
-
-
         $allowSettingsError = ($mode == 'manual' ? true : false);
         $syncRan = false;
 

@@ -97,7 +97,7 @@ class SyncAPI
         });
     }
 
-    public function deleteTaxonomies($source, $field)
+    public function deleteTaxonomies($identifier, $field)
     {
         try {
             $args = array(
@@ -105,7 +105,7 @@ class SyncAPI
                 'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
                     array(
                         'key' => 'source',
-                        'value' => $source,
+                        'value' => $identifier,
                         'compare' => '=',
                     ),
                 ),
@@ -121,17 +121,17 @@ class SyncAPI
         }
     }
 
-    public function deleteCategories($url, $type)
+    public function deleteCategories($identifier, $type)
     {
-        $this->deleteTaxonomies($url, 'rrze_' . $type . '_category');
+        $this->deleteTaxonomies($identifier, 'rrze_' . $type . '_category');
     }
 
-    public function deleteTags($url, $type)
+    public function deleteTags($identifier, $type)
     {
-        $this->deleteTaxonomies($url, 'rrze_' . $type . '_tag');
+        $this->deleteTaxonomies($identifier, 'rrze_' . $type . '_tag');
     }
 
-    protected function setCategories(&$aCategories, &$site_url, $type)
+    protected function setCategories(&$aCategories, &$identifier, $type)
     {
         try {
             $field = 'rrze_' . $type . '_category';
@@ -141,12 +141,12 @@ class SyncAPI
                 if (!$term) {
                     $term = wp_insert_term($name, $field);
                 }
-                update_term_meta($term['term_id'], 'source', $site_url);
+                update_term_meta($term['term_id'], 'source', $identifier);
                 foreach ($aDetails as $childname => $tmp) {
                     $childterm = term_exists($childname, $field);
                     if (!$childterm) {
                         $childterm = wp_insert_term($childname, $field, array('parent' => $term['term_id']));
-                        update_term_meta($childterm['term_id'], 'source', $site_url);
+                        update_term_meta($childterm['term_id'], 'source', $identifier);
                     }
                 }
                 if ($aDetails) {
@@ -227,14 +227,14 @@ class SyncAPI
         $aRet = [];
         $field = 'rrze_' . $type . '_category';
         $aCategories = $this->getTaxonomies($url, $field, $categories);
-        $this->setCategories($aCategories, $url, $type);
+        $this->setCategories($aCategories, $identifier, $type);
 
         $categories = get_terms(array(
             'taxonomy' => $field,
             'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
                 array(
                     'key' => 'source',
-                    'value' => $url,
+                    'value' => $identifier,
                 )
             ),
             'hide_empty' => false,
@@ -246,11 +246,11 @@ class SyncAPI
         return $aRet;
     }
 
-    public function deleteEntries($url, $type)
+    public function deleteEntries($identifier, $type)
     {
         // deletes all Entries by url
         $iDel = 0;
-        $allEntries = get_posts(array('post_type' => 'rrze_' . $type, 'meta_key' => 'source', 'meta_value' => $url, 'numberposts' => -1)); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+        $allEntries = get_posts(array('post_type' => 'rrze_' . $type, 'meta_key' => 'source', 'meta_value' => $identifier, 'numberposts' => -1)); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 
         foreach ($allEntries as $entry) {
             wp_delete_post($entry->ID, true);
@@ -361,7 +361,7 @@ class SyncAPI
         }
     }
 
-    public function setTags($terms, $url, $type)
+    public function setTags($terms, $identifier, $type)
     {
         try {
             if ($terms) {
@@ -371,7 +371,7 @@ class SyncAPI
                         $term = term_exists($name, 'rrze_' . $type . '_tag');
                         if (!$term) {
                             $term = wp_insert_term($name, 'rrze_' . $type . '_tag');
-                            update_term_meta($term['term_id'], 'source', $url);
+                            update_term_meta($term['term_id'], 'source', $identifier);
                         }
                     }
                 }
@@ -412,9 +412,9 @@ class SyncAPI
             // get all remoteIDs of stored FAQ to this source ( key = remoteID, value = postID )
             $aRemoteIDs = $this->getEntriesRemoteIDs($url, $type);
 
-            $this->deleteTags($url, $type);
-            $this->deleteCategories($url, $type);
-            $this->getCategories($identifier, $url, $type, $categories);
+            // $this->deleteTags($identifier, $type);
+            // $this->deleteCategories($identifier, $type);
+            // $this->getCategories($identifier, $url, $type, $categories);
 
             $field_cpt = 'rrze_' . $type;
             $field_tag = 'rrze_' . $type . '_tag';
@@ -445,7 +445,7 @@ class SyncAPI
                                 'post_title' => $entry['title'],
                                 'post_content' => $entry['content'],
                                 'meta_input' => array(
-                                    'source' => $url,
+                                    'source' => $identifier,
                                     'lang' => $entry['lang'],
                                     'remoteID' => $entry['remoteID'],
                                 ),
@@ -468,7 +468,7 @@ class SyncAPI
                             'ping_status' => 'closed',
                             'post_status' => 'publish',
                             'meta_input' => array(
-                                'source' => $url,
+                                'source' => $identifier,
                                 'lang' => $entry['lang'],
                                 'remoteID' => $entry['id'],
                                 'remoteChanged' => $entry['remoteChanged'],

@@ -64,7 +64,6 @@ class Main
         $this->defaults = new Defaults();
         $this->settings();
         $this->restapi = new RESTAPI();
-        $this->sync = new SyncAPI();
 
         // $this->adminInterface = new AdminInterfaces('rrze_faq');
         // $this->adminInterface = new AdminInterfaces('rrze_glossary');
@@ -80,9 +79,29 @@ class Main
         // add_action('wp_ajax_rrze_answers_get_categories', [$this, 'rrze_answers_get_categories_cb']);
 
         add_action('pre_update_option_rrze-answers', [$this, 'switchTask'], 10, 1);
+        add_action('update_option_rrze-answers', [$this, 'maybeSync'], 10, 2);
 
         $this->shortcode();
         $this->blocks();
+    }
+
+
+    public function maybeSync($oldOptions, $newOptions)
+    {
+
+        if ($oldOptions == $newOptions) {
+            return;
+        }
+
+        $tab = (!empty($_GET['tab']) ? $_GET['tab'] : '');
+
+        if ($tab == 'import') {
+            $sync = new Sync();
+            $frequency = (!empty($newOptions['frequency']) ? $newOptions['frequency'] : '');
+            $mode = ($frequency ? 'automatic' : 'manual');
+            $sync->doSync($mode);
+            $sync->setCronjob($frequency);
+        }
     }
 
     public function switchTask($options)
@@ -94,7 +113,8 @@ class Main
             $options = array_merge($storedOptions, $options);
         }
 
-        $domains = $this->sync->getDomains();
+        $syncAPI = new SyncAPI();
+        $domains = $syncAPI->getDomains();
 
         $tab = (!empty($_GET['tab']) ? $_GET['tab'] : '');
 
@@ -104,45 +124,38 @@ class Main
                     // add new domain
                     $identifier = Tools::getIdentifier($options['new_url']);
                     $url = 'https://' . Tools::getHost($options['new_url']);
-                    $aRet = $this->sync->checkDomain($identifier, $url, $domains);
+                    $aRet = $syncAPI->checkDomain($identifier, $url, $domains);
 
                     if ($aRet['status']) {
-                        // url is correct, rrze-answers at given url is in use and shortname is new
+                        // url is correct, rrze-answers at given url is in use and identifier is new (generated if not unique)
                         $domains[$identifier] = $url;
                     } else {
                         add_settings_error('new_url', 'domains_new_error', $aRet['msg'], 'error');
                     }
                 } else {
                     // delete domain(s)
-                    foreach ($_POST as $key => $url) {
+                    $types = ['faq', 'glossary'];
+
+                    foreach ($_POST as $key => $identifier) {
                         if (substr($key, 0, 11) === "del_domain_") {
-                            if (($shortname = array_search($url, $domains)) !== false) {
-                                unset($domains[$shortname]);
-                                $this->sync->deleteEntries($url, 'faq');
-                                $this->sync->deleteCategories($url, 'faq');
-                                $this->sync->deleteTags($url, 'faq');
-                                $this->sync->deleteEntries($url, 'glossary');
-                                $this->sync->deleteCategories($url, 'glossary');
-                                $this->sync->deleteTags($url, 'glossary');
+                            if ((array_search($identifier, array_keys($domains))) !== false) {
+                                unset($domains[$identifier]);
+                                foreach ($types as $type) {
+                                    $syncAPI->deleteEntries($identifier, $type);
+                                    $syncAPI->deleteCategories($identifier, $type);
+                                    $syncAPI->deleteTags($identifier, $type);
+                                    unset($options[$type . '_categories_' . $identifier]);
+                                }
                             }
-                            unset($options['faqsync_categories_' . $shortname]);
-                            unset($options['faqsync_donotsync_' . $shortname]);
                         }
                     }
                 }
                 break;
             case 'import':
-                $frequency = (!empty($options['frequency']) ? $options['frequency'] : '');
-
-                // echo $type;
-                // exit;
-                $mode = (!empty($frequency) ? 'automatic' : 'manual');
-                $sync = new Sync();
-                $sync->doSync($mode);
-                // $sync->setCronjob();
+                // nothing to do here, see after update options (hook: update_option_rrze-answers)
                 break;
             case 'del':
-                // deleteLogfile();
+                Tools::deleteLogfile();
                 break;
         }
 

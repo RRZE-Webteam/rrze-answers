@@ -12,14 +12,14 @@ use RRZE\Answers\Common\API\SyncAPI;
         <?php
 
         $api = new SyncAPI();
-        $aDomains = $api->getDomains();
+        $domains = $api->getDomains();
 
-        if (count($aDomains) > 0) {
+        if (count($domains) > 0) {
             $i = 1;
             echo '<style> .settings_page_rrze-answers #log .form-table th {width:0;}</style>';
             echo '<table class="wp-list-table widefat striped"><tbody>';
-            foreach ($aDomains as $name => $url) {
-                echo '<tr><td><input type="checkbox" name="del_domain_' . esc_attr($i) . '" value="' . esc_url($url) . '"></td><td>' . esc_html($name) . '</td><td>' . esc_url($url) . '</td></tr>';
+            foreach ($domains as $identifier => $url) {
+                echo '<tr><td><input type="checkbox" name="del_domain_' . esc_attr($i) . '" value="' . esc_attr($identifier) . '"></td><td>' . esc_html($identifier) . '</td><td>' . esc_url($url) . '</td></tr>';
                 $i++;
             }
             echo '</tbody></table>';
