@@ -46,6 +46,8 @@ class Defaults
      */
     private function load(): array
     {
+$pagelist = Tools::getPageList();
+
         $defaults = [
             'settings' => [
                 'option_name' => 'rrze-answers',
@@ -104,7 +106,7 @@ class Defaults
                         'label' => __('Archive page', 'rrze-answers'),
                         'description' => '',
                         'type' => 'select',
-                        'options' => Tools::getPageList(),
+                        'options' => $pagelist,
                         'default' => ''
                     ],
                     [
@@ -142,7 +144,7 @@ class Defaults
                         'label' => __('Archive page', 'rrze-answers'),
                         'description' => '',
                         'type' => 'select',
-                        'options' => Tools::getPageList(),
+                        'options' => $pagelist,
                         'default' => ''
                     ],
                     [
@@ -180,7 +182,7 @@ class Defaults
                         'label' => __('Archive page', 'rrze-answers'),
                         'description' => '',
                         'type' => 'select',
-                        'options' => Tools::getPageList(),
+                        'options' => $pagelist,
                         'default' => ''
                     ],
                     [

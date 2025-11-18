@@ -16,12 +16,12 @@ class SyncAPI
 
     public function getTaxonomies($url, $field, &$filter)
     {
-        // $cacheKey = 'rrze_answers_tax_' . md5($url . '|' . $field . '|' . (string) $filter);
-        // $cached = get_transient($cacheKey);
+        $cacheKey = 'rrze_answers_tax_' . md5($url . '|' . $field . '|' . (string) $filter);
+        $cached = get_transient($cacheKey);
 
-        // if ($cached !== false && is_array($cached)) {
-        //     return $cached;
-        // }
+        if ($cached !== false && is_array($cached)) {
+            return $cached;
+        }
 
         $aRet = [];
         $slug = ($filter ? '&slug=' . $filter : '');
@@ -83,7 +83,7 @@ class SyncAPI
             }
 
             // Cache the result for 1 hour
-            // set_transient($cacheKey, $aRet, HOUR_IN_SECONDS);
+            set_transient($cacheKey, $aRet, HOUR_IN_SECONDS);
 
                     //             echo '<pre>';
                     // var_dump($aRet);
