@@ -234,15 +234,6 @@ class Defaults
             foreach ($types as $type => $label) {
 
                 $cats = $syncAPI->getTaxonomies($url, 'rrze_' . $type . '_category', $filter);
-
-                // BK DEBUG 
-                if (!$cats) {
-
-                    $cats = $syncAPI->getTaxonomies($url, $type . '_category', $filter);
-                    // var_dump($cats);
-                    // exit;
-                }
-
                 $options = [];
 
                 foreach ($cats as $key => $unused) {

@@ -3,7 +3,7 @@
 	"apiVersion": 3,
 	"name": "rrze-answers/glossary",
 	"version": "2.1.11",
-	"title": "Glossary",
+	"title": "RRZE Glossary",
 	"category": "rrze",
 	"description": "Display glossaries",
 	"icon": "book",
