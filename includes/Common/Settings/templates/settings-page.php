@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\PluginBlueprint\Common\Settings;
+namespace RRZE\Answers\Common\Settings;
 
 defined('ABSPATH') || exit;
 
@@ -18,7 +18,7 @@ $errors = $settings->errors->hasErrors();
 
     <?php if ($errors) { ?>
         <div class="notice notice-error is-dismissible">
-            <p><?php _e('Settings issues detected.', 'rrze-plugin-blueprint'); ?></p>
+            <p><?php _e('Settings issues detected.', 'rrze-answers'); ?></p>
         </div>
     <?php } ?>
 

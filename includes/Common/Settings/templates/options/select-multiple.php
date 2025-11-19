@@ -1,8 +1,9 @@
 <?php
 
-namespace RRZE\PluginBlueprint\Common\Settings;
+namespace RRZE\Answers\Common\Settings;
 
 defined('ABSPATH') || exit;
+
 ?>
 <tr valign="top">
     <th scope="row" class="rrze-wp-form-label">
@@ -19,7 +20,9 @@ defined('ABSPATH') || exit;
         <?php } ?>
 
         <?php if ($error = $option->hasError()) { ?>
-            <div class="rrze-plugin-blueprint-settings-error"><?php echo $error; ?></div>
+            <div class="rrze-answers-settings-error"><?php echo $error; ?></div>
         <?php } ?>
     </td>
 </tr>
+
+

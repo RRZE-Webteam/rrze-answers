@@ -1,12 +1,13 @@
 <?php
 
-namespace RRZE\PluginBlueprint\Common\Settings;
+namespace RRZE\Answers\Common\Settings;
+
 
 defined('ABSPATH') || exit;
 
-use RRZE\PluginBlueprint\Common\Settings\Section;
+use RRZE\Answers\Common\Settings\Section;
 
-use RRZE\PluginBlueprint\Common\Settings\Options\{
+use RRZE\Answers\Common\Settings\Options\{
     Checkbox,
     CheckboxMultiple,
     Password,
@@ -14,7 +15,11 @@ use RRZE\PluginBlueprint\Common\Settings\Options\{
     Select,
     SelectMultiple,
     Text,
-    Textarea
+    Textarea,
+    HR,
+    Logfile,
+    DomainsTable,
+    Msg
 };
 
 class Option
@@ -62,7 +67,7 @@ class Option
         $this->type = $type;
         $this->args = $args;
 
-        $typeMap = apply_filters('rrze_plugin_blueprint_settings_option_type_map', [
+        $typeMap = apply_filters('rrze-answers_settings_option_type_map', [
             'checkbox' => Checkbox::class,
             'checkbox-multiple' => CheckboxMultiple::class,
             'password' => Password::class,
@@ -70,7 +75,11 @@ class Option
             'select' => Select::class,
             'select-multiple' => SelectMultiple::class,
             'text' => Text::class,
-            'textarea' => Textarea::class
+            'textarea' => Textarea::class,
+            'hr' => HR::class,
+            'logfile' => Logfile::class,
+            'domains-table' => DomainsTable::class,
+            'msg' => Msg::class            
         ]);
 
         if (isset($typeMap[$this->type])) {

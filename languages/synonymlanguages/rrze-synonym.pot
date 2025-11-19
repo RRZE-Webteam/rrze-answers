@@ -1,0 +1,414 @@
+# Copyright (C) 2025 RRZE Webteam
+# This file is distributed under the GNU General Public License v2.
+msgid ""
+msgstr ""
+"Project-Id-Version: RRZE Placeholder 3.0.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/rrze-placeholder\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-02-27T14:47:17+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.11.0\n"
+"X-Domain: rrze-placeholder\n"
+
+#. Plugin Name of the plugin
+#: rrze-placeholder.php
+#: config/config.php:47
+#: config/config.php:48
+msgid "RRZE Placeholder"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: rrze-placeholder.php
+msgid "https://gitlab.rrze.fau.de/rrze-webteam/rrze-placeholder"
+msgstr ""
+
+#. Description of the plugin
+#: rrze-placeholder.php
+msgid "Plugin, um Placeholdere zu erstellen und aus dem FAU-Netzwerk zu synchronisieren. Verwendbar als Shortcode oder Block."
+msgstr ""
+
+#. Author of the plugin
+#: rrze-placeholder.php
+msgid "RRZE Webteam"
+msgstr ""
+
+#. Author URI of the plugin
+#: rrze-placeholder.php
+msgid "https://blogs.fau.de/webworking/"
+msgstr ""
+
+#: config/config.php:30
+msgid "German"
+msgstr ""
+
+#: config/config.php:31
+msgid "English"
+msgstr ""
+
+#: config/config.php:32
+msgid "Spanish"
+msgstr ""
+
+#: config/config.php:33
+msgid "French"
+msgstr ""
+
+#: config/config.php:34
+msgid "Russian"
+msgstr ""
+
+#: config/config.php:35
+msgid "Chinese"
+msgstr ""
+
+#: config/config.php:51
+msgid "RRZE Placeholder Settings"
+msgstr ""
+
+#: config/config.php:64
+msgid "Here comes the Context Help content."
+msgstr ""
+
+#: config/config.php:66
+msgid "Overview"
+msgstr ""
+
+#: config/config.php:67
+msgid "For more information"
+msgstr ""
+
+#: config/config.php:67
+msgid "RRZE Webteam on Github"
+msgstr ""
+
+#: config/config.php:81
+msgid "Domains"
+msgstr ""
+
+#: config/config.php:85
+#: config/config.php:132
+msgid "Synchronize"
+msgstr ""
+
+#: config/config.php:89
+msgid "Logfile"
+msgstr ""
+
+#: config/config.php:104
+#: config/config.php:118
+msgid "Short name"
+msgstr ""
+
+#: config/config.php:105
+msgid "Enter a short name for this domain."
+msgstr ""
+
+#: config/config.php:110
+#: config/config.php:125
+msgid "URL"
+msgstr ""
+
+#: config/config.php:111
+msgid "Enter the domain's URL you want to receive placeholders from."
+msgstr ""
+
+#: config/config.php:119
+msgid "Use this name as attribute 'domain' in shortcode [placeholder]"
+msgstr ""
+
+#: config/config.php:133
+msgid "Do not synchronize"
+msgstr ""
+
+#: config/config.php:144
+msgid "Info"
+msgstr ""
+
+#: config/config.php:145
+#: config/config.php:147
+msgid "All placeholders will be updated or inserted. Placeholders that have been deleted at the remote website will be deleted on this website, too."
+msgstr ""
+
+#: config/config.php:151
+msgid "Mode"
+msgstr ""
+
+#: config/config.php:152
+msgid "Synchronize automatically"
+msgstr ""
+
+#: config/config.php:157
+msgid "Frequency"
+msgstr ""
+
+#: config/config.php:161
+msgid "daily"
+msgstr ""
+
+#: config/config.php:162
+msgid "twicedaily"
+msgstr ""
+
+#: config/config.php:196
+msgid "Slug"
+msgstr ""
+
+#: config/config.php:202
+msgid "Placeholder"
+msgstr ""
+
+#: config/config.php:207
+msgid "Abbreviation"
+msgstr ""
+
+#: config/config.php:208
+msgid "Longform"
+msgstr ""
+
+#: config/config.php:212
+msgid "Type of output"
+msgstr ""
+
+#: includes/API.php:21
+#: includes/API.php:24
+msgid "is already in use."
+msgstr ""
+
+#: includes/API.php:31
+#: includes/API.php:39
+msgid "is not valid."
+msgstr ""
+
+#: includes/CPT.php:24
+msgctxt "placeholders"
+msgid "placeholder"
+msgstr ""
+
+#: includes/CPT.php:25
+msgctxt "Single placeholder"
+msgid "placeholder"
+msgstr ""
+
+#: includes/CPT.php:26
+#: templates/archive-placeholder.php:32
+msgid "Placeholders"
+msgstr ""
+
+#: includes/CPT.php:27
+msgid "Add placeholder"
+msgstr ""
+
+#: includes/CPT.php:28
+msgid "Add new placeholder"
+msgstr ""
+
+#: includes/CPT.php:29
+msgid "Edit placeholder"
+msgstr ""
+
+#: includes/CPT.php:30
+msgid "All placeholders"
+msgstr ""
+
+#: includes/CPT.php:31
+msgid "Search placeholder"
+msgstr ""
+
+#: includes/CPT.php:40
+#: build/index.js:1
+msgid "placeholder"
+msgstr ""
+
+#: includes/CPT.php:41
+msgid "Placeholder informations"
+msgstr ""
+
+#: includes/Layout.php:62
+#: includes/Layout.php:114
+msgid "Pronunciation"
+msgstr ""
+
+#: includes/Layout.php:112
+#: includes/Layout.php:209
+msgid "Full form"
+msgstr ""
+
+#: includes/Layout.php:140
+msgid "Properties"
+msgstr ""
+
+#: includes/Layout.php:149
+msgid "Integration in pages and posts"
+msgstr ""
+
+#: includes/Layout.php:173
+msgid "This placeholder cannot be edited because it is synchronized"
+msgstr ""
+
+#: includes/Layout.php:173
+msgid "You can edit it at the source"
+msgstr ""
+
+#: includes/Layout.php:186
+#: includes/Layout.php:192
+msgid "Source"
+msgstr ""
+
+#: includes/Layout.php:187
+#: includes/Layout.php:193
+#: build/index.js:1
+msgid "ID"
+msgstr ""
+
+#: includes/Layout.php:211
+msgid "Enter here the long, written form of the placeholder. This text will later replace the shortcode. Attention: Breaks or HTML statements are not accepted."
+msgstr ""
+
+#: includes/Layout.php:221
+msgid "Choose the language in which the long form is pronounced."
+msgstr ""
+
+#: includes/Main.php:189
+msgid "Next automatically synchronization:"
+msgstr ""
+
+#: includes/Main.php:212
+msgid "RRZE Plugins"
+msgstr ""
+
+#: includes/Settings.php:304
+msgid "Add domain"
+msgstr ""
+
+#: includes/Settings.php:308
+msgid "Delete logfile"
+msgstr ""
+
+#: includes/Settings.php:348
+msgid "Please note: \"Delete selected domains\" will DELETE every placeholder on this website that has been fetched from the selected domains."
+msgstr ""
+
+#: includes/Settings.php:349
+msgid "Delete selected domains"
+msgstr ""
+
+#: includes/Settings.php:940
+#: includes/Settings.php:943
+msgid "Logfile is empty."
+msgstr ""
+
+#: includes/Sync.php:29
+msgid "Domain"
+msgstr ""
+
+#: includes/Sync.php:29
+msgid "Synchronization completed."
+msgstr ""
+
+#: includes/Sync.php:29
+msgid "new"
+msgstr ""
+
+#: includes/Sync.php:29
+msgid " updated"
+msgstr ""
+
+#: includes/Sync.php:29
+msgid "and"
+msgstr ""
+
+#: includes/Sync.php:29
+msgid "deleted"
+msgstr ""
+
+#: includes/Sync.php:29
+#: includes/Sync.php:38
+msgid "Required time:"
+msgstr ""
+
+#: includes/Sync.php:29
+#: includes/Sync.php:38
+msgid "seconds"
+msgstr ""
+
+#: includes/Sync.php:38
+msgid "All synchronizations completed"
+msgstr ""
+
+#: includes/Sync.php:40
+msgid "Settings updated"
+msgstr ""
+
+#: rrze-placeholder.php:85
+msgid "The server is running PHP version %1$s. The Plugin requires at least PHP version %2$s."
+msgstr ""
+
+#: rrze-placeholder.php:88
+msgid "The server is running WordPress version %1$s. The Plugin requires at least WordPress version %2$s."
+msgstr ""
+
+#: build/index.js:1
+msgid "all"
+msgstr ""
+
+#: build/index.js:1
+msgid "No title"
+msgstr ""
+
+#: build/index.js:1
+msgid "-- hidden --"
+msgstr ""
+
+#: build/index.js:1
+msgid "A - Z"
+msgstr ""
+
+#: build/index.js:1
+msgid "Tagcloud"
+msgstr ""
+
+#: build/index.js:1
+msgid "Tabs"
+msgstr ""
+
+#: build/index.js:1
+msgid "Title"
+msgstr ""
+
+#: build/index.js:1
+msgid "Sort field"
+msgstr ""
+
+#: build/index.js:1
+msgid "ASC"
+msgstr ""
+
+#: build/index.js:1
+msgid "DESC"
+msgstr ""
+
+#: build/index.js:1
+msgid "Show a selection of individual Placeholders"
+msgstr ""
+
+#: build/index.js:1
+msgid "Language"
+msgstr ""
+
+#: build/index.js:1
+msgid "Show only Placeholders matching the selected language."
+msgstr ""
+
+#: build/block.json
+msgctxt "block title"
+msgid "Placeholder RRZE"
+msgstr ""
+
+#: build/block.json
+msgctxt "block description"
+msgid "Display placeholders"
+msgstr ""

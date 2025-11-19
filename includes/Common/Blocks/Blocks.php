@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\PluginBlueprint\Common\Blocks;
+namespace RRZE\Answers\Common\Blocks;
 
 defined('ABSPATH') || exit;
 
@@ -9,7 +9,7 @@ defined('ABSPATH') || exit;
  * 
  * This class is responsible for registering custom blocks for the plugin.
  * 
- * @package RRZE\PluginBlueprint
+ * @package RRZE\Answers\Common
  * @since 1.0.0
  */
 class Blocks
@@ -97,8 +97,8 @@ class Blocks
     {
         foreach ($this->blocks as $block) {
             wp_set_script_translations(
-                'rrze-plugin-blueprint-' . $block . '-editor-script',
-                'rrze-plugin-blueprint',
+                'rrze-answers-' . $block . '-editor-script',
+                'rrze-answers',
                 $this->pluginPath . 'languages'
             );
         }

@@ -1,10 +1,9 @@
 <?php
 
-namespace RRZE\PluginBlueprint\Common\Settings;
+namespace RRZE\Answers\Common\Settings;
 
 defined('ABSPATH') || exit;
 ?>
-<h2><?php echo $section->title; ?></h2>
 
 <?php if ($section->description) { ?>
     <div><?php echo $section->description; ?></div>

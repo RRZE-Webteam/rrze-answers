@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\PluginBlueprint\Common\Settings;
+namespace RRZE\Answers\Common\Settings;
 
 defined('ABSPATH') || exit;
 
@@ -10,7 +10,7 @@ defined('ABSPATH') || exit;
  * This class provides methods to encrypt and decrypt values using OpenSSL.
  * It uses a cipher method of 'aes-256-cbc' and requires the OpenSSL extension.
  *
- * @package RRZE\PluginBlueprint\Common\Settings
+ * @package RRZE\Answers\Common\Settings
  */
 class Encryption
 {
