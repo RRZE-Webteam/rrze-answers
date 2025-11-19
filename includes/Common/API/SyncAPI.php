@@ -19,7 +19,7 @@ class SyncAPI
         $cacheKey = 'rrze_answers_tax_' . md5($url . '|' . $field . '|' . (string) $filter);
         $cached = get_transient($cacheKey);
 
-        if ($cached !== false && is_array($cached)) {
+        if (!empty($cached)) {
             return $cached;
         }
 
@@ -342,7 +342,7 @@ class SyncAPI
             $ret = [];
             $field_cat = 'rrze_' . $type . '_category';
             $field_tag = 'rrze_' . $type . '_tag';
-            $filter = '&filter[rrze_faq_category]=' . $categories;
+            $filter = '&filter[rrze_' . $type . '_category]=' . $categories;
             $page = 1;
 
             do {
@@ -473,6 +473,10 @@ class SyncAPI
             $iDeleted = 0;
             $aURLhasSlider = [];
             $field_cpt = 'rrze_' . $type;
+
+            // BK DEBUG
+            // $field_tag = $type . '_tag';
+            // $field_cat = $type . '_category';
             $field_tag = 'rrze_' . $type . '_tag';
             $field_cat = 'rrze_' . $type . '_category';
 
@@ -482,6 +486,8 @@ class SyncAPI
             $this->deleteTags($identifier, $type);
             $this->deleteCategories($identifier, $type);
             $aEntries = $this->getEntries($url, $categories, $type);
+
+
 
             // set FAQ
             foreach ($aEntries as $entry) {

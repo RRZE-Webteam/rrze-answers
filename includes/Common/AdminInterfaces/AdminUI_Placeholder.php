@@ -174,7 +174,7 @@ class AdminUI_Placeholder extends AdminUIBase
     {
         $cols['title'] = __('Placeholder', 'rrze-answers');
 
-        if ((new Tools())->hasSync()) {
+        if ((new Tools())->hasSync('placeholder')) {
             $cols['source'] = __('Source', 'rrze-answers');
         }
 

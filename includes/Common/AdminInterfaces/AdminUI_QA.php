@@ -198,7 +198,7 @@ class AdminUI_QA extends AdminUIBase
         $cols['lang'] = __('Language', 'rrze-answers');
         $cols['sortfield'] = __('Sort criterion', 'rrze-answers');
 
-        if ((new Tools())->hasSync()) {
+        if ((new Tools())->hasSync($this->post_type)) {
             $cols['source'] = __('Source', 'rrze-answers');
         }
         return $cols;
@@ -211,7 +211,7 @@ class AdminUI_QA extends AdminUIBase
         $cols['lang'] = __('Language', 'rrze-answers');
         $cols['sortfield'] = 'sortfield';
 
-        if ((new Tools())->hasSync()) {
+        if ((new Tools())->hasSync($this->post_type)) {
             $cols['source'] = __('Source', 'rrze-answers');
         }
         return $cols;
@@ -221,7 +221,7 @@ class AdminUI_QA extends AdminUIBase
     {
         if ($col === 'lang') {
             echo esc_html((string) get_post_meta($post_id, 'lang', true));
-        } elseif ($col === 'source' && (new Tools())->hasSync()) {
+        } elseif ($col === 'source' && (new Tools())->hasSync($this->post_type)) {
             echo esc_html((string) get_post_meta($post_id, 'source', true));
         } elseif ($col === 'sortfield') {
             echo esc_html((string) get_post_meta($post_id, 'sortfield', true));
@@ -233,7 +233,7 @@ class AdminUI_QA extends AdminUIBase
     protected function taxonomyColumns(array $cols): array
     {
         $cols['lang'] = __('Language', 'rrze-answers');
-        if ((new Tools())->hasSync()) {
+        if ((new Tools())->hasSync($this->post_type)) {
             $cols['source'] = __('Source', 'rrze-answers');
         }
         return $cols;
@@ -243,7 +243,7 @@ class AdminUI_QA extends AdminUIBase
     {
         if ($col === 'lang') {
             echo esc_html((string) get_term_meta($term_id, 'lang', true));
-        } elseif ($col === 'source' && (new Tools())->hasSync()) {
+        } elseif ($col === 'source' && (new Tools())->hasSync($this->post_type)) {
             echo esc_html((string) get_term_meta($term_id, 'source', true));
         }
     }

@@ -123,7 +123,7 @@ class Main
                 if ($options['new_url'] && ($options['new_url'] != 'https://')) {
                     // add new domain
                     $identifier = Tools::getIdentifier($options['new_url']);
-                    $url = 'https://' . Tools::getHost($options['new_url']);
+                    $url = 'https://' . Tools::getHost($options['new_url']);                    
                     $aRet = $syncAPI->checkDomain($identifier, $url, $domains);
 
                     if ($aRet['status']) {

@@ -316,10 +316,10 @@ class Tools
         return null;
     }
 
-    public function hasSync(): bool
+    public function hasSync($post_type): bool
     {
         $query = new WP_Query([
-            'post_type' => 'rrze_faq',
+            'post_type' => 'rrze_' . $post_type,
             'post_status' => 'publish',
             'posts_per_page' => 1,
             'meta_query' => [

@@ -232,7 +232,14 @@ class Defaults
             $filter = '';
 
             foreach ($types as $type => $label) {
+
                 $cats = $syncAPI->getTaxonomies($url, 'rrze_' . $type . '_category', $filter);
+
+                // BK DEBUG 
+                if (!$cats) {
+                    $cats = $syncAPI->getTaxonomies($url, $type . '_category', $filter);
+                }
+
                 $options = [];
 
                 foreach ($cats as $key => $unused) {
