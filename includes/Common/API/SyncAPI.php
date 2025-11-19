@@ -139,9 +139,10 @@ class SyncAPI
 
         try {
             $field = 'rrze_' . $type . '_category';
-            $aTmp = $aCategories;
+            // $aTmp = $aCategories;
 
-            foreach ($aTmp as $name => $aDetails) {
+            // foreach ($aTmp as $name => $aDetails) {
+            foreach ($aCategories as $name) {
 
                 // Try to get or create parent term
                 $term = term_exists($name, $field);
@@ -155,25 +156,25 @@ class SyncAPI
                     update_term_meta($term['term_id'], 'source', $identifier);
                 }
 
-                // Process child terms
-                foreach ($aDetails as $childname => $tmp) {
-                    $childterm = term_exists($childname, $field);
-                    if (!$childterm) {
-                        $childterm = wp_insert_term($childname, $field, [
-                            'parent' => $term['term_id']
-                        ]);
-                    }
+                // // Process child terms
+                // foreach ($aDetails as $childname => $tmp) {
+                //     $childterm = term_exists($childname, $field);
+                //     if (!$childterm) {
+                //         $childterm = wp_insert_term($childname, $field, [
+                //             'parent' => $term['term_id']
+                //         ]);
+                //     }
 
-                    // Add child term ID to result array
-                    if (!is_wp_error($childterm) && isset($childterm['term_id'])) {
-                        $termIds[] = $childterm['term_id'];
-                        update_term_meta($childterm['term_id'], 'source', $identifier);
-                    }
-                }
+                //     // Add child term ID to result array
+                //     if (!is_wp_error($childterm) && isset($childterm['term_id'])) {
+                //         $termIds[] = $childterm['term_id'];
+                //         update_term_meta($childterm['term_id'], 'source', $identifier);
+                //     }
+                // }
 
-                if ($aDetails) {
-                    $aTmp = $aDetails;
-                }
+                // if ($aDetails) {
+                //     $aTmp = $aDetails;
+                // }
             }
 
             // Return all collected term IDs
@@ -248,29 +249,29 @@ class SyncAPI
         }
     }
 
-    public function getCategories($identifier, $url, $type, $categories = '')
-    {
-        $aRet = [];
-        $field = 'rrze_' . $type . '_category';
-        $aCategories = $this->getTaxonomies($url, $field, $categories);
-        $this->setCategories($aCategories, $identifier, $type);
+    // public function getCategories($identifier, $url, $type, $categories = '')
+    // {
+    //     $aRet = [];
+    //     $field = 'rrze_' . $type . '_category';
+    //     $aCategories = $this->getTaxonomies($url, $field, $categories);
+    //     $this->setCategories($aCategories, $identifier, $type);
 
-        $categories = get_terms(array(
-            'taxonomy' => $field,
-            'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-                array(
-                    'key' => 'source',
-                    'value' => $identifier,
-                )
-            ),
-            'hide_empty' => false,
-        ));
-        $categoryHierarchy = [];
-        $this->sortCats($categories, $categoryHierarchy);
-        $this->cleanCats();
-        $this->getSlugNameCats($this->aAllCats, $aRet);
-        return $aRet;
-    }
+    //     $categories = get_terms(array(
+    //         'taxonomy' => $field,
+    //         'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+    //             array(
+    //                 'key' => 'source',
+    //                 'value' => $identifier,
+    //             )
+    //         ),
+    //         'hide_empty' => false,
+    //     ));
+    //     $categoryHierarchy = [];
+    //     $this->sortCats($categories, $categoryHierarchy);
+    //     $this->cleanCats();
+    //     $this->getSlugNameCats($this->aAllCats, $aRet);
+    //     return $aRet;
+    // }
 
     public function deleteEntries($identifier, $type)
     {
@@ -471,41 +472,22 @@ class SyncAPI
             $iUpdated = 0;
             $iDeleted = 0;
             $aURLhasSlider = [];
+            $field_cpt = 'rrze_' . $type;
+            $field_tag = 'rrze_' . $type . '_tag';
+            $field_cat = 'rrze_' . $type . '_category';
 
             // get all remoteIDs of stored FAQ to this source ( key = remoteID, value = postID )
             $aRemoteIDs = $this->getEntriesRemoteIDs($url, $type);
 
             $this->deleteTags($identifier, $type);
             $this->deleteCategories($identifier, $type);
-
-
-            // $aCategories = $this->getCategories($identifier, $url, $type, $categories);
-
-
-            $field_cpt = 'rrze_' . $type;
-            $field_tag = 'rrze_' . $type . '_tag';
-            $field_cat = 'rrze_' . $type . '_category';
-
-            // fetch from remote and insert into database
-            $aCategories = $this->getTaxonomies($url, $field_cat, $categories);
-            $categoryIDs = $this->setCategories($aCategories, $identifier, $type);
-
             $aEntries = $this->getEntries($url, $categories, $type);
 
             // set FAQ
             foreach ($aEntries as $entry) {
+
                 $tagIDs = $this->setTags($entry[$field_tag], $identifier, $type);
-
-                // $aCategoryIDs = [];
-
-                foreach ($entry[$field_cat] as $nr => $name) {
-                    $term = get_term_by('name', $name, $field_cat);
-                    if (!$term) {
-                        var_dump($entry[$field_cat]);
-                        exit;
-                    }
-                    $aCategoryIDs[] = $term->term_id;
-                }
+                $categoryIDs = $this->setCategories($entry[$field_cat], $identifier, $type);
 
                 if ($entry['URLhasSlider']) {
                     $aURLhasSlider[] = $entry['URLhasSlider'];

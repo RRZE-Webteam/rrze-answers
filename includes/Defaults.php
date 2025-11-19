@@ -231,7 +231,13 @@ class Defaults
 
             $filter = '';
             foreach ($types as $type => $label) {
-                $cats = $syncAPI->getCategories($identifier, $url, $type, '');
+                // $cats = $syncAPI->getCategories($identifier, $url, $type, '');
+                $cats = $syncAPI->getTaxonomies($url, 'rrze_' . $type . '_category', $filter);
+                $options = [];
+
+                foreach ($cats as $key => $unused) {
+                    $options[$key] = $key;
+}
 
                 if (!empty($cats)) {
                     $defaults['fields']['import'][] = [
@@ -239,7 +245,7 @@ class Defaults
                         'label' => $label . ' ' . __('Categories', 'rrze-answers'),
                         'description' => __('Please select the categories you\'d like to fetch ' . $label . ' to.', 'rrze-answers'),
                         'type' => 'select-multiple',
-                        'options' => $cats
+                        'options' => $options
                     ];
                 } else {
                     $defaults['fields']['import'][] = [
