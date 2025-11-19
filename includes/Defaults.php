@@ -230,14 +230,14 @@ class Defaults
             ];
 
             $filter = '';
+
             foreach ($types as $type => $label) {
-                // $cats = $syncAPI->getCategories($identifier, $url, $type, '');
                 $cats = $syncAPI->getTaxonomies($url, 'rrze_' . $type . '_category', $filter);
                 $options = [];
 
                 foreach ($cats as $key => $unused) {
                     $options[$key] = $key;
-}
+                }
 
                 if (!empty($cats)) {
                     $defaults['fields']['import'][] = [
