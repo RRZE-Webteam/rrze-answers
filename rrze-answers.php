@@ -244,7 +244,7 @@ function rrze_answers_migrate_multisite() {
     if ( ! function_exists('deactivate_plugins') ) require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
     $targets = [
-        'rrze-answers/rrze-answers.php',
+        'rrze-answers/rrze-faq.php',
         'rrze-glossary/rrze-glossary.php',
         'rrze-placeholder/rrze-placeholder.php',
     ];
