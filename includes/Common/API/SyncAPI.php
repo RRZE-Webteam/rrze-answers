@@ -134,26 +134,51 @@ class SyncAPI
 
     protected function setCategories(&$aCategories, &$identifier, $type)
     {
+        // Array that will collect all term IDs
+        $termIds = [];
+
         try {
             $field = 'rrze_' . $type . '_category';
             $aTmp = $aCategories;
+
             foreach ($aTmp as $name => $aDetails) {
+
+                // Try to get or create parent term
                 $term = term_exists($name, $field);
                 if (!$term) {
                     $term = wp_insert_term($name, $field);
                 }
-                update_term_meta($term['term_id'], 'source', $identifier);
+
+                // Add parent term ID to result array
+                if (!is_wp_error($term) && isset($term['term_id'])) {
+                    $termIds[] = $term['term_id'];
+                    update_term_meta($term['term_id'], 'source', $identifier);
+                }
+
+                // Process child terms
                 foreach ($aDetails as $childname => $tmp) {
                     $childterm = term_exists($childname, $field);
                     if (!$childterm) {
-                        $childterm = wp_insert_term($childname, $field, array('parent' => $term['term_id']));
+                        $childterm = wp_insert_term($childname, $field, [
+                            'parent' => $term['term_id']
+                        ]);
+                    }
+
+                    // Add child term ID to result array
+                    if (!is_wp_error($childterm) && isset($childterm['term_id'])) {
+                        $termIds[] = $childterm['term_id'];
                         update_term_meta($childterm['term_id'], 'source', $identifier);
                     }
                 }
+
                 if ($aDetails) {
                     $aTmp = $aDetails;
                 }
             }
+
+            // Return all collected term IDs
+            return $termIds;
+
         } catch (CustomException $e) {
             return new \WP_Error('setCategories_error', __('Error in setCategories().', 'rrze-answers'));
         }
@@ -364,19 +389,56 @@ class SyncAPI
 
     public function setTags($terms, $identifier, $type)
     {
+        // Array that will collect all term IDs
+        $termIds = [];
+
         try {
             if ($terms) {
+
+                // Convert comma-separated list into array
                 $aTerms = explode(',', $terms);
+
                 foreach ($aTerms as $name) {
-                    if ($name) {
-                        $term = term_exists($name, 'rrze_' . $type . '_tag');
-                        if (!$term) {
-                            $term = wp_insert_term($name, 'rrze_' . $type . '_tag');
-                            update_term_meta($term['term_id'], 'source', $identifier);
+
+                    // Skip empty names
+                    $name = trim($name);
+                    if (!$name) {
+                        continue;
+                    }
+
+                    $taxonomy = 'rrze_' . $type . '_tag';
+
+                    // Try to get existing term
+                    $term = term_exists($name, $taxonomy);
+
+                    if (!$term) {
+                        // Create term if it does not exist
+                        $term = wp_insert_term($name, $taxonomy);
+
+                        // If creation failed, skip it
+                        if (is_wp_error($term)) {
+                            continue;
                         }
+
+                        // Save metadata
+                        update_term_meta($term['term_id'], 'source', $identifier);
+                    }
+
+                    // Normalize return value (term_exists may return ID or array)
+                    if (!is_array($term) && !is_wp_error($term)) {
+                        $term = ['term_id' => (int) $term];
+                    }
+
+                    // Add term ID to result array
+                    if (!is_wp_error($term) && isset($term['term_id'])) {
+                        $termIds[] = (int) $term['term_id'];
                     }
                 }
             }
+
+            // Return all collected term IDs
+            return $termIds;
+
         } catch (CustomException $e) {
             return new \WP_Error('setTags_error', __('Error in setTags().', 'rrze-answers'));
         }
@@ -415,24 +477,30 @@ class SyncAPI
 
             $this->deleteTags($identifier, $type);
             $this->deleteCategories($identifier, $type);
-            $aCategories = $this->getCategories($identifier, $url, $type, $categories);
+
+
+            // $aCategories = $this->getCategories($identifier, $url, $type, $categories);
+
 
             $field_cpt = 'rrze_' . $type;
             $field_tag = 'rrze_' . $type . '_tag';
             $field_cat = 'rrze_' . $type . '_category';
 
-            $aEntries = $this->getEntries($url, $categories, $type);
+            // fetch from remote and insert into database
+            $aCategories = $this->getTaxonomies($url, $field_cat, $categories);
+            $categoryIDs = $this->setCategories($aCategories, $identifier, $type);
 
+            $aEntries = $this->getEntries($url, $categories, $type);
 
             // set FAQ
             foreach ($aEntries as $entry) {
-                $this->setTags($entry[$field_tag], $identifier, $type);
+                $tagIDs = $this->setTags($entry[$field_tag], $identifier, $type);
 
-                $aCategoryIDs = [];
+                // $aCategoryIDs = [];
 
                 foreach ($entry[$field_cat] as $nr => $name) {
                     $term = get_term_by('name', $name, $field_cat);
-                    if (!$term){
+                    if (!$term) {
                         var_dump($entry[$field_cat]);
                         exit;
                     }
@@ -456,8 +524,8 @@ class SyncAPI
                                     'remoteID' => $entry['remoteID'],
                                 ),
                                 'tax_input' => array(
-                                    $field_cat => $aCategoryIDs,
-                                    $field_tag => $entry[$field_tag],
+                                    $field_cat => $categoryIDs,
+                                    $field_tag => $tagIDs,
                                 ),
                             ));
                             $iUpdated++;
@@ -481,8 +549,8 @@ class SyncAPI
                                 'sortfield' => '',
                             ),
                             'tax_input' => array(
-                                $field_cat => $aCategoryIDs,
-                                $field_tag => $entry[$field_tag],
+                                $field_cat => $categoryIDs,
+                                $field_tag => $tagIDs,
                             ),
                         ));
                         $iNew++;
@@ -572,7 +640,7 @@ class SyncAPI
                 $content = json_decode(wp_remote_retrieve_body($request), TRUE);
 
                 if (!$content) {
-                    $aRet['ret'] = $url . ' ' . __('is not valid.', 'rrze-answers');
+                    $aRet['ret'] = $url . ' ' . __(' does not support this plugin.', 'rrze-answers');
                 } else {
                     $aRet['status'] = TRUE;
                     break;
