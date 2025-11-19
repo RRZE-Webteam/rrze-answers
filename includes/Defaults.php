@@ -237,7 +237,10 @@ class Defaults
 
                 // BK DEBUG 
                 if (!$cats) {
+
                     $cats = $syncAPI->getTaxonomies($url, $type . '_category', $filter);
+                    // var_dump($cats);
+                    // exit;
                 }
 
                 $options = [];

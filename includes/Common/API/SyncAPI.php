@@ -27,6 +27,9 @@ class SyncAPI
         $slug = ($filter ? '&slug=' . $filter : '');
         $page = 1;
 
+        // echo $url . '/' . ENDPOINT . $field . '?page=' . $page . $slug;
+        // exit;
+
         try {
             do {
                 $request = $this->remoteGet($url . '/' . ENDPOINT . $field . '?page=' . $page . $slug);
@@ -487,13 +490,20 @@ class SyncAPI
             $this->deleteCategories($identifier, $type);
             $aEntries = $this->getEntries($url, $categories, $type);
 
+            // echo '<pre>';
+            // var_dump($aEntries);
+            // exit;
+
 
 
             // set FAQ
             foreach ($aEntries as $entry) {
 
-                $tagIDs = $this->setTags($entry[$field_tag], $identifier, $type);
-                $categoryIDs = $this->setCategories($entry[$field_cat], $identifier, $type);
+                // BK DEBUG
+                // $tagIDs = $this->setTags($entry[$field_tag], $identifier, $type);
+                // $categoryIDs = $this->setCategories($entry[$field_cat], $identifier, $type);
+                $tagIDs = $this->setTags($entry['glossary_tag'], $identifier, $type);
+                $categoryIDs = $this->setCategories($entry['glossary_category'], $identifier, $type);
 
                 if ($entry['URLhasSlider']) {
                     $aURLhasSlider[] = $entry['URLhasSlider'];
@@ -573,17 +583,30 @@ class SyncAPI
      */
     private function remoteGet(string $url, array $args = [], bool $safe = true)
     {
+        $cacheKey = 'rrze_answers_remoteget_' . md5($url . '|' . implode(',', $args) . '|' . (string) $safe);
+        $cached = get_transient($cacheKey);
+
+        if (!empty($cached)) {
+            return $cached;
+        }
+
         try {
             if (!$args) {
                 $args = [
                     'sslverify' => defined('WP_DEBUG') && WP_DEBUG ? false : true
                 ];
             }
+
             if ($safe) {
-                return wp_safe_remote_get($url, $args);
+                $ret = wp_safe_remote_get($url, $args);
             } else {
-                return wp_remote_get($url, $args);
+                $ret = wp_remote_get($url, $args);
             }
+
+            // Cache the result for 1 hour
+            set_transient($cacheKey, $ret, HOUR_IN_SECONDS);
+
+            return $ret;
         } catch (CustomException $e) {
             return new \WP_Error('remoteGet_error', __('Error in remoteGet().', 'rrze-answers'));
         }
