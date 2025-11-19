@@ -2,6 +2,8 @@
 
 namespace RRZE\Answers\Common\API;
 
+use RRZE\Answers\Common\CustomException;
+
 defined('ABSPATH') || exit;
 
 
@@ -86,7 +88,7 @@ class SyncAPI
             set_transient($cacheKey, $aRet, HOUR_IN_SECONDS);
 
             return $aRet;
-        } catch (\Throwable $e) {
+        } catch (CustomException $e) {
             return new \WP_Error('getTaxonomies_error', __('Error in getTaxonomies().', 'rrze-answers'));
         }
     }
