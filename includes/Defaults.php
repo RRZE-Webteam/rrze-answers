@@ -199,7 +199,7 @@ class Defaults
                     [
                         'name' => 'ANSWERSLOGFILE',
                         'type' => 'logfile',
-                        'default' => ANSWERSLOGFILE
+                        'default' => RRZEANSWERSLOGFILE
                     ]
                 ]
             ],
@@ -214,48 +214,53 @@ class Defaults
             ],
         ];
 
-        $syncAPI = new SyncAPI();
-        $domains = $syncAPI->getDomains();
+        $tab = (!empty($_GET['tab']) ? $_GET['tab'] : '');
 
-        foreach ($domains as $identifier => $url) {
-            $defaults['fields']['import'][] = [
-                'name' => 'hr_' . $identifier,
-                'label' => $identifier . ' (' . $url . ')',
-                'type' => 'hr',
-            ];
+        if ($tab == 'domains' || $tab == 'import') {
 
-            $types = [
-                'faq' => 'FAQ',
-                'glossary' => __('Glossary', 'rrze-answers')
-            ];
+            $syncAPI = new SyncAPI();
+            $domains = $syncAPI->getDomains();
 
-            $filter = '';
+            foreach ($domains as $identifier => $url) {
+                $defaults['fields']['import'][] = [
+                    'name' => 'hr_' . $identifier,
+                    'label' => $identifier . ' (' . $url . ')',
+                    'type' => 'hr',
+                ];
 
-            foreach ($types as $type => $label) {
+                $types = [
+                    'faq' => 'FAQ',
+                    'glossary' => __('Glossary', 'rrze-answers')
+                ];
 
-                $cats = $syncAPI->getTaxonomies($url, 'rrze_' . $type . '_category', $filter);
-                $options = [];
+                $filter = '';
 
-                foreach ($cats as $key => $unused) {
-                    $options[$key] = $key;
-                }
+                foreach ($types as $type => $label) {
 
-                if (!empty($cats)) {
-                    $defaults['fields']['import'][] = [
-                        'name' => $type . '_categories_' . $identifier,
-                        'label' => $label . ' ' . __('Categories', 'rrze-answers'),
-                        'description' => __('Please select the categories you\'d like to fetch ' . $label . ' to.', 'rrze-answers'),
-                        'type' => 'select-multiple',
-                        'options' => $options
-                    ];
-                } else {
-                    $defaults['fields']['import'][] = [
-                        'name' => $type . '_categories_' . $identifier,
-                        'label' => $label . ' ' . __('Categories', 'rrze-answers'),
-                        'description' => __('Please select the categories you\'d like to fetch ' . $label . ' to.', 'rrze-answers'),
-                        'type' => 'msg',
-                        'placeholder' => __('Category not found.', 'rrze-answers')
-                    ];
+                    $cats = $syncAPI->getTaxonomies($url, 'rrze_' . $type . '_category', $filter);
+                    $options = [];
+
+                    foreach ($cats as $key => $unused) {
+                        $options[$key] = $key;
+                    }
+
+                    if (!empty($cats)) {
+                        $defaults['fields']['import'][] = [
+                            'name' => $type . '_categories_' . $identifier,
+                            'label' => $label . ' ' . __('Categories', 'rrze-answers'),
+                            'description' => __('Please select the categories you\'d like to fetch ' . $label . ' to.', 'rrze-answers'),
+                            'type' => 'select-multiple',
+                            'options' => $options
+                        ];
+                    } else {
+                        $defaults['fields']['import'][] = [
+                            'name' => $type . '_categories_' . $identifier,
+                            'label' => $label . ' ' . __('Categories', 'rrze-answers'),
+                            'description' => __('Please select the categories you\'d like to fetch ' . $label . ' to.', 'rrze-answers'),
+                            'type' => 'msg',
+                            'placeholder' => __('Category not found.', 'rrze-answers')
+                        ];
+                    }
                 }
             }
         }

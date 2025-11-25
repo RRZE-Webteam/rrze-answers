@@ -101,6 +101,7 @@ class Main
             $mode = ($frequency ? 'automatic' : 'manual');
             $sync->doSync($mode);
             $sync->setCronjob($frequency);
+            // settings_errors();
         }
     }
 
@@ -177,6 +178,8 @@ class Main
         unset($options['faqsync_categories']);
         unset($options['faqsync_donotsync']);
         unset($options['faqsync_hr']);
+
+        // settings_errors();
 
         return $options;
     }
@@ -472,12 +475,12 @@ class Main
             filemtime(plugin()->getPath() . 'build/css/rrze-answers.css')
         );
 
-        wp_register_style(
-            'rrze-placeholder-css',
-            plugins_url('build/css/rrze-placeholder.css', plugin()->getBasename()),
-            [],
-            filemtime(plugin()->getPath() . 'build/css/rrze-placeholder.css')
-        );
+        // wp_register_style(
+        //     'rrze-placeholder-css',
+        //     plugins_url('build/css/rrze-placeholder.css', plugin()->getBasename()),
+        //     [],
+        //     filemtime(plugin()->getPath() . 'build/css/rrze-placeholder.css')
+        // );
 
         wp_register_script(
             'rrze-answers-accordion',

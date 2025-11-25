@@ -1,0 +1,456 @@
+@use "sass:map";
+
+// FAQ
+
+/* Globals for letter bar */
+$faq-color-bg-empty: transparent;
+$faq-color-border-empty: #e9edf2;
+$faq-color-text-empty: #e9edf2;
+
+$faq-color-border-filled: #dfe6ec;
+$faq-color-bg-filled: #dfe6ec;
+$faq-color-bg-hover: #d2ddeb;
+$faq-color-text-filled: #036;
+
+$faq-letter-size: 2rem;
+$faq-font-size: 0.875rem;
+
+/* Faculty colors (base + dark + contrast) */
+$default-fau:        #04316A;
+$default-fau-dark:   #041e42;
+$default-fau-ctr:    #ffffff;
+$default-fau-ctr-d:  #ffffff;
+
+$default-med:        #18b4f1;
+$default-med-dark:   #005287;
+$default-med-ctr:    #000000;
+$default-med-ctr-d:  #ffffff;
+
+$default-nat:        #7bb725;
+$default-nat-dark:   #266141;
+$default-nat-ctr:    #000000;
+$default-nat-ctr-d:  #ffffff;
+
+$default-phil:       #fdb735;
+$default-phil-dark:  #e87722;
+$default-phil-ctr:   #000000;
+$default-phil-ctr-d: #000000;
+
+$default-rw:         #c50f3c;
+$default-rw-dark:    #971b2f;
+$default-rw-ctr:     #ffffff;
+$default-rw-ctr-d:   #ffffff;
+
+$default-tf:         #8C9FB1;
+$default-tf-dark:    #2f586e;
+$default-tf-ctr:     #000000;
+$default-tf-ctr-d:   #ffffff;
+
+/* Neutral surfaces */
+$surface:      #d2ddeb;
+$surfaceText:  #444444;
+$borderColor:  #dfe6ec;
+
+/* Light style specific colors */
+$faq-light-bg:         #fff;
+$faq-light-bg-muted:   #f5f7f9;
+$faq-light-bg-hover:   #e9edf2;
+$faq-light-text:       #222;
+$faq-light-icon-color: #CED9E7;
+
+/* Faculty map for easier maintenance */
+$faq-faculties: (
+  fau: (
+    accent:        $default-fau,
+    accent-dark:   $default-fau-dark,
+    contrast:      $default-fau-ctr,
+    contrast-dark: $default-fau-ctr-d
+  ),
+  med: (
+    accent:        $default-med,
+    accent-dark:   $default-med-dark,
+    contrast:      $default-med-ctr,
+    contrast-dark: $default-med-ctr-d
+  ),
+  nat: (
+    accent:        $default-nat,
+    accent-dark:   $default-nat-dark,
+    contrast:      $default-nat-ctr,
+    contrast-dark: $default-nat-ctr-d
+  ),
+  phil: (
+    accent:        $default-phil,
+    accent-dark:   $default-phil-dark,
+    contrast:      $default-phil-ctr,
+    contrast-dark: $default-phil-ctr-d
+  ),
+  rw: (
+    accent:        $default-rw,
+    accent-dark:   $default-rw-dark,
+    contrast:      $default-rw-ctr,
+    contrast-dark: $default-rw-ctr-d
+  ),
+  tf: (
+    accent:        $default-tf,
+    accent-dark:   $default-tf-dark,
+    contrast:      $default-tf-ctr,
+    contrast-dark: $default-tf-ctr-d
+  )
+);
+
+/* Mixin to apply faculty CSS variables */
+@mixin faq-faculty-colors($faculty-key) {
+  $config: map.get($faq-faculties, $faculty-key);
+
+  --faq-accent:        #{map.get($config, accent)};
+  --faq-contrast:      #{map.get($config, contrast)};
+  --faq-accent-dark:   #{map.get($config, accent-dark)};
+  --faq-contrast-dark: #{map.get($config, contrast-dark)};
+}
+
+/* Mixin for caret icons (mask-based) */
+@mixin faq-caret($icon, $color, $size: 1em, $top: 12px, $right: 10px) {
+  content: '';
+  width: $size;
+  height: $size;
+  position: absolute;
+  top: $top;
+  right: $right;
+  mask: url($icon) no-repeat center / contain;
+  -webkit-mask: url($icon) no-repeat center / contain;
+  background-color: $color;
+}
+
+/* Base content panel */
+.answers-content {
+  background-color: #f5f7f9;
+  padding: 1rem 1rem 0.5rem;
+}
+
+.faq-term-content {
+  margin-left: 1em;
+}
+
+/* Masonry columns for tiles */
+.faq-masonry {
+  column-count: 1;
+  column-gap: 1.5rem;
+
+  .faq-item {
+    break-inside: avoid;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (min-width: 600px) {
+    column-count: 2;
+  }
+
+  @media (min-width: 900px) {
+    column-count: 3;
+  }
+}
+
+/* Summary basics */
+details.faq-term summary,
+details.faq-item summary {
+  cursor: pointer;
+  font-weight: 700;
+  margin-top: 0.5em;
+  outline: none;
+}
+
+/* RRZE look & feel */
+.rrze-faq {
+  /* Default (FAU) palette via CSS variables (used below) */
+  .faq-item {
+    @include faq-faculty-colors(fau);
+  }
+
+  /* Faculty mappings via loop */
+  @each $faculty, $config in $faq-faculties {
+    .faq-item.is-#{$faculty} {
+      @include faq-faculty-colors($faculty);
+    }
+  }
+
+  /* A–Z index */
+  ul.letters {
+    margin: 1.25rem 0 0.75rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .letters {
+    li {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: $faq-letter-size;
+      height: $faq-letter-size;
+      margin: 2px;
+      border: 1px solid $faq-color-border-empty;
+      color: $faq-color-text-empty;
+      background: $faq-color-bg-empty;
+      border-radius: 4px;
+      background-clip: padding-box;
+      font-size: $faq-font-size;
+      line-height: 1;
+      transition: background-color 0.2s ease;
+
+      &.filled {
+        border-color: $faq-color-border-filled;
+        background-color: $faq-color-bg-filled;
+        color: $faq-color-text-filled;
+
+        &:hover {
+          background-color: $faq-color-bg-hover;
+        }
+      }
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  /* Accordion */
+  details.faq-item {
+    border: 1px solid $borderColor;
+    margin-bottom: 5px;
+
+    > summary {
+      display: block;
+      position: relative;
+      list-style: none;
+      margin: 0;
+      padding: 8px 35px 8px 20px;
+      font-size: 1rem;
+      text-align: left;
+      cursor: pointer;
+      background: $surface !important;
+      color: $surfaceText !important;
+      border: 0 !important;
+      /* robust left bar that survives theme overrides */
+      box-shadow: inset 10px 0 0 0 var(--faq-accent) !important;
+      transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+
+      &::marker {
+        content: "";
+      }
+
+      &::before {
+        @include faq-caret("../../assets/img/caret-down.svg", $surfaceText);
+      }
+
+      &:hover,
+      &:focus {
+        text-decoration: none;
+        background-color: var(--faq-accent-dark) !important;
+        color: var(--faq-contrast-dark) !important;
+        cursor: pointer;
+        outline: none;
+        box-shadow: inset 10px 0 0 0 var(--faq-accent-dark) !important;
+
+        &::before {
+          background-color: var(--faq-contrast-dark);
+        }
+      }
+
+      svg.rrze-elements-icon {
+        margin-right: 3px;
+      }
+    }
+
+    &[open] > summary {
+      background-color: var(--faq-accent) !important;
+      color: var(--faq-contrast) !important;
+      box-shadow: inset 10px 0 0 0 var(--faq-accent) !important;
+
+      &::before {
+        @include faq-caret("../../assets/img/caret-up.svg", var(--faq-contrast-dark));
+      }
+
+      &:hover,
+      &:focus {
+        background-color: var(--faq-accent-dark) !important;
+        color: var(--faq-contrast-dark) !important;
+        box-shadow: inset 10px 0 0 0 var(--faq-accent-dark) !important;
+
+        &::before {
+          background-color: var(--faq-contrast-dark);
+        }
+      }
+    }
+  }
+
+  .alert.font-light {
+    details.faq-item > summary {
+      color: $surfaceText !important;
+
+      * {
+        color: $surfaceText !important;
+      }
+
+      &:hover,
+      &:focus {
+        color: var(--faq-contrast) !important;
+      }
+    }
+  }
+
+  &.style_light {
+    details.faq-item {
+      border-top: 1px solid $borderColor;
+
+      &:last-child {
+        border-bottom: 1px solid $borderColor;
+      }
+
+      > summary {
+        box-shadow: none !important;
+        border-left: none !important;
+        background: $faq-light-bg !important;
+        color: $faq-light-text !important;
+        padding: 12px 40px 12px 10px;
+        font-weight: bold;
+
+        &::before {
+          @include faq-caret(
+            "../../assets/img/angle-down.svg",
+            $faq-light-icon-color,
+            2em,
+            9px,
+            5px
+          );
+        }
+
+        &:hover,
+        &:focus {
+          background-color: $faq-light-bg-muted !important;
+          color: $faq-light-text !important;
+
+          &::before {
+            background-color: $faq-light-icon-color;
+          }
+        }
+      }
+
+      &[open] > summary {
+        background-color: $faq-light-bg-muted !important;
+        color: $faq-light-text !important;
+
+        &::before {
+          @include faq-caret(
+            "../../assets/img/angle-up.svg",
+            $faq-light-icon-color,
+            2em,
+            9px,
+            5px
+          );
+        }
+
+        &:hover,
+        &:focus {
+          background-color: $faq-light-bg-hover !important;
+          color: $faq-light-text !important;
+        }
+      }
+    }
+  }
+}
+
+/* Disable generic :target offset hacks inside the FAQ block */
+.rrze-faq [id]:target::before,
+.rrze-faq details.faq-item:target::before {
+  content: none !important;
+  display: none !important;
+}
+
+.rrze-faq [id]:target {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* we need to calc the height of the overlay header in RRZE-2019 - every other theme uses 0px per default */
+.rrze-faq [id] {
+  scroll-margin-top: var(--header-height, 0px);
+}
+
+// Glossary
+.fau-glossar {
+  --fau-glossar-pagination-color-default: var(--FAU-Col-FAU-Blau-100, #e9edf2);
+  --fau-glossar-pagination-background-color-default: var(--FAU-Col-FAU-Blau-100, transparent);
+
+  --fau-glossar-pagination-color-active: var(--FAU-Col-FAU-Weiss-100, #036);
+  --fau-glossar-pagination-color-active-hover: var(--FAU-Col-FAU-Blau-100, #fff);
+
+  --fau-glossar-pagination-background-color-active: var(--FAU-Col-FAU-Blau-100, #dfe6ec);
+  --fau-glossar-pagination-background-color-active-hover: var(--FAU-Col-FAU-Blau-25, #036);
+
+  --fau-glossar-pagination-border-radius: var(--border-radius-buttons, 4px);
+  --fau-glossar-pagination-border-color: var(--fau-glossar-pagination-color-default);
+
+  --fau-glossar-pagination-margin: 0.1rem;
+  --fau-glossar-pagination-padding: var(--Spacing-2x, 0.5rem) var(--Spacing-4x, 1rem);
+  --fau-glossar-pagination-animation: var(--basic-animation, all 0.2s ease-in-out);
+
+  .fau-elemental & {
+    --fau-glossar-pagination-border-color: transparent;
+    --fau-glossar-pagination-background-color-default: transparent;
+  }
+
+  .letters {
+    margin: 1.5rem 0 0.5rem;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    li {
+      a,
+      span {
+        display: flex;
+        border: 1px solid var(--fau-glossar-pagination-border-color);
+        color: var(--fau-glossar-pagination-color-default);
+        background-color: var(--fau-glossar-pagination-background-color-default);
+        border-radius: var(--fau-glossar-pagination-border-radius);
+        vertical-align: middle;
+        text-align: center;
+        margin: var(--fau-glossar-pagination-margin);
+        padding: var(--fau-glossar-pagination-padding);
+        font-size: 1.125rem;
+        font-weight: 600;
+        transition: var(--basic-animation);
+      }
+
+      a {
+        text-decoration: none;
+      }
+
+      &.filled {
+        a,
+        span {
+          background: var(--fau-glossar-pagination-background-color-active);
+          color: var(--fau-glossar-pagination-color-active);
+        }
+
+        a:focus,
+        a:hover,
+        span:hover {
+          color: var(--fau-glossar-pagination-color-active-hover);
+          background-color: var(--fau-glossar-pagination-background-color-active-hover);
+          text-decoration: none;
+        }
+      }
+    }
+  }
+
+  .accordion {
+    margin: 0;
+    padding: 0;
+  }
+}

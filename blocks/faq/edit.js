@@ -403,7 +403,6 @@ export default function Edit({ attributes, setAttributes }) {
 									})
 								}
 							/>
-							{!hide_accordion ? (
 								<>
 									<ToggleControl
 										checked={!!masonry}
@@ -432,7 +431,6 @@ export default function Edit({ attributes, setAttributes }) {
 										}
 									/>
 								</>
-							) : (
 								<ToggleControl
 									checked={!!hide_title}
 									label={__('Hide title', 'rrze-answers')}
@@ -442,7 +440,6 @@ export default function Edit({ attributes, setAttributes }) {
 										})
 									}
 								/>
-							)}
 						</>
 					)}
 				</PanelBody>

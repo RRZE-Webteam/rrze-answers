@@ -3,7 +3,7 @@
 	"apiVersion": 3,
 	"name": "rrze-answers/faq",
 	"version": "5.3.4",
-	"title": "FAQ",
+	"title": "RRZE FAQ",
 	"category": "rrze",
 	"description": "Display FAQ",
 	"icon": "editor-help",

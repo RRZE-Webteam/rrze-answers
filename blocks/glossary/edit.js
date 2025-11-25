@@ -392,7 +392,6 @@ export default function Edit({ attributes, setAttributes }) {
 							setAttributes({ registerstyle: value })
 						}
 					/>
-					{(!register || register === 'none') && (
 						<>
 							<ToggleControl
 								checked={!!hide_accordion}
@@ -403,7 +402,6 @@ export default function Edit({ attributes, setAttributes }) {
 									})
 								}
 							/>
-							{!hide_accordion ? (
 								<>
 									<ToggleControl
 										checked={!!masonry}
@@ -432,7 +430,6 @@ export default function Edit({ attributes, setAttributes }) {
 										}
 									/>
 								</>
-							) : (
 								<ToggleControl
 									checked={!!hide_title}
 									label={__('Hide title', 'rrze-answers')}
@@ -442,9 +439,7 @@ export default function Edit({ attributes, setAttributes }) {
 										})
 									}
 								/>
-							)}
 						</>
-					)}
 				</PanelBody>
 				<PanelBody title={__('Sorting options', 'rrze-answers')}>
 					<SelectControl
