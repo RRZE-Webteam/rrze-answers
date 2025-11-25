@@ -30,6 +30,9 @@
 		"hide_title": {
 			"type": "boolean"
 		},
+		"masonry": {
+			"type": "boolean"
+		},
 		"expand_all_link": {
 			"type": "boolean"
 		},
