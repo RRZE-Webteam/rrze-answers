@@ -374,7 +374,7 @@ class ShortcodeFAQ
      * @param string $load_open Attribute for open state
      * @return string The generated HTML content
      */
-    private function renderExplicitFAQs($id, bool $gutenberg, int $hstart, string $style, bool $masonry, string $expand_all_link, bool $hide_accordion, bool $hide_title, string $color, string $load_open): string
+    private function renderExplicitItems($id, bool $gutenberg, int $hstart, string $style, bool $masonry, string $expand_all_link, bool $hide_accordion, bool $hide_title, string $color, string $load_open): string
     {
         $content = '';
         $this->bSchema = false;
@@ -405,7 +405,7 @@ class ShortcodeFAQ
                 }
 
                 if ($hide_accordion) {
-                    $content .= Tools::renderItem($question, $answer, $hstart, $useSchema, $hide_title);
+                    $content .= Tools::renderItem('faq', $question, $answer, $hstart, $useSchema, $hide_title);
                 } else {
                     $content .= Tools::renderItemAccordion('faq', $anchorfield, $question, $answer, $color, $load_open, $useSchema);
                 }
@@ -686,7 +686,7 @@ class ShortcodeFAQ
         $gutenberg = (is_array($id) ? true : false);
 
         if ($id && (!$gutenberg || $gutenberg && $id[0])) {
-            $content = $this->renderExplicitFAQs($id, $gutenberg, $hstart, $style, $masonry, $expand_all_link, $hide_accordion, $hide_title, $color, $load_open);
+            $content = $this->renderExplicitItems($id, $gutenberg, $hstart, $style, $masonry, $expand_all_link, $hide_accordion, $hide_title, $color, $load_open);
         } else {
             $content = $this->renderFilteredFAQs($atts, $hstart, $style, $expand_all_link, $hide_accordion, $hide_title, $color, $load_open, $sort, $order, $category, $tag, $glossary, $glossarystyle);
         }

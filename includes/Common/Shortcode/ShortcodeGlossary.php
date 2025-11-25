@@ -243,63 +243,6 @@ class ShortcodeGlossary
     }
 
 
-    /**
-     * Outputs explicitly requested FAQs as accordion or simple content.
-     *
-     * Supports both Gutenberg blocks (multiple IDs as an array) and the classic editor (comma-separated).
-     *
-     * @param mixed $id Single ID or array of IDs
-     * @param bool $gutenberg Whether Gutenberg is used
-     * @param int $hstart HTML heading level
-     * @param string $style Inline styles for the accordion
-     * @param bool $masonry Whether tiles should be displayed (fake masonry - see https://github.com/RRZE-Webteam/rrze-answers/issues/105#issuecomment-2873361435 )
-     * @param string $expand_all_link Attribute for “expand all” link
-     * @param bool $hide_accordion Whether the accordion should be suppressed
-     * @param bool $hide_title Whether the title should be suppressed
-     * @param string $color Color attribute of the accordion
-     * @param string $load_open Attribute for open state
-     * @return string The generated HTML content
-     */
-    private function renderExplicitFAQs($id, bool $gutenberg, int $hstart, string $style, bool $masonry, string $expand_all_link, bool $hide_accordion, bool $hide_title, string $color, string $load_open): string
-    {
-        $content = '';
-        $this->bSchema = false;
-
-        // EXPLICIT FAQ(s)
-        if ($gutenberg) {
-            $aIDs = $id;
-        } else {
-            // classic editor
-            $aIDs = explode(',', $id);
-        }
-
-        foreach ($aIDs as $id) {
-            $id = trim($id);
-            if ($id) {
-                $question = get_the_title($id);
-                $anchorfield = get_post_meta($id, 'anchorfield', true);
-
-                if (empty($anchorfield)) {
-                    $anchorfield = 'ID-' . $id;
-                }
-
-                $answer = str_replace(']]>', ']]&gt;', apply_filters('the_content', get_post_field('post_content', $id)));
-                $useSchema = (get_post_meta($id, 'source', true) === 'website');
-
-                if ($useSchema) {
-                    $this->bSchema = true;
-                }
-
-                if ($hide_accordion) {
-                    $content .= Tools::renderItem($question, $answer, $hstart, $useSchema, $hide_title);
-                } else {
-                    $content .= Tools::renderItemAccordion('glossary', $anchorfield, $question, $answer, $color, $load_open, $useSchema);
-                }
-            }
-        }
-
-        return $content;
-    }
 
     /**
      * Outputs FAQs based on taxonomies (category/tag) or glossary view.
@@ -519,7 +462,7 @@ class ShortcodeGlossary
 
                         $content .= Tools::renderItemAccordion('glossary', $anchorfield, $question, $answer, $color, $load_open, $useSchema);
                     } else {
-                        $content .= Tools::renderItem($question, $answer, $hstart, $useSchema, $hide_title);
+                        $content .= Tools::renderItem('glossary', $question, $answer, $hstart, $useSchema, $hide_title);
                     }
                     $last_anchor = $letter;
                 }
@@ -663,7 +606,7 @@ class ShortcodeGlossary
         $gutenberg = (is_array($id) ? true : false);
 
         if ($id && (!$gutenberg || $gutenberg && $id[0])) {
-            $content = $this->renderExplicitFAQs($id, $gutenberg, $hstart, $style, $masonry, $expand_all_link, $hide_accordion, $hide_title, $color, $load_open);
+            $content = $this->renderExplicitItems($id, $gutenberg, $hstart, $style, $masonry, $expand_all_link, $hide_accordion, $hide_title, $color, $load_open);
         } else {
             $content = $this->renderFilteredFAQs($atts, $hstart, $style, $expand_all_link, $hide_accordion, $hide_title, $color, $load_open, $sort, $order, $category, $tag, $register, $registerstyle);
         }

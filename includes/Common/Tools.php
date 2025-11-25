@@ -250,6 +250,7 @@ class Tools
             . '</div>';
     }
 
+
     public static function getLetter(&$txt)
     {
         return mb_strtoupper(mb_substr(remove_accents($txt), 0, 1), 'UTF-8');
