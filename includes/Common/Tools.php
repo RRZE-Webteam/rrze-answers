@@ -117,7 +117,7 @@ class Tools
 
     public static function renderFAQWrapper(?int $postID = null, string &$content, string &$headerID, bool &$masonry, string &$color, string &$additional_class, bool &$bSchema): string
     {
-        $classes = 'rrze-answers';
+        $classes = 'rrze-faq';
         if ($masonry) {
             $classes .= ' faq-masonry';
         }
