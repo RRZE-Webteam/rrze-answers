@@ -199,7 +199,7 @@ class Defaults
                     [
                         'name' => 'ANSWERSLOGFILE',
                         'type' => 'logfile',
-                        'default' => ANSWERSLOGFILE
+                        'default' => RRZEANSWERSLOGFILE
                     ]
                 ]
             ],
