@@ -237,7 +237,7 @@ function rrze_update_placeholder_cpt()
 // 2. deaktivate rrze-answers, rrze-glossary and rrze-placeholder
 function rrze_answers_migrate_multisite()
 {
-    if ( get_site_option('rrze-answers_migrate_multisite_done') ) {
+    if (get_site_option('rrze-answers_migrate_multisite_done')) {
         return;
     }
 
@@ -303,7 +303,7 @@ function rrze_answers_migrate_multisite()
     if (is_plugin_active_for_network($answers)) {
         deactivate_plugins($answers, false, true); // network_wide = true
     }
-    
+
     $res = activate_plugin($answers, '', false, false); // activate rrze-answers
 
     update_site_option('rrze-answers_migrate_multisite_done', 1);
