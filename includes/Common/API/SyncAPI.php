@@ -570,10 +570,18 @@ class SyncAPI
      */
     private function remoteGet(string $url, array $args = [], bool $safe = true)
     {
+        $cache_key = 'rrze_remote_' . md5($url);
+        $cached = get_transient($cache_key);
+
+        if (false !== $cached) {
+            return $cached;
+        }
+
         try {
-            if (!$args) {
+            if (empty($args)) {
                 $args = [
-                    'sslverify' => defined('WP_DEBUG') && WP_DEBUG ? false : true
+                    'sslverify' => defined('WP_DEBUG') && WP_DEBUG ? false : true,
+                    'timeout' => 5,
                 ];
             }
 
@@ -581,6 +589,11 @@ class SyncAPI
                 $ret = wp_safe_remote_get($url, $args);
             } else {
                 $ret = wp_remote_get($url, $args);
+            }
+
+            // Cache only if this is not a WP_Error
+            if (!is_wp_error($ret)) {
+                set_transient($cache_key, $ret, 10 * MINUTE_IN_SECONDS);
             }
 
             return $ret;
