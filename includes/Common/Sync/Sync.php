@@ -15,7 +15,7 @@ class Sync
 
     public function __construct()
     {
-                $this->syncAPI = new SyncAPI();
+        $this->syncAPI = new SyncAPI();
 
         // $this->type = $type;
         // $this->frequency = $frequency;
@@ -34,7 +34,6 @@ class Sync
 
     public function setCronjob($frequency)
     {
-        date_default_timezone_set('Europe/Berlin');
         $hook = 'rrze_answers_auto_sync';
 
         if ($frequency == '') {
@@ -42,22 +41,28 @@ class Sync
             return;
         }
 
-        $nextcron = 0;
         switch ($frequency) {
             case 'daily':
-                $nextcron = 86400;
+                $interval = DAY_IN_SECONDS;
                 break;
             case 'twicedaily':
-                $nextcron = 43200;
+                $interval = 12 * HOUR_IN_SECONDS;
                 break;
+            default:
+                return;
         }
 
-        $nextcron += time();
+        $nextcron = time() + $interval;
+
         wp_clear_scheduled_hook($hook);
         wp_schedule_event($nextcron, $frequency, $hook);
 
         $timestamp = wp_next_scheduled($hook);
-        $message = __('Next automatically synchronization:', 'rrze-answers') . ' ' . date('d.m.Y H:i:s', $timestamp);
+        $wp_tz = wp_timezone();
+        $dt = new \DateTime('@' . $timestamp); // @ = UTC timestamp
+        $dt->setTimezone($wp_tz);
+
+        $message = __('Next automatic synchronization:', 'rrze-answers') . ' ' . $dt->format('d.m.Y H:i:s');
         add_settings_error('RRZE-Answers', 'autosynccomplete', $message, 'updated');
     }
 
