@@ -58,8 +58,7 @@ class Sync
 
         $timestamp = wp_next_scheduled($hook);
         $message = __('Next automatically synchronization:', 'rrze-answers') . ' ' . date('d.m.Y H:i:s', $timestamp);
-        add_settings_error('AutoSyncComplete', 'autosynccomplete', $message, 'updated');
-        settings_errors();
+        add_settings_error('RRZE-Answers', 'autosynccomplete', $message, 'updated');
     }
 
 
@@ -71,7 +70,8 @@ class Sync
 
         $domains = $this->syncAPI->getDomains();
         $options = get_option('rrze-answers');
-        $allowSettingsError = ($mode == 'manual' ? true : false);
+        // $allowSettingsError = ($mode == 'manual' ? true : false);
+        $allowSettingsError = true;
         $syncRan = false;
 
         $types = [
@@ -96,7 +96,7 @@ class Sync
                         Tools::logIt($error_msg . ' | ' . $mode);
 
                         if ($allowSettingsError) {
-                            add_settings_error('Synchronization error', 'syncerror', $error_msg, 'error');
+                            add_settings_error('RRZE-Answers', 'syncerror', $error_msg, 'error');
                         }
                     }
 
@@ -104,7 +104,7 @@ class Sync
                     Tools::logIt($sync_msg . ' | ' . $mode);
 
                     if ($allowSettingsError) {
-                        add_settings_error('Synchronization completed', 'synccompleted', $sync_msg, 'success');
+                        add_settings_error('RRZE-Answers', 'synccompleted', $sync_msg, 'success');
                     }
                 }
             }
@@ -117,8 +117,7 @@ class Sync
         }
 
         if ($allowSettingsError) {
-            add_settings_error('Synchronization completed', 'synccompleted', $sync_msg, 'success');
-            settings_errors();
+            add_settings_error('RRZE-Answers', 'synccompleted', $sync_msg, 'success');
         }
 
         Tools::logIt($sync_msg . ' | ' . $mode);

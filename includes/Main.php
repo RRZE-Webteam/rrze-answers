@@ -101,6 +101,7 @@ class Main
             $mode = ($frequency ? 'automatic' : 'manual');
             $sync->doSync($mode);
             $sync->setCronjob($frequency);
+            // settings_errors();
         }
     }
 
@@ -177,6 +178,8 @@ class Main
         unset($options['faqsync_categories']);
         unset($options['faqsync_donotsync']);
         unset($options['faqsync_hr']);
+
+        // settings_errors();
 
         return $options;
     }
