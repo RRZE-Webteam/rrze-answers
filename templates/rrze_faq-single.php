@@ -16,7 +16,7 @@ get_header();
 
 <?php
 echo 'TEST FAQ s';
-include_once('template-parts/faq-content.php');
+include_once('template-parts/answers-content.php');
 ?>
 </main>
 

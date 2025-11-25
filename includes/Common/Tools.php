@@ -54,7 +54,7 @@ class Tools
     }
 
     /**
-     * Renders a single FAQ entry in an accordion (<details>/<summary>) format.
+     * Renders a single entry in an accordion (<details>/<summary>) format.
      * 
      * Optionally wraps the output in Schema.org FAQPage microdata if $useSchema is true.
      * The markup remains fully accessible and keeps the existing HTML structure intact.
@@ -68,23 +68,68 @@ class Tools
      * @return string             The complete HTML string for the FAQ item.
      */
 
-    public static function renderFAQItemAccordion(string $anchor, string $question, string $answer, string $color, string $load_open, bool $useSchema): string
-    {
-        $out = $useSchema ? '<div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">' : '';
-        $out .= '<details' . ($load_open ? ' open' : '') . ' id="' . esc_attr($anchor) . '" class="faq-item is-' . $color . '">';
+    public static function renderItemAccordion(
+        string $type,
+        string $anchor,
+        string $question,
+        string $answer,
+        string $color,
+        string $load_open,
+        bool $useSchema
+    ): string {
+        // Normalize type
+        $type = strtolower($type);
+        $isFaq = ($type === 'faq');
+        $isGlossary = ($type === 'glossary');
+
+        $out = '';
+
+        // Wrapper with schema depending on type
+        if ($useSchema) {
+            if ($isFaq) {
+                $out .= '<div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">';
+            } elseif ($isGlossary) {
+                $out .= '<div itemscope itemtype="https://schema.org/DefinedTerm">';
+            } else {
+                // Fallback: behave like FAQ
+                $out .= '<div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">';
+            }
+        }
+
+        $out .= '<details'
+            . ($load_open ? ' open' : '')
+            . ' id="' . esc_attr($anchor) . '"'
+            . ' class="faq-item is-' . esc_attr($color) . '">';
 
         if ($useSchema) {
-            $out .= '<summary itemprop="name">' . esc_html($question) . '</summary>';
-            $out .= '<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">';
-            $out .= '<div class="faq-content" itemprop="text">' . $answer . '</div>';
-            $out .= '</div>';
+            if ($isFaq) {
+                // FAQ schema: Question + acceptedAnswer/Answer/text
+                $out .= '<summary itemprop="name">' . esc_html($question) . '</summary>';
+                $out .= '<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">';
+                $out .= '<div class="answers-content" itemprop="text">' . $answer . '</div>';
+                $out .= '</div>';
+            } elseif ($isGlossary) {
+                // Glossary schema: DefinedTerm / name / description / text
+                // Based on the structure of the former constants, but visible (no display:none)
+                $out .= '<summary itemscope itemprop="name" itemtype="https://schema.org/name">'
+                    . '<span itemprop="name">' . esc_html($question) . '</span>'
+                    . '</summary>';
+
+                $out .= '<div itemscope itemprop="description" itemtype="https://schema.org/description">';
+                $out .= '<div class="answers-content" itemprop="text">' . $answer . '</div>';
+                $out .= '</div>';
+            }
         } else {
+            // No schema at all
             $out .= '<summary>' . esc_html($question) . '</summary>';
-            $out .= '<div class="faq-content">' . $answer . '</div>';
+            $out .= '<div class="answers-content">' . $answer . '</div>';
         }
 
         $out .= '</details>';
-        $out .= $useSchema ? '</div>' : '';
+
+        if ($useSchema) {
+            $out .= '</div>'; // close Question or DefinedTerm wrapper
+        }
 
         return $out;
     }
@@ -101,22 +146,73 @@ class Tools
      * @param bool   $useSchema Whether to output Schema.org Question/Answer markup.
      * @return string           The complete HTML string for the FAQ item.
      */
-    public static function renderFAQItem(string $question, string $answer, int $hstart, bool $useSchema, bool $hide_title): string
-    {
-        if ($useSchema) {
-            $title = ($hide_title ? '' : '<h' . $hstart . ' itemprop="name">' . esc_html($question) . '</h' . $hstart . '>');
-            return '<div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">'
+    public static function renderItem(
+        string $type,
+        string $question,
+        string $answer,
+        int $hstart,
+        bool $useSchema,
+        bool $hide_title
+    ): string {
+
+        $type = strtolower($type);
+        $isFaq = ($type === 'faq');
+        $isGlossary = ($type === 'glossary');
+
+        // No schema
+        if (!$useSchema) {
+            return '<h' . $hstart . '>'
+                . esc_html($question)
+                . '</h' . $hstart . '>'
+                . $answer;
+        }
+
+        if ($isFaq) {
+            $title = $hide_title
+                ? ''
+                : '<h' . $hstart . ' itemprop="name">' . esc_html($question) . '</h' . $hstart . '>';
+
+            return
+                '<div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">'
                 . $title
-                . '<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text">' . $answer . '</div></div>'
+                . '<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">'
+                . '<div itemprop="text">' . $answer . '</div>'
+                . '</div>'
                 . '</div>';
         }
 
-        return '<h' . $hstart . '>' . esc_html($question) . '</h' . $hstart . '>' . $answer;
+        if ($isGlossary) {
+            // title may be hidden — but must keep schema structure intact
+            $title = $hide_title
+                ? ''
+                : '<h' . $hstart . ' itemscope itemprop="name" itemtype="https://schema.org/name">'
+                . '<span itemprop="name">' . esc_html($question) . '</span>'
+                . '</h' . $hstart . '>';
+
+            return
+                '<div itemscope itemtype="https://schema.org/DefinedTerm">'
+                . $title
+                . '<div itemscope itemprop="description" itemtype="https://schema.org/description">'
+                . '<div itemprop="text">' . $answer . '</div>'
+                . '</div>'
+                . '</div>';
+        }
     }
 
 
-    public static function renderFAQWrapper(?int $postID = null, string &$content, string &$headerID, bool &$masonry, string &$color, string &$additional_class, bool &$bSchema): string
-    {
+    public static function renderWrapper(
+        string $type,
+        ?int $postID = null,
+        string &$content,
+        string &$headerID,
+        bool &$masonry,
+        string &$color,
+        string &$additional_class,
+        bool &$bSchema
+    ): string {
+        $isFaq = ($type === 'faq');
+        $isGlossary = ($type === 'glossary');
+
         $classes = 'rrze-faq';
         if ($masonry) {
             $classes .= ' faq-masonry';
@@ -125,17 +221,34 @@ class Tools
             $classes .= ' ' . trim($additional_class);
         }
 
-        return '<div ' . ($bSchema ? 'itemscope itemtype="https://schema.org/FAQPage" ' : '')
-            . 'class="' . esc_attr($classes) . '" role="region" aria-labelledby="' . esc_attr($headerID) . '"'
+        $schemaAttr = '';
+        if ($bSchema) {
+            if ($isFaq) {
+                $schemaAttr = ' itemscope itemtype="https://schema.org/FAQPage"';
+            } elseif ($isGlossary) {
+                $schemaAttr = ' itemscope itemtype="https://schema.org/DefinedTermSet"';
+            }
+        }
+
+        // Fallback heading text depending on type
+        $fallbackTitle = $isGlossary
+            ? __('Glossary', 'rrze-answers')
+            : __('FAQ', 'rrze-answers');
+
+        $title = get_the_title($postID);
+        if (empty($title)) {
+            $title = $fallbackTitle;
+        }
+
+        return '<div' . $schemaAttr
+            . ' class="' . esc_attr($classes) . '" role="region" aria-labelledby="' . esc_attr($headerID) . '"'
             . ' data-accordion="single"'
             . ' data-scroll-offset="96"'
             . '>'
-            . '<h2 id="' . esc_attr($headerID) . '" class="screen-reader-text">' . esc_html(get_the_title($postID) ?: __('FAQ', 'rrze-answers')) . '</h2>'
+            . '<h2 id="' . esc_attr($headerID) . '" class="screen-reader-text">' . esc_html($title) . '</h2>'
             . $content
             . '</div>';
     }
-
-
 
     public static function getLetter(&$txt)
     {

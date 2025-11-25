@@ -405,9 +405,9 @@ class ShortcodeFAQ
                 }
 
                 if ($hide_accordion) {
-                    $content .= Tools::renderFAQItem($question, $answer, $hstart, $useSchema, $hide_title);
+                    $content .= Tools::renderItem($question, $answer, $hstart, $useSchema, $hide_title);
                 } else {
-                    $content .= Tools::renderFAQItemAccordion($anchorfield, $question, $answer, $color, $load_open, $useSchema);
+                    $content .= Tools::renderItemAccordion('faq', $anchorfield, $question, $answer, $color, $load_open, $useSchema);
                 }
             }
         }
@@ -597,7 +597,7 @@ class ShortcodeFAQ
                             $anchorfield = 'innerID-' . $ID;
                         }
 
-                        $content .= Tools::renderFAQItemAccordion($anchorfield, $question, $answer, $color, $load_open, $useSchema);
+                        $content .= Tools::renderItemAccordion('faq', $anchorfield, $question, $answer, $color, $load_open, $useSchema);
                     }
 
                     $content .= '</div></section>';
@@ -631,9 +631,9 @@ class ShortcodeFAQ
                             $content .= ($last_anchor != $letter ? '<h2 id="letter-' . $letter . '">' . $letter . '</h2>' : '');
                         }
 
-                        $content .= Tools::renderFAQItemAccordion($anchorfield, $question, $answer, $color, $load_open, $useSchema);
+                        $content .= Tools::renderItemAccordion('faq', $anchorfield, $question, $answer, $color, $load_open, $useSchema);
                     } else {
-                        $content .= Tools::renderFAQItem($question, $answer, $hstart, $useSchema, $hide_title);
+                        $content .= Tools::renderItem('faq', $question, $answer, $hstart, $useSchema, $hide_title);
                     }
                     $last_anchor = $letter;
                 }
@@ -704,7 +704,7 @@ class ShortcodeFAQ
         wp_enqueue_script('rrze-answers-accordion');
         wp_enqueue_style('rrze-answers-css');
 
-        $content = Tools::renderFAQWrapper($postID, $content, $headerID, $masonry, $color, $additional_class, $this->bSchema);
+        $content = Tools::renderWrapper('faq', $postID, $content, $headerID, $masonry, $color, $additional_class, $this->bSchema);
 
         return $content;
 
