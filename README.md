@@ -119,7 +119,7 @@ External domains can be added and synchronized via:
 
 ```
 Settings → RRZE Answers → Domains
-Settings → RRZE Answers → Synchronization
+Settings → RRZE Answers → Import
 ```
 
 Entries from synchronized domains behave like local entries and can be displayed via shortcode, block, or widget.
@@ -135,7 +135,7 @@ Entries from synchronized domains behave like local entries and can be displayed
 
 ## REST API (v2)
 
-### FAQs
+### FAQ
 - All:  
   `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/faq`
 - Filtered:  
