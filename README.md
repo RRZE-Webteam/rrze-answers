@@ -157,10 +157,6 @@ In `/wp-admin/widgets.php`, you can find the following widgets:
 - Category + Tag:  
   `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/glossary?filter[glossary_category]=Dienste&filter[glossary_tag]=Sprache`
 
-### Placeholders
-- All:  
-  `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/placeholder`
-
 **Pagination:**  
 Refer to [WordPress REST API Pagination](https://developer.wordpress.org/rest-api/using-the-rest-api/pagination/)
 
