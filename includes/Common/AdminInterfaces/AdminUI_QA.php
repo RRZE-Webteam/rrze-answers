@@ -115,7 +115,7 @@ class AdminUI_QA extends AdminUIBase
 
     /* ---------------- Classic editor shortcode helper ---------------- */
 
-    protected function renderShortcodeBox(): void
+    public function renderShortcodeBox(): void
     {
         global $post;
         if (!$post || (int) $post->ID <= 0) {

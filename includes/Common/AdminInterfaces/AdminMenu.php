@@ -1,16 +1,4 @@
 <?php
-/**
- * Admin-Menüstruktur für Answers
- *
- * - Top-Level: "Answers"
- * - Submenüs: "FAQ", "Glossary", "Placeholder"
- * - Jede Subseite zeigt 4 Links: All, Add, Categories, Tags
- *
- * Wichtig:
- *   Wir blenden die Standard-Menüs der CPTs aus (show_in_menu=false),
- *   damit keine Duplikate im linken Menü erscheinen.
- */
-
 namespace RRZE\Answers\Common\AdminInterfaces;
 
 defined('ABSPATH') || exit;
@@ -21,7 +9,6 @@ class AdminMenu {
     private $glossary_pt  = 'rrze_glossary';
     private $placeholder_pt   = 'rrze_placeholder';
 
-    // Taxonomy-Slugs (anpassen falls abweichend)
     private $faq_cat      = 'rrze_faq_category';
     private $faq_tag      = 'rrze_faq_tag';
 
@@ -31,17 +18,13 @@ class AdminMenu {
     private $syn_group    = 'rrze_placeholder_group';
     private $syn_tag      = 'rrze_placeholder_tag';
 
-    // Menü-Slug des Top-Level-Punktes
     private $parent_slug  = 'rrze-answers';
 
     public function __construct() {
-        // 1) CPT-Menüs unterdrücken, wir bauen selbst die Struktur
         add_filter('register_post_type_args', [$this, 'hideCptMenus'], 20, 2);
 
-        // 2) Unser Menü aufbauen
         add_action('admin_menu', [$this, 'registerMenus'], 9);
 
-        // 3) Aktive Markierung im Menü sauber halten
         add_filter('parent_file',  [$this, 'fixParentHighlight']);
         add_filter('submenu_file', [$this, 'fixSubmenuHighlight']);
     }
@@ -49,7 +32,6 @@ class AdminMenu {
     public function hideCptMenus(array $args, string $post_type): array {
         $targets = [$this->faq_pt, $this->glossary_pt, $this->placeholder_pt];
         if (in_array($post_type, $targets, true)) {
-            // eigenes Menü → Standard-CPT-Menüs verstecken
             $args['show_in_menu']       = false;
             $args['show_in_admin_bar']  = false;
         }
@@ -57,7 +39,6 @@ class AdminMenu {
     }
 
     public function registerMenus(): void {
-        // Top-Level "Answers"
         add_menu_page(
             __('Answers', 'rrze-answers'),
             __('Answers', 'rrze-answers'),
@@ -68,7 +49,6 @@ class AdminMenu {
             25
         );
 
-        // Sub: FAQ / Glossary / Placeholder
         add_submenu_page($this->parent_slug, __('FAQ', 'rrze-answers'), __('FAQ', 'rrze-answers'), 'edit_posts', 'rrze-answers_faq',      function () { $this->renderHub($this->faq_pt, $this->faq_cat, $this->faq_tag, __('FAQ', 'rrze-answers')); });
         add_submenu_page($this->parent_slug, __('Glossary', 'rrze-answers'), __('Glossary', 'rrze-answers'), 'edit_posts', 'rrze-answers_glossary', function () { $this->renderHub($this->glossary_pt, $this->glossary_cat, $this->glossary_tag, __('Glossary', 'rrze-answers')); });
         add_submenu_page($this->parent_slug, __('Placeholder', 'rrze-answers'), __('Placeholder', 'rrze-answers'), 'edit_posts', 'rrze-answers_placeholder', function () { $this->renderHub($this->placeholder_pt, $this->syn_group, $this->syn_tag, __('Placeholder', 'rrze-answers')); });
@@ -120,7 +100,6 @@ class AdminMenu {
         echo '</div></div>';
     }
 
-    // Sorgt dafür, dass "Answers" links hervorgehoben bleibt, wenn man in die echten Screens springt
     public function fixParentHighlight($parent_file) {
         $screen = get_current_screen();
         if (!$screen) return $parent_file;
@@ -136,7 +115,6 @@ class AdminMenu {
         $screen = get_current_screen();
         if (!$screen) return $submenu_file;
 
-        // Setze das “aktive” Submenü auf unseren Hub
         if ($screen->post_type === $this->faq_pt || in_array($screen->taxonomy ?? '', [$this->faq_cat, $this->faq_tag], true)) {
             return 'rrze-answers_faq';
         }

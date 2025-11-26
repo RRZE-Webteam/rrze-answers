@@ -7,13 +7,6 @@ defined('ABSPATH') || exit;
 
 use RRZE\Answers\Common\Tools;
 
-/**
- * Admin UI for rrze_placeholder.
- * - Custom properties metabox (placeholder, titleLang)
- * - Read-only mode for synced items
- * - Shortcode helper box
- * - Custom list table columns (Source, ID)
- */
 class AdminUI_Placeholder extends AdminUIBase
 {
     /** @var array<string,string> */
@@ -86,24 +79,24 @@ class AdminUI_Placeholder extends AdminUIBase
         echo '<input type="hidden" name="source" id="source" value="' . esc_attr($source) . '">';
     }
 
-    protected function renderShortcodeBox(): void
-    {
-        global $post;
-        if (!$post || (int) $post->ID <= 0) {
-            return;
-        }
+    // public function renderShortcodeBox(): void
+    // {
+    //     global $post;
+    //     if (!$post || (int) $post->ID <= 0) {
+    //         return;
+    //     }
 
-        $ret = '';
-        $ret .= '<p>[placeholder id="' . (int) $post->ID . '"]</p>';
-        if ($post->post_name) {
-            $ret .= '<p>[placeholder slug="' . esc_html($post->post_name) . '"]</p>';
-        }
-        $ret .= '<p>[fau_abbr id="' . (int) $post->ID . '"]</p>';
-        if ($post->post_name) {
-            $ret .= '<p>[fau_abbr slug="' . esc_html($post->post_name) . '"]</p>';
-        }
-        echo wp_kses_post($ret);
-    }
+    //     $ret = '';
+    //     $ret .= '<p>[placeholder id="' . (int) $post->ID . '"]</p>';
+    //     if ($post->post_name) {
+    //         $ret .= '<p>[placeholder slug="' . esc_html($post->post_name) . '"]</p>';
+    //     }
+    //     $ret .= '<p>[fau_abbr id="' . (int) $post->ID . '"]</p>';
+    //     if ($post->post_name) {
+    //         $ret .= '<p>[fau_abbr slug="' . esc_html($post->post_name) . '"]</p>';
+    //     }
+    //     echo wp_kses_post($ret);
+    // }
 
     /* ---------------- Read-only UI for synced placeholders ---------------- */
 

@@ -130,7 +130,7 @@ abstract class AdminUIBase
             if ($this->features['show_shortcode_box']) {
                 add_meta_box(
                     'shortcode_box',
-                    __('Integration in pages and posts', 'rrze-answers'),
+                    __('Integration in pages and posts as a shortcode', 'rrze-answers'),
                     [$this, 'renderShortcodeBox'],
                     $this->post_type,
                     'normal'
@@ -251,7 +251,7 @@ abstract class AdminUIBase
     }
 
     /** Optional: renders a shortcode helper box (classic editor only). */
-    protected function renderShortcodeBox(): void
+    public function renderShortcodeBox(): void
     {
         // Subclasses may implement to show helpful shortcodes for this CPT
     }
