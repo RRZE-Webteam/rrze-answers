@@ -93,13 +93,6 @@ class SyncAPI
         }
     }
 
-    public function sortIt(&$arr)
-    {
-        uasort($arr, function ($a, $b) {
-            return strtolower($a) <=> strtolower($b);
-        });
-    }
-
     public function deleteTaxonomies($identifier, $field)
     {
         try {
@@ -392,56 +385,45 @@ class SyncAPI
 
     public function setTags($terms, $identifier, $type)
     {
-        // Array that will collect all term IDs
         $termIds = [];
 
         try {
             if ($terms) {
-
-                // Convert comma-separated list into array
                 $aTerms = explode(',', $terms);
 
                 foreach ($aTerms as $name) {
 
-                    // Skip empty names
                     $name = trim($name);
+
                     if (!$name) {
                         continue;
                     }
 
                     $taxonomy = 'rrze_' . $type . '_tag';
-
-                    // Try to get existing term
                     $term = term_exists($name, $taxonomy);
 
                     if (!$term) {
-                        // Create term if it does not exist
+
                         $term = wp_insert_term($name, $taxonomy);
 
-                        // If creation failed, skip it
                         if (is_wp_error($term)) {
                             continue;
                         }
 
-                        // Save metadata
                         update_term_meta($term['term_id'], 'source', $identifier);
                     }
 
-                    // Normalize return value (term_exists may return ID or array)
                     if (!is_array($term) && !is_wp_error($term)) {
                         $term = ['term_id' => (int) $term];
                     }
 
-                    // Add term ID to result array
                     if (!is_wp_error($term) && isset($term['term_id'])) {
                         $termIds[] = (int) $term['term_id'];
                     }
                 }
             }
 
-            // Return all collected term IDs
             return $termIds;
-
         } catch (CustomException $e) {
             return new \WP_Error('setTags_error', __('Error in setTags().', 'rrze-answers'));
         }

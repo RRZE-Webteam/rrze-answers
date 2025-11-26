@@ -5,7 +5,7 @@ namespace RRZE\Answers\Common\API;
 defined('ABSPATH') || exit;
 
 /**
- * REST API for the 'rrze_faq', 'rrze_glossary' and 'rrze_synomym' object type
+ * REST API for the 'rrze_faq' and 'rrze_glossary' object type
  */
 class RESTAPI
 {
@@ -24,7 +24,6 @@ class RESTAPI
 
         // allow or forbid API for others to import 
         add_filter('rest_authentication_errors', [$this, 'activateAPI'], 10, 1);
-
     }
 
 
@@ -51,7 +50,7 @@ class RESTAPI
                 }
             }
 
-            if (in_array($post_type, ['rrze_faq', 'rrze_placeholder', 'rrze_glossary'])) {
+            if (in_array($post_type, ['rrze_faq', 'rrze_placeholder', 'rrze_glossary'], true)) {
                 $obj = get_post_type_object($post_type);
                 if (is_user_logged_in() && $obj && current_user_can($obj->cap->edit_posts)) {
                     return $result;
@@ -75,7 +74,7 @@ class RESTAPI
 
     public function getMyPostMeta($object, $attr)
     {
-        return get_post_meta($object['id'], $attr, TRUE);
+        return get_post_meta($object['id'], $attr, true);
     }
 
     // make API deliver source and lang for placeholders
@@ -104,7 +103,7 @@ class RESTAPI
     }
 
     /**
-     * Get the meta 'source' of a 'rrze_faq' object type
+     * Get the meta 'source' of a post object type
      *
      * @param array $object
      * @return string
@@ -115,7 +114,7 @@ class RESTAPI
     }
 
     /**
-     * Get the meta 'lang' of a 'rrze_faq' object type
+     * Get the meta 'lang' of a post object type
      *
      * @param array $object
      * @return string
@@ -126,7 +125,7 @@ class RESTAPI
     }
 
     /**
-     * Get the meta 'remoteID' of a 'rrze_faq' object type
+     * Get the meta 'remoteID' of a post object type
      *
      * @param array $object
      * @return string
@@ -137,7 +136,7 @@ class RESTAPI
     }
 
     /**
-     * Get the meta 'remoteChanged' of a 'rrze_faq' object type
+     * Get the meta 'remoteChanged' of a post object type
      *
      * @param array $object
      * @return string
@@ -148,30 +147,34 @@ class RESTAPI
     }
 
     /**
-     * Registers meta fields of a 'rrze_faq' object type
+     * Registers meta fields of the 'rrze_faq' and 'rrze_glossary' object types
      */
     public function registerPostMetaRestFields()
     {
-        // Registers the 'source' meta field for the 'rrze_faq' object type
-        register_rest_field('rrze_faq', 'source', array(
-            'get_callback' => [$this, 'getPostSource'],
-            'schema' => null,
-        ));
-        // Registers the 'lang' meta field for the 'rrze_faq' object type
-        register_rest_field('rrze_faq', 'lang', array(
-            'get_callback' => [$this, 'getPostLang'],
-            'schema' => null,
-        ));
-        // Registers the 'remoteID' meta field for the 'rrze_faq' object type
-        register_rest_field('rrze_faq', 'remoteID', array(
-            'get_callback' => [$this, 'getPostRemoteID'],
-            'schema' => null,
-        ));
-        // Registers the 'remoteChanged' meta field for the 'rrze_faq' object type
-        register_rest_field('rrze_faq', 'remoteChanged', array(
-            'get_callback' => [$this, 'getPostRemoteChanged'],
-            'schema' => null,
-        ));
+        $post_types = array('rrze_faq', 'rrze_glossary');
+
+        foreach ($post_types as $post_type) {
+            // Registers the 'source' meta field
+            register_rest_field($post_type, 'source', array(
+                'get_callback' => [$this, 'getPostSource'],
+                'schema' => null,
+            ));
+            // Registers the 'lang' meta field
+            register_rest_field($post_type, 'lang', array(
+                'get_callback' => [$this, 'getPostLang'],
+                'schema' => null,
+            ));
+            // Registers the 'remoteID' meta field
+            register_rest_field($post_type, 'remoteID', array(
+                'get_callback' => [$this, 'getPostRemoteID'],
+                'schema' => null,
+            ));
+            // Registers the 'remoteChanged' meta field
+            register_rest_field($post_type, 'remoteChanged', array(
+                'get_callback' => [$this, 'getPostRemoteChanged'],
+                'schema' => null,
+            ));
+        }
     }
 
     /**
@@ -179,12 +182,23 @@ class RESTAPI
      */
     public function addRestQueryFilters()
     {
-        // Add filter parameters to the object query
-        add_filter('rest_rrze_faq_query', [$this, 'addFilterParam'], 10, 2);
-        // Add filter parameters to the categories query
-        add_filter('rest_rrze_faq_category_query', [$this, 'addFilterParam'], 10, 2);
-        // Add filter parameters to the tags query
-        add_filter('rest_rrze_faq_tag_query', [$this, 'addFilterParam'], 10, 2);
+        // Add filter parameters to the post type queries
+        $post_types = array('rrze_faq', 'rrze_glossary');
+        foreach ($post_types as $post_type) {
+            add_filter('rest_' . $post_type . '_query', [$this, 'addFilterParam'], 10, 2);
+        }
+
+        // Add filter parameters to the categories queries
+        $tax_queries = array(
+            'rrze_faq_category',
+            'rrze_faq_tag',
+            'rrze_glossary_category',
+            'rrze_glossary_tag',
+        );
+
+        foreach ($tax_queries as $taxonomy) {
+            add_filter('rest_' . $taxonomy . '_query', [$this, 'addFilterParam'], 10, 2);
+        }
     }
 
     /**
@@ -212,29 +226,41 @@ class RESTAPI
     }
 
     /**
-     * Get the terms names of the 'rrze_faq_category' taxonomy
+     * Get the terms names of the category taxonomy for FAQ or Glossary
      *
      * @param array $object
      * @return array
      */
     public function getCategories($object)
     {
-        $cats = wp_get_post_terms($object['id'], 'rrze_faq_category', array('fields' => 'names'));
+        // Object type is available in the REST object array
+        $post_type = isset($object['type']) ? $object['type'] : '';
+
+        // Fallback to FAQ tax if type is unknown
+        $taxonomy = 'rrze_faq_category';
+        if ($post_type === 'rrze_glossary') {
+            $taxonomy = 'rrze_glossary_category';
+        }
+
+        $cats = wp_get_post_terms($object['id'], $taxonomy, array('fields' => 'names'));
         return $cats;
     }
 
     /**
-     * Get the children terms names of the 'rrze_faq_category' taxonomy
+     * Get the children term names of the current taxonomy
      *
      * @param array $term
      * @return array
      */
     public function getChildrenCategories($term)
     {
+        // Use the taxonomy of the term to make this work for FAQ and Glossary
+        $taxonomy = isset($term['taxonomy']) ? $term['taxonomy'] : 'rrze_faq_category';
+
         $children = get_terms(
             array(
-                'taxonomy' => 'rrze_faq_category',
-                'parent' => $term['id'],
+                'taxonomy' => $taxonomy,
+                'parent'   => $term['id'],
             )
         );
         $aRet = [];
@@ -245,18 +271,25 @@ class RESTAPI
     }
 
     /**
-     * Get the terms names of the 'rrze_faq_tag' taxonomy
+     * Get the terms names of the tag taxonomy for FAQ or Glossary
      *
      * @param array $object
      * @return array
      */
     public function getTags($object)
     {
-        return wp_get_post_terms($object['id'], 'rrze_faq_tag', array('fields' => 'names'));
+        $post_type = isset($object['type']) ? $object['type'] : '';
+
+        $taxonomy = 'rrze_faq_tag';
+        if ($post_type === 'rrze_glossary') {
+            $taxonomy = 'rrze_glossary_tag';
+        }
+
+        return wp_get_post_terms($object['id'], $taxonomy, array('fields' => 'names'));
     }
 
     /**
-     * Get the term meta 'source' of a 'rrze_faq' object type
+     * Get the term meta 'source'
      *
      * @param array $object
      * @return string
@@ -267,7 +300,7 @@ class RESTAPI
     }
 
     /**
-     * Get the term meta 'lang' of a 'rrze_faq' object type
+     * Get the term meta 'lang'
      *
      * @param array $object
      * @return string
@@ -278,17 +311,18 @@ class RESTAPI
     }
 
     /**
-     * Registers the taxonomies fields for the 'rrze_faq' object type
+     * Registers the taxonomies fields for the 'rrze_faq' and 'rrze_glossary' object types
      */
     public function registerTaxRestFields()
     {
+        // FAQ categories and tags
         register_rest_field(
             'rrze_faq',
             'rrze_faq_category',
             array(
-                'get_callback' => [$this, 'getCategories'],
+                'get_callback'    => [$this, 'getCategories'],
                 'update_callback' => null,
-                'schema' => null,
+                'schema'          => null,
             )
         );
 
@@ -296,41 +330,76 @@ class RESTAPI
             'rrze_faq',
             'rrze_faq_tag',
             array(
-                'get_callback' => [$this, 'getTags'],
+                'get_callback'    => [$this, 'getTags'],
                 'update_callback' => null,
-                'schema' => null,
+                'schema'          => null,
             )
         );
 
-        // Registers the 'source' and 'lang' meta fields for the 'rrze_faq_category' and 'rrze_faq_tag' taxonomies
-        $fields = array('rrze_faq_category', 'rrze_faq_tag');
+        // Glossary categories and tags
+        register_rest_field(
+            'rrze_glossary',
+            'rrze_glossary_category',
+            array(
+                'get_callback'    => [$this, 'getCategories'],
+                'update_callback' => null,
+                'schema'          => null,
+            )
+        );
+
+        register_rest_field(
+            'rrze_glossary',
+            'rrze_glossary_tag',
+            array(
+                'get_callback'    => [$this, 'getTags'],
+                'update_callback' => null,
+                'schema'          => null,
+            )
+        );
+
+        // Registers the 'source' and 'lang' meta fields for all FAQ/Glossary taxonomies
+        $fields = array(
+            'rrze_faq_category',
+            'rrze_faq_tag',
+            'rrze_glossary_category',
+            'rrze_glossary_tag',
+        );
+
         foreach ($fields as $field) {
             // Registers the 'source' meta field
             register_rest_field($field, 'source', array(
                 'get_callback' => [$this, 'getTermSource'],
-                'schema' => null,
+                'schema'       => null,
             ));
             // Registers the 'lang' meta field
             register_rest_field($field, 'lang', array(
                 'get_callback' => [$this, 'getTermLang'],
-                'schema' => null,
+                'schema'       => null,
             ));
         }
     }
 
     /**
-     * Registers the taxonomy children field for the 'rrze_faq_category' taxonomy
+     * Registers the taxonomy children field for FAQ and Glossary categories
      */
     public function registerTaxChildrenRestField()
     {
-        register_rest_field(
+        // Make the same callback work for FAQ and Glossary categories
+        $category_taxonomies = array(
             'rrze_faq_category',
-            'children',
-            array(
-                'get_callback' => [$this, 'getChildrenCategories'],
-                'update_callback' => null,
-                'schema' => null,
-            )
+            'rrze_glossary_category',
         );
+
+        foreach ($category_taxonomies as $taxonomy) {
+            register_rest_field(
+                $taxonomy,
+                'children',
+                array(
+                    'get_callback'    => [$this, 'getChildrenCategories'],
+                    'update_callback' => null,
+                    'schema'          => null,
+                )
+            );
+        }
     }
 }

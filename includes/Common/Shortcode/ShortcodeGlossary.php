@@ -267,7 +267,7 @@ class ShortcodeGlossary
      * @param string $registerstyle “a-z”, “tabs”, “tagcloud” or empty
      * @return string Rendered HTML content
      */
-    private function renderFilteredFAQs(array $atts, int $hstart, string $style, string $expand_all_link, bool $hide_accordion, bool $hide_title, string $color, string $load_open, string $sort, string $order, $category, $tag, string $register, string $registerstyle): string
+    private function renderFilteredItems(array $atts, int $hstart, string $style, string $expand_all_link, bool $hide_accordion, bool $hide_title, string $color, string $load_open, string $sort, string $order, $category, $tag, string $register, string $registerstyle): string
     {
         $content = '';
         $this->bSchema = false;
@@ -610,7 +610,7 @@ class ShortcodeGlossary
         if ($id && (!$gutenberg || $gutenberg && $id[0])) {
             $content = $this->renderExplicitItems($id, $gutenberg, $hstart, $style, $masonry, $expand_all_link, $hide_accordion, $hide_title, $color, $load_open);
         } else {
-            $content = $this->renderFilteredFAQs($atts, $hstart, $style, $expand_all_link, $hide_accordion, $hide_title, $color, $load_open, $sort, $order, $category, $tag, $register, $registerstyle);
+            $content = $this->renderFilteredItems($atts, $hstart, $style, $expand_all_link, $hide_accordion, $hide_title, $color, $load_open, $sort, $order, $category, $tag, $register, $registerstyle);
         }
 
         // 2020-05-12 THIS IS NOT IN USE because f.e. [faq glossary="category"] led to errors ("TypeError: e.$slides is null slick.min.js" and "TypeError: can't access property "add"" ) as FAQ can have >1 category and so equal sliders would be returned in output which leads to JS errors that avoid accordeons to work properly
@@ -630,6 +630,65 @@ class ShortcodeGlossary
 
         return $content;
 
+    }
+
+
+        /**
+     * Outputs explicitly requested FAQs as accordion or simple content.
+     *
+     * Supports both Gutenberg blocks (multiple IDs as an array) and the classic editor (comma-separated).
+     *
+     * @param mixed $id Single ID or array of IDs
+     * @param bool $gutenberg Whether Gutenberg is used
+     * @param int $hstart HTML heading level
+     * @param string $style Inline styles for the accordion
+     * @param bool $masonry Whether tiles should be displayed (fake masonry - see https://github.com/RRZE-Webteam/rrze-answers/issues/105#issuecomment-2873361435 )
+     * @param string $expand_all_link Attribute for “expand all” link
+     * @param bool $hide_accordion Whether the accordion should be suppressed
+     * @param bool $hide_title Whether the title should be suppressed
+     * @param string $color Color attribute of the accordion
+     * @param string $load_open Attribute for open state
+     * @return string The generated HTML content
+     */
+    private function renderExplicitItems($id, bool $gutenberg, int $hstart, string $style, bool $masonry, string $expand_all_link, bool $hide_accordion, bool $hide_title, string $color, string $load_open): string
+    {
+        $content = '';
+        $this->bSchema = false;
+
+        // EXPLICIT FAQ(s)
+        if ($gutenberg) {
+            $aIDs = $id;
+        } else {
+            // classic editor
+            $aIDs = explode(',', $id);
+        }
+
+        foreach ($aIDs as $id) {
+            $id = trim($id);
+            if ($id) {
+                $question = get_the_title($id);
+                $anchorfield = get_post_meta($id, 'anchorfield', true);
+
+                if (empty($anchorfield)) {
+                    $anchorfield = 'ID-' . $id;
+                }
+
+                $answer = str_replace(']]>', ']]&gt;', apply_filters('the_content', get_post_field('post_content', $id)));
+                $useSchema = (get_post_meta($id, 'source', true) === 'website');
+
+                if ($useSchema) {
+                    $this->bSchema = true;
+                }
+
+                if ($hide_accordion) {
+                    $content .= Tools::renderItem('faq', $question, $answer, $hstart, $useSchema, $hide_title);
+                } else {
+                    $content .= Tools::renderItemAccordion('faq', $anchorfield, $question, $answer, $color, $load_open, $useSchema);
+                }
+            }
+        }
+
+        return $content;
     }
 
 

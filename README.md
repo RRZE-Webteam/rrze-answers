@@ -17,16 +17,30 @@ It allows you to:
 - Display entries using shortcodes, Gutenberg blocks, or widgets  
 - Filter and group entries by categories, tags, or domains  
 - Integrate with the WordPress REST API (v2)
+- Can improve your ranking on Google with integrated SEO optimization using structured data 
 
 ---
 
 ## Features
 
 - **Unified content management:** FAQs, Glossary entries, and Placeholders are managed in one place.  
-- **Flexible display options:** Accordion view, A–Z index, tabs, or tag cloud.  
+- **Flexible display options:** Accordion view, A–Z index, tabs, tag cloud or grid.
 - **Cross-domain synchronization:** Share and import entries from other FAU sites.  
 - **REST API support:** Access entries programmatically.  
-- **Multilingual and SEO-friendly:** Uses [`schema.org/DefinedTerm`](https://schema.org/DefinedTerm) for glossary entries and `<abbr>` tags for placeholders.  
+- **Multilingual and SEO-friendly:** Uses [`schema.org/Faq`](https://schema.org/Faq) for faq entries, [`schema.org/DefinedTerm`](https://schema.org/DefinedTerm) for glossary entries and `<abbr>` tags for placeholders.  
+
+---
+
+## Blocks
+
+**RRZE FAQ Block**
+The FAQ block lets you display selected FAQ entries and control how they appear on the page. In the settings, you can choose specific items, filter by categories or tags, and select a glossary or grouping style such as alphabetical lists, tabs, or tag clouds. You can hide interface elements like titles, accordions, or the glossary navigation, enable a masonry grid layout, and add optional CSS or faculty classes. Sorting options and the starting heading level can also be adjusted to match your page structure.
+
+**RRZE Glossary Block**
+The Glossary block displays glossary entries and offers similar flexibility. You can select entries, filter them by categories or tags, and control the register or grouping style, including A–Z lists, tab navigation, and tag cloud layouts. Display elements such as titles, accordion views, or the register can be hidden, while optional features like “expand all” or opening entries by default can be enabled. Additional styling classes, sorting behavior, and heading levels can be configured as needed.
+
+**Using placeholders**
+The text editor provides a dedicated menu entry for inserting placeholders. From there, you can select any available placeholder from a list and insert it directly into your content.
 
 ---
 
@@ -105,7 +119,7 @@ External domains can be added and synchronized via:
 
 ```
 Settings → RRZE Answers → Domains
-Settings → RRZE Answers → Synchronization
+Settings → RRZE Answers → Import
 ```
 
 Entries from synchronized domains behave like local entries and can be displayed via shortcode, block, or widget.
@@ -114,26 +128,14 @@ Entries from synchronized domains behave like local entries and can be displayed
 
 ## Widgets
 
-In `/wp-admin/widgets.php`, you can find the following widgets:
-- **Answers Widget:** Show a specific or random FAQ, glossary entry, or placeholder.  
+- **Answers Widget:** Show a specific or random FAQ or glossary entry.  
 - Configurable options include display duration, layout, and category selection.
-
----
-
-## Examples
-
-```html
-[faq glossary="tag tagcloud"]
-[glossary register="category tabs" tag="Tag1" show="expand-all-link"]
-[placeholder slug="fau"]
-[fau_abbr id="123"]
-```
 
 ---
 
 ## REST API (v2)
 
-### FAQs
+### FAQ
 - All:  
   `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/faq`
 - Filtered:  
@@ -144,10 +146,6 @@ In `/wp-admin/widgets.php`, you can find the following widgets:
   `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/glossary`
 - Category + Tag:  
   `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/glossary?filter[glossary_category]=Dienste&filter[glossary_tag]=Sprache`
-
-### Placeholders
-- All:  
-  `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/placeholder`
 
 **Pagination:**  
 Refer to [WordPress REST API Pagination](https://developer.wordpress.org/rest-api/using-the-rest-api/pagination/)
