@@ -202,13 +202,13 @@ class Tools
 
     public static function renderWrapper(
         string $type,
-        ?int $postID = null,
         string &$content,
         string &$headerID,
         bool &$masonry,
         string &$color,
         string &$additional_class,
-        bool &$bSchema
+        bool &$bSchema,
+        ?int $postID = null
     ): string {
         $isFaq = ($type === 'faq');
         $isGlossary = ($type === 'glossary');
