@@ -42,6 +42,8 @@ The Glossary block displays glossary entries and offers similar flexibility. You
 **Using placeholders**
 The text editor provides a dedicated menu entry for inserting placeholders. From there, you can select any available placeholder from a list and insert it directly into your content.
 
+---
+
 ## Shortcodes
 
 ### FAQ Shortcode
