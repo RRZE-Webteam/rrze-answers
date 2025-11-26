@@ -30,13 +30,6 @@ class Tools
         return false;
     }
 
-    public static function sortIt(&$arr)
-    {
-        uasort($arr, function ($a, $b) {
-            return strtolower($a) <=> strtolower($b);
-        });
-    }
-
     public static function searchArrayByKey(&$needle, &$aHaystack)
     {
         foreach ($aHaystack as $k => $v) {

@@ -17,18 +17,23 @@ It allows you to:
 - Display entries using shortcodes, Gutenberg blocks, or widgets  
 - Filter and group entries by categories, tags, or domains  
 - Integrate with the WordPress REST API (v2)
+- Can improve your ranking on Google with integrated SEO optimization using structured data 
 
 ---
 
 ## Features
 
 - **Unified content management:** FAQs, Glossary entries, and Placeholders are managed in one place.  
-- **Flexible display options:** Accordion view, A–Z index, tabs, or tag cloud.  
+- **Flexible display options:** Accordion view, A–Z index, tabs, tag cloud or grid.
 - **Cross-domain synchronization:** Share and import entries from other FAU sites.  
 - **REST API support:** Access entries programmatically.  
-- **Multilingual and SEO-friendly:** Uses [`schema.org/DefinedTerm`](https://schema.org/DefinedTerm) for glossary entries and `<abbr>` tags for placeholders.  
+- **Multilingual and SEO-friendly:** Uses [`schema.org/Faq`](https://schema.org/Faq) for faq entries, [`schema.org/DefinedTerm`](https://schema.org/DefinedTerm) for glossary entries and `<abbr>` tags for placeholders.  
 
 ---
+
+## Blocks
+
+
 
 ## Shortcodes
 

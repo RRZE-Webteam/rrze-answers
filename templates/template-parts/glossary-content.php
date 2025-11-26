@@ -30,8 +30,8 @@ $cats = wp_kses_post($tools->getTermLinks( $postID, 'glossary_category' ));
 $tags = wp_kses_post($tools->getTermLinks( $postID, 'glossary_tag' ));            
 $details = '<article class="news-details">
 <!-- rrze-glossary --><p id="rrze-glossary" class="meta-footer">'
-. ( $cats ? '<span class="post-meta-categories"> '. __( 'Categories', 'rrze-glossary' ) . ': ' . $cats . '</span>' : '' )
-. ( $tags ? '<span class="post-meta-tags"> '. __( 'Tags', 'rrze-glossary' ) . ': ' . $tags . '</span>' : '' )
+. ( $cats ? '<span class="post-meta-categories"> '. __( 'Categories', 'rrze-answers' ) . ': ' . $cats . '</span>' : '' )
+. ( $tags ? '<span class="post-meta-tags"> '. __( 'Tags', 'rrze-answers' ) . ': ' . $tags . '</span>' : '' )
 . '</p></article>';
 
 the_content(); 

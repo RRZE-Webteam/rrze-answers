@@ -7,7 +7,7 @@ defined('ABSPATH') || exit;
 
 use RRZE\Answers\Common\Tools;
 
-class AdminUI_Placeholder extends AdminUIBase
+class AdminUI_Placeholder extends AdminUI
 {
     /** @var array<string,string> */
     protected array $langChoices = [];

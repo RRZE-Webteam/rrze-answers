@@ -15,7 +15,7 @@ defined('ABSPATH') || exit;
  * - Read-only handling for synced content
  * - Safe extension points for subclasses
  */
-abstract class AdminUIBase
+abstract class AdminUI
 {
     /** @var string */
     protected string $post_type;
@@ -250,10 +250,45 @@ abstract class AdminUIBase
         echo '<h1>' . esc_html($post->post_title) . '</h1><br>' . wp_kses_post($content);
     }
 
-    /** Optional: renders a shortcode helper box (classic editor only). */
     public function renderShortcodeBox(): void
     {
-        // Subclasses may implement to show helpful shortcodes for this CPT
+        global $post;
+        if (!$post || (int) $post->ID <= 0) {
+            return;
+        }
+
+        $ret = '';
+        $category = '';
+        $tag = '';
+
+        // Build taxonomy slug lists (comma separated)
+        foreach (["{$this->post_type}_category", "{$this->post_type}_tag"] as $tax) {
+            $terms = wp_get_post_terms($post->ID, $tax);
+            $list = '';
+            foreach ($terms as $t) {
+                $list .= $t->slug . ', ';
+            }
+            $list = rtrim($list, ', ');
+            if ($tax === "{$this->post_type}_category") {
+                $category = $list;
+            } else {
+                $tag = $list;
+            }
+        }
+
+        // Keep original plugin’s shortcode style (always [faq])
+        $ret .= '<h3 class="hndle">' . esc_html__('Single entries', 'rrze-answers') . ':</h3><p>[faq id="' . (int) $post->ID . '"]</p>';
+        if ($category) {
+            $ret .= '<h3 class="hndle">' . esc_html__('Accordion with category', 'rrze-answers') . ':</h3><p>[faq category="' . esc_html($category) . '"]</p>';
+            $ret .= '<p>' . esc_html__('If there is more than one category listed, use at least one of them.', 'rrze-answers') . '</p>';
+        }
+        if ($tag) {
+            $ret .= '<h3 class="hndle">' . esc_html__('Accordion with tag', 'rrze-answers') . ':</h3><p>[faq tag="' . esc_html($tag) . '"]</p>';
+            $ret .= '<p>' . esc_html__('If there is more than one tag listed, use at least one of them.', 'rrze-answers') . '</p>';
+        }
+        $ret .= '<h3 class="hndle">' . esc_html__('Accordion with all entries', 'rrze-answers') . ':</h3><p>[faq]</p>';
+
+        echo wp_kses_post($ret);
     }
 
     /** Columns for the post list table. */
