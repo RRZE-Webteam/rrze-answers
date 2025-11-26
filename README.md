@@ -128,20 +128,8 @@ Entries from synchronized domains behave like local entries and can be displayed
 
 ## Widgets
 
-In `/wp-admin/widgets.php`, you can find the following widgets:
-- **Answers Widget:** Show a specific or random FAQ, glossary entry, or placeholder.  
+- **Answers Widget:** Show a specific or random FAQ or glossary entry.  
 - Configurable options include display duration, layout, and category selection.
-
----
-
-## Examples
-
-```html
-[faq glossary="tag tagcloud"]
-[glossary register="category tabs" tag="Tag1" show="expand-all-link"]
-[placeholder slug="fau"]
-[fau_abbr id="123"]
-```
 
 ---
 
