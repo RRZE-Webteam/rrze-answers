@@ -704,7 +704,7 @@ class ShortcodeFAQ
         wp_enqueue_script('rrze-answers-accordion');
         wp_enqueue_style('rrze-answers-css');
 
-        $content = Tools::renderWrapper('faq', $postID, $content, $headerID, $masonry, $color, $additional_class, $this->bSchema);
+        $content = Tools::renderWrapper('faq', $content, $headerID, $masonry, $color, $additional_class, $this->bSchema, $postID);
 
         return $content;
 

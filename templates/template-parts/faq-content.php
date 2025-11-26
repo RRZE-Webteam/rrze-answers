@@ -67,4 +67,4 @@ $masonry = false;
 $color = '';
 $additional_class = '';
 
-echo wp_kses_post($tools->renderWrapper('faq', $postID, $content, $headerID, $masonry, $color, $additional_class, $bSchema));
+echo wp_kses_post($tools->renderWrapper('faq', $content, $headerID, $masonry, $color, $additional_class, $bSchema, $postID));
