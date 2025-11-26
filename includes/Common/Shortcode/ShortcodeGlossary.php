@@ -19,6 +19,8 @@ class ShortcodeGlossary
     private $settings = '';
     private $pluginname = '';
 
+    private $bSchema = false;
+
     public function __construct()
     {
         $this->settings = $this->getShortcodeSettings();
@@ -624,7 +626,7 @@ class ShortcodeGlossary
         wp_enqueue_script('rrze-answers-accordion');
         wp_enqueue_style('rrze-answers-css');
 
-        $content = Tools::renderWrapper('glossary', $postID, $content, $headerID, $masonry, $color, $additional_class, $this->bSchema);
+        $content = Tools::renderWrapper('glossary', $content, $headerID, $masonry, $color, $additional_class, $this->bSchema, $postID);
 
         return $content;
 
