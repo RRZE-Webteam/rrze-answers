@@ -237,9 +237,9 @@ function rrze_update_placeholder_cpt()
 // 2. deaktivate rrze-answers, rrze-glossary and rrze-placeholder
 function rrze_answers_migrate_multisite()
 {
-    // if (get_site_option('rrze-answers_migrate_multisite_done')) {
-    //     return;
-    // }
+    if (get_site_option('rrze-answers_migrate_multisite_done')) {
+        return;
+    }
 
     if (!is_multisite() || !is_network_admin() || !current_user_can('manage_network_plugins')) {
         return;
