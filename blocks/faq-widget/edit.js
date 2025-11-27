@@ -11,6 +11,7 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import ServerSideRender from '@wordpress/server-side-render';
+import { __ } from '@wordpress/i18n';
 
 const FAQ_POST_TYPE = 'rrze_faq';
 const FAQ_TAXONOMY = 'rrze_faq_category';
@@ -68,7 +69,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
     // Build select options for FAQs.
     const faqOptions = [
-        { label: '— Select FAQ —', value: 0 },
+        { label: __( '— Select FAQ —', 'rrze-answers' ), value: 0 },
         ...faqs.map( ( faq ) => ( {
             label: faq.title?.rendered || `#${ faq.id }`,
             value: faq.id,
@@ -77,7 +78,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
     // Build select options for categories.
     const categoryOptions = [
-        { label: '— Select category —', value: 0 },
+        { label: __( '— Select category —', 'rrze-answers' ), value: 0 },
         ...categories.map( ( term ) => ( {
             label: term.name,
             value: term.id,
@@ -102,46 +103,63 @@ export default function Edit( { attributes, setAttributes } ) {
 
     // Handle hide_title checkbox.
     const onChangeHideTitle = ( checked ) => {
-        // Store as 1/0 so PHP receives an integer.
         setAttributes( { hide_title: checked ? 1 : 0 } );
     };
 
     return (
         <>
             <InspectorControls>
-                <PanelBody title="FAQ selection" initialOpen={ true }>
+                <PanelBody
+                    title={ __( 'FAQ selection', 'rrze-answers' ) }
+                    initialOpen={ true }
+                >
                     { isLoadingFaqs && <Spinner /> }
 
                     { ! isLoadingFaqs && ! faqs.length && (
                         <Notice status="warning" isDismissible={ false }>
-                            No FAQs found (post type &quot;rrze_faq&quot; must be public and show_in_rest).
+                            { __(
+                                'No FAQs found (post type "rrze_faq" must be public and show_in_rest).',
+                                'rrze-answers'
+                            ) }
                         </Notice>
                     ) }
 
                     <SelectControl
-                        label="Choose a FAQ"
+                        label={ __( 'Choose a FAQ', 'rrze-answers' ) }
                         value={ id }
                         options={ faqOptions }
                         onChange={ onChangeFAQ }
-                        help="Select a specific FAQ post."
+                        help={ __( 'Select a specific FAQ post.', 'rrze-answers' ) }
                     />
 
                     <SelectControl
-                        label="Or choose a category to display a random FAQ"
+                        label={ __(
+                            'Or choose a category to display a random FAQ',
+                            'rrze-answers'
+                        ) }
                         value={ catID }
                         options={ categoryOptions }
                         onChange={ onChangeCategory }
                         disabled={ ! categories.length && ! isLoadingCategories }
-                        help="If a category is selected and no specific FAQ is set, a random FAQ from this category will be used."
+                        help={ __(
+                            'If a category is selected and no specific FAQ is set, a random FAQ from this category will be used.',
+                            'rrze-answers'
+                        ) }
                     />
                 </PanelBody>
 
-                <PanelBody title="Display options" initialOpen={ false }>
+                <PanelBody
+                    title={ __( 'Display options', 'rrze-answers' ) }
+                    initialOpen={ false }
+                >
                     <CheckboxControl
-                        label="Hide question title"
+                        label={ __( 'Hide question title', 'rrze-answers' ) }
                         checked={ !! hide_title }
                         onChange={ onChangeHideTitle }
-                        help="If enabled, the FAQ title will be hidden."
+                        help={ __(
+                            'If enabled, the FAQ title will be hidden.',
+                            'rrze-answers'
+                        ) }
                     />
                 </PanelBody>
             </InspectorControls>

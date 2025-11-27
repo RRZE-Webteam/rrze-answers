@@ -170,8 +170,8 @@ function register_blocks()
     register_block_type_from_metadata(__DIR__ . '/blocks/glossary');
     register_block_type_from_metadata(__DIR__ . '/blocks/placeholder');
 
-    // $script_handle = generate_block_asset_handle('rrze-answers/faq', 'editorScript');
-    // wp_set_script_translations($script_handle, 'rrze-answers', plugin_dir_path(__FILE__) . 'languages');
+    $script_handle = generate_block_asset_handle('rrze-answers/faq', 'editorScript');
+    wp_set_script_translations($script_handle, 'rrze-answers', plugin_dir_path(__FILE__) . 'languages');
 }
 
 
