@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: RRZE FAQ\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/rrze-answers\n"
 "Last-Translator: \n"
-"Language-Team: Deutsch (Sie)\n"
+"Language-Team: Deutsch\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2025-02-27T09:48:14+00:00\n"
-"PO-Revision-Date: 2025-11-27 14:55+0000\n"
-"Language: de_DE_formal\n"
+"PO-Revision-Date: 2025-11-27 15:27+0000\n"
+"Language: de_DE\n"
 "X-Generator: Loco https://localise.biz/\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
@@ -24,7 +24,7 @@ msgstr ""
 
 #: includes/Common/Sync/Sync.php:100
 msgid " contains sliders ([gallery]) and cannot be synchronized:"
-msgstr ""
+msgstr " enthält den Shortcode für Slider ([gallery]) und kann nicht synchronisiert werden:"
 
 #: includes/Common/API/SyncAPI.php:626
 msgid " does not support this plugin."
@@ -452,7 +452,7 @@ msgstr ""
 
 #: includes/Common/CPT/CPTFAQ.php:56
 msgid "FAQ Tags"
-msgstr ""
+msgstr "FAQ Schlagwörter"
 
 #: includes/Common/Widgets/FAQ.php:22
 msgid "FAQ Widget"
@@ -510,7 +510,7 @@ msgstr "Glossar"
 
 #: includes/Defaults.php:152
 msgid "Glossary Slug"
-msgstr ""
+msgstr "Glossar Slug"
 
 #: includes/Common/Shortcode/ShortcodeFAQ.php:96
 #: blocks/faq/edit.js:389
@@ -974,7 +974,7 @@ msgstr "Diese FAQ kann nicht bearbeitet werden, da sie synchronisiert ist"
 
 #: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:115
 msgid "This placeholder cannot be edited because it is synchronized"
-msgstr ""
+msgstr "Dieser Platzhalter kann nicht bearbeitet werden, da er synchronisiert ist."
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:206
 #: includes/Common/Shortcode/ShortcodeFAQ.php:226
