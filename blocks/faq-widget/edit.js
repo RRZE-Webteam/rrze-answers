@@ -149,7 +149,7 @@ export default function Edit( { attributes, setAttributes } ) {
             <div { ...blockProps }>
                 {/* Server-side preview of the FAQ output */}
                 <ServerSideRender
-                    block="rrze-answers/faqwidget"
+                    block="rrze-answers/faq-widget"
                     attributes={ attributes }
                 />
             </div>

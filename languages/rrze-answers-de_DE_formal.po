@@ -463,43 +463,43 @@ msgstr "Schlagwort editieren"
 msgid "Update tag"
 msgstr "Schlagwort aktualisieren"
 
-#: includes/FAQWidget.php:17
+#: includes/faq-widget.php:17
 msgid "FAQ Widget"
 msgstr "FAQ-Widget"
 
-#: includes/FAQWidget.php:18
+#: includes/faq-widget.php:18
 msgid "Displays a FAQ"
 msgstr "Zeigt eine FAQ an"
 
-#: includes/FAQWidget.php:97
+#: includes/faq-widget.php:97
 msgid "Choose a FAQ"
 msgstr "Wählen Sie eine FAQ"
 
-#: includes/FAQWidget.php:114
+#: includes/faq-widget.php:114
 msgid "show question and answer"
 msgstr "Zeige Frage und Antwort"
 
-#: includes/FAQWidget.php:115
+#: includes/faq-widget.php:115
 msgid "show question and answer opened"
 msgstr "Zeige Frage und geöffnete Antwort"
 
-#: includes/FAQWidget.php:116
+#: includes/faq-widget.php:116
 msgid "hide question"
 msgstr "Frage ausblenden"
 
-#: includes/FAQWidget.php:118
+#: includes/faq-widget.php:118
 msgid "Display options:"
 msgstr "Anzeige:"
 
-#: includes/FAQWidget.php:132
+#: includes/faq-widget.php:132
 msgid "Start"
 msgstr "Start"
 
-#: includes/FAQWidget.php:133
+#: includes/faq-widget.php:133
 msgid "End"
 msgstr "Ende"
 
-#: includes/FAQWidget.php:167
+#: includes/faq-widget.php:167
 msgid "or choose a Category to display a FAQ randomly"
 msgstr "oder wählen Sie eine Kategorie aus der eine FAQ zufällig angezeigt wird"
 

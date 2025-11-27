@@ -420,7 +420,7 @@ class Main
         $blocks = new Blocks(
             [                                  // Array of block names
                 'faq',
-                'faqwidget',
+                'faq-widget',
                 'glossary',
                 'placeholder'
             ],
