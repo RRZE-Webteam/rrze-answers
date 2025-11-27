@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: RRZE FAQ\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/rrze-answers\n"
 "Last-Translator: \n"
-"Language-Team: Deutsch\n"
+"Language-Team: Deutsch (Sie)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2025-02-27T09:48:14+00:00\n"
-"PO-Revision-Date: 2025-11-27 14:04+0000\n"
-"Language: de_DE\n"
+"PO-Revision-Date: 2025-11-27 14:55+0000\n"
+"Language: de_DE_formal\n"
 "X-Generator: Loco https://localise.biz/\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
@@ -20,6 +20,7 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-0: *.min.js\n"
 "X-Poedit-SearchPathExcluded-1: node_modules\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Loco-Version: 2.8.0; wp-6.8.3; php-8.4.10\n"
 
 #: includes/Common/Sync/Sync.php:100
 msgid " contains sliders ([gallery]) and cannot be synchronized:"
@@ -27,7 +28,7 @@ msgstr ""
 
 #: includes/Common/API/SyncAPI.php:626
 msgid " does not support this plugin."
-msgstr ""
+msgstr "unterstützt dieses Plugin nicht."
 
 #: includes/Defaults.php:251
 #: includes/Defaults.php:259
@@ -36,7 +37,7 @@ msgstr ""
 
 #: includes/Common/Tools.php:471
 msgid "-- Choose a website --"
-msgstr ""
+msgstr "-- Website wählen --"
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:69
 #: includes/Common/Shortcode/ShortcodeFAQ.php:79
@@ -48,7 +49,7 @@ msgstr "-- versteckt --"
 
 #: includes/Defaults.php:280
 msgid "-- off --"
-msgstr ""
+msgstr "-- aus --"
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:73
 #: includes/Common/Shortcode/ShortcodeFAQ.php:83
@@ -60,7 +61,7 @@ msgstr "A - Z"
 
 #: includes/Common/Shortcode/ShortcodePlaceholder.php:57
 msgid "Abbreviation"
-msgstr ""
+msgstr "Abkürzung"
 
 #: includes/Common/AdminInterfaces/AdminUI.php:289
 msgid "Accordion with all entries"
@@ -77,7 +78,7 @@ msgstr "Akkordeon mit Schlagwort"
 #: includes/Common/AdminInterfaces/AdminMenu.php:89
 #, php-format
 msgid "Add %s"
-msgstr ""
+msgstr "%s hinzufügen "
 
 #: includes/Common/CPT/CPTFAQ.php:38
 msgid "Add FAQ"
@@ -85,23 +86,23 @@ msgstr "FAQ hinzufügen"
 
 #: includes/Common/CPT/CPTGlossary.php:37
 msgid "Add glossary"
-msgstr ""
+msgstr "Glossar hinzufügen"
 
 #: includes/Common/CPT/CPTFAQ.php:39
 msgid "Add new FAQ"
-msgstr "Neue FAQ anlegen"
+msgstr "Neue FAQ hinzufügen"
 
 #: includes/Common/CPT/CPTGlossary.php:38
 msgid "Add new glossary"
-msgstr ""
+msgstr "Neues Glossar hinzufügen"
 
 #: includes/Common/CPT/CPTPlaceholder.php:38
 msgid "Add new placeholder"
-msgstr ""
+msgstr "Neuen Platzhalter hinzufügen"
 
 #: includes/Common/CPT/CPTPlaceholder.php:37
 msgid "Add placeholder"
-msgstr ""
+msgstr "Platzhalter hinzufügen"
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:193
 #: includes/Common/Shortcode/ShortcodeFAQ.php:213
@@ -111,7 +112,7 @@ msgstr "Zusätzliche CSS-Klasse(n) für das umgebende DIV"
 #: includes/Common/AdminInterfaces/AdminMenu.php:88
 #, php-format
 msgid "All %s"
-msgstr ""
+msgstr "Alle %s"
 
 #: includes/Common/CPT/CPTFAQ.php:41
 msgid "All FAQ"
@@ -119,7 +120,7 @@ msgstr "Alle FAQ"
 
 #: includes/Common/CPT/CPTGlossary.php:40
 msgid "All glossaries"
-msgstr ""
+msgstr "Alle Glossare"
 
 #: includes/Defaults.php:207
 msgid "All languages"
@@ -127,7 +128,7 @@ msgstr "Alle Sprachen"
 
 #: includes/Common/CPT/CPTPlaceholder.php:40
 msgid "All placeholders"
-msgstr ""
+msgstr "Alle Platzhalter"
 
 #: includes/Common/AdminInterfaces/AdminUI.php:371
 msgid "All Sources"
@@ -135,32 +136,32 @@ msgstr "Alle Quellen"
 
 #: includes/Common/Sync/Sync.php:119
 msgid "All synchronizations completed"
-msgstr "Alle Synchronisationen abgeschlossen"
+msgstr "Alle Synchronisierungen abgeschlossen"
 
 #: includes/Defaults.php:73
 msgid "Allow other websites to import your FAQ. Your SEO will not be affected. Structured data is used for your content only."
-msgstr ""
+msgstr "Erlauben Sie anderen Websites, Ihre FAQ zu importieren. Ihre Suchmaschinenoptimierung (SEO) wird davon nicht beeinträchtigt. Strukturierte Daten werden ausschließlich für Ihre Inhalte verwendet."
 
 #: includes/Defaults.php:79
 msgid "Allow other websites to import your glossary. Your SEO will not be affected. Structured data is used for your content only."
-msgstr ""
+msgstr "Erlauben Sie anderen Websites, Ihr Glossar zu importieren. Ihre Suchmaschinenoptimierung (SEO) wird davon nicht beeinträchtigt. Strukturierte Daten werden ausschließlich für Ihre Inhalte verwendet."
 
 #: includes/Defaults.php:72
 msgid "Allow to import FAQ"
-msgstr ""
+msgstr "Import von FAQ erlauben"
 
 #: includes/Defaults.php:78
 msgid "Allow to import glossary"
-msgstr ""
+msgstr "Import von Glossaren erlauben"
 
 #: includes/Common/AdminInterfaces/AdminUI_QA.php:60
 msgid "Anchor"
-msgstr "Anker"
+msgstr "Sprungmarke"
 
 #: includes/Common/AdminInterfaces/AdminUI_QA.php:113
 #, fuzzy
 msgid "Anchor field (optional) to define jump marks when displayed in accordions"
-msgstr "Ankerfeld (optional) zur Definition von Sprungmarken bei der Anzeige in Akkordeons "
+msgstr "Ankerfeld (optional) zum Definieren von Sprungmarken bei der Anzeige in Akkordeons "
 
 #: includes/Common/Sync/Sync.php:108
 msgid "and"
@@ -170,18 +171,18 @@ msgstr "und"
 #: includes/Common/AdminInterfaces/AdminMenu.php:44
 #: includes/Common/AdminInterfaces/AdminMenu.php:58
 msgid "Answers"
-msgstr ""
+msgstr "Antworten"
 
 #: includes/Common/API/RESTAPI.php:65
 #, php-format
 msgid "API is deactivated for %s. Contact website owner %s"
-msgstr ""
+msgstr "API ist deaktiviert für %s. Kontaktieren Sie den Eigentümer der Website %s"
 
 #: includes/Defaults.php:106
 #: includes/Defaults.php:144
 #: includes/Defaults.php:182
 msgid "Archive page"
-msgstr ""
+msgstr "Archiv Seite"
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:226
 #: includes/Common/Shortcode/ShortcodeFAQ.php:246
@@ -189,47 +190,47 @@ msgstr ""
 #: blocks/glossary/edit.js:284
 #: blocks/placeholder/edit.js:195
 msgid "ASC"
-msgstr "Aufsteigend"
+msgstr "aufsteigend"
 
 #: blocks/faq/block.json:1
 msgctxt "block description"
 msgid "Display FAQ"
-msgstr "Zeigt eine FAQ an"
+msgstr "FAQ anzeigen"
 
 #: blocks/glossary/block.json:1
 msgctxt "block description"
 msgid "Display glossaries"
-msgstr ""
+msgstr "Glossare anzeigen"
 
 #: blocks/placeholder/block.json:1
 msgctxt "block description"
 msgid "Display placeholders"
-msgstr ""
+msgstr "Platzhalter anzeigen"
 
 #: blocks/faq-widget/block.json:1
 msgctxt "block description"
 msgid "Displays a random FAQ from a category."
-msgstr ""
+msgstr "Zeigt ein zufälliges FAQ einer Kategorie an."
 
 #: blocks/placeholder/block.json:1
 msgctxt "block title"
 msgid "Placeholder"
-msgstr ""
+msgstr "Platzhalter"
 
 #: blocks/faq/block.json:1
 msgctxt "block title"
 msgid "RRZE FAQ"
-msgstr ""
+msgstr "RRZE FAQ"
 
 #: blocks/faq-widget/block.json:1
 msgctxt "block title"
 msgid "RRZE FAQ Widget"
-msgstr ""
+msgstr "RRZE FAQ Widget"
 
 #: blocks/glossary/block.json:1
 msgctxt "block title"
 msgid "RRZE Glossary"
-msgstr ""
+msgstr "RRZE Glossary"
 
 #: includes/Defaults.php:250
 #: includes/Defaults.php:258
@@ -253,12 +254,12 @@ msgstr "Kategorie"
 
 #: includes/Defaults.php:261
 msgid "Category not found."
-msgstr ""
+msgstr "Kategorie nicht gefunden."
 
 #: includes/Defaults.php:122
 #: includes/Defaults.php:160
 msgid "Category Slug"
-msgstr ""
+msgstr "Kategorien Slug"
 
 #: includes/Defaults.php:213
 #: blocks/faq/edit.js:186
@@ -270,11 +271,15 @@ msgstr "Chinesisch"
 #: includes/Common/Widgets/FAQ.php:104
 #: blocks/faq-widget/edit.js:128
 msgid "Choose a FAQ"
-msgstr "Wähle eine FAQ"
+msgstr "Wählen Sie eine FAQ"
+
+#: includes/Common/AdminInterfaces/AdminMenu.php:59
+msgid "Choose a section:"
+msgstr "Abschnitt auswählen:"
 
 #: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:73
 msgid "Choose the language in which the long form is pronounced."
-msgstr ""
+msgstr "Wählen Sie die Sprache, in der die Langform ausgesprochen wird."
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:167
 #: includes/Common/Shortcode/ShortcodeFAQ.php:180
@@ -285,7 +290,7 @@ msgstr "Farbe"
 
 #: includes/Common/AdminInterfaces/AdminUI_QA.php:106
 msgid "Criterion for sorting the output of the shortcode"
-msgstr "Kriterium für die Sortierung der Ausgabe des Shortcodes"
+msgstr "Kriterium für die Sortierung der Shortcode-Ausgabe"
 
 #: includes/Defaults.php:281
 msgid "daily"
@@ -293,7 +298,7 @@ msgstr "täglich"
 
 #: includes/Common/Tools.php:454
 msgid "Default archive"
-msgstr ""
+msgstr "Standard-Archiv"
 
 #: includes/Common/Settings/templates/options/domains-table.php:27
 msgid "Delete selected domains"
@@ -309,11 +314,11 @@ msgstr "gelöscht"
 #: blocks/glossary/edit.js:288
 #: blocks/placeholder/edit.js:199
 msgid "DESC"
-msgstr "Absteigend"
+msgstr "absteigend"
 
 #: includes/Common/Widgets/FAQ.php:125
 msgid "Display options:"
-msgstr "Anzeigeoptionen:"
+msgstr "Anzeige:"
 
 #: includes/Common/Widgets/FAQ.php:23
 msgid "Displays a FAQ"
@@ -332,15 +337,15 @@ msgstr "Domains"
 
 #: includes/Common/CPT/CPTFAQ.php:40
 msgid "Edit FAQ"
-msgstr "FAQ bearbeiten"
+msgstr "FAQ editieren"
 
 #: includes/Common/CPT/CPTGlossary.php:39
 msgid "Edit glossary"
-msgstr ""
+msgstr "Glossar editieren"
 
 #: includes/Common/CPT/CPTPlaceholder.php:39
 msgid "Edit placeholder"
-msgstr ""
+msgstr "Platzhalter editieren"
 
 #: includes/Common/Widgets/FAQ.php:140
 msgid "End"
@@ -355,35 +360,35 @@ msgstr "Englisch"
 
 #: includes/Common/AdminInterfaces/AdminUI_QA.php:38
 msgid "Enter glossary term here"
-msgstr ""
+msgstr "Glossarbegriff hier eingeben"
 
 #: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:32
 msgid "Enter placeholder here"
-msgstr ""
+msgstr "Platzhalterbegriff hier eingeben"
 
 #: includes/Common/AdminInterfaces/AdminUI_QA.php:37
 msgid "Enter question here"
-msgstr "Frage hier eingeben"
+msgstr "Geben Sie hier die Frage ein"
 
 #: includes/Defaults.php:87
 #: includes/Defaults.php:93
 msgid "Enter the domain's URL you want to receive FAQ from."
-msgstr "Gib die URL der Domain ein, von der du das FAQ erhalten möchtest."
+msgstr "Geben Sie die URL der Domain ein, von der Sie FAQ beziehen möchten."
 
 #: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:62
 msgid "Enter the long, written form of the placeholder. This text replaces the shortcode. Note: line breaks or HTML are not accepted."
-msgstr ""
+msgstr "Geben Sie die lange, schriftliche Form des Platzhalters ein. Dieser Text ersetzt den Shortcode. Hinweis: Zeilenumbrüche oder HTML werden nicht akzeptiert."
 
 #: includes/Defaults.php:58
 msgid "Enter your text here..."
-msgstr ""
+msgstr "Text hier eingeben..."
 
 #: includes/Common/CPT/CPT.php:37
 #: includes/Common/CPT/CPT.php:38
 #: includes/Common/CPT/CPT.php:91
 #: includes/Common/CPT/CPT.php:92
 msgid "Entries"
-msgstr ""
+msgstr "Einträge"
 
 #: includes/Common/API/SyncAPI.php:330
 msgid "Error in absoluteUrl()."
@@ -427,7 +432,7 @@ msgstr ""
 
 #. Description of the plugin
 msgid "Explain your content with FAQ, glossary and placeholders."
-msgstr ""
+msgstr "Erläutern Sie Ihre Inhalte mit FAQ, Glossar und Platzhaltern."
 
 #: includes/Defaults.php:101
 #: includes/Common/Tools.php:229
@@ -438,9 +443,8 @@ msgid "FAQ"
 msgstr "FAQ"
 
 #: includes/Common/CPT/CPTFAQ.php:48
-#, fuzzy
 msgid "FAQ Categories"
-msgstr "Alle Kategorien"
+msgstr "FAQ Kategorien"
 
 #: includes/Defaults.php:114
 msgid "FAQ Slug"
@@ -459,10 +463,6 @@ msgctxt "FAQ, placeholder or glossary entries"
 msgid "FAQ"
 msgstr "FAQ"
 
-#: includes/Common/AdminInterfaces/AdminMenu.php:62
-msgid "Fragen & Antworten verwalten"
-msgstr ""
-
 #: includes/Defaults.php:211
 #: blocks/faq/edit.js:174
 #: blocks/glossary/edit.js:174
@@ -473,7 +473,7 @@ msgstr "Französisch"
 #: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:60
 #: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:132
 msgid "Full form"
-msgstr ""
+msgstr "Ausführliche Form"
 
 #: includes/Defaults.php:208
 #: blocks/faq/edit.js:166
@@ -481,10 +481,6 @@ msgstr ""
 #: blocks/placeholder/edit.js:103
 msgid "German"
 msgstr "Deutsch"
-
-#: includes/Common/AdminInterfaces/AdminMenu.php:63
-msgid "Glossarbegriffe verwalten"
-msgstr ""
 
 #: includes/Defaults.php:139
 #: includes/Defaults.php:233
@@ -497,20 +493,20 @@ msgstr ""
 #: includes/Common/AdminInterfaces/AdminMenu.php:63
 #: includes/Common/Sync/Sync.php:84
 msgid "Glossary"
-msgstr ""
+msgstr "Glossar"
 
 #: includes/Common/CPT/CPTGlossary.php:47
 msgid "Glossary Categories"
-msgstr ""
+msgstr "Glossar Kategorien"
 
 #: includes/Common/Shortcode/ShortcodeFAQ.php:72
 msgid "Glossary content"
-msgstr "Inhalt des Glossars"
+msgstr "Glossar Inhalt"
 
 #: includes/Common/CPT/CPTGlossary.php:34
 msgctxt "Glossary entries"
 msgid "Glossary"
-msgstr ""
+msgstr "Glossar"
 
 #: includes/Defaults.php:152
 msgid "Glossary Slug"
@@ -519,11 +515,11 @@ msgstr ""
 #: includes/Common/Shortcode/ShortcodeFAQ.php:96
 #: blocks/faq/edit.js:389
 msgid "Glossary style"
-msgstr "Glossar Stil"
+msgstr "Style des Glossars"
 
 #: includes/Common/CPT/CPTGlossary.php:55
 msgid "Glossary Tags"
-msgstr ""
+msgstr "Glossar Schlagwörter"
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:109
 #: includes/Common/Shortcode/ShortcodeFAQ.php:205
@@ -539,24 +535,24 @@ msgstr "Überschriftsebene der ersten Überschrift"
 
 #: includes/Common/Shortcode/ShortcodeFAQ.php:125
 msgid "Hide accordeon"
-msgstr "Akkordeon ausblenden"
+msgstr "Ausgabe nicht in Akkordeons"
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:116
 #: blocks/faq/edit.js:399
 #: blocks/glossary/edit.js:398
 msgid "Hide accordion"
-msgstr ""
+msgstr "Akkordion ausblenden"
 
 #: includes/Common/Widgets/FAQ.php:123
 msgid "hide question"
-msgstr "frage verbergen"
+msgstr "Frage ausblenden"
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:123
 #: includes/Common/Shortcode/ShortcodeFAQ.php:132
 #: blocks/faq/edit.js:436
 #: blocks/glossary/edit.js:435
 msgid "Hide title"
-msgstr "Titel ausblenden"
+msgstr "Ausgabe ohne Frage"
 
 #. URI of the plugin
 msgid "https://github.com/RRZE-Webteam/rrze-answers"
@@ -576,11 +572,11 @@ msgstr "ID"
 
 #: includes/Common/AdminInterfaces/AdminUI.php:283
 msgid "If there is more than one category listed, use at least one of them."
-msgstr "Wenn es mehr als eine Kategorie gibt, verwende mindestens eine davon."
+msgstr "Wenn mehrere Kategorien aufgeführt sind, nutzen Sie bitte mindestens eine davon."
 
 #: includes/Common/AdminInterfaces/AdminUI.php:287
 msgid "If there is more than one tag listed, use at least one of them."
-msgstr "Wenn mehr als ein Schlagwort aufgelistet ist, verwende mindestens eines von ihnen."
+msgstr "Wenn mehrere Schlagwörter aufgeführt sind, nutzen Sie bitte mindestens eines davon."
 
 #: includes/Defaults.php:65
 msgid "Import"
@@ -588,18 +584,18 @@ msgstr ""
 
 #: includes/Common/AdminInterfaces/AdminUI.php:133
 msgid "Integration in pages and posts as a shortcode"
-msgstr ""
+msgstr "Integration in Seiten und Beiträgen als Shortcode"
 
 #: includes/Common/API/SyncAPI.php:607
 #: includes/Common/API/SyncAPI.php:610
 #, fuzzy
 msgid "is already in use."
-msgstr " ist bereits im Einsatz."
+msgstr " ist bereits in Verwendung."
 
 #: includes/Common/API/SyncAPI.php:621
 #, fuzzy
 msgid "is not valid."
-msgstr " ungültig."
+msgstr " ist nicht gültig."
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:199
 #: includes/Common/Shortcode/ShortcodeFAQ.php:219
@@ -620,28 +616,40 @@ msgstr "Sprache dieser FAQ"
 #: includes/Common/CPT/CPT.php:160
 #: includes/Common/CPT/CPT.php:176
 msgid "Linked Page"
-msgstr ""
+msgstr "Verlinkte Seite"
 
 #: includes/Common/Shortcode/ShortcodeFAQ.php:146
 msgid "Load website with opened accordeons"
-msgstr "Website mit geöffneten Accordions laden"
+msgstr "Website mit geöffneten Akkordeons laden"
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:137
 msgid "Load website with opened accordions"
-msgstr ""
+msgstr "Website mit geöffneten Akkordeons laden"
 
 #: includes/Defaults.php:66
 msgid "Logfile"
-msgstr "Logfile"
+msgstr "Protokoll"
 
 #: includes/Common/Settings/templates/options/logfile.php:22
 #: includes/Common/Settings/templates/options/logfile.php:25
 msgid "Logfile is empty."
-msgstr "Das Logfile ist leer."
+msgstr "Logfile ist leer."
 
 #: includes/Common/Shortcode/ShortcodePlaceholder.php:58
 msgid "Longform"
-msgstr ""
+msgstr "Lange Form"
+
+#: includes/Common/AdminInterfaces/AdminMenu.php:63
+msgid "Manage glossary terms"
+msgstr "Glossarbegriffe verwalten"
+
+#: includes/Common/AdminInterfaces/AdminMenu.php:64
+msgid "Manage placeholders & groups"
+msgstr "Platzhalter & Gruppen verwalten"
+
+#: includes/Common/AdminInterfaces/AdminMenu.php:62
+msgid "Manage questions & answers"
+msgstr "Fragen & Antworten verwalten"
 
 #: includes/Common/Sync/Sync.php:108
 msgid "new"
@@ -655,7 +663,7 @@ msgstr "Domain hinzufügen"
 #: includes/Common/Sync/Sync.php:65
 #, fuzzy
 msgid "Next automatic synchronization:"
-msgstr "Die nächste automatische Synchronisierung:"
+msgstr "Nächste automatische Synchronisierung:"
 
 #: rrze-answers.php:310
 msgid "No sites required changes."
@@ -664,7 +672,7 @@ msgstr ""
 #: includes/Common/CPT/CPT.php:162
 #: includes/Common/CPT/CPT.php:178
 msgid "None"
-msgstr ""
+msgstr "Keine"
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:49
 #: includes/Common/Shortcode/ShortcodeGlossary.php:174
@@ -677,24 +685,28 @@ msgstr ""
 msgid "none"
 msgstr "keine"
 
+#: includes/Common/AdminInterfaces/AdminMenu.php:72
+msgid "Open"
+msgstr "Öffnen"
+
 #: includes/Common/Widgets/FAQ.php:174
 msgid "or choose a Category to display a FAQ randomly"
-msgstr "oder wähle eine Kategorie, um zufällig eine FAQ anzuzeigen"
+msgstr "oder wählen Sie eine Kategorie aus der eine FAQ zufällig angezeigt wird"
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:235
 #: includes/Common/Shortcode/ShortcodeFAQ.php:255
 #: blocks/faq/edit.js:455
 #: blocks/glossary/edit.js:453
 msgid "Order"
-msgstr "Bestellung"
+msgstr "Reihenfolge"
 
 #: includes/Defaults.php:63
 msgid "Permalink Settings"
-msgstr ""
+msgstr "Permalink Einstellungen"
 
 #: includes/Defaults.php:62
 msgid "Permissions"
-msgstr ""
+msgstr "Erlaubnisse"
 
 #: includes/Defaults.php:177
 #: includes/Common/CPT/CPTPlaceholder.php:36
@@ -703,28 +715,24 @@ msgstr ""
 #: includes/Common/AdminInterfaces/AdminMenu.php:64
 #: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:168
 msgid "Placeholder"
-msgstr ""
+msgstr "Platzhalter"
 
 #: includes/Defaults.php:190
 msgid "Placeholder Slug"
-msgstr ""
-
-#: includes/Common/AdminInterfaces/AdminMenu.php:64
-msgid "Placeholdere & Gruppen"
-msgstr ""
+msgstr "Platzhalter Slug"
 
 #: templates/rrze_placeholder-archive.php:13
 msgid "Placeholders"
-msgstr ""
+msgstr "Platzhalter"
 
 #: includes/Common/CPT/CPTPlaceholder.php:34
 msgctxt "Placeholders"
 msgid "Placeholder"
-msgstr ""
+msgstr "Platzhalter"
 
 #: includes/Common/Settings/templates/options/domains-table.php:26
 msgid "Please note: \"Delete selected domains\" will DELETE every FAQ on this website that has been fetched from the selected domains."
-msgstr "Bitte beachte: \"Ausgewählte Domains löschen\" löscht alle FAQ auf dieser Website, die von den ausgewählten Domains abgerufen wurden."
+msgstr "Bitte beachten: \"Ausgewählte Domains löschen\" LÖSCHT alle FAQ auf dieser Website, die von den ausgewählten Domains bezogen wurden."
 
 #. 1: The plugin name, 2: The error string.
 #: rrze-answers.php:379
@@ -735,27 +743,27 @@ msgstr ""
 #: includes/Common/Tools.php:535
 #: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:135
 msgid "Pronunciation"
-msgstr ""
+msgstr "Aussprache"
 
 #: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:66
 msgid "Pronunciation language"
-msgstr ""
+msgstr "Sprache der Aussprache"
 
 #: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:42
 msgid "Properties"
-msgstr ""
+msgstr "Eigenschaften"
 
 #: includes/Common/AdminInterfaces/AdminUI_QA.php:197
 msgid "Question"
-msgstr ""
+msgstr "Frage"
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:62
 msgid "Register content"
-msgstr ""
+msgstr "Register Inhalt"
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:86
 msgid "Register style"
-msgstr ""
+msgstr "Register Stil"
 
 #: includes/Common/Sync/Sync.php:108
 #: includes/Common/Sync/Sync.php:119
@@ -769,7 +777,7 @@ msgstr ""
 
 #: includes/Defaults.php:55
 msgid "RRZE Answers Settings"
-msgstr ""
+msgstr "RRZE Answers Einstellungen"
 
 #. Author of the plugin
 msgid "RRZE Webteam"
@@ -789,15 +797,15 @@ msgstr "Russisch"
 
 #: includes/Common/CPT/CPTFAQ.php:42
 msgid "Search FAQ"
-msgstr "Suche FAQ"
+msgstr "FAQ suchen"
 
 #: includes/Common/CPT/CPTGlossary.php:41
 msgid "Search glossary"
-msgstr ""
+msgstr "Glossar suchen"
 
 #: includes/Common/CPT/CPTPlaceholder.php:41
 msgid "Search placeholder"
-msgstr ""
+msgstr "Platzhalter suchen"
 
 #: includes/Common/Sync/Sync.php:108
 #: includes/Common/Sync/Sync.php:119
@@ -810,7 +818,7 @@ msgstr ""
 
 #: includes/Common/Settings/Settings.php:587
 msgid "Settings saved."
-msgstr ""
+msgstr "Einstellungen gespeichert."
 
 #: includes/Common/Sync/Sync.php:121
 msgid "Settings updated"
@@ -819,19 +827,19 @@ msgstr "Einstellungen aktualisiert"
 #: includes/Common/Shortcode/ShortcodeGlossary.php:130
 #: includes/Common/Shortcode/ShortcodeFAQ.php:139
 msgid "Show \"expand all\" button"
-msgstr "Schaltfläche \"Alles erweitern\" anzeigen"
+msgstr "\"Alle öffnen\" - Button anzeigen"
 
 #: includes/Common/Widgets/FAQ.php:121
 msgid "show question and answer"
-msgstr "frage und Antwort anzeigen"
+msgstr "Zeige Frage und Antwort"
 
 #: includes/Common/Widgets/FAQ.php:122
 msgid "show question and answer opened"
-msgstr "frage und Antwort anzeigen geöffnet"
+msgstr "Zeige Frage und geöffnete Antwort"
 
 #: includes/Common/AdminInterfaces/AdminUI.php:280
 msgid "Single entries"
-msgstr "Einzelne Einträge"
+msgstr "Einzelner Eintrag"
 
 #: includes/Common/CPT/CPTFAQ.php:36
 msgctxt "Single FAQ, placeholder or glossary "
@@ -841,12 +849,12 @@ msgstr "FAQ"
 #: includes/Common/CPT/CPTGlossary.php:35
 msgctxt "Single glossary "
 msgid "Glossary"
-msgstr ""
+msgstr "Glossar"
 
 #: includes/Common/CPT/CPTPlaceholder.php:35
 msgctxt "Single placeholder"
 msgid "Placeholder"
-msgstr ""
+msgstr "Platzhalter"
 
 #: includes/Common/Shortcode/ShortcodePlaceholder.php:46
 msgid "Slug"
@@ -858,11 +866,11 @@ msgstr ""
 #: blocks/faq/edit.js:448
 #: blocks/glossary/edit.js:446
 msgid "Sort"
-msgstr "Sortieren"
+msgstr "Sortierung"
 
 #: includes/Common/AdminInterfaces/AdminUI_QA.php:212
 msgid "Sort by"
-msgstr ""
+msgstr "Sortieren nach"
 
 #: includes/Common/AdminInterfaces/AdminUI_QA.php:199
 msgid "Sort criterion"
@@ -898,11 +906,11 @@ msgstr "Start"
 #: includes/Common/Shortcode/ShortcodeGlossary.php:187
 #: includes/Common/Shortcode/ShortcodeFAQ.php:200
 msgid "Style"
-msgstr "Aussehen"
+msgstr "Stil"
 
 #: includes/Common/Sync/Sync.php:108
 msgid "Synchronization completed."
-msgstr "Die Synchronisierung ist abgeschlossen."
+msgstr "Synchronisierung abgeschlossen."
 
 #: includes/Defaults.php:276
 msgid "Synchronize automatically"
@@ -978,15 +986,15 @@ msgstr "Titel"
 
 #: includes/Defaults.php:282
 msgid "twicedaily"
-msgstr "Zweimal täglich"
+msgstr "Zwei Mal am Schlagwörtern"
 
 #: includes/Common/Shortcode/ShortcodePlaceholder.php:62
 msgid "Type of output"
-msgstr ""
+msgstr "Art der Ausgabe"
 
 #: includes/Common/Settings/Settings.php:406
 msgid "Unnamed tab"
-msgstr ""
+msgstr "Unbenannter Tab"
 
 #: includes/Common/Sync/Sync.php:108
 msgid "updated"
@@ -996,19 +1004,11 @@ msgstr "aktualisiert"
 msgid "was activated and old plugins were deactivated on these sites:"
 msgstr ""
 
-#: includes/Common/AdminInterfaces/AdminMenu.php:59
-msgid "Wähle einen Bereich:"
-msgstr ""
-
 #: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:116
 #: includes/Common/AdminInterfaces/AdminUI.php:237
 msgid "You can edit it at the source"
-msgstr "Du kannst sie an der Quelle bearbeiten"
+msgstr "Sie können es auf der Quelle editieren"
 
 #: includes/Common/Settings/Settings.php:562
 msgid "You do not have enough permissions to do that."
-msgstr ""
-
-#: includes/Common/AdminInterfaces/AdminMenu.php:72
-msgid "Öffnen"
 msgstr ""
