@@ -129,22 +129,17 @@ export default function Edit( { attributes, setAttributes } ) {
                         value={ id }
                         options={ faqOptions }
                         onChange={ onChangeFAQ }
-                        help={ __( 'Select a specific FAQ post.', 'rrze-answers' ) }
                     />
 
                     <SelectControl
                         label={ __(
-                            'Or choose a category to display a random FAQ',
+                            'Or',
                             'rrze-answers'
                         ) }
                         value={ catID }
                         options={ categoryOptions }
                         onChange={ onChangeCategory }
                         disabled={ ! categories.length && ! isLoadingCategories }
-                        help={ __(
-                            'If a category is selected and no specific FAQ is set, a random FAQ from this category will be used.',
-                            'rrze-answers'
-                        ) }
                     />
                 </PanelBody>
 

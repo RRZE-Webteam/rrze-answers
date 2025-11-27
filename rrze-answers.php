@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            0.1.34
+Version:            1.0.0
 Description:        Explain your content with FAQ, glossary and placeholders. 
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
@@ -170,18 +170,18 @@ function register_blocks()
     register_block_type_from_metadata(__DIR__ . '/blocks/glossary');
     register_block_type_from_metadata(__DIR__ . '/blocks/placeholder');
 
- 
-$faq_handle        = generate_block_asset_handle( 'rrze-answers/faq', 'editorScript' );
-$faq_widget_handle = generate_block_asset_handle( 'rrze-answers/faq-widget', 'editorScript' );
-$glossary_handle   = generate_block_asset_handle( 'rrze-answers/glossary', 'editorScript' );
-$placeholder_handle = generate_block_asset_handle( 'rrze-answers/placeholder', 'editorScript' );
 
-$path = plugin_dir_path( __FILE__ ) . 'languages';
+    $faq_handle = generate_block_asset_handle('rrze-answers/faq', 'editorScript');
+    $faq_widget_handle = generate_block_asset_handle('rrze-answers/faq-widget', 'editorScript');
+    $glossary_handle = generate_block_asset_handle('rrze-answers/glossary', 'editorScript');
+    $placeholder_handle = generate_block_asset_handle('rrze-answers/placeholder', 'editorScript');
 
-wp_set_script_translations( $faq_handle, 'rrze-answers', $path );
-wp_set_script_translations( $faq_widget_handle, 'rrze-answers', $path );
-wp_set_script_translations( $glossary_handle, 'rrze-answers', $path );
-wp_set_script_translations( $placeholder_handle, 'rrze-answers', $path );
+    $path = plugin_dir_path(__FILE__) . 'languages';
+
+    wp_set_script_translations($faq_handle, 'rrze-answers', $path);
+    wp_set_script_translations($faq_widget_handle, 'rrze-answers', $path);
+    wp_set_script_translations($glossary_handle, 'rrze-answers', $path);
+    wp_set_script_translations($placeholder_handle, 'rrze-answers', $path);
 }
 
 
