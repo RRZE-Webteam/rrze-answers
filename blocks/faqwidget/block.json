@@ -1,0 +1,31 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "rrze-answers/faqwidget",
+  "title": "RRZE FAQ Widget",
+  "category": "widgets",
+  "icon": "editor-help",
+  "description": "Displays a random FAQ from a category.",
+  "attributes": {
+    "id": {
+      "type": "integer",
+      "default": 0
+    },
+    "catID": {
+      "type": "integer",
+      "default": 0
+    },
+    "hide_title": {
+      "type": "integer",
+      "default": 0
+    }
+  },
+  "supports": {
+    "html": false
+  },
+  "textdomain": "rrze-answers",
+  "editorScript": "file:../../build/faqwidget.js",
+  "style": "file:../../build/css/rrze-answers.css",
+  "editorStyle": "file:../../build/css/rrze-answers.css",
+  "render": "file:./render.php"
+}
