@@ -564,4 +564,122 @@ class Tools
         }
     }
 
+
+    /**
+     * Render callback for the FAQ block.
+     *
+     * @param array $attributes Block attributes.
+     * @return string
+     */
+    public static function render_faq_block($attributes)
+    {
+        // Define default attribute values to avoid undefined indexes.
+        $defaults = [
+            'id' => 0,
+            'catID' => 0,
+            'start' => '',
+            'end' => '',
+            'display' => 1,
+        ];
+
+        $attributes = wp_parse_args($attributes, $defaults);
+
+        $id = (int) $attributes['id'];
+        $cat_id = (int) $attributes['catID'];
+        $start = !empty($attributes['start']) ? wp_date('Y-m-d', strtotime($attributes['start'])) : '';
+        $end = !empty($attributes['end']) ? wp_date('Y-m-d', strtotime($attributes['end'])) : '';
+        $display = (int) $attributes['display'];
+
+        // Date range is optional: only limit output if values are set.
+        if ($start || $end) {
+            $today = wp_date('Y-m-d');
+
+            if (($start && $today < $start) || ($end && $today > $end)) {
+                // Outside of date range -> do not render anything.
+                return '';
+            }
+        }
+
+        // If no explicit FAQ ID is given, try to get a random one.
+        // If a category is set, pick from that category; otherwise from all FAQs.
+        if (!$id) {
+            $id = static::get_random_faq_id($cat_id);
+        }
+
+        // If we still have no valid FAQ ID, render nothing.
+        if (!$id) {
+            return '';
+        }
+
+        // Map display option to shortcode attributes.
+        switch ($display) {
+            case 2:
+                $shortcode_attr = "show='load-open'";
+                break;
+            case 3:
+                $shortcode_attr = "hide='title'";
+                break;
+            case 1:
+            default:
+                $shortcode_attr = '';
+                break;
+        }
+
+        // Build shortcode string.
+        $shortcode = sprintf(
+            '[faq id="%d"%s%s]',
+            $id,
+            $shortcode_attr ? ' ' : '',
+            $shortcode_attr
+        );
+
+        // Return rendered shortcode.
+        echo do_shortcode($shortcode);
+    }
+
+    /**
+     * Get a random FAQ ID.
+     * If a category ID is provided, pick from that category; otherwise from all FAQs.
+     *
+     * @param int $cat_id Category term ID (optional).
+     * @return int
+     */
+    protected static function get_random_faq_id($cat_id = 0)
+    {
+        $cat_id = (int) $cat_id;
+
+        $args = [
+            'posts_per_page' => -1,
+            'post_type' => 'rrze_faq',
+            'fields' => 'ids',
+            'post_status' => 'publish',
+            'no_found_rows' => true,
+            'update_post_term_cache' => false,
+            'update_post_meta_cache' => false,
+        ];
+
+        // Add taxonomy filter only if a category is given.
+        if ($cat_id) {
+            $args['tax_query'] = [
+                [
+                    'taxonomy' => 'rrze_faq_category',
+                    'field' => 'term_id',
+                    'terms' => $cat_id,
+                ],
+            ];
+        }
+
+        $posts = get_posts($args);
+
+        if (empty($posts)) {
+            return 0;
+        }
+
+        // Pick a random ID from the list.
+        $random_key = array_rand($posts);
+
+        return (int) $posts[$random_key];
+    }
+
+
 }

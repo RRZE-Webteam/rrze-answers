@@ -420,6 +420,9 @@ class Main
         $blocks = new Blocks(
             [                                  // Array of block names
                 'faq',
+                'faqwidget',
+                'glossary',
+                'placeholder'
             ],
             plugin()->getPath('build/blocks'), // Blocks directory path
             plugin()->getPath()                // Plugin directory path

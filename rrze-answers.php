@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            0.1.11
+Version:            0.1.29
 Description:        Explain your content with FAQ, glossary and placeholders. 
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
@@ -166,6 +166,7 @@ function load_textdomain()
 function register_blocks()
 {
     register_block_type_from_metadata(__DIR__ . '/blocks/faq');
+    register_block_type_from_metadata(__DIR__ . '/blocks/faqwidget');
     register_block_type_from_metadata(__DIR__ . '/blocks/glossary');
     register_block_type_from_metadata(__DIR__ . '/blocks/placeholder');
 
