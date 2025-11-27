@@ -8,7 +8,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2025-02-27T09:48:14+00:00\n"
-"PO-Revision-Date: 2025-11-27 15:06+0000\n"
+"PO-Revision-Date: 2025-11-27 15:10+0000\n"
 "Language: de_DE\n"
 "X-Generator: Loco https://localise.biz/\n"
 "X-Poedit-Basepath: ..\n"
@@ -754,7 +754,7 @@ msgstr ""
 
 #: blocks/faq/edit.js:326
 msgid "Only show FAQ-entries with these selected categories."
-msgstr ""
+msgstr "Nur FAQ-Einträge mit diesen ausgewählten Kategorien anzeigen."
 
 #: blocks/faq/edit.js:337
 msgid "Only show FAQ-entries with these selected tags."
@@ -922,7 +922,7 @@ msgstr "Sekunden"
 
 #: blocks/faq-widget/edit.js:132
 msgid "Select a specific FAQ post."
-msgstr ""
+msgstr "Wählen Sie einen bestimmten FAQ-Beitrag aus."
 
 #: includes/Common/Settings/templates/settings-page.php:21
 msgid "Settings issues detected."
@@ -943,11 +943,11 @@ msgstr "\"Alle öffnen\" - Button anzeigen"
 
 #: blocks/placeholder/edit.js:220
 msgid "Show a selection of individual Placeholders"
-msgstr ""
+msgstr "Eine Auswahl einzelner Platzhalter anzeigen"
 
 #: blocks/placeholder/edit.js:231
 msgid "Show only Placeholders matching the selected language."
-msgstr ""
+msgstr "Nur Platzhalter anzeigen, die der ausgewählten Sprache entsprechen."
 
 #: includes/Common/Widgets/FAQ.php:121
 msgid "show question and answer"
@@ -968,7 +968,7 @@ msgstr "FAQ"
 
 #: blocks/faq/edit.js:347
 msgid "Single FAQ-Entries"
-msgstr ""
+msgstr "Einzelner FAQ Eintrag"
 
 #: includes/Common/CPT/CPTGlossary.php:35
 msgctxt "Single glossary "
@@ -977,7 +977,7 @@ msgstr "Glossar"
 
 #: blocks/glossary/edit.js:347
 msgid "Single glossary-Entries"
-msgstr ""
+msgstr "Einzelner Glossar Eintrag"
 
 #: includes/Common/CPT/CPTPlaceholder.php:35
 msgctxt "Single placeholder"
@@ -1011,7 +1011,7 @@ msgstr "Sortierfeld"
 
 #: blocks/faq/edit.js:446 blocks/glossary/edit.js:444
 msgid "Sorting options"
-msgstr ""
+msgstr "Sortier Optionen"
 
 #: includes/Common/AdminInterfaces/AdminUI_QA.php:202
 #: includes/Common/AdminInterfaces/AdminUI_QA.php:215
@@ -1099,6 +1099,7 @@ msgstr "Diese FAQ kann nicht bearbeitet werden, da sie synchronisiert ist"
 #: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:115
 msgid "This placeholder cannot be edited because it is synchronized"
 msgstr ""
+"Dieser Platzhalter kann nicht bearbeitet werden, da er synchronisiert ist."
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:206
 #: includes/Common/Shortcode/ShortcodeFAQ.php:226 blocks/faq/edit.js:269
@@ -1137,8 +1138,8 @@ msgstr ""
 
 #: blocks/faq-widget/edit.js:81
 msgid "— Select category —"
-msgstr ""
+msgstr "-- Kategorie wählen --"
 
 #: blocks/faq-widget/edit.js:72
 msgid "— Select FAQ —"
-msgstr ""
+msgstr "-- FAQ wählen --"
