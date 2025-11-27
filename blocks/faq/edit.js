@@ -323,10 +323,7 @@ export default function Edit({ attributes, setAttributes }) {
 				>
 					<SelectControl
 						label={__('Categories', 'rrze-answers')}
-						help={__(
-							'Only show FAQ-entries with these selected categories.',
-							'rrze-answers'
-						)}
+						help={__('Only show FAQ-entries with these selected categories.','rrze-answers')}
 						value={categorystate}
 						options={categoryoptions}
 						onChange={onChangeCategory}
@@ -334,10 +331,7 @@ export default function Edit({ attributes, setAttributes }) {
 					/>
 					<SelectControl
 						label={__('Tags', 'rrze-answers')}
-						help={__(
-							'Only show FAQ-entries with these selected tags.',
-							'rrze-answers'
-						)}
+						help={__('Only show FAQ-entries with these selected tags.','rrze-answers')}
 						value={tagstate}
 						options={tagoptions}
 						onChange={onChangeTag}
@@ -345,10 +339,7 @@ export default function Edit({ attributes, setAttributes }) {
 					/>
 					<SelectControl
 						label={__('Single FAQ-Entries', 'rrze-answers')}
-						help={__(
-							'Only show these FAQ-entries.',
-							'rrze-answers'
-						)}
+						help={__('Only show these FAQ-entries.','rrze-answers')}
 						value={idstate}
 						options={faqoptions}
 						onChange={onChangeID}
@@ -356,26 +347,18 @@ export default function Edit({ attributes, setAttributes }) {
 					/>
 					<SelectControl
 						label={__('Language', 'rrze-answers')}
-						help={__(
-							'Only show FAQ-entries in this language.',
-							'rrze-answers'
-						)}
+						help={__('Only show FAQ-entries in this language.','rrze-answers')}
 						value={lang}
 						options={langoptions}
-						onChange={(value) =>
-							setAttributes({ lang: value })
+						onChange={(value) =>setAttributes({ lang: value })
 						}
 					/>
 					<SelectControl
 						label={__('Group Glossary Content by', 'rrze-answers')}
-						help={__(
-							'Group FAQ-entries by categories or tags.',
-							'rrze-answers'
-						)}
+						help={__('Group FAQ-entries by categories or tags.','rrze-answers')}
 						value={glossary}
 						options={glossaryoptions}
-						onChange={(value) =>
-							setAttributes({ glossary: value })
+						onChange={(value) =>setAttributes({ glossary: value })
 						}
 					/>
 				</PanelBody>
@@ -388,58 +371,11 @@ export default function Edit({ attributes, setAttributes }) {
 					<SelectControl
 						label={__('Glossary style', 'rrze-answers')}
 						options={glossarystyleoptions}
-						onChange={(value) =>
-							setAttributes({ glossarystyle: value })
+						onChange={(value) =>setAttributes({ glossarystyle: value })
 						}
 					/>
 					{(!glossary || glossary === 'none') && (
-						<>
-							<ToggleControl
-								checked={!!hide_accordion}
-								label={__('Hide accordion', 'rrze-answers')}
-								onChange={() =>
-									setAttributes({
-										hide_accordion: !hide_accordion,
-									})
-								}
-							/>
-								<>
-									<ToggleControl
-										checked={!!masonry}
-										label={__('Grid', 'rrze-answers')}
-										onChange={() =>
-											setAttributes({
-												masonry: !masonry,
-											})
-										}
-									/>
-									<SelectControl
-										label={__(
-											'Accordion-Style',
-											'rrze-answers'
-										)}
-										options={styleoptions}
-										onChange={(value) =>
-											setAttributes({ style: value })
-										}
-									/>
-									<SelectControl
-										label={__('Color', 'rrze-answers')}
-										options={coloroptions}
-										onChange={(value) =>
-											setAttributes({ color: value })
-										}
-									/>
-								</>
-								<ToggleControl
-									checked={!!hide_title}
-									label={__('Hide title', 'rrze-answers')}
-									onChange={() =>
-										setAttributes({
-											hide_title: !hide_title,
-										})
-									}
-								/>
+						<><ToggleControl	checked={!!hide_accordion}	label={__('Hide accordion', 'rrze-answers')}	onChange={() =>		setAttributes({			hide_accordion: !hide_accordion,		})	}/><>	<ToggleControl		checked={!!masonry}		label={__('Grid', 'rrze-answers')}		onChange={() =>			setAttributes({				masonry: !masonry,			})		}	/>	<SelectControl		label={__(			'Accordion-Style',			'rrze-answers'		)}		options={styleoptions}		onChange={(value) =>			setAttributes({ style: value })		}	/>	<SelectControl		label={__('Color', 'rrze-answers')}		options={coloroptions}		onChange={(value) =>			setAttributes({ color: value })		}	/></><ToggleControl	checked={!!hide_title}	label={__('Hide title', 'rrze-answers')}	onChange={() =>		setAttributes({			hide_title: !hide_title,		})	}/>
 						</>
 					)}
 				</PanelBody>
@@ -447,15 +383,13 @@ export default function Edit({ attributes, setAttributes }) {
 					<SelectControl
 						label={__('Sort', 'rrze-answers')}
 						options={sortoptions}
-						onChange={(value) =>
-							setAttributes({ sort: value })
+						onChange={(value) =>setAttributes({ sort: value })
 						}
 					/>
 					<SelectControl
 						label={__('Order', 'rrze-answers')}
 						options={orderoptions}
-						onChange={(value) =>
-							setAttributes({ order: value })
+						onChange={(value) =>setAttributes({ order: value })
 						}
 					/>
 				</PanelBody>

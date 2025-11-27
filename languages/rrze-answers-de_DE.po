@@ -3,671 +3,1162 @@ msgstr ""
 "Project-Id-Version: RRZE FAQ\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/rrze-answers\n"
 "Last-Translator: \n"
-"Language-Team: \n"
+"Language-Team: Deutsch\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2025-02-27T09:48:14+00:00\n"
-"PO-Revision-Date: 2025-02-27 11:05+0100\n"
+"PO-Revision-Date: 2025-11-27 17:30+0000\n"
 "Language: de_DE\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Loco https://localise.biz/\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
 "X-Poedit-WPHeader: rrze-answers.php\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.min.js\n"
 "X-Poedit-SearchPathExcluded-1: node_modules\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Loco-Version: 2.8.0; wp-6.8.3; php-8.4.10\n"
 
-#. Plugin Name of the plugin
-#: rrze-answers.php
-#: config/config.php:53
-#: config/config.php:54
+#: includes/Common/API/SyncAPI.php:626
+msgid " does not support this plugin."
+msgstr "unterstützt dieses Plugin nicht."
+
+#: includes/Common/Tools.php:471
+msgid "-- Choose a website --"
+msgstr "-- Website wählen --"
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:79
+#: includes/Common/Shortcode/ShortcodeGlossary.php:69 blocks/faq/edit.js:220
+#: blocks/glossary/edit.js:220 blocks/placeholder/edit.js:134 build/faq.js:1
+#: build/glossary.js:1 build/placeholder.js:1
+msgid "-- hidden --"
+msgstr "-- versteckt --"
+
+#: includes/Defaults.php:280
+msgid "-- off --"
+msgstr "-- aus --"
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:83
+#: includes/Common/Shortcode/ShortcodeGlossary.php:73 blocks/faq/edit.js:208
+#: blocks/glossary/edit.js:208 blocks/placeholder/edit.js:138 build/faq.js:1
+#: build/glossary.js:1 build/placeholder.js:1
+msgid "A - Z"
+msgstr "A - Z"
+
+#: includes/Common/Shortcode/ShortcodePlaceholder.php:57
+msgid "Abbreviation"
+msgstr "Abkürzung"
+
+#: includes/Common/AdminInterfaces/AdminUI.php:289
+msgid "Accordion with all entries"
+msgstr "Akkordeon mit allen Einträgen"
+
+#: includes/Common/AdminInterfaces/AdminUI.php:282
+msgid "Accordion with category"
+msgstr "Akkordeon mit Kategorie"
+
+#: includes/Common/AdminInterfaces/AdminUI.php:286
+msgid "Accordion with tag"
+msgstr "Akkordeon mit Schlagwort"
+
+#: blocks/faq/edit.js:378 blocks/glossary/edit.js:416 build/faq.js:1
+#: build/glossary.js:1
+msgid "Accordion-Style"
+msgstr "Akkordeon-Stil"
+
+#: includes/Common/AdminInterfaces/AdminMenu.php:89
+msgid "Add %s"
+msgstr "%s hinzufügen "
+
+#: includes/Common/CPT/CPTFAQ.php:38
+msgid "Add FAQ"
+msgstr "FAQ hinzufügen"
+
+#: includes/Common/CPT/CPTGlossary.php:37
+msgid "Add glossary"
+msgstr "Glossar hinzufügen"
+
+#: includes/Common/CPT/CPTFAQ.php:39
+msgid "Add new FAQ"
+msgstr "Neue FAQ hinzufügen"
+
+#: includes/Common/CPT/CPTGlossary.php:38
+msgid "Add new glossary"
+msgstr "Neues Glossar hinzufügen"
+
+#: includes/Common/CPT/CPTPlaceholder.php:38
+msgid "Add new placeholder"
+msgstr "Neuen Platzhalter hinzufügen"
+
+#: includes/Common/CPT/CPTPlaceholder.php:37
+msgid "Add placeholder"
+msgstr "Platzhalter hinzufügen"
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:213
+#: includes/Common/Shortcode/ShortcodeGlossary.php:193
+msgid "Additonal CSS-class(es) for sourrounding DIV"
+msgstr "Zusätzliche CSS-Klasse(n) für das umgebende DIV"
+
+#: blocks/faq/edit.js:97 blocks/faq/edit.js:118 blocks/faq/edit.js:144
+#: blocks/faq/edit.js:162 blocks/glossary/edit.js:97
+#: blocks/glossary/edit.js:118 blocks/glossary/edit.js:144
+#: blocks/glossary/edit.js:162 blocks/placeholder/edit.js:43
+#: blocks/placeholder/edit.js:63 blocks/placeholder/edit.js:83
+#: blocks/placeholder/edit.js:99 build/faq.js:1 build/glossary.js:1
+#: build/placeholder.js:1
+msgid "all"
+msgstr "Alle"
+
+#: includes/Common/AdminInterfaces/AdminMenu.php:88
+msgid "All %s"
+msgstr "Alle %s"
+
+#: includes/Common/CPT/CPTFAQ.php:41
+msgid "All FAQ"
+msgstr "Alle FAQ"
+
+#: includes/Common/CPT/CPTGlossary.php:40
+msgid "All glossaries"
+msgstr "Alle Glossare"
+
+#: includes/Defaults.php:207
+msgid "All languages"
+msgstr "Alle Sprachen"
+
+#: includes/Common/CPT/CPTPlaceholder.php:40
+msgid "All placeholders"
+msgstr "Alle Platzhalter"
+
+#: includes/Common/AdminInterfaces/AdminUI.php:371
+msgid "All Sources"
+msgstr "Alle Quellen"
+
+#: includes/Common/Sync/Sync.php:119
+msgid "All synchronizations completed"
+msgstr "Alle Synchronisierungen abgeschlossen"
+
+#: includes/Defaults.php:73
+msgid ""
+"Allow other websites to import your FAQ. Your SEO will not be affected. "
+"Structured data is used for your content only."
+msgstr ""
+"Erlauben Sie anderen Websites, Ihre FAQ zu importieren. Ihre "
+"Suchmaschinenoptimierung (SEO) wird davon nicht beeinträchtigt. "
+"Strukturierte Daten werden ausschließlich für Ihre Inhalte verwendet."
+
+#: includes/Defaults.php:79
+msgid ""
+"Allow other websites to import your glossary. Your SEO will not be affected. "
+"Structured data is used for your content only."
+msgstr ""
+"Erlauben Sie anderen Websites, Ihr Glossar zu importieren. Ihre "
+"Suchmaschinenoptimierung (SEO) wird davon nicht beeinträchtigt. "
+"Strukturierte Daten werden ausschließlich für Ihre Inhalte verwendet."
+
+#: includes/Defaults.php:72
+msgid "Allow to import FAQ"
+msgstr "Import von FAQ erlauben"
+
+#: includes/Defaults.php:78
+msgid "Allow to import glossary"
+msgstr "Import von Glossaren erlauben"
+
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:60
+msgid "Anchor"
+msgstr "Sprungmarke"
+
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:113
+#, fuzzy
+msgid ""
+"Anchor field (optional) to define jump marks when displayed in accordions"
+msgstr ""
+"Ankerfeld (optional) zum Definieren von Sprungmarken bei der Anzeige in "
+"Akkordeons "
+
+#: includes/Common/Sync/Sync.php:108
+msgid "and"
+msgstr "und"
+
+#: includes/Common/AdminInterfaces/AdminMenu.php:43
+#: includes/Common/AdminInterfaces/AdminMenu.php:44
+#: includes/Common/AdminInterfaces/AdminMenu.php:58
+msgid "Answers"
+msgstr "Antworten"
+
+#: includes/Common/API/RESTAPI.php:65
+msgid "API is deactivated for %s. Contact website owner %s"
+msgstr ""
+"API ist deaktiviert für %s. Kontaktieren Sie den Eigentümer der Website %s"
+
+#: blocks/faq/edit.js:366 blocks/faq/edit.js:367 blocks/glossary/edit.js:383
+#: blocks/glossary/edit.js:384 build/faq.js:1 build/glossary.js:1
+msgid "Appearance"
+msgstr "Erscheinung"
+
+#: includes/Defaults.php:106 includes/Defaults.php:144
+#: includes/Defaults.php:182
+msgid "Archive page"
+msgstr "Archiv Seite"
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:246
+#: includes/Common/Shortcode/ShortcodeGlossary.php:226 blocks/faq/edit.js:284
+#: blocks/glossary/edit.js:284 blocks/placeholder/edit.js:195 build/faq.js:1
+#: build/glossary.js:1 build/placeholder.js:1
+msgid "ASC"
+msgstr "aufsteigend"
+
+#: blocks/faq/block.json
+msgctxt "block description"
+msgid "Display FAQ"
+msgstr "FAQ anzeigen"
+
+#: blocks/glossary/block.json
+msgctxt "block description"
+msgid "Display glossaries"
+msgstr "Glossare anzeigen"
+
+#: blocks/placeholder/block.json
+msgctxt "block description"
+msgid "Display placeholders"
+msgstr "Platzhalter anzeigen"
+
+#: blocks/faq-widget/block.json
+msgctxt "block description"
+msgid "Displays a random FAQ from a category."
+msgstr "Zeigt ein zufälliges FAQ einer Kategorie an."
+
+#: blocks/placeholder/block.json
+msgctxt "block title"
+msgid "Placeholder"
+msgstr "Platzhalter"
+
+#: blocks/faq/block.json
+msgctxt "block title"
 msgid "RRZE FAQ"
 msgstr "RRZE FAQ"
 
-#. Plugin URI of the plugin
-#: rrze-answers.php
-msgid "https://gitlab.rrze.fau.de/rrze-webteam/rrze-answers"
-msgstr "https://gitlab.rrze.fau.de/rrze-webteam/rrze-answers"
+#: blocks/faq-widget/block.json
+msgctxt "block title"
+msgid "RRZE FAQ Widget"
+msgstr "RRZE FAQ Widget"
+
+#: blocks/glossary/block.json
+msgctxt "block title"
+msgid "RRZE Glossary"
+msgstr "RRZE Glossary"
+
+#: includes/Common/AdminInterfaces/AdminMenu.php:90
+#: includes/Common/Shortcode/ShortcodeFAQ.php:63
+#: includes/Common/Shortcode/ShortcodeFAQ.php:102
+#: includes/Common/Shortcode/ShortcodeGlossary.php:53
+#: includes/Common/Shortcode/ShortcodeGlossary.php:92 includes/Defaults.php:250
+#: includes/Defaults.php:258 templates/template-parts/faq-content.php:48
+#: templates/template-parts/glossary-content.php:33 blocks/faq/edit.js:197
+#: blocks/faq/edit.js:325 blocks/glossary/edit.js:197
+#: blocks/glossary/edit.js:325 build/faq.js:1 build/glossary.js:1
+msgid "Categories"
+msgstr "Kategorien"
+
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:209
+msgid "Category"
+msgstr "Kategorie"
+
+#: includes/Defaults.php:261
+msgid "Category not found."
+msgstr "Kategorie nicht gefunden."
+
+#: includes/Defaults.php:122 includes/Defaults.php:160
+msgid "Category Slug"
+msgstr "Kategorien Slug"
+
+#: includes/Defaults.php:213 blocks/faq/edit.js:186 blocks/glossary/edit.js:186
+#: blocks/placeholder/edit.js:126 build/faq.js:1 build/glossary.js:1
+#: build/placeholder.js:1
+msgid "Chinese"
+msgstr "Chinesisch"
+
+#: includes/Common/Widgets/FAQ.php:104 blocks/faq-widget/edit.js:128
+#: build/faq-widget.js:1
+msgid "Choose a FAQ"
+msgstr "Wählen Sie eine FAQ"
+
+#: includes/Common/AdminInterfaces/AdminMenu.php:59
+msgid "Choose a section:"
+msgstr "Abschnitt auswählen:"
+
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:73
+msgid "Choose the language in which the long form is pronounced."
+msgstr "Wählen Sie die Sprache, in der die Langform ausgesprochen wird."
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:180
+#: includes/Common/Shortcode/ShortcodeGlossary.php:167 blocks/faq/edit.js:378
+#: blocks/glossary/edit.js:426 build/faq.js:1 build/glossary.js:1
+msgid "Color"
+msgstr "Farbe"
+
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:106
+msgid "Criterion for sorting the output of the shortcode"
+msgstr "Kriterium für die Sortierung der Shortcode-Ausgabe"
+
+#: includes/Defaults.php:281
+msgid "daily"
+msgstr "täglich"
+
+#: includes/Common/Tools.php:454
+msgid "Default archive"
+msgstr "Standard-Archiv"
+
+#: includes/Common/Settings/templates/options/domains-table.php:27
+msgid "Delete selected domains"
+msgstr "Ausgewählte Domains löschen"
+
+#: includes/Common/Sync/Sync.php:108
+msgid "deleted"
+msgstr "gelöscht"
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:250
+#: includes/Common/Shortcode/ShortcodeGlossary.php:230 blocks/faq/edit.js:288
+#: blocks/glossary/edit.js:288 blocks/placeholder/edit.js:199 build/faq.js:1
+#: build/glossary.js:1 build/placeholder.js:1
+msgid "DESC"
+msgstr "absteigend"
+
+#: blocks/faq-widget/edit.js:147 build/faq-widget.js:1
+msgid "Display options"
+msgstr "Anzeigeoptionen"
+
+#: includes/Common/Widgets/FAQ.php:125
+msgid "Display options:"
+msgstr "Anzeige:"
+
+#: includes/Common/Widgets/FAQ.php:23
+msgid "Displays a FAQ"
+msgstr "Zeigt eine FAQ an"
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:114
+#: includes/Common/Sync/Sync.php:100 includes/Common/Sync/Sync.php:108
+msgid "Domain"
+msgstr "Domain"
+
+#: includes/Defaults.php:64 includes/Defaults.php:86
+msgid "Domains"
+msgstr "Domains"
+
+#: includes/Common/CPT/CPTFAQ.php:40
+msgid "Edit FAQ"
+msgstr "FAQ editieren"
+
+#: includes/Common/CPT/CPTGlossary.php:39
+msgid "Edit glossary"
+msgstr "Glossar editieren"
+
+#: includes/Common/CPT/CPTPlaceholder.php:39
+msgid "Edit placeholder"
+msgstr "Platzhalter editieren"
+
+#: includes/Common/Widgets/FAQ.php:140
+msgid "End"
+msgstr "Ende"
+
+#: includes/Defaults.php:209 blocks/faq/edit.js:170 blocks/glossary/edit.js:170
+#: blocks/placeholder/edit.js:108 build/faq.js:1 build/glossary.js:1
+#: build/placeholder.js:1
+msgid "English"
+msgstr "Englisch"
+
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:38
+msgid "Enter glossary term here"
+msgstr "Glossarbegriff hier eingeben"
+
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:32
+msgid "Enter placeholder here"
+msgstr "Platzhalterbegriff hier eingeben"
+
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:37
+msgid "Enter question here"
+msgstr "Geben Sie hier die Frage ein"
+
+#: includes/Defaults.php:87 includes/Defaults.php:93
+msgid "Enter the domain's URL you want to receive FAQ from."
+msgstr "Geben Sie die URL der Domain ein, von der Sie FAQ beziehen möchten."
+
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:62
+msgid ""
+"Enter the long, written form of the placeholder. This text replaces the "
+"shortcode. Note: line breaks or HTML are not accepted."
+msgstr ""
+"Geben Sie die lange, schriftliche Form des Platzhalters ein. Dieser Text "
+"ersetzt den Shortcode. Hinweis: Zeilenumbrüche oder HTML werden nicht "
+"akzeptiert."
+
+#: includes/Defaults.php:58
+msgid "Enter your text here..."
+msgstr "Text hier eingeben..."
+
+#: includes/Common/CPT/CPT.php:37 includes/Common/CPT/CPT.php:38
+#: includes/Common/CPT/CPT.php:91 includes/Common/CPT/CPT.php:92
+msgid "Entries"
+msgstr "Einträge"
+
+#: includes/Common/API/SyncAPI.php:330
+msgid "Error in absoluteUrl()."
+msgstr ""
+
+#: includes/Common/API/SyncAPI.php:116
+msgid "Error in deleteTaxonomies()."
+msgstr ""
+
+#: includes/Common/API/SyncAPI.php:447
+msgid "Error in getEntriesRemoteIDs()."
+msgstr ""
+
+#: includes/Common/API/SyncAPI.php:382
+msgid "Error in getEntry()."
+msgstr ""
+
+#: includes/Common/API/SyncAPI.php:92
+msgid "Error in getTaxonomies()."
+msgstr ""
+
+#: includes/Common/API/SyncAPI.php:583
+msgid "Error in remoteGet()."
+msgstr ""
+
+#: includes/Common/API/SyncAPI.php:179
+msgid "Error in setCategories()."
+msgstr ""
+
+#: includes/Common/API/SyncAPI.php:541
+msgid "Error in setEntries()."
+msgstr ""
+
+#: includes/Common/API/SyncAPI.php:428
+msgid "Error in setTags()."
+msgstr ""
+
+#: includes/Common/API/SyncAPI.php:223
+msgid "Error in sortCats()."
+msgstr ""
 
 #. Description of the plugin
 #: rrze-answers.php
-msgid "Plugin, um FAQ zu erstellen und aus dem FAU-Netzwerk zu synchronisieren. Verwendbar als Shortcode, Block oder Widget."
-msgstr "Plugin, um FAQ zu erstellen und aus dem FAU-Netzwerk zu synchronisieren. Verwendbar als Shortcode, Block oder Widget."
+msgid "Explain your content with FAQ, glossary and placeholders."
+msgstr "Erläutern Sie Ihre Inhalte mit FAQ, Glossar und Platzhaltern."
+
+#: includes/Common/AdminInterfaces/AdminMenu.php:52
+#: includes/Common/AdminInterfaces/AdminMenu.php:62
+#: includes/Common/CPT/CPTFAQ.php:37 includes/Common/Tools.php:229
+#: includes/Defaults.php:101
+msgid "FAQ"
+msgstr "FAQ"
+
+#: includes/Common/CPT/CPTFAQ.php:48
+msgid "FAQ Categories"
+msgstr "FAQ Kategorien"
+
+#: blocks/faq-widget/edit.js:113 build/faq-widget.js:1
+msgid "FAQ selection"
+msgstr "FAQ Auswahl"
+
+#: includes/Defaults.php:114
+msgid "FAQ Slug"
+msgstr ""
+
+#: includes/Common/CPT/CPTFAQ.php:56
+msgid "FAQ Tags"
+msgstr "FAQ Schlagwörter"
+
+#: includes/Common/Widgets/FAQ.php:22
+msgid "FAQ Widget"
+msgstr "FAQ-Widget"
+
+#: includes/Common/CPT/CPTFAQ.php:35
+msgctxt "FAQ, placeholder or glossary entries"
+msgid "FAQ"
+msgstr "FAQ"
+
+#: blocks/faq/edit.js:321 blocks/glossary/edit.js:321 build/faq.js:1
+#: build/glossary.js:1
+msgid "Filter options"
+msgstr "Filter Optionen"
+
+#: blocks/faq/edit.js:322 build/faq.js:1
+msgid "Filter the FAQ-entries."
+msgstr "FAQ Einträge filtern."
+
+#: blocks/glossary/edit.js:322 build/glossary.js:1
+msgid "Filter the glossary-entries."
+msgstr "Glossar Einträge filtern."
+
+#: includes/Defaults.php:211 blocks/faq/edit.js:174 blocks/glossary/edit.js:174
+#: blocks/placeholder/edit.js:113 build/faq.js:1 build/glossary.js:1
+#: build/placeholder.js:1
+msgid "French"
+msgstr "Französisch"
+
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:60
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:132
+msgid "Full form"
+msgstr "Ausführliche Form"
+
+#: includes/Defaults.php:208 blocks/faq/edit.js:166 blocks/glossary/edit.js:166
+#: blocks/placeholder/edit.js:103 build/faq.js:1 build/glossary.js:1
+#: build/placeholder.js:1
+msgid "German"
+msgstr "Deutsch"
+
+#: includes/Common/AdminInterfaces/AdminMenu.php:53
+#: includes/Common/AdminInterfaces/AdminMenu.php:63
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:197
+#: includes/Common/CPT/CPTGlossary.php:36
+#: includes/Common/Shortcode/ShortcodeGlossary.php:104
+#: includes/Common/Sync/Sync.php:84 includes/Common/Tools.php:228
+#: includes/Defaults.php:139 includes/Defaults.php:233
+#: templates/rrze_glossary-archive.php:16
+msgid "Glossary"
+msgstr "Glossar"
+
+#: includes/Common/CPT/CPTGlossary.php:47
+msgid "Glossary Categories"
+msgstr "Glossar Kategorien"
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:72
+msgid "Glossary content"
+msgstr "Glossar Inhalt"
+
+#: includes/Common/CPT/CPTGlossary.php:34
+msgctxt "Glossary entries"
+msgid "Glossary"
+msgstr "Glossar"
+
+#: includes/Defaults.php:152
+msgid "Glossary Slug"
+msgstr "Glossar Slug"
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:96 blocks/faq/edit.js:372
+#: build/faq.js:1
+msgid "Glossary style"
+msgstr "Style des Glossars"
+
+#: includes/Common/CPT/CPTGlossary.php:55
+msgid "Glossary Tags"
+msgstr "Glossar Schlagwörter"
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:205
+#: includes/Common/Shortcode/ShortcodeGlossary.php:109 blocks/faq/edit.js:378
+#: blocks/glossary/edit.js:408 build/faq.js:1 build/glossary.js:1
+msgid "Grid"
+msgstr ""
+
+#: blocks/faq/edit.js:358 build/faq.js:1
+msgid "Group FAQ-entries by categories or tags."
+msgstr "FAQ-Einträge nach Kategorien oder Schlagwörtern gruppieren."
+
+#: blocks/faq/edit.js:357 build/faq.js:1
+msgid "Group Glossary Content by"
+msgstr "Glossar gruppieren nach"
+
+#: blocks/glossary/edit.js:371 build/glossary.js:1
+msgid "Group glossary-entries by categories or tags."
+msgstr "Glossar nach Kategorien oder Schlagwörtern gruppieren."
+
+#: blocks/glossary/edit.js:370 build/glossary.js:1
+msgid "Group register Content by"
+msgstr "Register gruppieren nach"
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:261
+#: includes/Common/Shortcode/ShortcodeGlossary.php:241
+msgid "Heading level of the first heading"
+msgstr "Überschriftsebene der ersten Überschrift"
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:125
+msgid "Hide accordeon"
+msgstr "Ausgabe nicht in Akkordeons"
+
+#: includes/Common/Shortcode/ShortcodeGlossary.php:116 blocks/faq/edit.js:378
+#: blocks/glossary/edit.js:398 build/faq.js:1 build/glossary.js:1
+msgid "Hide accordion"
+msgstr "Akkordion ausblenden"
+
+#: includes/Common/Widgets/FAQ.php:123
+msgid "hide question"
+msgstr "Frage ausblenden"
+
+#: blocks/faq-widget/edit.js:151 build/faq-widget.js:1
+msgid "Hide question title"
+msgstr "Frage ausblenden"
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:132
+#: includes/Common/Shortcode/ShortcodeGlossary.php:123 blocks/faq/edit.js:378
+#: blocks/glossary/edit.js:435 build/faq.js:1 build/glossary.js:1
+msgid "Hide title"
+msgstr "Ausgabe ohne Frage"
+
+#. Plugin URI of the plugin
+#: rrze-answers.php
+msgid "https://github.com/RRZE-Webteam/rrze-answers"
+msgstr ""
+
+#. Author URI of the plugin
+#: rrze-answers.php
+msgid "https://www.wp.rrze.fau.de/"
+msgstr ""
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:230
+#: includes/Common/Shortcode/ShortcodeGlossary.php:210 blocks/faq/edit.js:273
+#: blocks/glossary/edit.js:273 blocks/placeholder/edit.js:184 build/faq.js:1
+#: build/glossary.js:1 build/placeholder.js:1
+msgid "ID"
+msgstr "ID"
+
+#: build/faq-widget.js:1
+msgid ""
+"If a category is selected and no specific FAQ is set, a random FAQ from this "
+"category will be used."
+msgstr ""
+"Wenn eine Kategorie ausgewählt ist und keine bestimmte FAQ festgelegt ist, "
+"wird eine zufällige FAQ aus dieser Kategorie verwendet."
+
+#: blocks/faq-widget/edit.js:154 build/faq-widget.js:1
+msgid "If enabled, the FAQ title will be hidden."
+msgstr "Wenn diese Option aktiviert ist, wird der Titel der FAQ ausgeblendet."
+
+#: includes/Common/AdminInterfaces/AdminUI.php:283
+msgid "If there is more than one category listed, use at least one of them."
+msgstr ""
+"Wenn mehrere Kategorien aufgeführt sind, nutzen Sie bitte mindestens eine "
+"davon."
+
+#: includes/Common/AdminInterfaces/AdminUI.php:287
+msgid "If there is more than one tag listed, use at least one of them."
+msgstr ""
+"Wenn mehrere Schlagwörter aufgeführt sind, nutzen Sie bitte mindestens eines "
+"davon."
+
+#: includes/Defaults.php:65
+msgid "Import"
+msgstr ""
+
+#: includes/Common/AdminInterfaces/AdminUI.php:133
+msgid "Integration in pages and posts as a shortcode"
+msgstr "Integration in Seiten und Beiträgen als Shortcode"
+
+#: includes/Common/API/SyncAPI.php:607 includes/Common/API/SyncAPI.php:610
+#, fuzzy
+msgid "is already in use."
+msgstr " ist bereits in Verwendung."
+
+#: includes/Common/API/SyncAPI.php:621
+#, fuzzy
+msgid "is not valid."
+msgstr " ist nicht gültig."
+
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:48
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:198
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:211
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:235
+#: includes/Common/Shortcode/ShortcodeFAQ.php:219
+#: includes/Common/Shortcode/ShortcodeGlossary.php:199 blocks/faq/edit.js:349
+#: blocks/glossary/edit.js:358 blocks/placeholder/edit.js:227 build/faq.js:1
+#: build/glossary.js:1 build/placeholder.js:1
+msgid "Language"
+msgstr "Sprache"
+
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:89
+msgid "Language of this FAQ"
+msgstr "Sprache dieser FAQ"
+
+#: includes/Common/CPT/CPT.php:160 includes/Common/CPT/CPT.php:176
+msgid "Linked Page"
+msgstr "Verlinkte Seite"
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:146
+msgid "Load website with opened accordeons"
+msgstr "Website mit geöffneten Akkordeons laden"
+
+#: includes/Common/Shortcode/ShortcodeGlossary.php:137
+msgid "Load website with opened accordions"
+msgstr "Website mit geöffneten Akkordeons laden"
+
+#: includes/Defaults.php:66
+msgid "Logfile"
+msgstr "Protokoll"
+
+#: includes/Common/Settings/templates/options/logfile.php:22
+#: includes/Common/Settings/templates/options/logfile.php:25
+msgid "Logfile is empty."
+msgstr "Logfile ist leer."
+
+#: includes/Common/Shortcode/ShortcodePlaceholder.php:58
+msgid "Longform"
+msgstr "Lange Form"
+
+#: includes/Common/AdminInterfaces/AdminMenu.php:63
+msgid "Manage glossary terms"
+msgstr "Glossarbegriffe verwalten"
+
+#: includes/Common/AdminInterfaces/AdminMenu.php:64
+msgid "Manage placeholders & groups"
+msgstr "Platzhalter & Gruppen verwalten"
+
+#: includes/Common/AdminInterfaces/AdminMenu.php:62
+msgid "Manage questions & answers"
+msgstr "Fragen & Antworten verwalten"
+
+#: includes/Common/Sync/Sync.php:108
+msgid "new"
+msgstr "neu"
+
+#: includes/Defaults.php:92
+#, fuzzy
+msgid "New Domain"
+msgstr "Domain hinzufügen"
+
+#: includes/Common/Sync/Sync.php:65
+#, fuzzy
+msgid "Next automatic synchronization:"
+msgstr "Nächste automatische Synchronisierung:"
+
+#: blocks/faq-widget/edit.js:120 build/faq-widget.js:1
+msgid "No FAQs found (post type \"rrze_faq\" must be public and show_in_rest)."
+msgstr ""
+
+#: rrze-answers.php:310
+msgid "No sites required changes."
+msgstr ""
+
+#: blocks/faq/edit.js:154 blocks/glossary/edit.js:154
+#: blocks/placeholder/edit.js:91 build/faq.js:1 build/glossary.js:1
+#: build/placeholder.js:1
+msgid "No title"
+msgstr "Kein Titel"
+
+#: includes/Common/CPT/CPT.php:162 includes/Common/CPT/CPT.php:178
+msgid "None"
+msgstr "Keine"
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:59
+#: includes/Common/Shortcode/ShortcodeFAQ.php:187
+#: includes/Common/Shortcode/ShortcodeGlossary.php:49
+#: includes/Common/Shortcode/ShortcodeGlossary.php:174 blocks/faq/edit.js:193
+#: blocks/faq/edit.js:254 blocks/glossary/edit.js:193
+#: blocks/glossary/edit.js:254 build/faq.js:1 build/glossary.js:1
+msgid "none"
+msgstr "keine"
+
+#: blocks/faq/edit.js:350 build/faq.js:1
+msgid "Only show FAQ-entries in this language."
+msgstr "Nur FAQ-Einträge in dieser Sprache anzeigen."
+
+#: blocks/faq/edit.js:326 build/faq.js:1
+msgid "Only show FAQ-entries with these selected categories."
+msgstr "Nur FAQ-Einträge mit diesen ausgewählten Kategorien anzeigen."
+
+#: blocks/faq/edit.js:334 build/faq.js:1
+msgid "Only show FAQ-entries with these selected tags."
+msgstr "Nur FAQ-Einträge mit diesen ausgewählten Tags anzeigen."
+
+#: blocks/glossary/edit.js:359 build/glossary.js:1
+msgid "Only show glossary-entries in this language."
+msgstr "Nur Glossar-Einträge in dieser Sprache anzeigen."
+
+#: blocks/glossary/edit.js:326 build/glossary.js:1
+msgid "Only show glossary-entries with these selected categories."
+msgstr "Nur Glossar-Einträge mit diesen ausgewählten Kategorien anzeigen."
+
+#: blocks/glossary/edit.js:337 build/glossary.js:1
+msgid "Only show glossary-entries with these selected tags."
+msgstr "Nur Glossar-Einträge mit diesen ausgewählten Tags anzeigen."
+
+#: blocks/faq/edit.js:342 build/faq.js:1
+msgid "Only show these FAQ-entries."
+msgstr "Nur diese FAQ-Einträge anzeigen."
+
+#: blocks/glossary/edit.js:348 build/glossary.js:1
+msgid "Only show these glossary-entries."
+msgstr "Nur diese Glossar-Einträge anzeigen."
+
+#: includes/Common/AdminInterfaces/AdminMenu.php:72
+msgid "Open"
+msgstr "Öffnen"
+
+#: blocks/faq-widget/edit.js:135
+msgid "Or"
+msgstr "oder"
+
+#: includes/Common/Widgets/FAQ.php:174
+msgid "or choose a Category to display a FAQ randomly"
+msgstr ""
+"oder wählen Sie eine Kategorie aus der eine FAQ zufällig angezeigt wird"
+
+#: build/faq-widget.js:1
+msgid "Or choose a category to display a random FAQ"
+msgstr "oder Kategorie wählen für einen zufälligen FAQ-Eintrag"
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:255
+#: includes/Common/Shortcode/ShortcodeGlossary.php:235 blocks/faq/edit.js:390
+#: blocks/glossary/edit.js:453 build/faq.js:1 build/glossary.js:1
+msgid "Order"
+msgstr "Reihenfolge"
+
+#: includes/Defaults.php:63
+msgid "Permalink Settings"
+msgstr "Permalink Einstellungen"
+
+#: includes/Defaults.php:62
+msgid "Permissions"
+msgstr "Erlaubnisse"
+
+#: includes/Common/AdminInterfaces/AdminMenu.php:54
+#: includes/Common/AdminInterfaces/AdminMenu.php:64
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:168
+#: includes/Common/CPT/CPTPlaceholder.php:36
+#: includes/Common/Shortcode/ShortcodePlaceholder.php:52
+#: includes/Defaults.php:177
+msgid "Placeholder"
+msgstr "Platzhalter"
+
+#: blocks/placeholder/edit.js:216 build/placeholder.js:1
+msgid "placeholder"
+msgstr "Platzhalter"
+
+#: includes/Defaults.php:190
+msgid "Placeholder Slug"
+msgstr "Platzhalter Slug"
+
+#: templates/rrze_placeholder-archive.php:13
+msgid "Placeholders"
+msgstr "Platzhalter"
+
+#: includes/Common/CPT/CPTPlaceholder.php:34
+msgctxt "Placeholders"
+msgid "Placeholder"
+msgstr "Platzhalter"
+
+#: includes/Common/Settings/templates/options/domains-table.php:26
+msgid ""
+"Please note: \"Delete selected domains\" will DELETE every FAQ on this "
+"website that has been fetched from the selected domains."
+msgstr ""
+"Bitte beachten: \"Ausgewählte Domains löschen\" LÖSCHT alle FAQ auf dieser "
+"Website, die von den ausgewählten Domains bezogen wurden."
+
+#: includes/Defaults.php:251 includes/Defaults.php:259
+msgid "Please select the categories you'd like to fetch "
+msgstr "Bitte wählen Sie die Kategorien aus, die Sie abrufen möchten. "
+
+#. translators: 1: The plugin name, 2: The error string.
+#: rrze-answers.php:379
+msgid "Plugins: %1$s: %2$s"
+msgstr ""
+
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:135
+#: includes/Common/Tools.php:535
+msgid "Pronunciation"
+msgstr "Aussprache"
+
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:66
+msgid "Pronunciation language"
+msgstr "Sprache der Aussprache"
+
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:42
+msgid "Properties"
+msgstr "Eigenschaften"
+
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:197
+msgid "Question"
+msgstr "Frage"
+
+#: includes/Common/Shortcode/ShortcodeGlossary.php:62
+msgid "Register content"
+msgstr "Register Inhalt"
+
+#: includes/Common/Shortcode/ShortcodeGlossary.php:86
+msgid "Register style"
+msgstr "Register Stil"
+
+#: blocks/glossary/edit.js:389 build/glossary.js:1
+msgid "register style"
+msgstr "Register Stil"
+
+#: includes/Common/Sync/Sync.php:108 includes/Common/Sync/Sync.php:119
+msgid "Required time:"
+msgstr "Benötigte Zeit:"
+
+#. Plugin Name of the plugin
+#: rrze-answers.php includes/Defaults.php:54
+msgid "RRZE Answers"
+msgstr ""
+
+#: includes/Defaults.php:55
+msgid "RRZE Answers Settings"
+msgstr "RRZE Answers Einstellungen"
 
 #. Author of the plugin
 #: rrze-answers.php
 msgid "RRZE Webteam"
 msgstr "RRZE Webteam"
 
-#. Author URI of the plugin
-#: rrze-answers.php
-msgid "https://blogs.fau.de/webworking/"
-msgstr "https://blogs.fau.de/webworking/"
+#: includes/Common/Shortcode/ShortcodeFAQ.php:120
+#, fuzzy
+msgid "rrze_faq"
+msgstr "RRZE FAQ"
 
-#: config/config.php:34
-#: build/index.js:1
-msgid "German"
-msgstr "Deutsch"
-
-#: config/config.php:35
-#: build/index.js:1
-msgid "English"
-msgstr "Englisch"
-
-#: config/config.php:36
-#: build/index.js:1
-msgid "Spanish"
-msgstr "Spanisch"
-
-#: config/config.php:37
-#: build/index.js:1
-msgid "French"
-msgstr "Französisch"
-
-#: config/config.php:38
-#: build/index.js:1
+#: includes/Defaults.php:212 blocks/faq/edit.js:182 blocks/glossary/edit.js:182
+#: blocks/placeholder/edit.js:122 build/faq.js:1 build/glossary.js:1
+#: build/placeholder.js:1
 msgid "Russian"
 msgstr "Russisch"
 
-#: config/config.php:39
-#: build/index.js:1
-msgid "Chinese"
-msgstr "Chinesisch"
+#: includes/Common/CPT/CPTFAQ.php:42
+msgid "Search FAQ"
+msgstr "FAQ suchen"
 
-#: config/config.php:57
-msgid "RRZE FAQ Settings"
-msgstr "RRZE FAQ Einstellungen"
+#: includes/Common/CPT/CPTGlossary.php:41
+msgid "Search glossary"
+msgstr "Glossar suchen"
 
-#: config/config.php:71
-msgid "Here comes the Context Help content."
-msgstr "Hier kommt der Inhalt der Kontexthilfe."
+#: includes/Common/CPT/CPTPlaceholder.php:41
+msgid "Search placeholder"
+msgstr "Platzhalter suchen"
 
-#: config/config.php:73
-msgid "Overview"
-msgstr "Übersicht"
+#: includes/Common/Sync/Sync.php:108 includes/Common/Sync/Sync.php:119
+msgid "seconds"
+msgstr "Sekunden"
 
-#: config/config.php:74
-msgid "For more information"
-msgstr "Für mehr Informationen"
+#: build/faq-widget.js:1
+msgid "Select a specific FAQ post."
+msgstr "Wählen Sie einen bestimmten FAQ-Beitrag aus."
 
-#: config/config.php:74
-msgid "RRZE Webteam on Github"
-msgstr "RRZE Webteam auf Github"
+#: includes/Common/Settings/templates/settings-page.php:21
+msgid "Settings issues detected."
+msgstr ""
 
-#: config/config.php:89
-msgid "Domains"
-msgstr "Domains"
+#: includes/Common/Settings/Settings.php:587
+msgid "Settings saved."
+msgstr "Einstellungen gespeichert."
 
-#: config/config.php:93
-#: config/config.php:148
-msgid "Synchronize"
-msgstr "Synchronisieren"
+#: includes/Common/Sync/Sync.php:121
+msgid "Settings updated"
+msgstr "Einstellungen aktualisiert"
 
-#: config/config.php:97
-msgid "Logfile"
-msgstr "Logfile"
-
-#: config/config.php:113
-#: config/config.php:127
-msgid "Short name"
-msgstr "Kurzbezeichnung"
-
-#: config/config.php:114
-msgid "Enter a short name for this domain."
-msgstr "Gib eine Abkürzung für diese Domain ein."
-
-#: config/config.php:119
-#: config/config.php:134
-msgid "URL"
-msgstr "URL"
-
-#: config/config.php:120
-msgid "Enter the domain's URL you want to receive FAQ from."
-msgstr "Gib die URL der Domain ein, von der du das FAQ erhalten möchtest."
-
-#: config/config.php:128
-msgid "Use this name as attribute 'domain' in shortcode [faq]"
-msgstr "Verwende diesen Namen als Attribut 'domain' im Shortcode [faq]"
-
-#: config/config.php:141
-#: config/config.php:221
-#: config/config.php:260
-#: includes/CPT.php:73
-#: templates/template-parts/faq_content.php:28
-#: build/index.js:1
-msgid "Categories"
-msgstr "Kategorien"
-
-#: config/config.php:142
-msgid "Please select the categories you'd like to fetch FAQ to."
-msgstr "Bitte wähle die Kategorien aus, in denen du die FAQ abrufen möchtest."
-
-#: config/config.php:149
-msgid "Do not synchronize"
-msgstr "Nicht synchronisieren"
-
-#: config/config.php:160
-msgid "Info"
-msgstr "Info"
-
-#: config/config.php:161
-#: config/config.php:163
-msgid "All FAQ that match to the selected categories will be updated or inserted. Already synchronized FAQ that refer to categories which are not selected will be deleted. FAQ that have been deleted at the remote website will be deleted on this website, too."
-msgstr "Alle FAQ, die zu den ausgewählten Kategorien passen, werden aktualisiert oder eingefügt. Bereits synchronisierte FAQ, die sich auf Kategorien beziehen, die nicht ausgewählt sind, werden gelöscht. FAQ, die auf der entfernten Website gelöscht wurden, werden auch auf dieser Website gelöscht."
-
-#: config/config.php:167
-msgid "Mode"
-msgstr "Modus"
-
-#: config/config.php:168
-msgid "Synchronize automatically"
-msgstr "Automatisch synchronisieren"
-
-#: config/config.php:173
-msgid "Frequency"
-msgstr "Häufigkeit"
-
-#: config/config.php:177
-msgid "daily"
-msgstr "täglich"
-
-#: config/config.php:178
-msgid "twicedaily"
-msgstr "Zweimal täglich"
-
-#: config/config.php:217
-#: config/config.php:345
-#: build/index.js:1
-msgid "none"
-msgstr "keine"
-
-#: config/config.php:225
-#: config/config.php:266
-#: includes/CPT.php:95
-#: templates/template-parts/faq_content.php:29
-#: build/index.js:1
-msgid "Tags"
-msgstr "Schlagwörter"
-
-#: config/config.php:230
-msgid "Glossary content"
-msgstr "Inhalt des Glossars"
-
-#: config/config.php:237
-#: build/index.js:1
-msgid "-- hidden --"
-msgstr "-- versteckt --"
-
-#: config/config.php:241
-#: build/index.js:1
-msgid "A - Z"
-msgstr "A - Z"
-
-#: config/config.php:245
-#: build/index.js:1
-msgid "Tagcloud"
-msgstr "Schlagwörterwolke"
-
-#: config/config.php:249
-#: build/index.js:1
-msgid "Tabs"
-msgstr "Tabs"
-
-#: config/config.php:254
-#: build/index.js:1
-msgid "Glossary style"
-msgstr "Glossar Stil"
-
-#: config/config.php:272
-#: includes/Sync.php:33
-#: includes/Sync.php:41
-msgid "Domain"
-msgstr "Domain"
-
-#: config/config.php:278
-#: includes/CPT.php:31
-#: includes/CPT.php:45
-msgid "FAQ"
-msgstr "FAQ"
-
-#: config/config.php:283
-msgid "Hide accordeon"
-msgstr "Akkordeon ausblenden"
-
-#: config/config.php:290
-#: build/index.js:1
-msgid "Hide title"
-msgstr "Titel ausblenden"
-
-#: config/config.php:297
-#: build/index.js:1
+#: includes/Common/Shortcode/ShortcodeFAQ.php:139
+#: includes/Common/Shortcode/ShortcodeGlossary.php:130
 msgid "Show \"expand all\" button"
-msgstr "Schaltfläche \"Alles erweitern\" anzeigen"
+msgstr "\"Alle öffnen\" - Button anzeigen"
 
-#: config/config.php:304
-msgid "Load website with opened accordeons"
-msgstr "Website mit geöffneten Accordions laden"
+#: blocks/placeholder/edit.js:220 build/placeholder.js:1
+msgid "Show a selection of individual Placeholders"
+msgstr "Eine Auswahl einzelner Platzhalter anzeigen"
 
-#: config/config.php:338
-#: build/index.js:1
-msgid "Color"
-msgstr "Farbe"
+#: blocks/placeholder/edit.js:231 build/placeholder.js:1
+msgid "Show only Placeholders matching the selected language."
+msgstr "Nur Platzhalter anzeigen, die der ausgewählten Sprache entsprechen."
 
-#: config/config.php:358
-msgid "Style"
-msgstr "Aussehen"
+#: includes/Common/Widgets/FAQ.php:121
+msgid "show question and answer"
+msgstr "Zeige Frage und Antwort"
 
-#: config/config.php:364
-msgid "Additonal CSS-class(es) for sourrounding DIV"
-msgstr "Zusätzliche CSS-Klasse(n) für das umgebende DIV"
+#: includes/Common/Widgets/FAQ.php:122
+msgid "show question and answer opened"
+msgstr "Zeige Frage und geöffnete Antwort"
 
-#: config/config.php:370
-#: includes/Layout.php:180
-#: includes/Layout.php:203
-#: includes/Layout.php:214
-#: includes/Layout.php:300
-#: build/index.js:1
-msgid "Language"
-msgstr "Sprache"
+#: includes/Common/AdminInterfaces/AdminUI.php:280
+msgid "Single entries"
+msgstr "Einzelner Eintrag"
 
-#: config/config.php:377
-#: build/index.js:1
-msgid "Title"
-msgstr "Titel"
-
-#: config/config.php:381
-#: includes/Layout.php:206
-#: includes/Layout.php:217
-#: build/index.js:1
-msgid "ID"
-msgstr "ID"
-
-#: config/config.php:385
-#: build/index.js:1
-msgid "Sort field"
-msgstr "Sortierfeld"
-
-#: config/config.php:390
-#: includes/Layout.php:187
-#: build/index.js:1
-msgid "Sort"
-msgstr "Sortieren"
-
-#: config/config.php:397
-#: build/index.js:1
-msgid "ASC"
-msgstr "Aufsteigend"
-
-#: config/config.php:401
-#: build/index.js:1
-msgid "DESC"
-msgstr "Absteigend"
-
-#: config/config.php:406
-#: build/index.js:1
-msgid "Order"
-msgstr "Bestellung"
-
-#: config/config.php:412
-msgid "Heading level of the first heading"
-msgstr "Überschriftsebene der ersten Überschrift"
-
-#: config/config.php:420
-msgid "All languages"
-msgstr "Alle Sprachen"
-
-#: includes/API.php:22
-#: includes/API.php:25
-msgid " is already in use."
-msgstr " ist bereits im Einsatz."
-
-#: includes/API.php:32
-#: includes/API.php:40
-msgid " is not valid."
-msgstr " ungültig."
-
-#: includes/CPT.php:29
-msgctxt "FAQ, placeholder or glossary entries"
-msgid "FAQ"
-msgstr "FAQ"
-
-#: includes/CPT.php:30
+#: includes/Common/CPT/CPTFAQ.php:36
 msgctxt "Single FAQ, placeholder or glossary "
 msgid "FAQ"
 msgstr "FAQ"
 
-#: includes/CPT.php:32
-msgid "Add FAQ"
-msgstr "FAQ hinzufügen"
+#: blocks/faq/edit.js:341 build/faq.js:1
+msgid "Single FAQ-Entries"
+msgstr "Einzelne FAQ-Einträge"
 
-#: includes/CPT.php:33
-msgid "Add new FAQ"
-msgstr "Neue FAQ anlegen"
+#: includes/Common/CPT/CPTGlossary.php:35
+msgctxt "Single glossary "
+msgid "Glossary"
+msgstr "Glossar"
 
-#: includes/CPT.php:34
-msgid "Edit FAQ"
-msgstr "FAQ bearbeiten"
+#: blocks/glossary/edit.js:347 build/glossary.js:1
+msgid "Single glossary-Entries"
+msgstr "Einzelne Glossareinträge"
 
-#: includes/CPT.php:35
-msgid "All FAQ"
-msgstr "Alle FAQ"
+#: includes/Common/CPT/CPTPlaceholder.php:35
+msgctxt "Single placeholder"
+msgid "Placeholder"
+msgstr "Platzhalter"
 
-#: includes/CPT.php:36
-msgid "Search FAQ"
-msgstr "Suche FAQ"
+#: includes/Common/Shortcode/ShortcodePlaceholder.php:46
+msgid "Slug"
+msgstr ""
 
-#: includes/CPT.php:46
-msgid "FAQ informations"
-msgstr "FAQ-Informationen"
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:54
+#: includes/Common/Shortcode/ShortcodeFAQ.php:239
+#: includes/Common/Shortcode/ShortcodeGlossary.php:219 blocks/faq/edit.js:384
+#: blocks/glossary/edit.js:446 build/faq.js:1 build/glossary.js:1
+msgid "Sort"
+msgstr "Sortierung"
 
-#: includes/CPT.php:78
-#: includes/Layout.php:212
-msgid "Category"
-msgstr "Kategorie"
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:212
+msgid "Sort by"
+msgstr "Sortieren nach"
 
-#: includes/CPT.php:79
-#: includes/CPT.php:80
-msgid "Add new category"
-msgstr "Neue Kategorie hinzufügen"
-
-#: includes/CPT.php:81
-msgid "New category"
-msgstr "Neue Kategorie"
-
-#: includes/CPT.php:82
-msgid "Show category"
-msgstr "Kategorie zeigen"
-
-#: includes/CPT.php:83
-msgid "Show categories"
-msgstr "Kategorien anzeigen"
-
-#: includes/CPT.php:84
-msgid "Search categories"
-msgstr "Kategorien suchen"
-
-#: includes/CPT.php:85
-msgid "No category found"
-msgstr "Keine Kategorie gefunden"
-
-#: includes/CPT.php:86
-msgid "All categories"
-msgstr "Alle Kategorien"
-
-#: includes/CPT.php:87
-msgid "Separate categories with commas"
-msgstr "Mehrere Kategorien mit Kommas trennen"
-
-#: includes/CPT.php:88
-msgid "Choose from the most used categories"
-msgstr "Aus den meist verwendeten Kategorien wählen"
-
-#: includes/CPT.php:89
-msgid "Edit category"
-msgstr "Kategorie bearbeiten"
-
-#: includes/CPT.php:90
-msgid "Update category"
-msgstr "Kategorie aktualisieren"
-
-#: includes/CPT.php:100
-#: includes/Layout.php:213
-msgid "Tag"
-msgstr "Schlagwort"
-
-#: includes/CPT.php:101
-#: includes/CPT.php:102
-msgid "Add new tag"
-msgstr "Schlagwort (Tag) hinzufügen"
-
-#: includes/CPT.php:103
-msgid "New tag"
-msgstr "Neuer Tag"
-
-#: includes/CPT.php:104
-msgid "Show tag"
-msgstr "Schlagwort anzeigen"
-
-#: includes/CPT.php:105
-msgid "Show tags"
-msgstr "Schlagwörter anzeigen"
-
-#: includes/CPT.php:106
-msgid "Search tags"
-msgstr "Schlagwörter suchen"
-
-#: includes/CPT.php:107
-msgid "No tag found"
-msgstr "Kein Schlagwort gefunden"
-
-#: includes/CPT.php:108
-msgid "All tags"
-msgstr "Alle Tags"
-
-#: includes/CPT.php:109
-msgid "Separate tags with commas"
-msgstr "Schlagwörter mit Komma trennen"
-
-#: includes/CPT.php:110
-msgid "Choose from the most used tags"
-msgstr "Wählen Sie aus den am häufigsten verwendeten Schlagwörtern"
-
-#: includes/CPT.php:111
-msgid "Edit tag"
-msgstr "Schlagworte bearbeiten"
-
-#: includes/CPT.php:112
-msgid "Update tag"
-msgstr "Schlagwort aktualisieren"
-
-#: includes/FAQWidget.php:17
-msgid "FAQ Widget"
-msgstr "FAQ-Widget"
-
-#: includes/FAQWidget.php:18
-msgid "Displays a FAQ"
-msgstr "Zeigt eine FAQ an"
-
-#: includes/FAQWidget.php:97
-msgid "Choose a FAQ"
-msgstr "Wähle eine FAQ"
-
-#: includes/FAQWidget.php:114
-msgid "show question and answer"
-msgstr "frage und Antwort anzeigen"
-
-#: includes/FAQWidget.php:115
-msgid "show question and answer opened"
-msgstr "frage und Antwort anzeigen geöffnet"
-
-#: includes/FAQWidget.php:116
-msgid "hide question"
-msgstr "frage verbergen"
-
-#: includes/FAQWidget.php:118
-msgid "Display options:"
-msgstr "Anzeigeoptionen:"
-
-#: includes/FAQWidget.php:132
-msgid "Start"
-msgstr "Start"
-
-#: includes/FAQWidget.php:133
-msgid "End"
-msgstr "Ende"
-
-#: includes/FAQWidget.php:167
-msgid "or choose a Category to display a FAQ randomly"
-msgstr "oder wähle eine Kategorie, um zufällig eine FAQ anzuzeigen"
-
-#: includes/Layout.php:82
-msgid "Criterion for sorting the output of the shortcode"
-msgstr "Kriterium für die Sortierung der Ausgabe des Shortcodes"
-
-#: includes/Layout.php:90
-msgid "Anchor field (optional) to define jump marks when displayed in accordions "
-msgstr "Ankerfeld (optional) zur Definition von Sprungmarken bei der Anzeige in Akkordeons "
-
-#: includes/Layout.php:98
-msgid "Language of this FAQ"
-msgstr "Sprache dieser FAQ"
-
-#: includes/Layout.php:124
-msgid "Single entries"
-msgstr "Einzelne Einträge"
-
-#: includes/Layout.php:125
-msgid "Accordion with category"
-msgstr "Akkordeon mit Kategorie"
-
-#: includes/Layout.php:125
-msgid "If there is more than one category listed, use at least one of them."
-msgstr "Wenn es mehr als eine Kategorie gibt, verwende mindestens eine davon."
-
-#: includes/Layout.php:126
-msgid "Accordion with tag"
-msgstr "Akkordeon mit Schlagwort"
-
-#: includes/Layout.php:126
-msgid "If there is more than one tag listed, use at least one of them."
-msgstr "Wenn mehr als ein Schlagwort aufgelistet ist, verwende mindestens eines von ihnen."
-
-#: includes/Layout.php:127
-msgid "Accordion with all entries"
-msgstr "Akkordeon mit allen Einträgen"
-
-#: includes/Layout.php:136
-msgid "Enter question here"
-msgstr "Frage hier eingeben"
-
-#: includes/Layout.php:160
-msgid "This FAQ cannot be edited because it is synchronized"
-msgstr "Diese FAQ kann nicht bearbeitet werden, da sie synchronisiert ist"
-
-#: includes/Layout.php:160
-msgid "You can edit it at the source"
-msgstr "Du kannst sie an der Quelle bearbeiten"
-
-#: includes/Layout.php:171
-msgid "Integration in pages and posts"
-msgstr "Integration in Seiten und Beiträge"
-
-#: includes/Layout.php:194
-msgid "Anchor"
-msgstr "Anker"
-
-#: includes/Layout.php:204
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:199
 msgid "Sort criterion"
 msgstr "Sortierkriterium"
 
-#: includes/Layout.php:205
-#: includes/Layout.php:216
-#: includes/Layout.php:301
+#: includes/Common/Shortcode/ShortcodeFAQ.php:234
+#: includes/Common/Shortcode/ShortcodeGlossary.php:214 blocks/faq/edit.js:277
+#: blocks/glossary/edit.js:277 blocks/placeholder/edit.js:188 build/faq.js:1
+#: build/glossary.js:1 build/placeholder.js:1
+msgid "Sort field"
+msgstr "Sortierfeld"
+
+#: blocks/faq/edit.js:382 blocks/glossary/edit.js:444 build/faq.js:1
+#: build/glossary.js:1
+msgid "Sorting options"
+msgstr "Sortier Optionen"
+
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:171
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:179
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:202
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:215
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:237
 msgid "Source"
 msgstr "Quelle"
 
-#: includes/Layout.php:264
-msgid "All Sources"
-msgstr "Alle Quellen"
+#: includes/Defaults.php:210 blocks/faq/edit.js:178 blocks/glossary/edit.js:178
+#: blocks/placeholder/edit.js:118 build/faq.js:1 build/glossary.js:1
+#: build/placeholder.js:1
+msgid "Spanish"
+msgstr "Spanisch"
 
-#: includes/Main.php:201
-msgid "Next automatically synchronization:"
-msgstr "Die nächste automatische Synchronisierung:"
+#: includes/Common/Widgets/FAQ.php:139
+msgid "Start"
+msgstr "Start"
 
-#: includes/Settings.php:357
-msgid "Add domain"
-msgstr "Domain hinzufügen"
+#: includes/Common/Shortcode/ShortcodeFAQ.php:200
+#: includes/Common/Shortcode/ShortcodeGlossary.php:187
+msgid "Style"
+msgstr "Stil"
 
-#: includes/Settings.php:361
-msgid "Delete logfile"
-msgstr "Logdatei löschen"
-
-#: includes/Settings.php:398
-msgid "Domains:"
-msgstr "Domains:"
-
-#: includes/Settings.php:404
-msgid "Please note: \"Delete selected domains\" will DELETE every FAQ on this website that has been fetched from the selected domains."
-msgstr "Bitte beachte: \"Ausgewählte Domains löschen\" löscht alle FAQ auf dieser Website, die von den ausgewählten Domains abgerufen wurden."
-
-#: includes/Settings.php:405
-msgid "Delete selected domains"
-msgstr "Ausgewählte Domains löschen"
-
-#: includes/Settings.php:437
-msgid "no category with source = \"website\" found"
-msgstr "keine Kategorie mit Quelle = \"Website\" gefunden"
-
-#: includes/Settings.php:1016
-#: includes/Settings.php:1019
-msgid "Logfile is empty."
-msgstr "Das Logfile ist leer."
-
-#: includes/Sync.php:33
-msgid "Synchronization error. This FAQ contains sliders ([gallery]) and cannot be synchronized:"
-msgstr "Synchronisationsfehler. Diese FAQ enthält Slider ([Galerie]) und kann nicht synchronisiert werden:"
-
-#: includes/Sync.php:41
+#: includes/Common/Sync/Sync.php:108
 msgid "Synchronization completed."
-msgstr "Die Synchronisierung ist abgeschlossen."
+msgstr "Synchronisierung abgeschlossen."
 
-#: includes/Sync.php:41
-msgid "new"
-msgstr "neu"
+#: includes/Common/Sync/Sync.php:100
+msgid "Synchronization error. This "
+msgstr "Synchronisierungsfehler. Dies "
 
-#: includes/Sync.php:41
+#: includes/Defaults.php:276
+msgid "Synchronize automatically"
+msgstr "Automatisch synchronisieren"
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:91
+#: includes/Common/Shortcode/ShortcodeGlossary.php:81 blocks/faq/edit.js:216
+#: blocks/glossary/edit.js:216 blocks/placeholder/edit.js:146 build/faq.js:1
+#: build/glossary.js:1 build/placeholder.js:1
+msgid "Tabs"
+msgstr "Tabs"
+
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:210
+msgid "Tag"
+msgstr "Schlagwort"
+
+#: includes/Defaults.php:131 includes/Defaults.php:169
+msgid "Tag Slug"
+msgstr ""
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:87
+#: includes/Common/Shortcode/ShortcodeGlossary.php:77 blocks/faq/edit.js:212
+#: blocks/glossary/edit.js:212 blocks/placeholder/edit.js:142 build/faq.js:1
+#: build/glossary.js:1 build/placeholder.js:1
+msgid "Tagcloud"
+msgstr "Schlagwörterwolke"
+
+#: includes/Common/AdminInterfaces/AdminMenu.php:91
+#: includes/Common/Shortcode/ShortcodeFAQ.php:67
+#: includes/Common/Shortcode/ShortcodeFAQ.php:108
+#: includes/Common/Shortcode/ShortcodeGlossary.php:57
+#: includes/Common/Shortcode/ShortcodeGlossary.php:98
+#: templates/template-parts/faq-content.php:51
+#: templates/template-parts/glossary-content.php:34 blocks/faq/edit.js:201
+#: blocks/faq/edit.js:333 blocks/glossary/edit.js:201
+#: blocks/glossary/edit.js:336 build/faq.js:1 build/glossary.js:1
+msgid "Tags"
+msgstr "Schlagwörter"
+
+#. translators: 1: Server PHP version number, 2: Required PHP version number.
+#: rrze-answers.php:367
+msgid ""
+"The server is running PHP version %1$s. The plugin requires at least PHP "
+"version %2$s."
+msgstr ""
+
+#. translators: 1: Server WordPress version number, 2: Required WordPress version number.
+#: rrze-answers.php:360
+msgid ""
+"The server is running WordPress version %1$s. The plugin requires at least "
+"WordPress version %2$s."
+msgstr ""
+
+#: includes/Common/AdminInterfaces/AdminUI.php:236
+#, fuzzy
+msgid "This item cannot be edited because it is synchronized"
+msgstr "Diese FAQ kann nicht bearbeitet werden, da sie synchronisiert ist"
+
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:115
+msgid "This placeholder cannot be edited because it is synchronized"
+msgstr ""
+"Dieser Platzhalter kann nicht bearbeitet werden, da er synchronisiert ist."
+
+#: includes/Common/Shortcode/ShortcodeFAQ.php:226
+#: includes/Common/Shortcode/ShortcodeGlossary.php:206 blocks/faq/edit.js:269
+#: blocks/glossary/edit.js:269 blocks/placeholder/edit.js:180 build/faq.js:1
+#: build/glossary.js:1 build/placeholder.js:1
+msgid "Title"
+msgstr "Titel"
+
+#: includes/Defaults.php:282
+msgid "twicedaily"
+msgstr "Zwei Mal am Schlagwörtern"
+
+#: includes/Common/Shortcode/ShortcodePlaceholder.php:62
+msgid "Type of output"
+msgstr "Art der Ausgabe"
+
+#: includes/Common/Settings/Settings.php:406
+msgid "Unnamed tab"
+msgstr "Unbenannter Tab"
+
+#: includes/Common/Sync/Sync.php:108
 msgid "updated"
 msgstr "aktualisiert"
 
-#: includes/Sync.php:41
-msgid "and"
-msgstr "und"
+#: rrze-answers.php:304
+msgid "was activated and old plugins were deactivated on these sites:"
+msgstr ""
 
-#: includes/Sync.php:41
-msgid "deleted"
-msgstr "gelöscht"
+#: includes/Common/AdminInterfaces/AdminUI.php:237
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:116
+msgid "You can edit it at the source"
+msgstr "Sie können es auf der Quelle editieren"
 
-#: includes/Sync.php:41
-#: includes/Sync.php:52
-msgid "Required time:"
-msgstr "Benötigte Zeit:"
+#: includes/Common/Settings/Settings.php:562
+msgid "You do not have enough permissions to do that."
+msgstr ""
 
-#: includes/Sync.php:41
-#: includes/Sync.php:52
-msgid "seconds"
-msgstr "Sekunden"
+#: blocks/faq-widget/edit.js:81 build/faq-widget.js:1
+msgid "— Select category —"
+msgstr "— Kategorie auswählen —"
 
-#: includes/Sync.php:52
-msgid "All synchronizations completed"
-msgstr "Alle Synchronisationen abgeschlossen"
-
-#: includes/Sync.php:54
-msgid "Settings updated"
-msgstr "Einstellungen aktualisiert"
-
-#: build/block.json
-msgctxt "block title"
-msgid "FAQ RRZE"
-msgstr "FAQ RRZE"
-
-#: build/block.json
-msgctxt "block description"
-msgid "Display FAQ"
-msgstr "Zeigt eine FAQ an"
-
-#~ msgid "Choose File"
-#~ msgstr "Datei wählen"
-
-#, php-format
-#~ msgid "The server is running PHP version %1$s. The Plugin requires at least PHP version %2$s."
-#~ msgstr "Auf dem Server wird die PHP-Version %1$s ausgeführt. Das Plugin benötigt mindestens die PHP-Version %2$s."
-
-#, php-format
-#~ msgid "The server is running WordPress version %1$s. The Plugin requires at least WordPress version %2$s."
-#~ msgstr "Auf dem Server wird die WordPress-Version %1$s ausgeführt. Das Plugin benötigt mindestens die WordPress-Version %2$s."
-
-#~ msgid "Index"
-#~ msgstr "Index"
+#: blocks/faq-widget/edit.js:72 build/faq-widget.js:1
+msgid "— Select FAQ —"
+msgstr "— FAQ auswählen —"

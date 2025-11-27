@@ -56,12 +56,12 @@ class AdminMenu {
 
     public function renderAnswersDashboard(): void {
         echo '<div class="wrap"><h1>'.esc_html__('Answers', 'rrze-answers').'</h1>';
-        echo '<p>'.esc_html__('Wähle einen Bereich:', 'rrze-answers').'</p>';
+        echo '<p>'.esc_html__('Choose a section:', 'rrze-answers').'</p>';
         echo '<ul style="display:grid;gap:.5rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));max-width:900px">';
         $cards = [
-            ['slug'=>'rrze-answers_faq',      'title'=>__('FAQ', 'rrze-answers'),      'desc'=>__('Fragen & Antworten verwalten', 'rrze-answers')],
-            ['slug'=>'rrze-answers_glossary', 'title'=>__('Glossary', 'rrze-answers'), 'desc'=>__('Glossarbegriffe verwalten', 'rrze-answers')],
-            ['slug'=>'rrze-answers_placeholder',  'title'=>__('Placeholder', 'rrze-answers'),  'desc'=>__('Placeholdere & Gruppen', 'rrze-answers')],
+            ['slug'=>'rrze-answers_faq',      'title'=>__('FAQ', 'rrze-answers'),      'desc'=>__('Manage questions & answers', 'rrze-answers')],
+            ['slug'=>'rrze-answers_glossary', 'title'=>__('Glossary', 'rrze-answers'), 'desc'=>__('Manage glossary terms', 'rrze-answers')],
+            ['slug'=>'rrze-answers_placeholder',  'title'=>__('Placeholder', 'rrze-answers'),  'desc'=>__('Manage placeholders & groups', 'rrze-answers')],
         ];
         foreach ($cards as $c) {
             printf(
@@ -69,7 +69,7 @@ class AdminMenu {
                 esc_html($c['title']),
                 esc_html($c['desc']),
                 esc_url(admin_url('admin.php?page='.$c['slug'])),
-                esc_html__('Öffnen', 'rrze-answers')
+                esc_html__('Open', 'rrze-answers')
             );
         }
         echo '</ul></div>';
@@ -127,4 +127,3 @@ class AdminMenu {
         return $submenu_file;
     }
 }
-

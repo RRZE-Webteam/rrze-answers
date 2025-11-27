@@ -1,7 +1,7 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "rrze-answers/faqwidget",
+  "name": "rrze-answers/faq-widget",
   "title": "RRZE FAQ Widget",
   "category": "widgets",
   "icon": "editor-help",
@@ -24,7 +24,7 @@
     "html": false
   },
   "textdomain": "rrze-answers",
-  "editorScript": "file:../../build/faqwidget.js",
+  "editorScript": "file:../../build/faq-widget.js",
   "style": "file:../../build/css/rrze-answers.css",
   "editorStyle": "file:../../build/css/rrze-answers.css",
   "render": "file:./render.php"
