@@ -15,17 +15,9 @@
       "type": "integer",
       "default": 0
     },
-    "start": {
-      "type": "string",
-      "default": ""
-    },
-    "end": {
-      "type": "string",
-      "default": ""
-    },
-    "display": {
+    "hide_title": {
       "type": "integer",
-      "default": 1
+      "default": 0
     }
   },
   "supports": {

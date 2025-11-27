@@ -644,7 +644,7 @@ class Tools
      * @param int $cat_id Category term ID (optional).
      * @return int
      */
-    protected static function get_random_faq_id($cat_id = 0)
+    public static function get_random_faq_id($cat_id = 0)
     {
         $cat_id = (int) $cat_id;
 
