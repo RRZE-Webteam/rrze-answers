@@ -36,6 +36,9 @@ It allows you to:
 **RRZE FAQ Block**
 The FAQ block lets you display selected FAQ entries and control how they appear on the page. In the settings, you can choose specific items, filter by categories or tags, and select a glossary or grouping style such as alphabetical lists, tabs, or tag clouds. You can hide interface elements like titles, accordions, or the glossary navigation, enable a masonry grid layout, and add optional CSS or faculty classes. Sorting options and the starting heading level can also be adjusted to match your page structure.
 
+**RRZE FAQ Widget**
+This block lets you display either a selected FAQ entry or a random one from a chosen category. In the settings, you can pick a specific item or filter by categories. You may also choose to show the answer without displaying the question.
+
 **RRZE Glossary Block**
 The Glossary block displays glossary entries and offers similar flexibility. You can select entries, filter them by categories or tags, and control the register or grouping style, including A–Z lists, tab navigation, and tag cloud layouts. Display elements such as titles, accordion views, or the register can be hidden, while optional features like “expand all” or opening entries by default can be enabled. Additional styling classes, sorting behavior, and heading levels can be configured as needed.
 
