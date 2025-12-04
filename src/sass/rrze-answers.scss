@@ -384,16 +384,16 @@ details.rrze-answers-item summary {
 }
 
 /* Disable generic :target offset hacks inside the answers block */
-// .rrze-answers [id]:target::before,
-// .rrze-answers details.rrze-answers-item:target::before {
-//   content: none !important;
-//   display: none !important;
-// }
+.rrze-answers [id]:target::before,
+.rrze-answers details.rrze-answers-item:target::before {
+  content: none !important;
+  display: none !important;
+}
 
-// .rrze-answers [id]:target {
-//   padding-top: 0 !important;
-//   margin-top: 0 !important;
-// }
+.rrze-answers [id]:target {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
 
 /* we need to calc the height of the overlay header in RRZE-2019 - every other theme uses 0px per default */
 .rrze-answers [id] {
