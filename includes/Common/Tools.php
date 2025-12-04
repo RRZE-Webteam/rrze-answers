@@ -92,14 +92,14 @@ class Tools
         $out .= '<details'
             . ($load_open ? ' open' : '')
             . ' id="' . esc_attr($anchor) . '"'
-            . ' class="answers-item is-' . esc_attr($color) . '">';
+            . ' class="rrze-answers-item is-' . esc_attr($color) . '">';
 
         if ($useSchema) {
             if ($isFaq) {
                 // FAQ schema: Question + acceptedAnswer/Answer/text
                 $out .= '<summary itemprop="name">' . esc_html($question) . '</summary>';
                 $out .= '<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">';
-                $out .= '<div class="answers-content" itemprop="text">' . $answer . '</div>';
+                $out .= '<div class="rrze-answers-content" itemprop="text">' . $answer . '</div>';
                 $out .= '</div>';
             } elseif ($isGlossary) {
                 // Glossary schema: DefinedTerm / name / description / text
@@ -109,7 +109,7 @@ class Tools
                     . '</summary>';
 
                 $out .= '<div itemscope itemprop="description" itemtype="https://schema.org/description">';
-                $out .= '<div class="answers-content" itemprop="text">' . $answer . '</div>';
+                $out .= '<div class="rrze-answers-content" itemprop="text">' . $answer . '</div>';
                 $out .= '</div>';
             }
         } else {
