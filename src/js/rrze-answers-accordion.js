@@ -20,7 +20,7 @@ window.addEventListener('load', setHeaderVar);
   $(function () {
     $('.rrze-answers[data-accordion="single"]').each(function () {
       var $group = $(this);
-      var $items = $group.find('details.faq-item');
+      var $items = $group.find('details.answers-item');
 
       // Optional header offset for smooth scroll (set data-scroll-offset="96" on wrapper)
       var scrollOffset = parseInt($group.attr('data-scroll-offset') || '0', 10);
@@ -50,8 +50,8 @@ window.addEventListener('load', setHeaderVar);
         var $el = byId(id);
         if (!$el.length) return false;
 
-        var $target = $el.closest('details.faq-item');
-        if (!$target.length && $el.is('details.faq-item')) $target = $el;
+        var $target = $el.closest('details.answers-item');
+        if (!$target.length && $el.is('details.answers-item')) $target = $el;
         if (!$target.length || !$group.has($target).length) return false;
 
         $target.attr('open', 'open');

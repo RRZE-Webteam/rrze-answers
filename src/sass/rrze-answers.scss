@@ -1,19 +1,15 @@
-@use "sass:map";
+/* Globals for letter bar and answers component */
+$rrze-answers-color-bg-empty: transparent;
+$rrze-answers-color-border-empty: #e9edf2;
+$rrze-answers-color-text-empty: #e9edf2;
 
-// FAQ
+$rrze-answers-color-border-filled: #dfe6ec;
+$rrze-answers-color-bg-filled: #dfe6ec;
+$rrze-answers-color-bg-hover: #d2ddeb;
+$rrze-answers-color-text-filled: #036;
 
-/* Globals for letter bar */
-$faq-color-bg-empty: transparent;
-$faq-color-border-empty: #e9edf2;
-$faq-color-text-empty: #e9edf2;
-
-$faq-color-border-filled: #dfe6ec;
-$faq-color-bg-filled: #dfe6ec;
-$faq-color-bg-hover: #d2ddeb;
-$faq-color-text-filled: #036;
-
-$faq-letter-size: 2rem;
-$faq-font-size: 0.875rem;
+$rrze-answers-letter-size: 2rem;
+$rrze-answers-font-size: 0.875rem;
 
 /* Faculty colors (base + dark + contrast) */
 $default-fau:        #04316A;
@@ -51,174 +47,183 @@ $surface:      #d2ddeb;
 $surfaceText:  #444444;
 $borderColor:  #dfe6ec;
 
-/* Light style specific colors */
-$faq-light-bg:         #fff;
-$faq-light-bg-muted:   #f5f7f9;
-$faq-light-bg-hover:   #e9edf2;
-$faq-light-text:       #222;
-$faq-light-icon-color: #CED9E7;
-
-/* Faculty map for easier maintenance */
-$faq-faculties: (
-  fau: (
-    accent:        $default-fau,
-    accent-dark:   $default-fau-dark,
-    contrast:      $default-fau-ctr,
-    contrast-dark: $default-fau-ctr-d
-  ),
-  med: (
-    accent:        $default-med,
-    accent-dark:   $default-med-dark,
-    contrast:      $default-med-ctr,
-    contrast-dark: $default-med-ctr-d
-  ),
-  nat: (
-    accent:        $default-nat,
-    accent-dark:   $default-nat-dark,
-    contrast:      $default-nat-ctr,
-    contrast-dark: $default-nat-ctr-d
-  ),
-  phil: (
-    accent:        $default-phil,
-    accent-dark:   $default-phil-dark,
-    contrast:      $default-phil-ctr,
-    contrast-dark: $default-phil-ctr-d
-  ),
-  rw: (
-    accent:        $default-rw,
-    accent-dark:   $default-rw-dark,
-    contrast:      $default-rw-ctr,
-    contrast-dark: $default-rw-ctr-d
-  ),
-  tf: (
-    accent:        $default-tf,
-    accent-dark:   $default-tf-dark,
-    contrast:      $default-tf-ctr,
-    contrast-dark: $default-tf-ctr-d
-  )
-);
-
-/* Mixin to apply faculty CSS variables */
-@mixin faq-faculty-colors($faculty-key) {
-  $config: map.get($faq-faculties, $faculty-key);
-
-  --faq-accent:        #{map.get($config, accent)};
-  --faq-contrast:      #{map.get($config, contrast)};
-  --faq-accent-dark:   #{map.get($config, accent-dark)};
-  --faq-contrast-dark: #{map.get($config, contrast-dark)};
-}
-
-/* Mixin for caret icons (mask-based) */
-@mixin faq-caret($icon, $color, $size: 1em, $top: 12px, $right: 10px) {
-  content: '';
-  width: $size;
-  height: $size;
-  position: absolute;
-  top: $top;
-  right: $right;
-  mask: url($icon) no-repeat center / contain;
-  -webkit-mask: url($icon) no-repeat center / contain;
-  background-color: $color;
-}
-
 /* Base content panel */
-.answers-content {
+.rrze-answers-content {
   background-color: #f5f7f9;
   padding: 1rem 1rem 0.5rem;
 }
 
-.faq-term-content {
+.rrze-answers-term-content {
   margin-left: 1em;
 }
 
 /* Masonry columns for tiles */
-.faq-masonry {
+.rrze-answers-masonry {
   column-count: 1;
   column-gap: 1.5rem;
 
-  .faq-item {
+  .rrze-answers-item {
     break-inside: avoid;
     margin-bottom: 1.5rem;
   }
 
-  @media (min-width: 600px) {
-    column-count: 2;
-  }
-
-  @media (min-width: 900px) {
-    column-count: 3;
-  }
+  @media (min-width: 600px) { column-count: 2; }
+  @media (min-width: 900px) { column-count: 3; }
 }
 
 /* Summary basics */
-details.faq-term summary,
-details.faq-item summary {
+details.rrze-answers-term summary,
+details.rrze-answers-item summary {
   cursor: pointer;
   font-weight: 700;
   margin-top: 0.5em;
   outline: none;
 }
 
-/* RRZE look & feel */
-.rrze-faq {
-  /* Default (FAU) palette via CSS variables (used below) */
-  .faq-item {
-    @include faq-faculty-colors(fau);
+/* Root wrapper for answers/glossary/FAQ block */
+.rrze-answers {
+  --rrze-answers-pagination-color-default: var(--FAU-Col-FAU-Blau-100, #e9edf2);
+  --rrze-answers-pagination-background-color-default: var(--FAU-Col-FAU-Blau-100, transparent);
+
+  --rrze-answers-pagination-color-active: var(--FAU-Col-FAU-Weiss-100, #036);
+  --rrze-answers-pagination-color-active-hover: var(--FAU-Col-FAU-Blau-100, #fff);
+
+  --rrze-answers-pagination-background-color-active: var(--FAU-Col-FAU-Blau-100, #dfe6ec);
+  --rrze-answers-pagination-background-color-active-hover: var(--FAU-Col-FAU-Blau-25, #036);
+
+  --rrze-answers-pagination-border-radius: var(--border-radius-buttons, 4px);
+  --rrze-answers-pagination-border-color: var(--rrze-answers-pagination-color-default);
+
+  --rrze-answers-pagination-margin: 0.1rem;
+  --rrze-answers-pagination-padding: var(--Spacing-2x, 0.5rem) var(--Spacing-4x, 1rem);
+  --rrze-answers-pagination-animation: var(--basic-animation, all 0.2s ease-in-out);
+
+  .fau-elemental & {
+    --rrze-answers-pagination-border-color: transparent;
+    --rrze-answers-pagination-background-color-default: transparent;
   }
 
-  /* Faculty mappings via loop */
-  @each $faculty, $config in $faq-faculties {
-    .faq-item.is-#{$faculty} {
-      @include faq-faculty-colors($faculty);
-    }
+  /* Default (FAU) palette via CSS variables (used by accordion) */
+  .rrze-answers-item {
+    --rrze-answers-accent:        #{$default-fau};
+    --rrze-answers-contrast:      #{$default-fau-ctr};
+    --rrze-answers-accent-dark:   #{$default-fau-dark};
+    --rrze-answers-contrast-dark: #{$default-fau-ctr-d};
   }
 
-  /* A–Z index */
-  ul.letters {
-    margin: 1.25rem 0 0.75rem;
+  /* Faculty mappings */
+  .rrze-answers-item.is-fau  {
+    --rrze-answers-accent:        #{$default-fau};
+    --rrze-answers-contrast:      #{$default-fau-ctr};
+    --rrze-answers-accent-dark:   #{$default-fau-dark};
+    --rrze-answers-contrast-dark: #{$default-fau-ctr-d};
+  }
+  .rrze-answers-item.is-phil {
+    --rrze-answers-accent:        #{$default-phil};
+    --rrze-answers-contrast:      #{$default-phil-ctr};
+    --rrze-answers-accent-dark:   #{$default-phil-dark};
+    --rrze-answers-contrast-dark: #{$default-phil-ctr-d};
+  }
+  .rrze-answers-item.is-rw   {
+    --rrze-answers-accent:        #{$default-rw};
+    --rrze-answers-contrast:      #{$default-rw-ctr};
+    --rrze-answers-accent-dark:   #{$default-rw-dark};
+    --rrze-answers-contrast-dark: #{$default-rw-ctr-d};
+  }
+  .rrze-answers-item.is-med  {
+    --rrze-answers-accent:        #{$default-med};
+    --rrze-answers-contrast:      #{$default-med-ctr};
+    --rrze-answers-accent-dark:   #{$default-med-dark};
+    --rrze-answers-contrast-dark: #{$default-med-ctr-d};
+  }
+  .rrze-answers-item.is-nat  {
+    --rrze-answers-accent:        #{$default-nat};
+    --rrze-answers-contrast:      #{$default-nat-ctr};
+    --rrze-answers-accent-dark:   #{$default-nat-dark};
+    --rrze-answers-contrast-dark: #{$default-nat-ctr-d};
+  }
+  .rrze-answers-item.is-tf   {
+    --rrze-answers-accent:        #{$default-tf};
+    --rrze-answers-contrast:      #{$default-tf-ctr};
+    --rrze-answers-accent-dark:   #{$default-tf-dark};
+    --rrze-answers-contrast-dark: #{$default-tf-ctr-d};
+  }
+
+/* A–Z letters / pagination bar */
+  .letters {
+    margin: 1.25rem 0 0.5rem;
     padding: 0;
     list-style: none;
-  }
+    text-align: center; // center rows as a whole
 
-  .letters {
     li {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: $faq-letter-size;
-      height: $faq-letter-size;
+      width: $rrze-answers-letter-size;
+      height: $rrze-answers-letter-size;
       margin: 2px;
-      border: 1px solid $faq-color-border-empty;
-      color: $faq-color-text-empty;
-      background: $faq-color-bg-empty;
-      border-radius: 4px;
+      border: 1px solid var(--rrze-answers-pagination-border-color, $rrze-answers-color-border-empty);
+      border-radius: var(--rrze-answers-pagination-border-radius, 4px);
       background-clip: padding-box;
-      font-size: $faq-font-size;
+      font-size: $rrze-answers-font-size;
       line-height: 1;
-      transition: background-color 0.2s ease;
+      transition: background-color .2s ease, color .2s ease;
+
+      a,
+      span {
+        display: block;
+        width: 100%;
+        height: 100%;
+        color: var(--rrze-answers-pagination-color-default, $rrze-answers-color-text-empty);
+        background-color: var(--rrze-answers-pagination-background-color-default, $rrze-answers-color-bg-empty);
+        border-radius: inherit;
+        font-size: 1.125rem;
+        font-weight: 600;
+        line-height: $rrze-answers-letter-size; // vertical centering
+        text-align: center;
+        text-decoration: none;
+        transition: var(--rrze-answers-pagination-animation, all 0.2s ease-in-out);
+      }
 
       &.filled {
-        border-color: $faq-color-border-filled;
-        background-color: $faq-color-bg-filled;
-        color: $faq-color-text-filled;
+        a,
+        span {
+          background-color: var(
+            --rrze-answers-pagination-background-color-active,
+            $rrze-answers-color-bg-filled
+          );
+          color: var(
+            --rrze-answers-pagination-color-active,
+            $rrze-answers-color-text-filled
+          );
+        }
 
-        &:hover {
-          background-color: $faq-color-bg-hover;
+        a:focus,
+        a:hover,
+        span:hover {
+          color: var(
+            --rrze-answers-pagination-color-active-hover,
+            $rrze-answers-color-text-filled
+          );
+          background-color: var(
+            --rrze-answers-pagination-background-color-active-hover,
+            $rrze-answers-color-bg-hover
+          );
+          text-decoration: none;
         }
       }
     }
-
-    a {
-      text-decoration: none;
-      color: inherit;
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
   }
 
-  /* Accordion */
-  details.faq-item {
+  /* Accordion (list reset) from former glossar */
+  .accordion {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Accordion details from former rrze-faq */
+  details.rrze-answers-item {
     border: 1px solid $borderColor;
     margin-bottom: 5px;
 
@@ -231,32 +236,43 @@ details.faq-item summary {
       font-size: 1rem;
       text-align: left;
       cursor: pointer;
+
       background: $surface !important;
       color: $surfaceText !important;
+
       border: 0 !important;
       /* robust left bar that survives theme overrides */
-      box-shadow: inset 10px 0 0 0 var(--faq-accent) !important;
-      transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: inset 10px 0 0 0 var(--rrze-answers-accent) !important;
+      transition: background-color .15s ease, color .15s ease, box-shadow .15s ease;
 
-      &::marker {
-        content: "";
-      }
+      &::marker { content: ""; }
 
+      /* Caret (down) via CSS mask */
       &::before {
-        @include faq-caret("../../assets/img/caret-down.svg", $surfaceText);
+        content: '';
+        width: 1em;
+        height: 1em;
+        position: absolute;
+        top: 12px;
+        right: 10px;
+        mask: url("../../assets/img/caret-down.svg") no-repeat center / contain;
+        -webkit-mask: url("../../assets/img/caret-down.svg") no-repeat center / contain;
+        background-color: $surfaceText;
       }
 
       &:hover,
       &:focus {
         text-decoration: none;
-        background-color: var(--faq-accent-dark) !important;
-        color: var(--faq-contrast-dark) !important;
+        background-color: var(--rrze-answers-accent-dark) !important;
+        color: var(--rrze-answers-contrast-dark) !important;
         cursor: pointer;
         outline: none;
-        box-shadow: inset 10px 0 0 0 var(--faq-accent-dark) !important;
+        box-shadow: inset 10px 0 0 0 var(--rrze-answers-accent-dark) !important;
 
         &::before {
-          background-color: var(--faq-contrast-dark);
+          mask: url("../../assets/img/caret-down.svg") no-repeat center / contain;
+          -webkit-mask: url("../../assets/img/caret-down.svg") no-repeat center / contain;
+          background-color: var(--rrze-answers-contrast-dark);
         }
       }
 
@@ -266,29 +282,33 @@ details.faq-item summary {
     }
 
     &[open] > summary {
-      background-color: var(--faq-accent) !important;
-      color: var(--faq-contrast) !important;
-      box-shadow: inset 10px 0 0 0 var(--faq-accent) !important;
+      background-color: var(--rrze-answers-accent) !important;
+      color: var(--rrze-answers-contrast) !important;
+      box-shadow: inset 10px 0 0 0 var(--rrze-answers-accent) !important;
 
       &::before {
-        @include faq-caret("../../assets/img/caret-up.svg", var(--faq-contrast-dark));
+        mask: url("../../assets/img/caret-up.svg") no-repeat center / contain;
+        -webkit-mask: url("../../assets/img/caret-up.svg") no-repeat center / contain;
+        background-color: var(--rrze-answers-contrast-dark);
       }
+    }
 
-      &:hover,
-      &:focus {
-        background-color: var(--faq-accent-dark) !important;
-        color: var(--faq-contrast-dark) !important;
-        box-shadow: inset 10px 0 0 0 var(--faq-accent-dark) !important;
+    &[open] > summary:hover,
+    &[open] > summary:focus {
+      background-color: var(--rrze-answers-accent-dark) !important;
+      color: var(--rrze-answers-contrast-dark) !important;
+      box-shadow: inset 10px 0 0 0 var(--rrze-answers-accent-dark) !important;
 
-        &::before {
-          background-color: var(--faq-contrast-dark);
-        }
+      &::before {
+        mask: url("../../assets/img/caret-up.svg") no-repeat center / contain;
+        -webkit-mask: url("../../assets/img/caret-up.svg") no-repeat center / contain;
+        background-color: var(--rrze-answers-contrast-dark);
       }
     }
   }
 
   .alert.font-light {
-    details.faq-item > summary {
+    details.rrze-answers-item > summary {
       color: $surfaceText !important;
 
       * {
@@ -297,13 +317,13 @@ details.faq-item summary {
 
       &:hover,
       &:focus {
-        color: var(--faq-contrast) !important;
+        color: var(--rrze-answers-contrast) !important;
       }
     }
   }
 
   &.style_light {
-    details.faq-item {
+    details.rrze-answers-item {
       border-top: 1px solid $borderColor;
 
       &:last-child {
@@ -313,144 +333,69 @@ details.faq-item summary {
       > summary {
         box-shadow: none !important;
         border-left: none !important;
-        background: $faq-light-bg !important;
-        color: $faq-light-text !important;
+        background: #fff !important;
+        color: #222 !important;
         padding: 12px 40px 12px 10px;
         font-weight: bold;
 
         &::before {
-          @include faq-caret(
-            "../../assets/img/angle-down.svg",
-            $faq-light-icon-color,
-            2em,
-            9px,
-            5px
-          );
+          content: '';
+          width: 2em;
+          height: 2em;
+          position: absolute;
+          top: 9px;
+          right: 5px;
+          mask: url("../../assets/img/angle-down.svg") no-repeat center / contain;
+          -webkit-mask: url("../../assets/img/angle-down.svg") no-repeat center / contain;
+          background-color: #CED9E7;
         }
 
         &:hover,
         &:focus {
-          background-color: $faq-light-bg-muted !important;
-          color: $faq-light-text !important;
+          background-color: #f5f7f9 !important;
+          color: #222 !important;
 
           &::before {
-            background-color: $faq-light-icon-color;
+            mask: url("../../assets/img/angle-down.svg") no-repeat center / contain;
+            -webkit-mask: url("../../assets/img/angle-down.svg") no-repeat center / contain;
+            background-color: #CED9E7;
           }
         }
       }
 
       &[open] > summary {
-        background-color: $faq-light-bg-muted !important;
-        color: $faq-light-text !important;
+        background-color: #f5f7f9 !important;
+        color: #222 !important;
 
         &::before {
-          @include faq-caret(
-            "../../assets/img/angle-up.svg",
-            $faq-light-icon-color,
-            2em,
-            9px,
-            5px
-          );
+          mask: url("../../assets/img/angle-up.svg") no-repeat center / contain;
+          -webkit-mask: url("../../assets/img/angle-up.svg") no-repeat center / contain;
+          background-color: #CED9E7;
         }
+      }
 
-        &:hover,
-        &:focus {
-          background-color: $faq-light-bg-hover !important;
-          color: $faq-light-text !important;
-        }
+      &[open] > summary:hover,
+      &[open] > summary:focus {
+        background-color: #e9edf2 !important;
+        color: #222 !important;
       }
     }
   }
 }
 
-/* Disable generic :target offset hacks inside the FAQ block */
-.rrze-faq [id]:target::before,
-.rrze-faq details.faq-item:target::before {
-  content: none !important;
-  display: none !important;
-}
+/* Disable generic :target offset hacks inside the answers block */
+// .rrze-answers [id]:target::before,
+// .rrze-answers details.rrze-answers-item:target::before {
+//   content: none !important;
+//   display: none !important;
+// }
 
-.rrze-faq [id]:target {
-  padding-top: 0 !important;
-  margin-top: 0 !important;
-}
+// .rrze-answers [id]:target {
+//   padding-top: 0 !important;
+//   margin-top: 0 !important;
+// }
 
 /* we need to calc the height of the overlay header in RRZE-2019 - every other theme uses 0px per default */
-.rrze-faq [id] {
+.rrze-answers [id] {
   scroll-margin-top: var(--header-height, 0px);
-}
-
-// Glossary
-.fau-glossar {
-  --fau-glossar-pagination-color-default: var(--FAU-Col-FAU-Blau-100, #e9edf2);
-  --fau-glossar-pagination-background-color-default: var(--FAU-Col-FAU-Blau-100, transparent);
-
-  --fau-glossar-pagination-color-active: var(--FAU-Col-FAU-Weiss-100, #036);
-  --fau-glossar-pagination-color-active-hover: var(--FAU-Col-FAU-Blau-100, #fff);
-
-  --fau-glossar-pagination-background-color-active: var(--FAU-Col-FAU-Blau-100, #dfe6ec);
-  --fau-glossar-pagination-background-color-active-hover: var(--FAU-Col-FAU-Blau-25, #036);
-
-  --fau-glossar-pagination-border-radius: var(--border-radius-buttons, 4px);
-  --fau-glossar-pagination-border-color: var(--fau-glossar-pagination-color-default);
-
-  --fau-glossar-pagination-margin: 0.1rem;
-  --fau-glossar-pagination-padding: var(--Spacing-2x, 0.5rem) var(--Spacing-4x, 1rem);
-  --fau-glossar-pagination-animation: var(--basic-animation, all 0.2s ease-in-out);
-
-  .fau-elemental & {
-    --fau-glossar-pagination-border-color: transparent;
-    --fau-glossar-pagination-background-color-default: transparent;
-  }
-
-  .letters {
-    margin: 1.5rem 0 0.5rem;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    li {
-      a,
-      span {
-        display: flex;
-        border: 1px solid var(--fau-glossar-pagination-border-color);
-        color: var(--fau-glossar-pagination-color-default);
-        background-color: var(--fau-glossar-pagination-background-color-default);
-        border-radius: var(--fau-glossar-pagination-border-radius);
-        vertical-align: middle;
-        text-align: center;
-        margin: var(--fau-glossar-pagination-margin);
-        padding: var(--fau-glossar-pagination-padding);
-        font-size: 1.125rem;
-        font-weight: 600;
-        transition: var(--basic-animation);
-      }
-
-      a {
-        text-decoration: none;
-      }
-
-      &.filled {
-        a,
-        span {
-          background: var(--fau-glossar-pagination-background-color-active);
-          color: var(--fau-glossar-pagination-color-active);
-        }
-
-        a:focus,
-        a:hover,
-        span:hover {
-          color: var(--fau-glossar-pagination-color-active-hover);
-          background-color: var(--fau-glossar-pagination-background-color-active-hover);
-          text-decoration: none;
-        }
-      }
-    }
-  }
-
-  .accordion {
-    margin: 0;
-    padding: 0;
-  }
 }

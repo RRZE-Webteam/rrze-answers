@@ -92,7 +92,7 @@ class Tools
         $out .= '<details'
             . ($load_open ? ' open' : '')
             . ' id="' . esc_attr($anchor) . '"'
-            . ' class="faq-item is-' . esc_attr($color) . '">';
+            . ' class="answers-item is-' . esc_attr($color) . '">';
 
         if ($useSchema) {
             if ($isFaq) {
@@ -206,9 +206,9 @@ class Tools
         $isFaq = ($type === 'faq');
         $isGlossary = ($type === 'glossary');
 
-        $classes = 'rrze-faq';
+        $classes = 'rrze-answers';
         if ($masonry) {
-            $classes .= ' faq-masonry';
+            $classes .= ' answers-masonry';
         }
         if (!empty($additional_class)) {
             $classes .= ' ' . trim($additional_class);
@@ -254,13 +254,13 @@ class Tools
         if (count($aSearch) == 1) {
             return '';
         }
-        $ret = '<ul class="letters">';
+        $ret = '<ul class="letters list-icons">';
 
         foreach (range('A', 'Z') as $a) {
             if (array_key_exists($a, $aSearch)) {
                 $ret .= '<li class="filled"><a href="#letter-' . $a . '">' . $a . '</a></li>';
             } else {
-                $ret .= '<li>' . $a . '</li>';
+                $ret .= '<li aria-hidden="true" role="presentation"><span>' . $a . '</span></li>';
             }
         }
         return $ret . '</ul>';
