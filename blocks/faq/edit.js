@@ -369,15 +369,60 @@ export default function Edit({ attributes, setAttributes }) {
 					initialOpen={false}
 				>
 					<SelectControl
-						label={__('Glossary style', 'rrze-answers')}
-						options={glossarystyleoptions}
-						onChange={(value) =>setAttributes({ glossarystyle: value })
+						label={__('register style', 'rrze-answers')}
+						options={registerstyleoptions}
+						onChange={(value) =>
+							setAttributes({ registerstyle: value })
 						}
 					/>
-					{(!glossary || glossary === 'none') && (
-						<><ToggleControl	checked={!!hide_accordion}	label={__('Hide accordion', 'rrze-answers')}	onChange={() =>		setAttributes({			hide_accordion: !hide_accordion,		})	}/><>	<ToggleControl		checked={!!masonry}		label={__('Grid', 'rrze-answers')}		onChange={() =>			setAttributes({				masonry: !masonry,			})		}	/>	<SelectControl		label={__(			'Accordion-Style',			'rrze-answers'		)}		options={styleoptions}		onChange={(value) =>			setAttributes({ style: value })		}	/>	<SelectControl		label={__('Color', 'rrze-answers')}		options={coloroptions}		onChange={(value) =>			setAttributes({ color: value })		}	/></><ToggleControl	checked={!!hide_title}	label={__('Hide title', 'rrze-answers')}	onChange={() =>		setAttributes({			hide_title: !hide_title,		})	}/>
+						<>
+							<ToggleControl
+								checked={!!hide_accordion}
+								label={__('Hide accordion', 'rrze-answers')}
+								onChange={() =>
+									setAttributes({
+										hide_accordion: !hide_accordion,
+									})
+								}
+							/>
+								<>
+									<ToggleControl
+										checked={!!masonry}
+										label={__('Grid', 'rrze-answers')}
+										onChange={() =>
+											setAttributes({
+												masonry: !masonry,
+											})
+										}
+									/>
+									<SelectControl
+										label={__(
+											'Accordion-Style',
+											'rrze-answers'
+										)}
+										options={styleoptions}
+										onChange={(value) =>
+											setAttributes({ style: value })
+										}
+									/>
+									<SelectControl
+										label={__('Color', 'rrze-answers')}
+										options={coloroptions}
+										onChange={(value) =>
+											setAttributes({ color: value })
+										}
+									/>
+								</>
+								<ToggleControl
+									checked={!!hide_title}
+									label={__('Hide title', 'rrze-answers')}
+									onChange={() =>
+										setAttributes({
+											hide_title: !hide_title,
+										})
+									}
+								/>
 						</>
-					)}
 				</PanelBody>
 				<PanelBody title={__('Sorting options', 'rrze-answers')}>
 					<SelectControl

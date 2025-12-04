@@ -208,7 +208,7 @@ class Tools
 
         $classes = 'rrze-answers';
         if ($masonry) {
-            $classes .= ' answers-masonry';
+            $classes .= ' rrze-answers-masonry';
         }
         if (!empty($additional_class)) {
             $classes .= ' ' . trim($additional_class);
