@@ -228,38 +228,40 @@ class Defaults
                     'type' => 'hr',
                 ];
 
-                $types = [
-                    'faq' => 'FAQ',
-                    'glossary' => __('Glossary', 'rrze-answers')
-                ];
+                if ($tab == 'import') {
+                    $types = [
+                        'faq' => 'FAQ',
+                        'glossary' => __('Glossary', 'rrze-answers')
+                    ];
 
-                $filter = '';
+                    $filter = '';
 
-                foreach ($types as $type => $label) {
+                    foreach ($types as $type => $label) {
 
-                    $cats = $syncAPI->getTaxonomies($url, 'rrze_' . $type . '_category', $filter);
-                    $options = [];
+                        $cats = $syncAPI->getTaxonomies($url, 'rrze_' . $type . '_category', $filter);
+                        $options = [];
 
-                    foreach ($cats as $key => $unused) {
-                        $options[$key] = $key;
-                    }
+                        foreach ($cats as $key => $unused) {
+                            $options[$key] = $key;
+                        }
 
-                    if (!empty($cats)) {
-                        $defaults['fields']['import'][] = [
-                            'name' => $type . '_categories_' . $identifier,
-                            'label' => $label . ' ' . __('Categories', 'rrze-answers'),
-                            'description' => __('Please select the categories you\'d like to fetch ' . $label . ' to.', 'rrze-answers'),
-                            'type' => 'select-multiple',
-                            'options' => $options
-                        ];
-                    } else {
-                        $defaults['fields']['import'][] = [
-                            'name' => $type . '_categories_' . $identifier,
-                            'label' => $label . ' ' . __('Categories', 'rrze-answers'),
-                            'description' => __('Please select the categories you\'d like to fetch ' . $label . ' to.', 'rrze-answers'),
-                            'type' => 'msg',
-                            'placeholder' => __('Category not found.', 'rrze-answers')
-                        ];
+                        if (!empty($cats)) {
+                            $defaults['fields']['import'][] = [
+                                'name' => $type . '_categories_' . $identifier,
+                                'label' => $label . ' ' . __('Categories', 'rrze-answers'),
+                                'description' => __('Please select the categories you\'d like to fetch ' . $label . ' to.', 'rrze-answers'),
+                                'type' => 'select-multiple',
+                                'options' => $options
+                            ];
+                        } else {
+                            $defaults['fields']['import'][] = [
+                                'name' => $type . '_categories_' . $identifier,
+                                'label' => $label . ' ' . __('Categories', 'rrze-answers'),
+                                'description' => __('Please select the categories you\'d like to fetch ' . $label . ' to.', 'rrze-answers'),
+                                'type' => 'msg',
+                                'placeholder' => __('Category not found.', 'rrze-answers')
+                            ];
+                        }
                     }
                 }
             }
