@@ -117,7 +117,7 @@ class ShortcodeFAQ
             'id' => [
                 'default' => NULL,
                 'field_type' => 'text',
-                'label' => __('rrze_faq', 'rrze-answers'),
+                'label' => 'FAQ',
                 'type' => 'number'
             ],
             'hide_accordion' => [
