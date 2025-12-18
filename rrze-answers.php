@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            1.0.6
+Version:            1.0.7
 Description:        Explain your content with FAQ, glossary and placeholders. 
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
@@ -18,6 +18,7 @@ Requires PHP:       8.2
 namespace RRZE\Answers;
 
 use RRZE\Answers\Main;
+use RRZE\Answers\Common\Tools;
 use RRZE\Answers\Common\Plugin\Plugin;
 
 // Prevent direct access to the file.
@@ -425,6 +426,6 @@ function loaded()
     add_action('init', __NAMESPACE__ . '\register_blocks');
     add_action('init', __NAMESPACE__ . '\rrze_update_glossary_cpt');
     add_action('init', __NAMESPACE__ . '\rrze_update_placeholder_cpt');
+    add_action('init', __NAMESPACE__ . '\rrze_migrate_domains');
     add_action('admin_init', __NAMESPACE__ . '\rrze_answers_migrate_multisite');
-    add_action('admin_init', __NAMESPACE__ . '\rrze_migrate_domains');
 }

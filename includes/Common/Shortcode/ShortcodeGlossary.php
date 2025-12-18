@@ -252,7 +252,7 @@ class ShortcodeGlossary
      * Supports classic and alphabetical output, tabs or tag cloud display.
      * 
      * @param array $atts Original shortcode attributes
-     * @param int $hstart HTML heading level
+     * @param string $hstart HTML heading level
      * @param string $style Inline styles for the accordion
      * @param string $expand_all_link Attribute for “expand all” link
      * @param bool $hide_accordion Whether the accordion should be suppressed
@@ -267,7 +267,7 @@ class ShortcodeGlossary
      * @param string $registerstyle “a-z”, “tabs”, “tagcloud” or empty
      * @return string Rendered HTML content
      */
-    private function renderFilteredItems(array $atts, int $hstart, string $style, string $expand_all_link, bool $hide_accordion, bool $hide_title, string $color, string $load_open, string $sort, string $order, $category, $tag, string $register, string $registerstyle): string
+    private function renderFilteredItems(array $atts, string $hstart, string $style, string $expand_all_link, bool $hide_accordion, bool $hide_title, string $color, string $load_open, string $sort, string $order, $category, $tag, string $register, string $registerstyle): string
     {
         $content = '';
         $this->bSchema = false;
@@ -640,7 +640,7 @@ class ShortcodeGlossary
      *
      * @param mixed $id Single ID or array of IDs
      * @param bool $gutenberg Whether Gutenberg is used
-     * @param int $hstart HTML heading level
+     * @param string $hstart HTML heading level
      * @param string $style Inline styles for the accordion
      * @param bool $masonry Whether tiles should be displayed (fake masonry - see https://github.com/RRZE-Webteam/rrze-answers/issues/105#issuecomment-2873361435 )
      * @param string $expand_all_link Attribute for “expand all” link
@@ -650,7 +650,7 @@ class ShortcodeGlossary
      * @param string $load_open Attribute for open state
      * @return string The generated HTML content
      */
-    private function renderExplicitItems($id, bool $gutenberg, int $hstart, string $style, bool $masonry, string $expand_all_link, bool $hide_accordion, bool $hide_title, string $color, string $load_open): string
+    private function renderExplicitItems($id, bool $gutenberg, string $hstart, string $style, bool $masonry, string $expand_all_link, bool $hide_accordion, bool $hide_title, string $color, string $load_open): string
     {
         $content = '';
         $this->bSchema = false;
