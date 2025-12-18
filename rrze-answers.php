@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            1.0.5
+Version:            1.0.7
 Description:        Explain your content with FAQ, glossary and placeholders. 
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
@@ -18,6 +18,7 @@ Requires PHP:       8.2
 namespace RRZE\Answers;
 
 use RRZE\Answers\Main;
+use RRZE\Answers\Common\Tools;
 use RRZE\Answers\Common\Plugin\Plugin;
 
 // Prevent direct access to the file.
@@ -244,6 +245,35 @@ function rrze_update_placeholder_cpt()
 }
 
 
+function rrze_migrate_domains(){
+    if (get_site_option('rrze_migrate_domains_done')) {
+        return;
+    }
+
+    $domains = [];
+    $source_options = ['rrze-faq', 'rrze-glossary'];
+
+    foreach ($source_options as $option_name){
+        $option = get_option($option_name);
+
+        if (!empty($option['registeredDomains'])){
+            foreach ($option['registeredDomains'] as $shortname => $url){
+                $identifier = Tools::getIdentifier($url);
+                $domains[$identifier] = $url;
+            }
+        }
+    }
+
+    $answers_option = get_option('rrze-answers', []);
+
+    $answers_option['registeredDomains'] = $domains;
+
+    update_option('rrze-answers', $answers_option);
+
+    update_site_option('rrze_migrate_domains_done', 1);
+}
+
+
 // 1. activate rrze-answers on all websites where rrze-answers, rrze-glossary or rrze-placeholder is active
 // 2. deaktivate rrze-answers, rrze-glossary and rrze-placeholder
 function rrze_answers_migrate_multisite()
@@ -396,5 +426,6 @@ function loaded()
     add_action('init', __NAMESPACE__ . '\register_blocks');
     add_action('init', __NAMESPACE__ . '\rrze_update_glossary_cpt');
     add_action('init', __NAMESPACE__ . '\rrze_update_placeholder_cpt');
+    add_action('init', __NAMESPACE__ . '\rrze_migrate_domains');
     add_action('admin_init', __NAMESPACE__ . '\rrze_answers_migrate_multisite');
 }

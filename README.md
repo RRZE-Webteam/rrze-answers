@@ -27,7 +27,7 @@ It allows you to:
 - **Flexible display options:** Accordion view, A–Z index, tabs, tag cloud or grid.
 - **Cross-domain synchronization:** Share and import entries from other FAU sites.  
 - **REST API support:** Access entries programmatically.  
-- **Multilingual and SEO-friendly:** Uses [`schema.org/Faq`](https://schema.org/Faq) for faq entries, [`schema.org/DefinedTerm`](https://schema.org/DefinedTerm) for glossary entries and `<abbr>` tags for placeholders.  
+- **Multilingual and SEO-friendly:** Uses [`schema.org/FAQPage`](https://schema.org/FAQPage) for faq entries, [`schema.org/DefinedTerm`](https://schema.org/DefinedTerm) for glossary entries and `<abbr>` tags for placeholders.  
 
 ---
 
