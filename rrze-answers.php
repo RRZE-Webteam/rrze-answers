@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            1.0.7
+Version:            1.0.8
 Description:        Explain your content with FAQ, glossary and placeholders. 
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
@@ -246,7 +246,7 @@ function rrze_update_placeholder_cpt()
 
 
 function rrze_migrate_domains(){
-    if (get_site_option('rrze_migrate_domains_done')) {
+    if (get_option('rrze_migrate_domains_done')) {
         return;
     }
 
@@ -268,9 +268,10 @@ function rrze_migrate_domains(){
 
     $answers_option['registeredDomains'] = $domains;
 
-    update_option('rrze-answers', $answers_option);
+    delete_option('rrze-answers');
+    add_option('rrze-answers', $answers_option);    
 
-    update_site_option('rrze_migrate_domains_done', 1);
+    update_option('rrze_migrate_domains_done', 1);
 }
 
 
