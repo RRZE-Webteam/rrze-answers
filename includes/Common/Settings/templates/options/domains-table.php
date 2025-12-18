@@ -23,7 +23,7 @@ use RRZE\Answers\Common\API\SyncAPI;
                 $i++;
             }
             echo '</tbody></table>';
-            echo '<p>' . esc_html__('Please note: "Delete selected domains" will DELETE every FAQ on this website that has been fetched from the selected domains.', 'rrze-answers') . '</p>';
+            echo '<p>' . esc_html__('Please note: "Delete selected domains" will DELETE every FAQ and glossary entry on this website that has been fetched from the selected domains.', 'rrze-answers') . '</p>';
             submit_button(esc_html__('Delete selected domains', 'rrze-answers'));
         }
         ?>
