@@ -10,11 +10,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-12-05 14:14+0000\n"
+"POT-Creation-Date: 2025-12-18 12:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: Loco https://localise.biz/\n"
 "X-Domain: rrze-answers\n"
-"\n"
 "Language: \n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;"
 
@@ -691,7 +690,7 @@ msgstr ""
 msgid "No FAQs found (post type \"rrze_faq\" must be public and show_in_rest)."
 msgstr ""
 
-#: rrze-answers.php:310
+#: rrze-answers.php:341
 msgid "No sites required changes."
 msgstr ""
 
@@ -800,12 +799,12 @@ msgstr ""
 
 #: includes/Common/Settings/templates/options/domains-table.php:26
 msgid ""
-"Please note: \"Delete selected domains\" will DELETE every FAQ on this "
-"website that has been fetched from the selected domains."
+"Please note: \"Delete selected domains\" will DELETE every FAQ and glossary "
+"entry on this website that has been fetched from the selected domains."
 msgstr ""
 
 #. 1: The plugin name, 2: The error string.
-#: rrze-answers.php:379
+#: rrze-answers.php:410
 #, php-format
 msgid "Plugins: %1$s: %2$s"
 msgstr ""
@@ -1029,7 +1028,7 @@ msgid "Tags"
 msgstr ""
 
 #. 1: Server PHP version number, 2: Required PHP version number.
-#: rrze-answers.php:367
+#: rrze-answers.php:398
 #, php-format
 msgid ""
 "The server is running PHP version %1$s. The plugin requires at least PHP "
@@ -1037,7 +1036,7 @@ msgid ""
 msgstr ""
 
 #. 1: Server WordPress version number, 2: Required WordPress version number.
-#: rrze-answers.php:360
+#: rrze-answers.php:391
 #, php-format
 msgid ""
 "The server is running WordPress version %1$s. The plugin requires at least "
@@ -1074,7 +1073,7 @@ msgstr ""
 msgid "updated"
 msgstr ""
 
-#: rrze-answers.php:304
+#: rrze-answers.php:335
 msgid "was activated and old plugins were deactivated on these sites:"
 msgstr ""
 
