@@ -1,30 +1,47 @@
 <?php
-/* 
-Template Name: CPT placeholder Single Template
-*/
-
-use RRZE\Answers\Common\Tools;
+/**
+ * The template for displaying all placeholders
+ *
+ * @package WordPress
+ * @subpackage FAU
+ * @since FAU 1.0
+ */
 
 get_header();
-
-global $post;
-?>
-    <div id="sidebar" class="sidebar">
-        <?php get_sidebar(); ?>
-    </div>
-    <div id="primary" class="content-area">
-		<main id="main" class="site-main">
-<?php
-
-echo '<div id="post-' . get_the_ID() . '" class="' . implode(' ', get_post_class()) .'">';
-echo '<strong>' . $post->post_title . '</strong><br>';
-echo get_post_meta( $post->ID, 'placeholder', TRUE ) . Tools::getPronunciation($post->ID);
-echo '</div>';
 ?>
 
-        </main>
-    </div>
+<main id="main" class="site-main rrze-answers archive">
+    <div id="content"><div class="content-container">
+        <h2>FAQ</h2>
 
-<?php 
+        <ul>
+        <?php
+        if (have_posts()) {
+            while (have_posts()) {
+                the_post();
+                printf(
+                    '<li><a href="%s">%s</a></li>',
+                    esc_url(get_the_permalink()),
+                    esc_html(get_the_title())
+                );
+            }
+        } else {
+            echo '<li>' . esc_html__('Keine FAQs gefunden.', 'fau') . '</li>';
+        }
+        ?>
+        </ul>
 
-get_footer();
+        <?php
+        // Pagination
+        the_posts_pagination([
+            'mid_size'           => 2,
+            'end_size'           => 1,
+            'prev_text'          => '← ' . esc_html__('Previous', 'fau'),
+            'next_text'          => esc_html__('Next', 'fau') . ' →',
+            'screen_reader_text' => esc_html__('FAQ navigation', 'fau'),
+        ]);
+        ?>
+    </div></div>
+</main>
+
+<?php get_footer(); ?>
