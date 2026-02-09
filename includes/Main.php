@@ -495,9 +495,9 @@ class Main
 
         wp_register_script(
             'rrze-answers-search',
-            plugins_url('build/rrze-answers-search.js', $this->pluginFile),
+            plugins_url('build/rrze-answers-search.js', plugin()->getBasename()),
             [],
-            filemtime(plugin_dir_path($this->pluginFile) . 'build/rrze-answers-search.js'),
+            filemtime(plugin()->getPath() . 'build/rrze-answers-search.js'),
             true
         );
     }
@@ -513,9 +513,9 @@ class Main
 
         wp_register_script(
             'rrze-answers-search',
-            plugins_url('build/rrze-answers-search.js', $this->pluginFile),
+            plugins_url('build/rrze-answers-search.js', plugin()->getBasename()),
             [],
-            filemtime(plugin_dir_path($this->pluginFile) . 'build/rrze-answers-search.js'),
+            filemtime(plugin()->getPath() . 'build/rrze-answers-search.js'),
             true
         );
 

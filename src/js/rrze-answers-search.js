@@ -29,7 +29,7 @@
     if (!input) return;
 
     const detailsItems = Array.from(
-      wrapper.querySelectorAll("details.faq-item")
+      wrapper.querySelectorAll("details.rrze-answers-item")
     );
     if (!detailsItems.length) return;
 

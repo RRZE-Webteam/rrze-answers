@@ -57,6 +57,10 @@ $borderColor:  #dfe6ec;
   margin-left: 1em;
 }
 
+/* search field */
+.rrze-answers-search { margin: 0 0 1rem; }
+.rrze-answers-search__input { width: 100%; max-width: 32rem; }
+
 /* Masonry columns for tiles */
 .rrze-answers-masonry {
   column-count: 1;

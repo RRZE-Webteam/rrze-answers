@@ -15,8 +15,7 @@ get_header();
 <main id="main" class="site-main rrze-answers">
 
 <?php
-echo 'TEST FAQ s';
-include_once('template-parts/answers-content.php');
+include_once('template-parts/faq-content.php');
 ?>
 </main>
 
