@@ -1,6 +1,6 @@
 {
   "name": "rrze-answers",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Plugin to create FAQs and synchronize them from the FAU network. Usable as a shortcode, block, or widget.",
   "author": "RRZE Webteam",
   "license": "GPL-2.0-or-later",
@@ -11,8 +11,8 @@
   ],
   "scripts": {
     "start": "wp-scripts start faq=./blocks/faq/index.js faq-widget=./blocks/faq-widget/index.js glossary=./blocks/glossary/index.js placeholder=./blocks/placeholder/index.js src/js/rrze-answers-accordion.js src/js/rrze-answers-import-ui.js --webpack-copy-php",
-    "build": "wp-scripts build faq=./blocks/faq/index.js faq-widget=./blocks/faq-widget/index.js glossary=./blocks/glossary/index.js placeholder=./blocks/placeholder/index.js src/js/rrze-answers-accordion.js src/js/rrze-answers-import-ui.js --webpack-copy-php && npm run build:css && npm run increment-version",
-    "build:js": "wp-scripts build src/index.js src/js/rrze-answers-accordion.js",
+    "build": "npm-run-all build:js build:css increment-version",
+    "build:js": "wp-scripts build faq=./blocks/faq/index.js faq-widget=./blocks/faq-widget/index.js glossary=./blocks/glossary/index.js placeholder=./blocks/placeholder/index.js src/js/rrze-answers-accordion.js src/js/rrze-answers-import-ui.js src/js/rrze-answers-search.js --webpack-copy-php",
     "build:css": "sass src/sass:build/css --style compressed --no-source-map",
     "increment-version": "node increment-version.js patch",
     "format": "wp-scripts format",

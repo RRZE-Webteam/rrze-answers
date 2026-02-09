@@ -207,6 +207,13 @@ class ShortcodeFAQ
                 'default' => FALSE,
                 'checked' => FALSE
             ],
+			'search' => [
+				'field_type' => 'toggle',
+				'label' => __('Show search field', 'rrze-answers'),
+				'type' => 'boolean',
+				'default' => FALSE,
+				'checked' => FALSE
+			],
             'additional_class' => [
                 'default' => '',
                 'field_type' => 'text',
@@ -326,6 +333,9 @@ class ShortcodeFAQ
                         break;
                     case 'load-open':
                         $atts['load_open'] = ' load="open"';
+                        break;
+                    case 'search':
+                        $atts['search'] = true;
                         break;
                 }
             }
@@ -678,6 +688,7 @@ class ShortcodeFAQ
         extract($atts);
 
         $content = '';
+        $search = !empty($atts['search']);
         $glossarystyle = (isset($glossarystyle) ? $glossarystyle : '');
         $hide_title = (isset($hide_title) ? $hide_title : false);
         $color = (isset($color) ? $color : '');
@@ -704,7 +715,11 @@ class ShortcodeFAQ
         wp_enqueue_script('rrze-answers-accordion');
         wp_enqueue_style('rrze-answers-css');
 
-        $content = Tools::renderWrapper('faq', $content, $headerID, $masonry, $color, $additional_class, $this->bSchema, $postID);
+        if ($search) {
+            wp_enqueue_script('rrze-answers-search');
+        }
+
+        $content = Tools::renderWrapper('faq', $content, $headerID, $masonry, $color, $additional_class, $this->bSchema, $postID, $search);
 
         return $content;
 

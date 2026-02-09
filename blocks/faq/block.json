@@ -33,6 +33,10 @@
 		"masonry": {
 			"type": "boolean"
 		},
+		"search": {
+			"type": "boolean",
+			"default": false
+		},
 		"color": {
 			"type": "string"
 		},
@@ -60,8 +64,12 @@
 		"html": false
 	},
 	"textdomain": "rrze-answers",
-  	"editorScript": "file:../../build/faq.js",
+	"viewScript": [
+		"file:./rrze-answers-accordion.js",
+		"file:./rrze-answers-search.js"
+	],
+	"editorScript": "file:../../build/faq.js",
 	"style": "file:../../build/css/rrze-answers.css",
-  	"editorStyle": "file:../../build/css/rrze-answers.css",
+	"editorStyle": "file:../../build/css/rrze-answers.css",
 	"render": "file:./render.php"
 }

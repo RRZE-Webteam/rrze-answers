@@ -124,7 +124,7 @@ class Main
                 if ($options['new_url'] && ($options['new_url'] != 'https://')) {
                     // add new domain
                     $identifier = Tools::getIdentifier($options['new_url']);
-                    $url = 'https://' . Tools::getHost($options['new_url']);                    
+                    $url = 'https://' . Tools::getHost($options['new_url']);
                     $aRet = $syncAPI->checkDomain($identifier, $url, $domains);
 
                     if ($aRet['status']) {
@@ -492,6 +492,14 @@ class Main
             filemtime(plugin()->getPath() . 'build/rrze-answers-accordion.js'),
             true
         );
+
+        wp_register_script(
+            'rrze-answers-search',
+            plugins_url('build/rrze-answers-search.js', $this->pluginFile),
+            [],
+            filemtime(plugin_dir_path($this->pluginFile) . 'build/rrze-answers-search.js'),
+            true
+        );
     }
 
     public function enqueueAdminAssets()
@@ -503,7 +511,17 @@ class Main
             filemtime(plugin()->getPath() . 'build/css/rrze-answers-admin.css')
         );
 
+        wp_register_script(
+            'rrze-answers-search',
+            plugins_url('build/rrze-answers-search.js', $this->pluginFile),
+            [],
+            filemtime(plugin_dir_path($this->pluginFile) . 'build/rrze-answers-search.js'),
+            true
+        );
+
         wp_enqueue_style('rrze-answers-admin-css');
+        wp_enqueue_script('rrze-answers-accordion');
+        wp_enqueue_script('rrze-answers-search');
     }
 
 

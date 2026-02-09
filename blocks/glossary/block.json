@@ -33,6 +33,10 @@
 		"masonry": {
 			"type": "boolean"
 		},
+		"search": {
+			"type": "boolean",
+			"default": false
+		},
 		"expand_all_link": {
 			"type": "boolean"
 		},
@@ -61,11 +65,15 @@
 			"type": "number",
 			"default": 2
 		}
-	},	
+	},
 	"supports": {
 		"html": false
 	},
 	"textdomain": "rrze-answers",
+	"viewScript": [
+		"file:./rrze-answers-accordion.js",
+		"file:./rrze-answers-search.js"
+	],
 	"editorScript": "file:../../build/glossary.js",
 	"render": "file:./render.php"
 }

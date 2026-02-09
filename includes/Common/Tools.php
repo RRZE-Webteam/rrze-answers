@@ -201,7 +201,8 @@ class Tools
         string &$color,
         string &$additional_class,
         bool &$bSchema,
-        ?int $postID = null
+        ?int $postID = null,
+        bool $search = false
     ): string {
         $isFaq = ($type === 'faq');
         $isGlossary = ($type === 'glossary');
@@ -233,12 +234,31 @@ class Tools
             $title = $fallbackTitle;
         }
 
+        $searchMarkup = '';
+        if ($search) {
+            $searchId = $headerID . '-search';
+            $searchMarkup =
+                '<div class="rrze-answers-search">'
+                . '<label class="screen-reader-text" for="' . esc_attr($searchId) . '">'
+                . esc_html__('Search FAQ', 'rrze-answers')
+                . '</label>'
+                . '<input type="search"'
+                . ' id="' . esc_attr($searchId) . '"'
+                . ' class="rrze-answers-search__input"'
+                . ' placeholder="' . esc_attr__('Search…', 'rrze-answers') . '"'
+                . ' data-minlen="3"'
+                . ' autocomplete="off"'
+                . ' />'
+                . '</div>';
+        }
+
         return '<div' . $schemaAttr
             . ' class="' . esc_attr($classes) . '" role="region" aria-labelledby="' . esc_attr($headerID) . '"'
             . ' data-accordion="single"'
             . ' data-scroll-offset="96"'
             . '>'
             . '<h2 id="' . esc_attr($headerID) . '" class="screen-reader-text">' . esc_html($title) . '</h2>'
+            . $searchMarkup
             . $content
             . '</div>';
     }

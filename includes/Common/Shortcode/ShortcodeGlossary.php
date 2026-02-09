@@ -111,6 +111,13 @@ class ShortcodeGlossary
                 'default' => FALSE,
                 'checked' => FALSE
             ],
+            'search' => [
+                'field_type' => 'toggle',
+                'label' => __('Show search field', 'rrze-answers'),
+                'type' => 'boolean',
+                'default' => FALSE,
+                'checked' => FALSE
+            ],
             'hide_accordion' => [
                 'field_type' => 'toggle',
                 'label' => __('Hide accordion', 'rrze-answers'),
@@ -535,6 +542,9 @@ class ShortcodeGlossary
                     case 'load-open':
                         $atts['load_open'] = ' load="open"';
                         break;
+                    case 'search':
+                        $atts['search'] = true;
+                        break;
                 }
             }
         }
@@ -599,6 +609,7 @@ class ShortcodeGlossary
         extract($atts);
 
         $content = '';
+        $search = !empty($atts['search']);
         $register = (string) ($register ?? '');
         $registerstyle = (string) ($registerstyle ?? '');
         $hide_title = (isset($hide_title) ? $hide_title : false);
@@ -626,14 +637,18 @@ class ShortcodeGlossary
         wp_enqueue_script('rrze-answers-accordion');
         wp_enqueue_style('rrze-answers-css');
 
-        $content = Tools::renderWrapper('glossary', $content, $headerID, $masonry, $color, $additional_class, $this->bSchema, $postID);
+        if ($search) {
+            wp_enqueue_script('rrze-answers-search');
+        }
+
+        $content = Tools::renderWrapper('glossary', $content, $headerID, $masonry, $color, $additional_class, $this->bSchema, $postID, $search);
 
         return $content;
 
     }
 
 
-        /**
+    /**
      * Outputs explicitly requested FAQs as accordion or simple content.
      *
      * Supports both Gutenberg blocks (multiple IDs as an array) and the classic editor (comma-separated).
@@ -711,7 +726,7 @@ class ShortcodeGlossary
             }];
             phpvar = (typeof phpvar === 'undefined' ? tmp : phpvar.concat(tmp)); 
         </script>
-    <?php
+        <?php
     }
 
     public function addMCEButtons($pluginArray)
