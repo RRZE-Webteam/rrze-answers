@@ -500,6 +500,12 @@ class Main
             filemtime(plugin()->getPath() . 'build/rrze-answers-search.js'),
             true
         );
+
+        if (is_admin()) {
+            wp_enqueue_script('rrze-answers-accordion');
+            wp_enqueue_script('rrze-answers-search');
+        }
+
     }
 
     public function enqueueAdminAssets()
