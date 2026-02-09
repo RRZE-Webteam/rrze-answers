@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            1.0.9
+Version:            1.0.10
 Description:        Explain your content with FAQ, glossary and placeholders. 
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
@@ -245,7 +245,8 @@ function rrze_update_placeholder_cpt()
 }
 
 
-function rrze_migrate_domains(){
+function rrze_migrate_domains()
+{
     if (get_option('rrze_migrate_domains_done')) {
         return;
     }
@@ -253,11 +254,11 @@ function rrze_migrate_domains(){
     $domains = [];
     $source_options = ['rrze-faq', 'rrze-glossary'];
 
-    foreach ($source_options as $option_name){
+    foreach ($source_options as $option_name) {
         $option = get_option($option_name);
 
-        if (!empty($option['registeredDomains'])){
-            foreach ($option['registeredDomains'] as $shortname => $url){
+        if (!empty($option['registeredDomains'])) {
+            foreach ($option['registeredDomains'] as $shortname => $url) {
                 $identifier = Tools::getIdentifier($url);
                 $domains[$identifier] = $url;
             }
@@ -269,24 +270,27 @@ function rrze_migrate_domains(){
     $answers_option['registeredDomains'] = $domains;
 
     delete_option('rrze-answers');
-    add_option('rrze-answers', $answers_option);    
+    add_option('rrze-answers', $answers_option);
 
     update_option('rrze_migrate_domains_done', 1);
 }
 
 
 // 1. activate rrze-answers on all websites where rrze-answers, rrze-glossary or rrze-placeholder is active
-// 2. deaktivate rrze-answers, rrze-glossary and rrze-placeholder
+// 2. deaktivate rrze-faq, rrze-glossary and rrze-placeholder
 function rrze_answers_migrate_multisite()
 {
-    if (get_site_option('rrze-answers_migrate_multisite_done')) {
-        return;
-    }
+    // Uncomment to run migration only once.
+    // if (get_site_option('rrze-answers_migrate_multisite_done')) {
+    //     return;
+    // }
 
+    // Run only in multisite network admin and only for users allowed to manage plugins network-wide.
     if (!is_multisite() || !is_network_admin() || !current_user_can('manage_network_plugins')) {
         return;
     }
 
+    // Ensure plugin functions are available.
     if (!function_exists('is_plugin_active')) {
         require_once ABSPATH . 'wp-admin/includes/plugin.php';
     }
@@ -296,12 +300,23 @@ function rrze_answers_migrate_multisite()
         'rrze-glossary/rrze-glossary.php',
         'rrze-synonym/rrze-synonym.php',
     ];
+
     $answers = 'rrze-answers/rrze-answers.php';
     $report = [];
+
+    /**
+     * Important:
+     * rrze-answers must NOT be network-activated, otherwise it will automatically be active on all sites.
+     * Therefore we deactivate it network-wide before doing any per-site activation.
+     */
+    if (is_plugin_active_for_network($answers)) {
+        deactivate_plugins($answers, false, true); // network_wide = true
+    }
 
     foreach (get_sites(['number' => 0]) as $site) {
         switch_to_blog((int) $site->blog_id);
 
+        // Check if any of the target plugins is active on this site.
         $has_target = false;
         foreach ($targets as $p) {
             if (is_plugin_active($p)) {
@@ -310,7 +325,9 @@ function rrze_answers_migrate_multisite()
             }
         }
 
+        // Only migrate sites where at least one of the old plugins is active.
         if ($has_target) {
+            // Deactivate old plugins on this site.
             $deactivated = [];
             foreach ($targets as $p) {
                 if (is_plugin_active($p)) {
@@ -319,37 +336,80 @@ function rrze_answers_migrate_multisite()
                 }
             }
 
-            if ($deactivated) {
-                $report[] = [
-                    'label' => get_bloginfo('name') . ' (' . home_url() . ')',
-                    'list' => $deactivated,
-                ];
+            // Activate rrze-answers only on this site.
+            $activation_error = '';
+            $activated_now = false;
+
+            if (!is_plugin_active($answers)) {
+                $res = activate_plugin($answers, '', false, false); // site-wide activation
+
+                if (is_wp_error($res)) {
+                    $activation_error = $res->get_error_message();
+                } else {
+                    $activated_now = true;
+                }
             }
+
+            // Store migration results for admin notice output.
+            $report[] = [
+                'label'       => get_bloginfo('name') . ' (' . home_url() . ')',
+                'deactivated' => $deactivated,
+                'activated'   => $activated_now,
+                'error'       => $activation_error,
+            ];
         }
 
         restore_current_blog();
     }
 
+    // Show migration result in the network admin area.
     add_action('network_admin_notices', function () use ($report) {
         if ($report) {
-            echo '<div class="notice notice-success"><p><strong>RRZE-Answers</strong> ' . esc_html__('was activated and old plugins were deactivated on these sites:', 'rrze-answers') . '</p><ul style="margin-left:1.2em">';
+            echo '<div class="notice notice-success"><p><strong>RRZE-Answers</strong> '
+                . esc_html__('Migration result (old plugins deactivated, RRZE-Answers activated where needed):', 'rrze-answers')
+                . '</p><ul style="margin-left:1.2em">';
+
             foreach ($report as $row) {
-                echo '<li>' . esc_html($row['label']) . ': ' . esc_html(implode(', ', $row['list'])) . '</li>';
+                echo '<li><strong>' . esc_html($row['label']) . '</strong>: ';
+
+                if (!empty($row['deactivated'])) {
+                    echo esc_html__('Deactivated:', 'rrze-answers') . ' '
+                        . esc_html(implode(', ', $row['deactivated'])) . '. ';
+                } else {
+                    echo esc_html__('Deactivated: none.', 'rrze-answers') . ' ';
+                }
+
+                if (!empty($row['error'])) {
+                    echo '<strong style="color:#b32d2e">'
+                        . esc_html__('RRZE-Answers activation failed:', 'rrze-answers')
+                        . '</strong> '
+                        . esc_html($row['error']);
+                } else {
+                    echo $row['activated']
+                        ? esc_html__('RRZE-Answers activated.', 'rrze-answers')
+                        : esc_html__('RRZE-Answers already active (no change).', 'rrze-answers');
+                }
+
+                echo '</li>';
             }
+
             echo '</ul></div>';
         } else {
-            echo '<div class="notice notice-info"><p>' . esc_html__('No sites required changes.', 'rrze-answers') . '</p></div>';
+            echo '<div class="notice notice-info"><p>'
+                . esc_html__('No sites required changes.', 'rrze-answers')
+                . '</p></div>';
         }
     });
 
+    // Final safety check: ensure rrze-answers is not network-activated.
     if (is_plugin_active_for_network($answers)) {
-        deactivate_plugins($answers, false, true); // network_wide = true
+        deactivate_plugins($answers, false, true);
     }
 
-    $res = activate_plugin($answers, '', false, false); // activate rrze-answers
-
+    // Mark migration as done.
     update_site_option('rrze-answers_migrate_multisite_done', 1);
 }
+
 
 
 /**
