@@ -4,7 +4,7 @@ Tags: faq, shortcode, block, widget, categories
 Requires at least: 6.1
 Tested up to: 6.8
 Requires PHP: 8.2
-Stable tag: 1.0.8
+Stable tag: 1.0.17
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,6 +18,7 @@ Features:
 * Output of FAQs by category, tag, or domain
 * Grouping as accordion or list
 * Glossary as A-Z index, tabs, or tag cloud
+* Search-as-you-type
 * REST API support
 * Support for multiple domains via synchronization
 * Widget to display a random or fixed FAQ

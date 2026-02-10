@@ -66,6 +66,7 @@ The text editor provides a dedicated menu entry for inserting placeholders. From
 - `id` – Specific FAQ IDs  
 - `hide` – Hide elements (`accordion`, `title`, `glossary`)  
 - `masonry` – Grid layout (`true`/`false`)  
+- `search`: Shows a search input above the FAQ list to filter questions. (`true`/`false`)  
 - `class` – Faculty or custom CSS classes (`fau`, `med`, `nat`, etc.)  
 - `sort` – Sort by `title`, `id`, or `sortfield`  
 - `order` – Sort direction (`asc`, `desc`)  

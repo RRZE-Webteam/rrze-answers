@@ -16,7 +16,6 @@ use RRZE\Answers\Common\{
     // AdminInterfaces\AdminInterfaces,
     // AdminInterfaces\AdminInterfacesPlaceholder,
     Settings\Settings,
-    // Settings\SettingsFAQ,
     CPT\CPTFAQ,
     CPT\CPTGlossary,
     CPT\CPTPlaceholder,
@@ -124,7 +123,7 @@ class Main
                 if ($options['new_url'] && ($options['new_url'] != 'https://')) {
                     // add new domain
                     $identifier = Tools::getIdentifier($options['new_url']);
-                    $url = 'https://' . Tools::getHost($options['new_url']);                    
+                    $url = 'https://' . Tools::getHost($options['new_url']);
                     $aRet = $syncAPI->checkDomain($identifier, $url, $domains);
 
                     if ($aRet['status']) {
@@ -492,6 +491,20 @@ class Main
             filemtime(plugin()->getPath() . 'build/rrze-answers-accordion.js'),
             true
         );
+
+        wp_register_script(
+            'rrze-answers-search',
+            plugins_url('build/rrze-answers-search.js', plugin()->getBasename()),
+            [],
+            filemtime(plugin()->getPath() . 'build/rrze-answers-search.js'),
+            true
+        );
+
+        if (is_admin()) {
+            wp_enqueue_script('rrze-answers-accordion');
+            wp_enqueue_script('rrze-answers-search');
+        }
+
     }
 
     public function enqueueAdminAssets()
@@ -503,7 +516,17 @@ class Main
             filemtime(plugin()->getPath() . 'build/css/rrze-answers-admin.css')
         );
 
+        wp_register_script(
+            'rrze-answers-search',
+            plugins_url('build/rrze-answers-search.js', plugin()->getBasename()),
+            [],
+            filemtime(plugin()->getPath() . 'build/rrze-answers-search.js'),
+            true
+        );
+
         wp_enqueue_style('rrze-answers-admin-css');
+        wp_enqueue_script('rrze-answers-accordion');
+        wp_enqueue_script('rrze-answers-search');
     }
 
 
