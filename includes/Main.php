@@ -16,7 +16,6 @@ use RRZE\Answers\Common\{
     // AdminInterfaces\AdminInterfaces,
     // AdminInterfaces\AdminInterfacesPlaceholder,
     Settings\Settings,
-    // Settings\SettingsFAQ,
     CPT\CPTFAQ,
     CPT\CPTGlossary,
     CPT\CPTPlaceholder,
