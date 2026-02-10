@@ -280,10 +280,9 @@ function rrze_migrate_domains()
 // 2. deaktivate rrze-faq, rrze-glossary and rrze-placeholder
 function rrze_answers_migrate_multisite()
 {
-    // Uncomment to run migration only once.
-    // if (get_site_option('rrze-answers_migrate_multisite_done')) {
-    //     return;
-    // }
+    if (get_site_option('rrze-answers_migrate_multisite_done')) {
+        return;
+    }
 
     // Run only in multisite network admin and only for users allowed to manage plugins network-wide.
     if (!is_multisite() || !is_network_admin() || !current_user_can('manage_network_plugins')) {
