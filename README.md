@@ -67,6 +67,7 @@ The text editor provides a dedicated menu entry for inserting placeholders. From
 - `hide` – Hide elements (`accordion`, `title`, `glossary`)  
 - `masonry` – Grid layout (`true`/`false`)  
 - `search`: Shows a search input above the FAQ list to filter questions. (`true`/`false`)  
+- `lang`: Filters by language (2 char code, f.e. 'de' or 'fr') 
 - `class` – Faculty or custom CSS classes (`fau`, `med`, `nat`, etc.)  
 - `sort` – Sort by `title`, `id`, or `sortfield`  
 - `order` – Sort direction (`asc`, `desc`)  
@@ -87,6 +88,7 @@ The text editor provides a dedicated menu entry for inserting placeholders. From
 - `category` – One or more categories  
 - `tag` – One or more tags  
 - `id` – Specific entries by ID  
+- `lang`: Filters by language (2 char code, f.e. 'de' or 'fr') 
 - `hide` – Hide output elements (`accordion`, `title`, `register`)  
 - `show` – Display options (`expand-all-link`, `load-open`)  
 - `class` – Border color / CSS classes  
