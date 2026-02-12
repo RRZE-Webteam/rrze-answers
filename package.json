@@ -1,6 +1,6 @@
 {
   "name": "rrze-answers",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "description": "Plugin to create FAQs and synchronize them from the FAU network. Usable as a shortcode, block, or widget.",
   "author": "RRZE Webteam",
   "license": "GPL-2.0-or-later",

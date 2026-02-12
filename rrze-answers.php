@@ -3,8 +3,8 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            1.0.20
-Description:        Explain your content with FAQ, glossary and placeholders. 
+Version:            1.0.21
+Description:        Explain your content with FAQ, glossary and placeholders.
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
 License:            GNU General Public License Version 3
@@ -21,47 +21,19 @@ use RRZE\Answers\Main;
 use RRZE\Answers\Common\Tools;
 use RRZE\Answers\Common\Plugin\Plugin;
 
-const RRZE_ANSWERS_PLUGIN = 'rrze-answers/rrze-answers.php';
-const MIGRATE_DONE_KEY = 'rrze_answers_migrate_multisite_done';
-const MIGRATE_PENDING_KEY = 'rrze_answers_migrate_multisite_pending';
-const MIGRATE_REPORT_KEY = 'rrze_answers_migrate_multisite_report';
-
-// Prevent direct access to the file.
-// This line ensures that the file is only executed within the context of WordPress.
-// If accessed directly, it will exit the script to prevent unauthorized access.
 defined('ABSPATH') || exit;
 
-$s = array(
-    '/^((http|https):\/\/)?(www.)+/i',
-    '/\//',
-    '/[^A-Za-z0-9\-]/',
-);
-$r = array(
-    '',
-    '-',
-    '-',
-);
-
-
+const RRZE_ANSWERS_PLUGIN = 'rrze-answers/rrze-answers.php';
+const MIGRATE_DONE_KEY    = 'rrze_answers_migrate_multisite_done';
+const MIGRATE_REPORT_KEY  = 'rrze_answers_migrate_multisite_report';
 
 /**
- * SPL Autoloader (PSR-4).
- * 
- * This autoloader function is registered with the SPL autoload stack to automatically load classes
- * from the plugin's 'includes' directory based on their fully-qualified class names.
- * It follows the PSR-4 autoloading standard, where the namespace corresponds to the directory structure.
- * It maps the namespace prefix to the base directory of the plugin, allowing for easy class loading
- * without the need for manual `require` or `include` statements.
- * This autoloader is particularly useful for organizing plugin code into classes and namespaces,
- * promoting better code structure and maintainability.
- * Use require_once `vendor/autoload.php` instead if you are using Composer for autoloading.
- * 
- * @see https://www.php-fig.org/psr/psr-4/
- * @param string $class The fully-qualified class name.
- * @return void
+ * ------------------------------------------------------------
+ * Autoloader (PSR-4-ish for /includes)
+ * ------------------------------------------------------------
  */
 spl_autoload_register(function ($class) {
-    $prefix = __NAMESPACE__;
+    $prefix  = __NAMESPACE__;
     $baseDir = __DIR__ . '/includes/';
 
     $len = strlen($prefix);
@@ -77,91 +49,116 @@ spl_autoload_register(function ($class) {
     }
 });
 
-
-// Register activation hook for the plugin
-register_activation_hook(__FILE__, __NAMESPACE__ . '\activation');
-
-// Register deactivation hook for the plugin
+/**
+ * ------------------------------------------------------------
+ * Hooks (IMPORTANT: activation hook must be registered at top-level)
+ * ------------------------------------------------------------
+ */
+register_activation_hook(__FILE__, __NAMESPACE__ . '\rrze_answers_on_activate_network');
 register_deactivation_hook(__FILE__, __NAMESPACE__ . '\deactivation');
 
-/**
- * Add an action hook for the 'plugins_loaded' hook.
- *
- * This hook is triggered after all active plugins have been loaded, allowing the plugin to perform
- * initialization tasks.
- */
 add_action('plugins_loaded', __NAMESPACE__ . '\loaded');
+add_action('network_admin_notices', __NAMESPACE__ . '\rrze_answers_migrate_multisite_notice');
 
 /**
- * Activation callback function.
- * 
- * @return void
+ * ------------------------------------------------------------
+ * Lifecycle
+ * ------------------------------------------------------------
  */
-function activation()
+
+/**
+ * Runs on deactivation (currently unused).
+ */
+function deactivation(): void
 {
-    // Use this if you need to perform tasks on activation.
+    // Cleanup could go here.
 }
 
 /**
- * Deactivation callback function.
+ * Activation callback specifically used for the "Network Activate" button.
+ *
+ * Requirements from you:
+ * - Migration MUST run only when clicking "Network Activate"
+ * - No pending flag: run migration right here
+ *
+ * IMPORTANT:
+ * - On multisite, WordPress passes $network_wide to activation hooks.
+ * - In some contexts WP may call hooks without args; therefore $network_wide is optional.
  */
-function deactivation()
+function rrze_answers_on_activate_network($network_wide = false): void
 {
-    // Use this if you need to perform tasks on deactivation.
-    // For example, you might want to clean up options or scheduled events.
+    $network_wide = (bool) $network_wide;
+
+    // Only run for multisite "Network Activate".
+    if (!is_multisite() || !$network_wide) {
+        return;
+    }
+
+    // Ensure plugin helper functions are available.
+    rrze_answers_ensure_plugin_functions();
+
+    /**
+     * Core requirement:
+     * RRZE-Answers must NOT remain network-activated, otherwise it is active on all sites.
+     * Since the user just network-activated it, immediately undo network activation.
+     */
+    rrze_answers_force_network_deactivate(RRZE_ANSWERS_PLUGIN);
+
+    // Hard abort if we cannot ensure it is not network-active.
+    if (rrze_answers_is_network_active(RRZE_ANSWERS_PLUGIN)) {
+        rrze_answers_store_report([
+            'type'   => 'error',
+            'title'  => 'RRZE-Answers',
+            'intro'  => __('Migration aborted: RRZE-Answers could not be deactivated network-wide during activation.', 'rrze-answers'),
+            'items'  => [],
+            'footer' => __('No site changes were made. Please deactivate RRZE-Answers network-wide manually and retry.', 'rrze-answers'),
+        ]);
+        return;
+    }
+
+    // Run migration immediately (no pending state).
+    rrze_answers_migrate_multisite_core();
+
+    // One more safety check: ensure RRZE-Answers did not become network-active again.
+    rrze_answers_force_network_deactivate(RRZE_ANSWERS_PLUGIN);
+
+    if (rrze_answers_is_network_active(RRZE_ANSWERS_PLUGIN)) {
+        rrze_answers_store_report([
+            'type'   => 'error',
+            'title'  => 'RRZE-Answers',
+            'intro'  => __('Migration incomplete: RRZE-Answers ended up network-activated again.', 'rrze-answers'),
+            'items'  => [],
+            'footer' => __('The migration was NOT marked as done. Please fix network activation and retry.', 'rrze-answers'),
+        ]);
+        return;
+    }
 }
 
 /**
- * Singleton pattern for initializing and accessing the main plugin instance.
- *
- * This method ensures that only one instance of the Plugin class is created and returned.
- *
- * @return Plugin The main instance of the Plugin class.
+ * ------------------------------------------------------------
+ * Plugin bootstrap
+ * ------------------------------------------------------------
  */
-function plugin()
+
+function plugin(): Plugin
 {
-    // Declare a static variable to hold the instance.
     static $instance;
-
-    // Check if the instance is not already created.
     if (null === $instance) {
-        // Add a new instance of the Plugin class, passing the current file (__FILE__) as a parameter.
         $instance = new Plugin(__FILE__);
     }
-
-    // Return the main instance of the Plugin class.
     return $instance;
 }
 
-/**
- * Main function to initialize the plugin.
- *
- * This function follows the singleton pattern to ensure that only one instance of the Main class is created.
- * It serves as the entry point for the plugin's functionality and is called when the plugin is loaded.
- *
- * @return Main The main instance of the Main class.
- */
-function main()
+function main(): Main
 {
-    // Declare a static variable to hold the instance.
     static $instance;
-
-    // Check if the instance is not already created.
     if (null === $instance) {
-        // Add a new instance of the Main class.
         $instance = new Main();
     }
-
-    // Return the main instance of the Main class.
     return $instance;
 }
 
-/**
- * Callback function to load the plugin textdomain.
- * 
- * @return void
- */
-function load_textdomain()
+function load_textdomain(): void
 {
     load_plugin_textdomain(
         'rrze-answers',
@@ -169,17 +166,17 @@ function load_textdomain()
         dirname(plugin_basename(__FILE__)) . '/languages'
     );
 }
-function register_blocks()
+
+function register_blocks(): void
 {
     register_block_type_from_metadata(__DIR__ . '/blocks/faq');
     register_block_type_from_metadata(__DIR__ . '/blocks/faq-widget');
     register_block_type_from_metadata(__DIR__ . '/blocks/glossary');
     register_block_type_from_metadata(__DIR__ . '/blocks/placeholder');
 
-
-    $faq_handle = generate_block_asset_handle('rrze-answers/faq', 'editorScript');
-    $faq_widget_handle = generate_block_asset_handle('rrze-answers/faq-widget', 'editorScript');
-    $glossary_handle = generate_block_asset_handle('rrze-answers/glossary', 'editorScript');
+    $faq_handle         = generate_block_asset_handle('rrze-answers/faq', 'editorScript');
+    $faq_widget_handle  = generate_block_asset_handle('rrze-answers/faq-widget', 'editorScript');
+    $glossary_handle    = generate_block_asset_handle('rrze-answers/glossary', 'editorScript');
     $placeholder_handle = generate_block_asset_handle('rrze-answers/placeholder', 'editorScript');
 
     $path = plugin_dir_path(__FILE__) . 'languages';
@@ -187,11 +184,76 @@ function register_blocks()
     wp_set_script_translations($faq_handle, 'rrze-answers', $path);
     wp_set_script_translations($faq_widget_handle, 'rrze-answers', $path);
     wp_set_script_translations($glossary_handle, 'rrze-answers', $path);
+    wp_set_script_translations($glossary_handle, 'rrze-answers', $path);
     wp_set_script_translations($placeholder_handle, 'rrze-answers', $path);
 }
 
+/**
+ * Main load routine.
+ */
+function loaded(): void
+{
+    plugin()->loaded();
 
-function rrze_update_glossary_cpt()
+    add_action('init', __NAMESPACE__ . '\load_textdomain');
+
+    $wpCompatibe   = is_wp_version_compatible(plugin()->getRequiresWP());
+    $phpCompatible = is_php_version_compatible(plugin()->getRequiresPHP());
+
+    if (!$wpCompatibe || !$phpCompatible) {
+        add_action('init', function () use ($wpCompatibe, $phpCompatible) {
+            if (!current_user_can('activate_plugins')) {
+                return;
+            }
+
+            $pluginName = plugin()->getName();
+
+            $error = '';
+            if (!$wpCompatibe) {
+                $error = sprintf(
+                    __('The server is running WordPress version %1$s. The plugin requires at least WordPress version %2$s.', 'rrze-answers'),
+                    wp_get_wp_version(),
+                    plugin()->getRequiresWP()
+                );
+            } elseif (!$phpCompatible) {
+                $error = sprintf(
+                    __('The server is running PHP version %1$s. The plugin requires at least PHP version %2$s.', 'rrze-answers'),
+                    PHP_VERSION,
+                    plugin()->getRequiresPHP()
+                );
+            }
+
+            add_action('admin_notices', function () use ($pluginName, $error) {
+                printf(
+                    '<div class="notice notice-error"><p>' .
+                    esc_html__('Plugins: %1$s: %2$s', 'rrze-answers') .
+                    '</p></div>',
+                    esc_html($pluginName),
+                    esc_html($error)
+                );
+            });
+        });
+
+        return;
+    }
+
+    main();
+
+    add_action('init', __NAMESPACE__ . '\register_blocks');
+
+    // Your existing migrations (single-site / per blog) can stay.
+    add_action('init', __NAMESPACE__ . '\rrze_update_glossary_cpt');
+    add_action('init', __NAMESPACE__ . '\rrze_update_placeholder_cpt');
+    add_action('init', __NAMESPACE__ . '\rrze_migrate_domains');
+}
+
+/**
+ * ------------------------------------------------------------
+ * Existing migrations you had (kept as-is)
+ * ------------------------------------------------------------
+ */
+
+function rrze_update_glossary_cpt(): void
 {
     global $wpdb;
 
@@ -229,7 +291,7 @@ function rrze_update_glossary_cpt()
     update_option('rrze_update_glossary_cpt_done', 1);
 }
 
-function rrze_update_placeholder_cpt()
+function rrze_update_placeholder_cpt(): void
 {
     global $wpdb;
 
@@ -249,8 +311,7 @@ function rrze_update_placeholder_cpt()
     update_option('rrze_update_placeholder_cpt_done', 1);
 }
 
-
-function rrze_migrate_domains()
+function rrze_migrate_domains(): void
 {
     if (get_option('rrze_migrate_domains_done')) {
         return;
@@ -271,7 +332,6 @@ function rrze_migrate_domains()
     }
 
     $answers_option = get_option('rrze-answers', []);
-
     $answers_option['registeredDomains'] = $domains;
 
     delete_option('rrze-answers');
@@ -280,11 +340,12 @@ function rrze_migrate_domains()
     update_option('rrze_migrate_domains_done', 1);
 }
 
-
-
 /**
- * Old plugins to replace.
+ * ------------------------------------------------------------
+ * Multisite plugin migration (FAQ/Glossary/Synonym -> Answers)
+ * ------------------------------------------------------------
  */
+
 function rrze_answers_migrate_targets(): array
 {
     return [
@@ -295,7 +356,7 @@ function rrze_answers_migrate_targets(): array
 }
 
 /**
- * Ensure plugin functions are available in admin context.
+ * Make sure WP's plugin API functions exist.
  */
 function rrze_answers_ensure_plugin_functions(): void
 {
@@ -305,8 +366,25 @@ function rrze_answers_ensure_plugin_functions(): void
 }
 
 /**
- * Aggressively refresh plugin caches / site option caches.
- * Helps with persistent object cache edge cases.
+ * Robust "is network active" check using the site option as source of truth.
+ * This avoids some edge cases where object cache makes is_plugin_active_for_network()
+ * briefly inconsistent.
+ */
+function rrze_answers_is_network_active(string $plugin_basename): bool
+{
+    $sitewide = (array) get_site_option('active_sitewide_plugins', []);
+    if (isset($sitewide[$plugin_basename])) {
+        return true;
+    }
+
+    // Fallback to core helper.
+    return function_exists('is_plugin_active_for_network')
+        ? is_plugin_active_for_network($plugin_basename)
+        : false;
+}
+
+/**
+ * Refresh plugin-related caches.
  */
 function rrze_answers_refresh_plugin_caches(): void
 {
@@ -314,13 +392,34 @@ function rrze_answers_refresh_plugin_caches(): void
         wp_clean_plugins_cache(true);
     }
 
-    // active_sitewide_plugins is stored in the site-options cache group.
     wp_cache_delete('active_sitewide_plugins', 'site-options');
     wp_cache_delete('active_plugins', 'options');
 }
 
 /**
- * One-time migration report notice in Network Admin.
+ * Force network deactivation and verify.
+ */
+function rrze_answers_force_network_deactivate(string $plugin_basename): void
+{
+    if (!rrze_answers_is_network_active($plugin_basename)) {
+        return;
+    }
+
+    deactivate_plugins($plugin_basename, false, true);
+
+    rrze_answers_refresh_plugin_caches();
+}
+
+/**
+ * Store a report (survives activation redirect) for display in Network Admin.
+ */
+function rrze_answers_store_report(array $payload): void
+{
+    set_site_transient(MIGRATE_REPORT_KEY, $payload, 10 * MINUTE_IN_SECONDS);
+}
+
+/**
+ * Display report notice in Network Admin (one-time).
  */
 function rrze_answers_migrate_multisite_notice(): void
 {
@@ -335,17 +434,17 @@ function rrze_answers_migrate_multisite_notice(): void
 
     delete_site_transient(MIGRATE_REPORT_KEY);
 
-    $type = $payload['type'] ?? 'info'; // info|success|warning|error
-    $title = $payload['title'] ?? 'RRZE-Answers';
-    $intro = $payload['intro'] ?? '';
-    $items = $payload['items'] ?? [];
+    $type   = $payload['type']   ?? 'info'; // info|success|warning|error
+    $title  = $payload['title']  ?? 'RRZE-Answers';
+    $intro  = $payload['intro']  ?? '';
+    $items  = $payload['items']  ?? [];
     $footer = $payload['footer'] ?? '';
 
     $class = match ($type) {
         'success' => 'notice notice-success',
         'warning' => 'notice notice-warning',
-        'error' => 'notice notice-error',
-        default => 'notice notice-info',
+        'error'   => 'notice notice-error',
+        default   => 'notice notice-info',
     };
 
     echo '<div class="' . esc_attr($class) . '"><p><strong>' . esc_html($title) . '</strong>';
@@ -370,113 +469,58 @@ function rrze_answers_migrate_multisite_notice(): void
 }
 
 /**
- * Activation hook.
+ * The core migration logic.
  *
- * IMPORTANT:
- * On multisite, this callback receives $network_wide.
- * We use it to detect "Network Activate" deterministically.
+ * Runs only during network activation (called from rrze_answers_on_activate_network()).
+ * It deactivates old plugins per-site and activates RRZE-Answers per-site where needed.
  */
-function rrze_answers_on_activate(bool $network_wide): void
+function rrze_answers_migrate_multisite_core(): void
 {
-    if (!is_multisite() || !$network_wide) {
+    // Only meaningful on multisite.
+    if (!is_multisite()) {
         return;
     }
 
-    // Ensure plugin APIs exist.
-    rrze_answers_ensure_plugin_functions();
-
-    /**
-     * CRITICAL:
-     * RRZE-Answers must NOT stay network-activated.
-     * Otherwise it will be active on all sites automatically,
-     * which breaks the "activate only where needed" migration.
-     *
-     * So we immediately deactivate it network-wide,
-     * then schedule the per-site migration for the next request.
-     */
-    if (is_plugin_active_for_network(RRZE_ANSWERS_PLUGIN)) {
-        deactivate_plugins(RRZE_ANSWERS_PLUGIN, false, true);
-        rrze_answers_refresh_plugin_caches();
-    }
-
-    // If it still remains network-active, we cannot proceed safely.
-    if (is_plugin_active_for_network(RRZE_ANSWERS_PLUGIN)) {
-        set_site_transient(
-            MIGRATE_REPORT_KEY,
-            [
-                'type' => 'error',
-                'title' => 'RRZE-Answers',
-                'intro' => __('Migration aborted: RRZE-Answers could not be deactivated network-wide during activation.', 'rrze-answers'),
-                'items' => [],
-                'footer' => __('No site changes were made. Please deactivate RRZE-Answers network-wide manually and retry.', 'rrze-answers'),
-            ],
-            10 * MINUTE_IN_SECONDS
-        );
-        // Do NOT set pending, do NOT set done.
+    // In activation context we may not be "network admin" screen, but we still require capability.
+    if (!current_user_can('manage_network_plugins')) {
+        rrze_answers_store_report([
+            'type'   => 'error',
+            'title'  => 'RRZE-Answers',
+            'intro'  => __('Migration aborted: insufficient permissions (manage_network_plugins).', 'rrze-answers'),
+            'items'  => [],
+            'footer' => '',
+        ]);
         return;
     }
-
-    // Mark migration as pending (so we run it on the next network admin load).
-    update_site_option(MIGRATE_PENDING_KEY, [
-        'time' => time(),
-        'user' => get_current_user_id(),
-        'reason' => 'network-activate',
-    ]);
-}
-
-/**
- * Run the actual per-site migration (Network Admin only).
- *
- * - Runs only if pending is set and not done.
- * - Hard-aborts if RRZE-Answers is network-active.
- * - Uses silent activation to avoid redirects/exits during programmatic activation.
- * - Persists report in a transient for display after redirects.
- */
-function rrze_answers_migrate_multisite(): void
-{
-    // Always show potential reports.
-    add_action('network_admin_notices', __NAMESPACE__ . '\rrze_answers_migrate_multisite_notice');
 
     if (get_site_option(MIGRATE_DONE_KEY)) {
+        rrze_answers_store_report([
+            'type'   => 'info',
+            'title'  => 'RRZE-Answers',
+            'intro'  => __('Migration already marked as done. No changes were made.', 'rrze-answers'),
+            'items'  => [],
+            'footer' => '',
+        ]);
         return;
     }
 
-    if (!is_multisite() || !is_network_admin() || !current_user_can('manage_network_plugins')) {
-        return;
-    }
-
-    $pending = get_site_option(MIGRATE_PENDING_KEY);
-    if (empty($pending)) {
-        return; // Not scheduled.
-    }
-
-    // Ensure plugin APIs exist.
     rrze_answers_ensure_plugin_functions();
 
-    // Safety: never migrate while RRZE-Answers is network-active.
-    if (is_plugin_active_for_network(RRZE_ANSWERS_PLUGIN)) {
-        // Try once to correct it.
-        deactivate_plugins(RRZE_ANSWERS_PLUGIN, false, true);
-        rrze_answers_refresh_plugin_caches();
-
-        if (is_plugin_active_for_network(RRZE_ANSWERS_PLUGIN)) {
-            set_site_transient(
-                MIGRATE_REPORT_KEY,
-                [
-                    'type' => 'error',
-                    'title' => 'RRZE-Answers',
-                    'intro' => __('Migration aborted: RRZE-Answers is still network-activated.', 'rrze-answers'),
-                    'items' => [],
-                    'footer' => __('No site changes were made. Please deactivate RRZE-Answers network-wide and reload this page.', 'rrze-answers'),
-                ],
-                10 * MINUTE_IN_SECONDS
-            );
-            return; // Keep pending; allow retry after manual fix.
-        }
+    // Safety: do not proceed if the plugin is network-active.
+    if (rrze_answers_is_network_active(RRZE_ANSWERS_PLUGIN)) {
+        rrze_answers_store_report([
+            'type'   => 'error',
+            'title'  => 'RRZE-Answers',
+            'intro'  => __('Migration aborted: RRZE-Answers is network-activated. Please deactivate it network-wide and retry.', 'rrze-answers'),
+            'items'  => [],
+            'footer' => '',
+        ]);
+        return;
     }
 
     $targets = rrze_answers_migrate_targets();
-    $report_items = [];
+
+    $report_items  = [];
     $changed_sites = 0;
 
     foreach (get_sites(['number' => 0]) as $site) {
@@ -500,7 +544,7 @@ function rrze_answers_migrate_multisite(): void
 
             $changed_sites++;
 
-            // Deactivate old plugins.
+            // Deactivate old plugins on this site.
             $deactivated = [];
             foreach ($targets as $p) {
                 if (is_plugin_active($p)) {
@@ -514,7 +558,11 @@ function rrze_answers_migrate_multisite(): void
             $activation_error = '';
 
             if (!is_plugin_active(RRZE_ANSWERS_PLUGIN)) {
-                // IMPORTANT: silent=true to avoid redirects/exits.
+                /**
+                 * IMPORTANT:
+                 * silent=true prevents redirects/exits inside activate_plugin(),
+                 * which would interrupt migration and suppress notices.
+                 */
                 $res = activate_plugin(RRZE_ANSWERS_PLUGIN, '', false, true);
 
                 if (is_wp_error($res)) {
@@ -550,139 +598,25 @@ function rrze_answers_migrate_multisite(): void
         }
     }
 
-    // Final safety: ensure RRZE-Answers did not become network-active again.
-    if (is_plugin_active_for_network(RRZE_ANSWERS_PLUGIN)) {
-        deactivate_plugins(RRZE_ANSWERS_PLUGIN, false, true);
-        rrze_answers_refresh_plugin_caches();
-    }
-
-    if (is_plugin_active_for_network(RRZE_ANSWERS_PLUGIN)) {
-        set_site_transient(
-            MIGRATE_REPORT_KEY,
-            [
-                'type' => 'error',
-                'title' => 'RRZE-Answers',
-                'intro' => __('Migration incomplete: RRZE-Answers could not be kept from being network-activated.', 'rrze-answers'),
-                'items' => $report_items,
-                'footer' => __('The migration was NOT marked as done. Please fix network activation and reload to retry.', 'rrze-answers'),
-            ],
-            10 * MINUTE_IN_SECONDS
-        );
-        return; // Keep pending; allow retry.
-    }
-
-    // Success/info report.
+    // Prepare report.
     if (!empty($report_items)) {
-        set_site_transient(
-            MIGRATE_REPORT_KEY,
-            [
-                'type' => 'success',
-                'title' => 'RRZE-Answers',
-                'intro' => __('Migration result (old plugins deactivated, RRZE-Answers activated where needed):', 'rrze-answers'),
-                'items' => $report_items,
-                'footer' => '',
-            ],
-            10 * MINUTE_IN_SECONDS
-        );
+        rrze_answers_store_report([
+            'type'   => 'success',
+            'title'  => 'RRZE-Answers',
+            'intro'  => __('Migration result (old plugins deactivated, RRZE-Answers activated where needed):', 'rrze-answers'),
+            'items'  => $report_items,
+            'footer' => '',
+        ]);
     } else {
-        set_site_transient(
-            MIGRATE_REPORT_KEY,
-            [
-                'type' => 'info',
-                'title' => 'RRZE-Answers',
-                'intro' => __('No sites required changes.', 'rrze-answers'),
-                'items' => [],
-                'footer' => '',
-            ],
-            10 * MINUTE_IN_SECONDS
-        );
+        rrze_answers_store_report([
+            'type'   => 'info',
+            'title'  => 'RRZE-Answers',
+            'intro'  => __('No sites required changes.', 'rrze-answers'),
+            'items'  => [],
+            'footer' => '',
+        ]);
     }
 
-    // Mark done and clear pending only on success.
+    // Mark migration done.
     update_site_option(MIGRATE_DONE_KEY, 1);
-    delete_site_option(MIGRATE_PENDING_KEY);
-}
-
-
-
-/**
- * Handle the loading of the plugin.
- *
- * This function is responsible for initializing the plugin, loading text domains for localization,
- * checking system requirements, and displaying error notices if necessary.
- */
-function loaded()
-{
-    // Trigger the 'loaded' method of the main plugin instance.
-    plugin()->loaded();
-
-    // Load the plugin textdomain for translations.
-    add_action(
-        'init',
-        __NAMESPACE__ . '\load_textdomain'
-    );
-
-    $wpCompatibe = is_wp_version_compatible(plugin()->getRequiresWP());
-    $phpCompatible = is_php_version_compatible(plugin()->getRequiresPHP());
-
-    // Check system requirements.
-    if (!$wpCompatibe || !$phpCompatible) {
-        // If the system requirements are not met, add an action to display an admin notice.
-        add_action('init', function () use ($wpCompatibe, $phpCompatible) {
-            // Check if the current user has the capability to activate plugins.
-            if (current_user_can('activate_plugins')) {
-                // Get the plugin name for display in the admin notice.
-                $pluginName = plugin()->getName();
-
-                // Determine the appropriate admin notice tag based on whether the plugin is network activated.
-                $tag = is_plugin_active_for_network(plugin()->getBaseName()) ? 'network_admin_notices' : 'admin_notices';
-
-                $error = '';
-                if (!$wpCompatibe) {
-                    $error = sprintf(
-                        /* translators: 1: Server WordPress version number, 2: Required WordPress version number. */
-                        __('The server is running WordPress version %1$s. The plugin requires at least WordPress version %2$s.', 'rrze-answers'),
-                        wp_get_wp_version(),
-                        plugin()->getRequiresWP()
-                    );
-                } elseif (!$phpCompatible) {
-                    $error = sprintf(
-                        /* translators: 1: Server PHP version number, 2: Required PHP version number. */
-                        __('The server is running PHP version %1$s. The plugin requires at least PHP version %2$s.', 'rrze-answers'),
-                        PHP_VERSION,
-                        plugin()->getRequiresPHP()
-                    );
-                }
-
-                // Display the error notice in the admin area.
-                // This will show a notice with the plugin name and the error message.
-                add_action('admin_notices', function () use ($pluginName, $error) {
-                    printf(
-                        '<div class="notice notice-error"><p>' .
-                        /* translators: 1: The plugin name, 2: The error string. */
-                        esc_html__('Plugins: %1$s: %2$s', 'rrze-answers') .
-                        '</p></div>',
-                        $pluginName,
-                        $error
-                    );
-                });
-            }
-        });
-
-        // If the system requirements are not met, the plugin initialization will not proceed.
-        return;
-    }
-
-    // If system requirements are met, proceed to initialize the main plugin instance.
-    // This will load the main functionality of the plugin.
-    main();
-
-    add_action('init', __NAMESPACE__ . '\register_blocks');
-    add_action('init', __NAMESPACE__ . '\rrze_update_glossary_cpt');
-    add_action('init', __NAMESPACE__ . '\rrze_update_placeholder_cpt');
-    add_action('init', __NAMESPACE__ . '\rrze_migrate_domains');
-    register_activation_hook(__FILE__, __NAMESPACE__ . '\rrze_answers_on_activate');
-    add_action('admin_init', __NAMESPACE__ . '\rrze_answers_migrate_multisite');
-    add_action('network_admin_notices', __NAMESPACE__ . '\rrze_answers_migrate_multisite_notice');
-
 }
