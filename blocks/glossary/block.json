@@ -3,7 +3,7 @@
 	"apiVersion": 3,
 	"name": "rrze-answers/glossary",
 	"version": "2.1.11",
-	"title": "RRZE Glossary",
+	"title": "Glossary",
 	"category": "rrze",
 	"description": "Display glossaries",
 	"icon": "book",
@@ -29,13 +29,6 @@
 		},
 		"hide_title": {
 			"type": "boolean"
-		},
-		"masonry": {
-			"type": "boolean"
-		},
-		"search": {
-			"type": "boolean",
-			"default": false
 		},
 		"expand_all_link": {
 			"type": "boolean"
@@ -70,10 +63,6 @@
 		"html": false
 	},
 	"textdomain": "rrze-answers",
-	"viewScript": [
-		"file:./rrze-answers-accordion.js",
-		"file:./rrze-answers-search.js"
-	],
-	"editorScript": "file:../../build/glossary.js",
+	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }
