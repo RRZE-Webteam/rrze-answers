@@ -17,6 +17,19 @@ use RRZE\Answers\Defaults;
  */
 class AdminUI_QA extends AdminUI
 {
+    /**
+     * Output save nonce once for QA metaboxes.
+     */
+    private function renderMetaNonce(): void
+    {
+        static $printed = false;
+        if ($printed) {
+            return;
+        }
+        wp_nonce_field($this->post_type . '_save_meta', $this->post_type . '_meta_nonce');
+        $printed = true;
+    }
+
     public function __construct(string $post_type)
     {
         parent::__construct($post_type, [
@@ -66,6 +79,8 @@ class AdminUI_QA extends AdminUI
 
      public function langboxCallback($meta_id)
     {
+        $this->renderMetaNonce();
+
         $current = get_post_meta($meta_id->ID, 'lang', true);
         if (empty($current)) {
             $current = substr(get_locale(), 0, 2);
@@ -93,6 +108,8 @@ class AdminUI_QA extends AdminUI
 
     public function sortboxCallback(\WP_Post $post): void
     {
+        $this->renderMetaNonce();
+
         // Hidden "source" to keep/update origin; defaults to website
         $source = (string) get_post_meta($post->ID, 'source', true);
         if ($source === '') {
@@ -108,6 +125,8 @@ class AdminUI_QA extends AdminUI
 
     public function anchorboxCallback(\WP_Post $post): void
     {
+        $this->renderMetaNonce();
+
         $anchorfield = (string) get_post_meta($post->ID, 'anchorfield', true);
         echo '<input type="text" name="anchorfield" id="anchorfield" class="anchorfield" value="' . esc_attr($anchorfield) . '">';
         echo '<p class="description">' . esc_html__('Anchor field (optional) to define jump marks when displayed in accordions', 'rrze-answers') . '</p>';
