@@ -548,14 +548,30 @@ class ShortcodeFAQ
                     $terms = wp_get_post_terms($post->ID, 'rrze_faq_' . $glossary);
                     if ($terms) {
                         foreach ($terms as $t) {
-                            if ($valid_term_ids && in_array($t->term_id, $valid_term_ids) === false) {
+                            $term_id = 0;
+                            $term_name = '';
+
+                            if (is_object($t)) {
+                                $term_id = isset($t->term_id) ? (int) $t->term_id : 0;
+                                $term_name = isset($t->name) ? (string) $t->name : '';
+                            } elseif (is_array($t)) {
+                                $term_id = isset($t['term_id']) ? (int) $t['term_id'] : 0;
+                                $term_name = isset($t['name']) ? (string) $t['name'] : '';
+                            }
+
+                            if (!$term_id || $term_name === '') {
                                 continue;
                             }
-                            $aTermIds[] = $t->term_id;
-                            $letter = Tools::getLetter($t->name);
+
+                            if ($valid_term_ids && in_array($term_id, $valid_term_ids, true) === false) {
+                                continue;
+                            }
+
+                            $aTermIds[] = $term_id;
+                            $letter = Tools::getLetter($term_name);
                             $aLetters[$letter] = true;
-                            $aUsedTerms[$t->name] = array('letter' => $letter, 'ID' => $t->term_id);
-                            $aPostIDs[$t->term_id][] = $post->ID;
+                            $aUsedTerms[$term_name] = array('letter' => $letter, 'ID' => $term_id);
+                            $aPostIDs[$term_id][] = $post->ID;
                         }
                     }
                 }
