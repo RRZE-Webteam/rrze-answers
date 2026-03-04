@@ -81,7 +81,7 @@ class ShortcodeGlossary
                         'val' => __('Tabs', 'rrze-answers')
                     ]
                 ],
-                'default' => 'a-z',
+                'default' => '',
                 'field_type' => 'select',
                 'label' => __('Register style', 'rrze-answers'),
                 'type' => 'string'
@@ -492,6 +492,14 @@ class ShortcodeGlossary
                     $last_anchor = $letter;
                 }
 
+                if ($aLetters) {
+                    switch ($registerstyle) {
+                        case 'a-z':
+                            $content = Tools::createAZ($aLetters) . $content;
+                            $anchor = 'letter';
+                            break;
+                    }
+                }
             }
         }
 

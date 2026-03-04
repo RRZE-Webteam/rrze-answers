@@ -91,7 +91,7 @@ class ShortcodeFAQ
                         'val' => __('Tabs', 'rrze-answers')
                     ]
                 ],
-                'default' => 'a-z',
+                'default' => '',
                 'field_type' => 'select',
                 'label' => __('Glossary style', 'rrze-answers'),
                 'type' => 'string'
@@ -664,6 +664,14 @@ class ShortcodeFAQ
                     $last_anchor = $letter;
                 }
 
+                if ($aLetters) {
+                    switch ($glossarystyle) {
+                        case 'a-z':
+                            $content = Tools::createAZ($aLetters) . $content;
+                            $anchor = 'letter';
+                            break;
+                    }
+                }
             }
         }
 
