@@ -355,7 +355,7 @@ class ShortcodeGlossary
                             $aCats = $category;
                         }
                         foreach ($aCats as $slug) {
-                            $filter_term = get_term_by('slug', $slug, 'rrze_faq_category');
+                            $filter_term = get_term_by('slug', $slug, 'rrze_glossary_category');
                             if ($filter_term) {
                                 $valid_term_ids[] = $filter_term->term_id;
                             }
@@ -367,7 +367,7 @@ class ShortcodeGlossary
                             $aTags = $tag;
                         }
                         foreach ($aTags as $slug) {
-                            $filter_term = get_term_by('slug', $slug, 'rrze_faq_tag');
+                            $filter_term = get_term_by('slug', $slug, 'rrze_glossary_tag');
                             if ($filter_term) {
                                 $valid_term_ids[] = $filter_term->term_id;
                             }
