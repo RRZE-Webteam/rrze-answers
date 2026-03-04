@@ -264,9 +264,22 @@ class Tools
     }
 
 
-    public static function getLetter(&$txt)
+    public static function getLetter($txt): string
     {
-        return mb_strtoupper(mb_substr(remove_accents($txt), 0, 1), 'UTF-8');
+        if (is_array($txt) && isset($txt["name"])) {
+            $txt = $txt["name"];
+        }
+
+        if (!is_scalar($txt)) {
+            return "";
+        }
+
+        $normalized = remove_accents((string) $txt);
+        if ($normalized === "") {
+            return "";
+        }
+
+        return mb_strtoupper(mb_substr($normalized, 0, 1), "UTF-8");
     }
 
     public static function createAZ(&$aSearch)
