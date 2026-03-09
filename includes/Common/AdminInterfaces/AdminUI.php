@@ -87,7 +87,16 @@ abstract class AdminUI
 
     public function preGetPosts(\WP_Query $q): void
     {
-        if (!is_admin() || empty($q->query['post_type']) || $q->get('post_type') !== $this->post_type) {
+        if (!is_admin() || !$q->is_main_query()) {
+            return;
+        }
+
+        $post_type = $q->get('post_type');
+
+        if (
+            $post_type !== $this->post_type &&
+            !(is_array($post_type) && in_array($this->post_type, $post_type, true))
+        ) {
             return;
         }
 
@@ -99,12 +108,12 @@ abstract class AdminUI
 
         // If sorting by a known meta key, set proper meta_query/orderby
         $orderby = (string) $q->get('orderby');
+
         if (in_array($orderby, $this->features['sortable_meta_keys'], true)) {
             $q->set('meta_key', $orderby);
             $q->set('orderby', 'meta_value');
         }
     }
-
     public function enterTitleHere(string $title, \WP_Post $post): string
     {
         if ($post->post_type === $this->post_type) {
