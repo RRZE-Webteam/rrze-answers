@@ -68,10 +68,9 @@ abstract class AdminUI
             return;
         }
 
-        // **Nur Post-List-Queries bearbeiten**
         $screen = get_current_screen();
-        if ($screen && $screen->base === 'edit-tags') {
-            return; // Taxonomy-Listing – nichts ändern
+        if ($screen && $screen->base === 'edit-tags' && $screen->taxonomy === "{$this->post_type}_category") {
+            return;
         }
 
         $post_type = $q->get('post_type');
