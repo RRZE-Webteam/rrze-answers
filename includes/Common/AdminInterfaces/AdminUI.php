@@ -68,6 +68,12 @@ abstract class AdminUI
             return;
         }
 
+        // **Nur Post-List-Queries bearbeiten**
+        $screen = get_current_screen();
+        if ($screen && $screen->base === 'edit-tags') {
+            return; // Taxonomy-Listing – nichts ändern
+        }
+
         $post_type = $q->get('post_type');
 
         if (
@@ -77,13 +83,14 @@ abstract class AdminUI
             return;
         }
 
+        // Default ordering für CPT
         if (!$q->get('orderby')) {
             $q->set('orderby', $this->features['default_orderby']);
             $q->set('order', $this->features['default_order']);
         }
 
+        // Meta-Key basiertes Sorting
         $orderby = (string) $q->get('orderby');
-
         if (in_array($orderby, $this->features['sortable_meta_keys'], true)) {
             $q->set('meta_key', $orderby);
             $q->set('orderby', 'meta_value');
