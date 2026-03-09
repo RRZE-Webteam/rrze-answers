@@ -170,8 +170,8 @@ abstract class AdminUI
 
     public function taxColumnValue($content, string $col, int $term_id)
     {
-        $this->renderTaxonomyColumn($col, $term_id);
-        return $content;
+        $new = $this->renderTaxonomyColumn($col, $term_id);
+        return $new !== null ? $new : $content;
     }
 
     public function renderListFilters(string $screen_post_type): void
@@ -324,10 +324,10 @@ abstract class AdminUI
     }
 
     /** Render values for taxonomy list-table custom columns. */
-    protected function renderTaxonomyColumn(string $col, int $term_id): void
+    protected function renderTaxonomyColumn(string $col, int $term_id): ?string
     {
+        return null;
     }
-
     /** Render filter UI above list table (categories/tags + source). */
     protected function listFiltersUI(): void
     {

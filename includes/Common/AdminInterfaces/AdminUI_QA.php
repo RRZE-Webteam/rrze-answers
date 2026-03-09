@@ -77,7 +77,7 @@ class AdminUI_QA extends AdminUI
         ];
     }
 
-     public function langboxCallback($meta_id)
+    public function langboxCallback($meta_id)
     {
         $this->renderMetaNonce();
 
@@ -258,12 +258,16 @@ class AdminUI_QA extends AdminUI
         return $cols;
     }
 
-    protected function renderTaxonomyColumn(string $col, int $term_id): void
+    protected function renderTaxonomyColumn(string $col, int $term_id): ?string
     {
         if ($col === 'lang') {
-            echo esc_html((string) get_term_meta($term_id, 'lang', true));
-        } elseif ($col === 'source' && (new Tools())->hasSync($this->post_type)) {
-            echo esc_html((string) get_term_meta($term_id, 'source', true));
+            return esc_html((string) get_term_meta($term_id, 'lang', true));
         }
+
+        if ($col === 'source' && (new Tools())->hasSync($this->post_type)) {
+            return esc_html((string) get_term_meta($term_id, 'source', true));
+        }
+
+        return null;
     }
 }
