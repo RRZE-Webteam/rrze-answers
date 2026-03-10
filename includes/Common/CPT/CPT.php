@@ -52,6 +52,66 @@ abstract class CPT
         add_action('template_redirect', [$this, 'custom_cpt_404_message'], 10);
     }
 
+    public function add_category_page_field($taxonomy)
+    {
+        $pages = get_pages();
+
+        echo '<div class="form-field term-linked-page-wrap">';
+        echo '<label for="linked_page">' . esc_html__('Linked Page', 'rrze-answers') . '</label>';
+        echo '<select name="linked_page">';
+        echo '<option value="">' . esc_html__('None', 'rrze-answers') . '</option>';
+
+        foreach ($pages as $page) {
+            echo '<option value="' . esc_attr($page->ID) . '">' . esc_html($page->post_title) . '</option>';
+        }
+
+        echo '</select>';
+        echo '</div>';
+    }
+
+    public function edit_category_page_field($term)
+    {
+        $pages = get_pages();
+        $selected = get_term_meta($term->term_id, 'linked_page', true);
+
+        wp_nonce_field('save_term_linked_page_meta', 'term_linked_page_meta_nonce');
+
+        echo '<tr class="form-field term-linked-page-wrap">';
+        echo '<th scope="row"><label for="linked_page">' . esc_html__('Linked Page', 'rrze-answers') . '</label></th>';
+        echo '<td>';
+        echo '<select name="linked_page">';
+        echo '<option value="">' . esc_html__('None', 'rrze-answers') . '</option>';
+
+        foreach ($pages as $page) {
+            printf(
+                '<option value="%1$d" %2$s>%3$s</option>',
+                esc_attr($page->ID),
+                selected($selected, $page->ID, false),
+                esc_html($page->post_title)
+            );
+        }
+
+        echo '</select>';
+        echo '</td>';
+        echo '</tr>';
+    }
+
+    public function save_category_page_field($term_id)
+    {
+        if (
+            !isset($_POST['term_linked_page_meta_nonce']) ||
+            !wp_verify_nonce(
+                sanitize_text_field(wp_unslash($_POST['term_linked_page_meta_nonce'])),
+                'save_term_linked_page_meta'
+            )
+        ) {
+            return;
+        }
+
+        if (isset($_POST['linked_page'])) {
+            update_term_meta($term_id, 'linked_page', (int) $_POST['linked_page']);
+        }
+    }
     /**
      * Register CPT
      */
