@@ -35,7 +35,6 @@
 
     const minLen = parseInt(input.getAttribute("data-minlen") || "3", 10);
 
-    // Cache FAQ questions (summary text only)
     const items = detailsItems.map((details) => {
       const summary = details.querySelector("summary");
       return {
@@ -44,20 +43,14 @@
       };
     });
 
-    /**
-     * Apply filtering based on input value
-     */
     function applyFilter(value) {
       const query = normalize(value);
-
-      // Reset if query is too short
       if (query.length < minLen) {
         items.forEach(({ details }) => {
           getToggleElement(details).style.display = "";
         });
         return;
       }
-
       items.forEach(({ details, question }) => {
         const match = question.includes(query);
         getToggleElement(details).style.display = match ? "" : "none";
@@ -65,8 +58,6 @@
     }
 
     input.addEventListener("input", () => applyFilter(input.value));
-
-    // Optional UX improvement: ESC clears the search
     input.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         input.value = "";
@@ -74,45 +65,40 @@
       }
     });
 
-    // Mark wrapper as initialized to avoid duplicate listeners
     wrapper.dataset.rrzeFaqSearchInit = "1";
   }
 
-  /**
-   * Initialize all FAQ instances in a given DOM scope
-   */
   function initAll(root = document) {
     root.querySelectorAll(".rrze-answers").forEach(initFAQSearch);
   }
 
-  // Initial run (frontend + initial editor render)
   initAll();
 
   /**
-   * Block editor support:
-   * ServerSideRender replaces markup dynamically,
-   * so we observe DOM mutations and re-initialize as needed.
+   * Observer initialization after document.body is available
    */
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      for (const node of mutation.addedNodes) {
-        if (!(node instanceof HTMLElement)) continue;
+  function initObserver() {
+    if (!document.body) {
+      return setTimeout(initObserver, 50); // warten, falls body noch nicht da
+    }
 
-        // Node itself may be an FAQ wrapper
-        if (node.matches && node.matches(".rrze-answers")) {
-          initFAQSearch(node);
-        }
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (!(node instanceof HTMLElement)) continue;
 
-        // Or may contain FAQ wrappers
-        if (node.querySelectorAll) {
-          initAll(node);
+          if (node.matches && node.matches(".rrze-answers")) {
+            initFAQSearch(node);
+          }
+          if (node.querySelectorAll) {
+            initAll(node);
+          }
         }
       }
-    }
-  });
+    });
 
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-  });
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
+  initObserver();
 })();
