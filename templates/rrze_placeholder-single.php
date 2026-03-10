@@ -12,7 +12,7 @@ get_header();
 
 <main id="main" class="site-main rrze-answers archive">
     <div id="content"><div class="content-container">
-        <h2>FAQ</h2>
+        <h2><?php echo __('Placeholders', 'rrze-answers'); ?></h2>
 
         <ul>
         <?php
@@ -26,7 +26,7 @@ get_header();
                 );
             }
         } else {
-            echo '<li>' . esc_html__('Keine FAQs gefunden.', 'fau') . '</li>';
+            echo '<li>' . esc_html__('No placeholders found.', 'rrze-answers') . '</li>';
         }
         ?>
         </ul>
@@ -38,7 +38,7 @@ get_header();
             'end_size'           => 1,
             'prev_text'          => '← ' . esc_html__('Previous', 'fau'),
             'next_text'          => esc_html__('Next', 'fau') . ' →',
-            'screen_reader_text' => esc_html__('FAQ navigation', 'fau'),
+            'screen_reader_text' => esc_html__('Placeholders navigation', 'fau'),
         ]);
         ?>
     </div></div>
