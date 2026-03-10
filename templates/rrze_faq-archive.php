@@ -26,7 +26,7 @@ get_header();
                 );
             }
         } else {
-            echo '<li>' . esc_html__('Keine FAQs gefunden.', 'fau') . '</li>';
+            echo '<li>' . esc_html__('No FAQ found.', 'rrze-answers') . '</li>';
         }
         ?>
         </ul>

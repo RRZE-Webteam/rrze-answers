@@ -1,6 +1,6 @@
 <?php
 /* 
-Template Name: Custom Taxonomy faq_category Template
+Template Name: Custom Taxonomy rrze_faq_category Template
 */
 
 get_header();
