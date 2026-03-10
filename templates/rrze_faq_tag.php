@@ -1,7 +1,8 @@
 <?php
 /* 
-Template Name: Custom Taxonomy faq_tag Template
+Template Name: Custom Taxonomy rrze_faq_tag Template
 */
+
 get_header();
 
 ?>
@@ -13,7 +14,6 @@ get_header();
 $post_type = 'rrze_faq';
 $taxonomy = 'rrze_faq_tag';
 include_once('template-parts/taxonomy.php');
-
 ?>
 </main>
 

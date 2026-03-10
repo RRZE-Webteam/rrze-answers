@@ -3,11 +3,12 @@
 Template Name: Part of the Custom Taxonomy Templates
 */
 
-
 $cat_slug = get_queried_object()->slug;
 $cat_name = get_queried_object()->name;
 
+$paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
 ?>
+
 <article>
 <div id="content"><div class="content-container">
 
@@ -16,9 +17,10 @@ echo '<h2>' . esc_html($cat_name) . '</h2>';
 
 $tax_post_args = array(
     'post_type' => $post_type,
-    'posts_per_page' => 999,
+    'posts_per_page' => 20,
+    'paged' => $paged,
     'order' => 'ASC',
-    'tax_query' => array(// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+    'tax_query' => array(
         array(
             'taxonomy' => $taxonomy,
             'field' => 'slug',
@@ -26,6 +28,7 @@ $tax_post_args = array(
         )
     )
 );
+
 $tax_post_query = new WP_Query($tax_post_args);
 
 if ($tax_post_query->have_posts()){
@@ -35,7 +38,16 @@ if ($tax_post_query->have_posts()){
         echo '<li><a href="' . esc_url(get_the_permalink()) . '">' . esc_html(get_the_title()) . '</a></li>';
     }
     echo '</ul>';
+
+    // Pagination
+    echo paginate_links(array(
+        'total' => $tax_post_query->max_num_pages,
+        'current' => $paged
+    ));
 }
+
+wp_reset_postdata();
 ?>
+
 </div></div>
 </article>

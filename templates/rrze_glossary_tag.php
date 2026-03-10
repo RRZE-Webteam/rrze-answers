@@ -1,7 +1,8 @@
 <?php
 /* 
-Template Name: Custom Taxonomy faq_tag Template
+Template Name: Custom Taxonomy rrze_glossary_tag Template
 */
+
 get_header();
 
 ?>
@@ -10,9 +11,9 @@ get_header();
 
 <?php
 
-$taxonomy = 'rrze_faq_tag';
-include_once('template-parts/faq-taxonomy.php');
-
+$post_type = 'rrze_glossary';
+$taxonomy = 'rrze_glossary_tag';
+include_once('template-parts/taxonomy.php');
 ?>
 </main>
 
