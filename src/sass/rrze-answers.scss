@@ -43,13 +43,13 @@ $default-tf-ctr:     #000000;
 $default-tf-ctr-d:   #ffffff;
 
 /* Neutral surfaces */
-$surface:      #d2ddeb;
+// $surface:      #d2ddeb;
 $surfaceText:  #444444;
 $borderColor:  #dfe6ec;
 
 /* Base content panel */
 .rrze-answers-content {
-  background-color: #f5f7f9;
+  // background-color: #f5f7f9;
   padding: 1rem 1rem 0.5rem;
 }
 
@@ -241,13 +241,13 @@ details.rrze-answers-item summary {
       text-align: left;
       cursor: pointer;
 
-      background: $surface !important;
+      // background: $surface !important;
       color: $surfaceText !important;
 
       border: 0 !important;
       /* robust left bar that survives theme overrides */
       box-shadow: inset 10px 0 0 0 var(--rrze-answers-accent) !important;
-      transition: background-color .15s ease, color .15s ease, box-shadow .15s ease;
+      // transition: background-color .15s ease, color .15s ease, box-shadow .15s ease;
 
       &::marker { content: ""; }
 
@@ -267,7 +267,7 @@ details.rrze-answers-item summary {
       &:hover,
       &:focus {
         text-decoration: none;
-        background-color: var(--rrze-answers-accent-dark) !important;
+        // background-color: var(--rrze-answers-accent-dark) !important;
         color: var(--rrze-answers-contrast-dark) !important;
         cursor: pointer;
         outline: none;
@@ -286,7 +286,7 @@ details.rrze-answers-item summary {
     }
 
     &[open] > summary {
-      background-color: var(--rrze-answers-accent) !important;
+      // background-color: var(--rrze-answers-accent) !important;
       color: var(--rrze-answers-contrast) !important;
       box-shadow: inset 10px 0 0 0 var(--rrze-answers-accent) !important;
 
@@ -299,7 +299,7 @@ details.rrze-answers-item summary {
 
     &[open] > summary:hover,
     &[open] > summary:focus {
-      background-color: var(--rrze-answers-accent-dark) !important;
+      // background-color: var(--rrze-answers-accent-dark) !important;
       color: var(--rrze-answers-contrast-dark) !important;
       box-shadow: inset 10px 0 0 0 var(--rrze-answers-accent-dark) !important;
 
@@ -356,7 +356,7 @@ details.rrze-answers-item summary {
 
         &:hover,
         &:focus {
-          background-color: #f5f7f9 !important;
+          // background-color: #f5f7f9 !important;
           color: #222 !important;
 
           &::before {
@@ -368,7 +368,7 @@ details.rrze-answers-item summary {
       }
 
       &[open] > summary {
-        background-color: #f5f7f9 !important;
+        // background-color: #f5f7f9 !important;
         color: #222 !important;
 
         &::before {
@@ -380,9 +380,98 @@ details.rrze-answers-item summary {
 
       &[open] > summary:hover,
       &[open] > summary:focus {
-        background-color: #e9edf2 !important;
+        // background-color: #e9edf2 !important;
         color: #222 !important;
       }
+    }
+  }
+}
+
+/* Fau Elemental accordion layout parity with rrze-elements-blocks */
+.wp-theme-FAU-Elemental .rrze-answers,
+.fau-elemental .rrze-answers {
+  details.rrze-answers-item {
+    border: none;
+    border-top: 1px solid var(--FAU-Col-FAU-Blau-100, #e9edf2);
+    margin-bottom: 0;
+    padding-right: 60px;
+    overflow: visible;
+
+    &:last-child {
+      border-bottom: 1px solid var(--FAU-Col-FAU-Blau-100, #e9edf2);
+    }
+
+    > summary {
+      margin: 0;
+      padding: 1rem 3rem 1rem 0;
+      font-size: var(--H-Heading-4, 1.25rem);
+      font-weight: 700;
+      font-family: var(--font-family-base), sans-serif;
+      box-shadow: none !important;
+      border: 0 !important;
+      overflow: visible;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: -60px;
+        width: 2rem;
+        height: 2rem;
+        transform: translateY(-50%);
+        background: var(--rrze-answers-accent);
+        transition: all .2s ease;
+        mask: none;
+        -webkit-mask: none;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: -60px;
+        width: 2rem;
+        height: 2rem;
+        transform: translateY(-50%);
+        transform-origin: center;
+        transition: all .2s ease;
+        background: var(--rrze-answers-contrast);
+        -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z'/%3E%3C/svg%3E") center/60% 60% no-repeat;
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z'/%3E%3C/svg%3E") center/60% 60% no-repeat;
+      }
+
+      // &:hover,
+      // &:focus {
+      //   box-shadow: none !important;
+      // }
+    }
+
+    &[open] > summary {
+      box-shadow: none !important;
+
+      &::before {
+        mask: none;
+        -webkit-mask: none;
+        background: var(--rrze-answers-accent);
+      }
+
+      &::after {
+        transform: translateY(-50%) rotate(180deg);
+      }
+    }
+  }
+}
+
+/* Fau Elemental dark style */
+.wp-theme-FAU-Elemental .is-style-dark .rrze-answers,
+.fau-elemental .is-style-dark .rrze-answers {
+  details.rrze-answers-item {
+    > summary::before {
+      background: var(--rrze-answers-contrast);
+    }
+
+    > summary::after {
+      background: var(--rrze-answers-accent);
     }
   }
 }
