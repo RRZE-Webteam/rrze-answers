@@ -40,6 +40,10 @@ class SyncAPI
 
                 $status_code = wp_remote_retrieve_response_code($request);
 
+                if ($status_code === 403) {
+                    return new \WP_Error('remote_forbidden', __('Import not allowed by source site.', 'rrze-answers'));
+                }
+
                 if ($status_code !== 200) {
                     break;
                 }
@@ -325,7 +329,15 @@ class SyncAPI
 
             do {
                 $request = $this->remoteGet($url . '/' . ENDPOINT . $type . '?page=' . $page . $filter);
+                if (is_wp_error($request)) {
+                    return $request;
+                }
+
                 $status_code = wp_remote_retrieve_response_code($request);
+
+                if ($status_code === 403) {
+                    return new \WP_Error('remote_forbidden', __('Import not allowed by source site.', 'rrze-answers'));
+                }
 
                 if ($status_code == 200) {
                     $entries = json_decode(wp_remote_retrieve_body($request), true);
@@ -338,13 +350,14 @@ class SyncAPI
                                 $content = $entry['content']['rendered'];
                                 $content = $this->absoluteUrl($content, $url);
 
+                                $remote_id = $entry['remoteID'] ?? $entry['id'];
                                 $ret[$entry['id']] = array(
                                     'id' => $entry['id'],
                                     'title' => $entry['title']['rendered'],
                                     'content' => $content,
                                     'lang' => $entry['lang'],
                                     $field_cat => $entry[$field_cat],
-                                    'remoteID' => $entry['remoteID'],
+                                    'remoteID' => $remote_id,
                                     'remoteChanged' => $entry['remoteChanged'],
                                 );
                                 $sTag = '';
@@ -412,18 +425,20 @@ class SyncAPI
         }
     }
 
-    public function getEntriesRemoteIDs($url, $type)
+    public function getEntriesRemoteIDs($identifier, $type)
     {
         try {
             $aRet = [];
-            $allEntries = get_posts(array('post_type' => 'rrze_' . $type, 'meta_key' => 'source', 'meta_value' => $url, 'fields' => 'ids', 'numberposts' => -1));// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+            $allEntries = get_posts(array('post_type' => 'rrze_' . $type, 'meta_key' => 'source', 'meta_value' => $identifier, 'fields' => 'ids', 'numberposts' => -1));// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
             foreach ($allEntries as $postID) {
                 $remoteID = get_post_meta($postID, 'remoteID', true);
                 $remoteChanged = get_post_meta($postID, 'remoteChanged', true);
-                $aRet[$remoteID] = array(
-                    'postID' => $postID,
-                    'remoteChanged' => $remoteChanged,
-                );
+                if ($remoteID !== '') {
+                    $aRet[$remoteID] = array(
+                        'postID' => $postID,
+                        'remoteChanged' => $remoteChanged,
+                    );
+                }
             }
             return $aRet;
         } catch (CustomException $e) {
@@ -445,11 +460,14 @@ class SyncAPI
             $field_cat = 'rrze_' . $type . '_category';
 
             // get all remoteIDs of stored FAQ to this source ( key = remoteID, value = postID )
-            $aRemoteIDs = $this->getEntriesRemoteIDs($url, $type);
+            $aRemoteIDs = $this->getEntriesRemoteIDs($identifier, $type);
 
             $this->deleteTags($identifier, $type);
             $this->deleteCategories($identifier, $type);
             $aEntries = $this->getEntries($url, $categories, $type);
+            if (is_wp_error($aEntries)) {
+                return $aEntries;
+            }
 
             // set FAQ
             foreach ($aEntries as $entry) {
@@ -472,6 +490,7 @@ class SyncAPI
                                     'source' => $identifier,
                                     'lang' => $entry['lang'],
                                     'remoteID' => $entry['remoteID'],
+                                    'remoteChanged' => $entry['remoteChanged'],
                                 ),
                                 'tax_input' => array(
                                     $field_cat => $categoryIDs,
@@ -494,7 +513,7 @@ class SyncAPI
                             'meta_input' => array(
                                 'source' => $identifier,
                                 'lang' => $entry['lang'],
-                                'remoteID' => $entry['id'],
+                                'remoteID' => $entry['remoteID'] ?? $entry['id'],
                                 'remoteChanged' => $entry['remoteChanged'],
                                 'sortfield' => '',
                             ),
