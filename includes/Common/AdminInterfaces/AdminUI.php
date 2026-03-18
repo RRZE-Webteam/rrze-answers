@@ -180,7 +180,8 @@ abstract class AdminUI
         if (!(is_admin() && $q->is_main_query())) {
             return $q;
         }
-        if (($q->query['post_type'] ?? null) !== $this->post_type) {
+        $post_type = $q->get('post_type');
+        if ($post_type !== $this->post_type && !(is_array($post_type) && in_array($this->post_type, $post_type, true))) {
             return $q;
         }
         return $this->applyFiltersToQuery($q);
@@ -360,26 +361,37 @@ abstract class AdminUI
         $tax_query = [];
         foreach ($this->taxSlugs as $slug) {
             $val = $_GET[$slug] ?? '';
-            if ($val !== '') {
+            if ($val !== '' && $val !== '0') {
+                $val = sanitize_text_field(wp_unslash((string)$val));
+                $field = is_numeric($val) ? 'term_id' : 'slug';
                 $tax_query[] = [
                     'taxonomy' => $slug,
-                    'field' => 'slug',
-                    'terms' => sanitize_text_field(wp_unslash((string)$val)),
+                    'field' => $field,
+                    'terms' => $val,
                 ];
             }
         }
 
         if (!empty($tax_query)) {
-            $q->query_vars['tax_query'] = $tax_query;
+            $existing = $q->get('tax_query');
+            if (is_array($existing) && !empty($existing)) {
+                $tax_query = array_merge($existing, $tax_query);
+            }
+            $q->set('tax_query', $tax_query);
         }
 
         $source = $_GET['source'] ?? '';
-        if ($source !== '') {
-            $q->query_vars['meta_query'] = [[
+        if ($source !== '' && $source !== '0') {
+            $meta_query = [[
                 'key' => 'source',
                 'value' => sanitize_text_field(wp_unslash((string)$source)),
                 'compare' => '=',
             ]];
+            $existing_meta = $q->get('meta_query');
+            if (is_array($existing_meta) && !empty($existing_meta)) {
+                $meta_query = array_merge($existing_meta, $meta_query);
+            }
+            $q->set('meta_query', $meta_query);
         }
 
         return $q;
