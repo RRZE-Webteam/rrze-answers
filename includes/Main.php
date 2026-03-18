@@ -292,7 +292,7 @@ class Main
             'itemref' => true, // references other elements by ID
         ];
 
-        // 2) HTML5 elements that may carry microdata in your templates/shortcodes
+        // 2) HTML5 elements that may carry microdata in templates/shortcodes
         $tags_to_extend = [
             'div',
             'span',
@@ -343,7 +343,7 @@ class Main
             $allowed_tags[$tag] = array_merge($allowed_tags[$tag], $schema_attrs);
         }
 
-        // 4) (Optional) keep your form elements if you output any in content
+        // 4) Add form elements
         $allowed_tags['select'] = array_merge($allowed_tags['select'] ?? [], [
             'name' => true,
             'id' => true,

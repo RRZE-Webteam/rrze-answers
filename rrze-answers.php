@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            1.0.39
+Version:            1.1.1
 Description:        Explain your content with FAQ, glossary and placeholders.
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
@@ -49,11 +49,6 @@ spl_autoload_register(function ($class) {
     }
 });
 
-/**
- * ------------------------------------------------------------
- * Hooks (IMPORTANT: activation hook must be registered at top-level)
- * ------------------------------------------------------------
- */
 
 // Only ONE activation hook. It runs the multisite migration ONLY when network-activated.
 register_activation_hook(__FILE__, __NAMESPACE__ . '\rrze_answers_on_activate_network');
@@ -66,12 +61,6 @@ add_action('plugins_loaded', __NAMESPACE__ . '\loaded');
 
 // Persisted migration report notice (survives activation redirects).
 add_action('network_admin_notices', __NAMESPACE__ . '\rrze_answers_migrate_multisite_notice');
-
-/**
- * ------------------------------------------------------------
- * Lifecycle
- * ------------------------------------------------------------
- */
 
 /**
  * Deactivation callback function.
@@ -165,11 +154,6 @@ function rrze_answers_on_activate_network($network_wide = false): void
     }
 }
 
-/**
- * ------------------------------------------------------------
- * Plugin bootstrap (your existing structure preserved)
- * ------------------------------------------------------------
- */
 
 function plugin(): Plugin
 {
@@ -283,12 +267,6 @@ function loaded(): void
     add_action('init', __NAMESPACE__ . '\rrze_migrate_domains');
     add_action('init', __NAMESPACE__ . '\rrze_migrate_blocks');
 }
-
-/**
- * ------------------------------------------------------------
- * Your existing migrations (kept as-is, minimal edits)
- * ------------------------------------------------------------
- */
 
 function rrze_update_glossary_cpt(): void
 {
@@ -417,15 +395,6 @@ function rrze_migrate_blocks(): void
     update_option('rrze_migrate_blocks_done', 1);
 }
 
-/**
- * ------------------------------------------------------------
- * Multisite plugin migration (FAQ/Glossary/Synonym -> Answers)
- * ------------------------------------------------------------
- */
-
-/**
- * Old plugins to replace.
- */
 function rrze_answers_migrate_targets(): array
 {
     return [
@@ -435,9 +404,6 @@ function rrze_answers_migrate_targets(): array
     ];
 }
 
-/**
- * Ensure WP's plugin API functions exist.
- */
 function rrze_answers_ensure_plugin_functions(): void
 {
     if (!function_exists('is_plugin_active')) {
@@ -445,9 +411,6 @@ function rrze_answers_ensure_plugin_functions(): void
     }
 }
 
-/**
- * Refresh plugin-related caches.
- */
 function rrze_answers_refresh_plugin_caches(): void
 {
     if (function_exists('wp_clean_plugins_cache')) {
@@ -548,11 +511,6 @@ function rrze_answers_migrate_multisite_notice(): void
     echo '</div>';
 }
 
-/**
- * Core migration logic (called only from rrze_answers_on_activate_network()).
- *
- * Returns ['items' => array, 'report' => array]
- */
 function rrze_answers_migrate_multisite_core(): array
 {
     // In activation context we might not be on a screen, but the user must have capability.
