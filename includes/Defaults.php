@@ -241,8 +241,8 @@ class Defaults
                         $cats = $syncAPI->getTaxonomies($url, 'rrze_' . $type . '_category', $filter);
                         $options = [];
 
-                        foreach ($cats as $key => $unused) {
-                            $options[$key] = $key;
+                        foreach ($cats as $slug => $name) {
+                            $options[$slug] = $name;
                         }
 
                         if (!empty($cats)) {
