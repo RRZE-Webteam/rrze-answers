@@ -3,7 +3,6 @@ $rrze-answers-color-bg-empty: transparent;
 $rrze-answers-color-border-empty: #e9edf2;
 $rrze-answers-color-text-empty: #e9edf2;
 
-$rrze-answers-color-border-filled: #dfe6ec;
 $rrze-answers-color-bg-filled: #dfe6ec;
 $rrze-answers-color-bg-hover: #d2ddeb;
 $rrze-answers-color-text-filled: #036;
@@ -43,13 +42,11 @@ $default-tf-ctr: #000000;
 $default-tf-ctr-d: #ffffff;
 
 /* Neutral surfaces */
-// $surface:      #d2ddeb;
 $surfaceText: #444444;
 $borderColor: #dfe6ec;
 
 /* Base content panel */
 .rrze-answers-content {
-  // background-color: #f5f7f9;
   padding: 1rem 1rem 0.5rem;
 }
 
@@ -400,6 +397,37 @@ details.rrze-answers-item summary {
 /* Fau Elemental dark style */
 .wp-theme-FAU-Elemental .is-style-dark .rrze-answers,
 .fau-elemental .is-style-dark .rrze-answers {
+  /* Use FAU-Elemental theme colors in dark mode */
+  .rrze-answers-item {
+    --rrze-answers-accent: var(--FAU-Col-FAU-Blau-100, #04316a);
+    --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
+  }
+
+  .rrze-answers-item.is-phil {
+    --rrze-answers-accent: var(--FAU-Col-Phil-Gelb-100, #fdb735);
+    --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
+  }
+
+  .rrze-answers-item.is-rw {
+    --rrze-answers-accent: var(--FAU-Col-RW-Rot-100, #c50f3c);
+    --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
+  }
+
+  .rrze-answers-item.is-med {
+    --rrze-answers-accent: var(--FAU-Col-Med-Blau-100, #18b4f1);
+    --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
+  }
+
+  .rrze-answers-item.is-nat {
+    --rrze-answers-accent: var(--FAU-Col-Nat-Gruen-100, #7bb725);
+    --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
+  }
+
+  .rrze-answers-item.is-tf {
+    --rrze-answers-accent: var(--FAU-Col-TF-Metallic-100, #8c9fb1);
+    --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
+  }
+
   details.rrze-answers-item {
     >summary::before {
       background: var(--rrze-answers-contrast);

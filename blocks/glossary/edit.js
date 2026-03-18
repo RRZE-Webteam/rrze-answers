@@ -77,7 +77,9 @@ export default function Edit({ attributes, setAttributes }) {
 		registerstyle,
 		register,
 	} = attributes;
-	const blockProps = useBlockProps();
+	const blockProps = useBlockProps({
+		className: style === 'dark' ? 'is-style-dark' : undefined,
+	});
 	const [categorystate, setSelectedCategories] = useState(['']);
 	const [tagstate, setSelectedTags] = useState(['']);
 	const [idstate, setSelectedIDs] = useState(['']);
