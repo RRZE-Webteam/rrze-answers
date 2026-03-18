@@ -94,6 +94,14 @@ class Sync
 
                 if ($categories) {
                     $aCnt = $this->syncAPI->setEntries($type, $identifier, $categories, $url);
+                    if (is_wp_error($aCnt)) {
+                        $error_msg = __('Domain', 'rrze-answers') . ' "' . $url . '": ' . $label . ' - ' . $aCnt->get_error_message();
+                        Tools::logIt($error_msg . ' | ' . $mode);
+                        if ($allowSettingsError) {
+                            add_settings_error('RRZE-Answers', 'syncerror', $error_msg, 'error');
+                        }
+                        continue;
+                    }
                     $syncRan = true;
 
                     foreach ($aCnt['URLhasSlider'] as $URLhasSlider) {

@@ -239,6 +239,9 @@ class Defaults
                     foreach ($types as $type => $label) {
 
                         $cats = $syncAPI->getTaxonomies($url, 'rrze_' . $type . '_category', $filter);
+                        if (is_wp_error($cats)) {
+                            $cats = [];
+                        }
                         $options = [];
 
                         foreach ($cats as $slug => $name) {
