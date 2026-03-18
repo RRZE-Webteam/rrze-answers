@@ -18,13 +18,14 @@ class SyncAPI
 
     public function getTaxonomies($url, $field, &$filter)
     {
-        $cacheKey = 'rrze_answers_tax_' . md5($url . '|' . $field . '|' . (string) $filter);
+        $cacheKey = 'rrze_answers_tax_v2_' . md5($url . '|' . $field . '|' . (string) $filter);
         $cached = get_transient($cacheKey);
 
         if (!empty($cached)) {
             return $cached;
         }
 
+        // Return flat map: slug => name
         $aRet = [];
         $slug = ($filter ? '&slug=' . $filter : '');
         $page = 1;
@@ -54,35 +55,17 @@ class SyncAPI
                         continue;
                     }
 
-
                     $name = $entry['name'] ?? null;
-                    if (!$name) {
+                    $term_slug = $entry['slug'] ?? null;
+                    if (!$name || !$term_slug) {
                         continue;
                     }
 
-                    if (!isset($aRet[$name])) {
-                        $aRet[$name] = [];
-                    }
-
-                    if (!empty($entry['children']) && is_array($entry['children'])) {
-                        foreach ($entry['children'] as $childname) {
-                            if (!isset($aRet[$name][$childname])) {
-                                $aRet[$name][$childname] = [];
-                            }
-                        }
-                    }
+                    $aRet[$term_slug] = $name;
                 }
 
                 $page++;
             } while (true);
-
-            foreach ($aRet as $name => $aChildren) {
-                foreach ($aChildren as $childname => $val) {
-                    if (isset($aRet[$childname])) {
-                        $aRet[$name][$childname] = $aRet[$childname];
-                    }
-                }
-            }
 
             // Cache the result for 1 hour
             set_transient($cacheKey, $aRet, HOUR_IN_SECONDS);
