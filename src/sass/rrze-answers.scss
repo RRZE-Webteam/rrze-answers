@@ -565,11 +565,11 @@ details.rrze-answers-item summary {
 
   border: none;
   margin-bottom: 0;
-  padding-right: 60px;
   overflow: visible;
 
   details.rrze-answers-item {
     border-top: 1px solid var(--rrze-answers-contrast);
+    padding-right: 60px;
 
     color: var(--rrze-answers-contrast);
     background-color: var(--rrze-answers-accent);
