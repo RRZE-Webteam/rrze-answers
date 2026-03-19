@@ -427,6 +427,7 @@ export default function Edit({ attributes, setAttributes }) {
 									/>
 									<SelectControl
 										label={__('Color', 'rrze-answers')}
+										value={color || ''}
 										options={coloroptions}
 										onChange={(value) =>
 											setAttributes({ color: value })

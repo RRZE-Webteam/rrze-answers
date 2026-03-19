@@ -44,7 +44,7 @@ window.addEventListener('load', setHeaderVar);
         if (shouldOpen) {
           $details.attr('open', 'open');
           if (animate) {
-            $content.stop(true, true).slideDown();
+            $content.stop(true, true).slideDown(400);
           } else {
             $content.stop(true, true).show();
           }
@@ -52,7 +52,7 @@ window.addEventListener('load', setHeaderVar);
         }
 
         if (animate) {
-          $content.stop(true, true).slideUp(function () {
+          $content.stop(true, true).slideUp(400, function () {
             $details.removeAttr('open');
           });
         } else {

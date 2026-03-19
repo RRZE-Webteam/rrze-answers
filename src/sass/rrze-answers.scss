@@ -403,6 +403,8 @@ details.rrze-answers-item summary {
       font-size: var(--H-Heading-4, 1.25rem);
       font-weight: 700;
       font-family: var(--font-family-base), sans-serif;
+      background: transparent;
+      color: inherit;
       box-shadow: none !important;
       border: 0 !important;
       overflow: visible;
@@ -434,11 +436,18 @@ details.rrze-answers-item summary {
         -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z'/%3E%3C/svg%3E") center/60% 60% no-repeat;
         mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z'/%3E%3C/svg%3E") center/60% 60% no-repeat;
       }
+
+      &:hover,
+      &:focus {
+        color: inherit;
+      }
     }
 
     .rrze-answers-content,
     &[open]>summary {
       box-shadow: none !important;
+      background: transparent;
+      color: inherit;
 
       &::before {
         mask: none;
@@ -447,6 +456,11 @@ details.rrze-answers-item summary {
 
       &::after {
         transform: translateY(-50%) rotate(180deg);
+      }
+
+      &:hover,
+      &:focus {
+        color: inherit;
       }
     }
   }
@@ -457,33 +471,35 @@ details.rrze-answers-item summary {
 
   /* Use FAU-Elemental theme colors in dark mode */
   .rrze-answers-item {
+    --rrze-answers-accordion-bg-default: var(--FAU-Col-FAU-Blau-100, #04316a);
+    --rrze-answers-accordion-text-default: var(--FAU-Col-FAU-Weiss-100, #fff);
+    --rrze-answers-accordion-bg-active: var(--FAU-Col-FAU-Blau-100, #04316a);
+    --rrze-answers-accordion-text-active: var(--FAU-Col-FAU-Weiss-100, #fff);
+    --rrze-answers-accordion-bg-active-hover: var(--FAU-Col-FAU-Blau-100, #04316a);
+    --rrze-answers-accordion-text-active-hover: var(--FAU-Col-FAU-Weiss-100, #fff);
+
     --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
     --rrze-answers-accent: var(--FAU-Col-FAU-Blau-100, #04316a);
+    --rrze-answers-accent-dark: var(--FAU-Col-FAU-Blau-100, #04316a);
+    --rrze-answers-contrast-dark: var(--FAU-Col-FAU-Weiss-100, #fff);
   }
 
-  .rrze-answers-item.is-phil {
-    --rrze-answers-accent: var(--FAU-Col-Phil-Gelb-100, #fdb735);
-    --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
-  }
-
-  .rrze-answers-item.is-rw {
-    --rrze-answers-accent: var(--FAU-Col-RW-Rot-100, #c50f3c);
-    --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
-  }
-
-  .rrze-answers-item.is-med {
-    --rrze-answers-accent: var(--FAU-Col-Med-Blau-100, #18b4f1);
-    --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
-  }
-
-  .rrze-answers-item.is-nat {
-    --rrze-answers-accent: var(--FAU-Col-Nat-Gruen-100, #7bb725);
-    --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
-  }
-
+  .rrze-answers-item.is-phil,
+  .rrze-answers-item.is-rw,
+  .rrze-answers-item.is-med,
+  .rrze-answers-item.is-nat,
   .rrze-answers-item.is-tf {
-    --rrze-answers-accent: var(--FAU-Col-TF-Metallic-100, #8c9fb1);
+    --rrze-answers-accordion-bg-default: var(--FAU-Col-FAU-Blau-100, #04316a);
+    --rrze-answers-accordion-text-default: var(--FAU-Col-FAU-Weiss-100, #fff);
+    --rrze-answers-accordion-bg-active: var(--FAU-Col-FAU-Blau-100, #04316a);
+    --rrze-answers-accordion-text-active: var(--FAU-Col-FAU-Weiss-100, #fff);
+    --rrze-answers-accordion-bg-active-hover: var(--FAU-Col-FAU-Blau-100, #04316a);
+    --rrze-answers-accordion-text-active-hover: var(--FAU-Col-FAU-Weiss-100, #fff);
+
     --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
+    --rrze-answers-accent: var(--FAU-Col-FAU-Blau-100, #04316a);
+    --rrze-answers-accent-dark: var(--FAU-Col-FAU-Blau-100, #04316a);
+    --rrze-answers-contrast-dark: var(--FAU-Col-FAU-Weiss-100, #fff);
   }
 
   details.rrze-answers-item {
@@ -508,8 +524,17 @@ details.rrze-answers-item summary {
 
   /* Use FAU-Elemental theme colors in dark mode */
   .rrze-answers-item {
+    --rrze-answers-accordion-bg-default: var(--FAU-Col-FAU-Blau-100, #04316a);
+    --rrze-answers-accordion-text-default: var(--FAU-Col-FAU-Weiss-100, #fff);
+    --rrze-answers-accordion-bg-active: var(--FAU-Col-FAU-Blau-100, #04316a);
+    --rrze-answers-accordion-text-active: var(--FAU-Col-FAU-Weiss-100, #fff);
+    --rrze-answers-accordion-bg-active-hover: var(--FAU-Col-FAU-Blau-100, #04316a);
+    --rrze-answers-accordion-text-active-hover: var(--FAU-Col-FAU-Weiss-100, #fff);
+
     --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
     --rrze-answers-accent: var(--FAU-Col-FAU-Blau-100, #04316a);
+    --rrze-answers-accent-dark: var(--FAU-Col-FAU-Blau-100, #04316a);
+    --rrze-answers-contrast-dark: var(--FAU-Col-FAU-Weiss-100, #fff);
   }
 
   /* Faculties don't have own colors in dark mode */
@@ -548,7 +573,6 @@ details.rrze-answers-item summary {
 
     color: var(--rrze-answers-contrast);
     background-color: var(--rrze-answers-accent);
-    ;
 
     >summary::before {
       background: var(--rrze-answers-contrast);
