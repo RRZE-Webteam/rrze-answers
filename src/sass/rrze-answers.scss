@@ -330,14 +330,14 @@ details.rrze-answers-item summary {
 .wp-theme-FAU-Elemental .rrze-answers,
 .fau-elemental .rrze-answers {
 
-  border-top: 1px solid var(--FAU-Col-FAU-Blau-100, #e9edf2); // Trenner zwischen Elementen
+  border-top: 1px solid var(--FAU-Col-FAU-Blau-100, #e9edf2); // between elements
 
   details.rrze-answers-item {
     border: none;
     margin-bottom: 0;
     padding-right: 60px;
     overflow: visible;
-    border-bottom: 1px solid var(--FAU-Col-FAU-Blau-100, #e9edf2); // unterer Rand
+    border-bottom: 1px solid var(--FAU-Col-FAU-Blau-100, #e9edf2); // border bottom of outer div
 
     >summary {
       margin: 0;
@@ -394,13 +394,13 @@ details.rrze-answers-item summary {
   }
 }
 
-/* Fau Elemental dark style */
-.wp-theme-FAU-Elemental .is-style-dark .rrze-answers,
-.fau-elemental .is-style-dark .rrze-answers {
+/* FAU-Einrichtungen dark style */
+.wp-theme-FAU-Einrichtungen .is-style-dark .rrze-answers {
+
   /* Use FAU-Elemental theme colors in dark mode */
   .rrze-answers-item {
-    --rrze-answers-accent: var(--FAU-Col-FAU-Blau-100, #04316a);
     --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
+    --rrze-answers-accent: var(--FAU-Col-FAU-Blau-100, #04316a);
   }
 
   .rrze-answers-item.is-phil {
@@ -429,6 +429,69 @@ details.rrze-answers-item summary {
   }
 
   details.rrze-answers-item {
+
+    color: var(--rrze-answers-contrast);
+    background-color: var(--rrze-answers-accent);
+
+    >summary::before {
+      background: var(--rrze-answers-contrast);
+    }
+
+    >summary::after {
+      background: var(--rrze-answers-contrast);
+    }
+  }
+}
+
+
+/* FAU-Elemental dark style */
+.wp-theme-FAU-Elemental .is-style-dark .rrze-answers,
+.fau-elemental .is-style-dark .rrze-answers {
+
+  /* Use FAU-Elemental theme colors in dark mode */
+  .rrze-answers-item {
+    --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
+    --rrze-answers-accent: var(--FAU-Col-FAU-Blau-100, #04316a);
+  }
+
+  /* Faculties don't have own colors in dark mode */
+  // .rrze-answers-item.is-phil {
+  //   --rrze-answers-accent: var(--FAU-Col-Phil-Gelb-100, #fdb735);
+  //   --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
+  // }
+
+  // .rrze-answers-item.is-rw {
+  //   --rrze-answers-accent: var(--FAU-Col-RW-Rot-100, #c50f3c);
+  //   --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
+  // }
+
+  // .rrze-answers-item.is-med {
+  //   --rrze-answers-accent: var(--FAU-Col-Med-Blau-100, #18b4f1);
+  //   --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
+  // }
+
+  // .rrze-answers-item.is-nat {
+  //   --rrze-answers-accent: var(--FAU-Col-Nat-Gruen-100, #7bb725);
+  //   --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
+  // }
+
+  // .rrze-answers-item.is-tf {
+  //   --rrze-answers-accent: var(--FAU-Col-TF-Metallic-100, #8c9fb1);
+  //   --rrze-answers-contrast: var(--FAU-Col-FAU-Weiss-100, #fff);
+  // }
+
+  border: none;
+  margin-bottom: 0;
+  padding-right: 60px;
+  overflow: visible;
+
+  details.rrze-answers-item {
+    border-top: 1px solid var(--rrze-answers-contrast);
+
+    color: var(--rrze-answers-contrast);
+    background-color: var(--rrze-answers-accent);
+    ;
+
     >summary::before {
       background: var(--rrze-answers-contrast);
     }
