@@ -77,7 +77,9 @@ export default function Edit({ attributes, setAttributes }) {
 		registerstyle,
 		register,
 	} = attributes;
-	const blockProps = useBlockProps();
+	const blockProps = useBlockProps({
+		className: style === 'dark' ? 'is-style-dark' : undefined,
+	});
 	const [categorystate, setSelectedCategories] = useState(['']);
 	const [tagstate, setSelectedTags] = useState(['']);
 	const [idstate, setSelectedIDs] = useState(['']);
@@ -417,6 +419,7 @@ export default function Edit({ attributes, setAttributes }) {
 											'Accordion-Style',
 											'rrze-answers'
 										)}
+										value={style || 'light'}
 										options={styleoptions}
 										onChange={(value) =>
 											setAttributes({ style: value })
@@ -424,6 +427,7 @@ export default function Edit({ attributes, setAttributes }) {
 									/>
 									<SelectControl
 										label={__('Color', 'rrze-answers')}
+										value={color || ''}
 										options={coloroptions}
 										onChange={(value) =>
 											setAttributes({ color: value })

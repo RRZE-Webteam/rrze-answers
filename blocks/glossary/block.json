@@ -47,7 +47,8 @@
 			"type": "string"
 		},
 		"style": {
-			"type": "string"
+			"type": "string",
+			"default": "light"
 		},
 		"additional_class": {
 			"type": "string"
@@ -74,6 +75,10 @@
 		"file:./rrze-answers-accordion.js",
 		"file:./rrze-answers-search.js"
 	],
-	"editorScript": "file:../../build/glossary.js",
+	"editorScript": [
+		"file:../../build/glossary.js",
+		"file:./rrze-answers-accordion.js",
+		"file:./rrze-answers-search.js"
+	],
 	"render": "file:./render.php"
 }

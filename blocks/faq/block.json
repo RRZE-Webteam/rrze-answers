@@ -41,7 +41,8 @@
 			"type": "string"
 		},
 		"style": {
-			"type": "string"
+			"type": "string",
+			"default": "light"
 		},
 		"additional_class": {
 			"type": "string"
@@ -68,7 +69,11 @@
 		"file:./rrze-answers-accordion.js",
 		"file:./rrze-answers-search.js"
 	],
-	"editorScript": "file:../../build/faq.js",
+	"editorScript": [
+		"file:../../build/faq.js",
+		"file:./rrze-answers-accordion.js",
+		"file:./rrze-answers-search.js"
+	],
 	"style": "file:../../build/css/rrze-answers.css",
 	"editorStyle": "file:../../build/css/rrze-answers.css",
 	"render": "file:./render.php"
