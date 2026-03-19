@@ -79,7 +79,7 @@ export default function Edit({ attributes, setAttributes }) {
 		search
 	} = attributes;
 	const blockProps = useBlockProps({
-		className: style === 'dark' ? 'is-style-dark' : undefined,
+		className: style === 'dark' ? 'is-style-dark' : 'is-style-light',
 	});
 	const [categorystate, setSelectedCategories] = useState(['']);
 	const [tagstate, setSelectedTags] = useState(['']);
@@ -254,10 +254,6 @@ export default function Edit({ attributes, setAttributes }) {
 
 	const styleoptions = [
 		{
-			label: __('none', 'rrze-answers'),
-			value: '',
-		},
-		{
 			label: 'light',
 			value: 'light',
 		},
@@ -413,6 +409,7 @@ export default function Edit({ attributes, setAttributes }) {
 											'Accordion-Style',
 											'rrze-answers'
 										)}
+										value={style || 'light'}
 										options={styleoptions}
 										onChange={(value) =>
 											setAttributes({ style: value })

@@ -34,9 +34,50 @@ window.addEventListener('load', setHeaderVar);
         }
       }
 
+      function getContent($details) {
+        return $details.children().not('summary');
+      }
+
+      function setOpen($details, shouldOpen, animate) {
+        var $content = getContent($details);
+
+        if (shouldOpen) {
+          $details.attr('open', 'open');
+          if (animate) {
+            $content.stop(true, true).slideDown();
+          } else {
+            $content.stop(true, true).show();
+          }
+          return;
+        }
+
+        if (animate) {
+          $content.stop(true, true).slideUp(function () {
+            $details.removeAttr('open');
+          });
+        } else {
+          $content.stop(true, true).hide();
+          $details.removeAttr('open');
+        }
+      }
+
       // Close all siblings except the provided one
-      function closeSiblings($except) {
-        $items.not($except).removeAttr('open');
+      function closeSiblings($except, animate) {
+        $items.not($except).each(function () {
+          var $d = $(this);
+          if ($d.prop('open')) {
+            setOpen($d, false, animate);
+          }
+        });
+      }
+
+      function openItem($target, animate) {
+        setOpen($target, true, animate);
+        closeSiblings($target, animate);
+
+        if ($target.attr('id')) {
+          history.replaceState(null, null, '#' + $target.attr('id'));
+        }
       }
 
       // Open target by location hash; returns true if handled
@@ -54,8 +95,7 @@ window.addEventListener('load', setHeaderVar);
         if (!$target.length && $el.is('details.rrze-answers-item')) $target = $el;
         if (!$target.length || !$group.has($target).length) return false;
 
-        $target.attr('open', 'open');
-        closeSiblings($target);
+        openItem($target, true);
 
         var $sum = $target.children('summary').first();
         if ($sum.length) { try { $sum.trigger('focus'); } catch (e) { } }
@@ -68,38 +108,47 @@ window.addEventListener('load', setHeaderVar);
       }
 
       // Initial: honor hash; otherwise keep only the first pre-open item
-      if (!openByHash(false)) {
-        var $firstOpen = $items.filter('[open]').first();
-        if ($firstOpen.length) closeSiblings($firstOpen);
-      }
-
-      // Keep only one open — prefer native 'toggle', fall back to summary click
       $items.each(function () {
         var $d = $(this);
+        var $content = getContent($d);
+        if ($d.prop('open')) {
+          $content.show();
+        } else {
+          $content.hide();
+        }
+      });
 
-        // Native 'toggle' event (supported in modern browsers)
-        $d.on('toggle', function () {
-          if (this.open) {
-            closeSiblings($d);
+      if (!openByHash(false)) {
+        var $firstOpen = $items.filter('[open]').first();
+        if ($firstOpen.length) {
+          closeSiblings($firstOpen, false);
+          setOpen($firstOpen, true, false);
+        }
+      }
 
-            // refresh Hash in URL
-            if ($d.attr('id')) {
-              history.replaceState(null, null, '#' + $d.attr('id'));
-            }
+      // Keep only one open — custom toggle with slide animation
+      $items.each(function () {
+        var $d = $(this);
+        var $summary = $d.children('summary');
+
+        function toggleItem() {
+          if ($d.prop('open')) {
+            setOpen($d, false, true);
+          } else {
+            openItem($d, true);
           }
+        }
+
+        $summary.on('click', function (e) {
+          e.preventDefault();
+          toggleItem();
         });
 
-        // Fallback: after summary click, check open state
-        $d.children('summary').on('click', function () {
-          setTimeout(function () {
-            if ($d.prop('open'))
-              closeSiblings($d);
-
-              // refresh Hash in URL
-              if ($d.attr('id')) {
-                history.replaceState(null, null, '#' + $d.attr('id'));
-              }
-            }, 0);
+        $summary.on('keydown', function (e) {
+          if (e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault();
+            toggleItem();
+          }
         });
       });
 

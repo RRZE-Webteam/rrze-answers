@@ -47,7 +47,8 @@
 			"type": "string"
 		},
 		"style": {
-			"type": "string"
+			"type": "string",
+			"default": "light"
 		},
 		"additional_class": {
 			"type": "string"

@@ -419,6 +419,7 @@ export default function Edit({ attributes, setAttributes }) {
 											'Accordion-Style',
 											'rrze-answers'
 										)}
+										value={style || 'light'}
 										options={styleoptions}
 										onChange={(value) =>
 											setAttributes({ style: value })
