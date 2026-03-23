@@ -218,7 +218,11 @@ class Tools
         $schemaAttr = '';
         if ($bSchema) {
             if ($isFaq) {
-                $schemaAttr = ' itemscope itemtype="https://schema.org/FAQPage"';
+                static $faqPageRendered = false;
+                if (!$faqPageRendered) {
+                    $schemaAttr = ' itemscope itemtype="https://schema.org/FAQPage"';
+                    $faqPageRendered = true;
+                }
             } elseif ($isGlossary) {
                 $schemaAttr = ' itemscope itemtype="https://schema.org/DefinedTermSet"';
             }
