@@ -388,6 +388,22 @@ details.rrze-answers-item summary {
 .wp-theme-FAU-Elemental .rrze-answers,
 .fau-elemental .rrze-answers {
 
+  details.rrze-answers-item.is-fau {
+    > summary,
+    > summary:hover,
+    > summary:focus,
+    &[open] > summary,
+    &[open] > summary:hover,
+    &[open] > summary:focus,
+    &[open] .rrze-answers-content,
+    &[open] .rrze-answers-content p,
+    .rrze-answers-content,
+    .rrze-answers-content p {
+      color: var(--FAU-Col-FAU-Blau-100, #{$default-fau}) !important;
+    }
+  }
+
+
   border-top: 1px solid var(--FAU-Col-FAU-Blau-100, #e9edf2); // between elements
 
   details.rrze-answers-item {
