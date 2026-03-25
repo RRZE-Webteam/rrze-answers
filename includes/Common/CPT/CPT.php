@@ -31,13 +31,13 @@ abstract class CPT
 
         foreach ($this->taxonomies as $tx) {
 
-            add_action("create_{$tx['name']}", [$this, 'setTermMeta'], 10);
+            add_action('create_' . $tx['name'], [$this, 'setTermMeta'], 10);
 
             if (!empty($tx['hierarchical'])) {
-                add_action("{$tx['name']}_add_form_fields", [$this, 'add_category_page_field']);
-                add_action("{$tx['name']}_edit_form_fields", [$this, 'edit_category_page_field']);
-                add_action("created_{$tx['name']}", [$this, 'save_category_page_field']);
-                add_action("edited_{$tx['name']}", [$this, 'save_category_page_field']);
+                add_action($tx['name'] . '_add_form_fields', [$this, 'add_category_page_field']);
+                add_action($tx['name'] . '_edit_form_fields', [$this, 'edit_category_page_field']);
+                add_action('created_' . $tx['name'], [$this, 'save_category_page_field']);
+                add_action('edited_' . $tx['name'], [$this, 'save_category_page_field']);
             }
         }
 
@@ -156,7 +156,7 @@ abstract class CPT
 
         foreach ($this->taxonomies as $t) {
 
-            $slug = !empty($options[$t['slug_option_key'] ?? ''])
+            $slug = isset($t['slug_option_key'], $options[$t['slug_option_key']])
                 ? sanitize_title($options[$t['slug_option_key']])
                 : ($t['default_slug'] ?? $t['name']);
 
@@ -236,19 +236,19 @@ abstract class CPT
         return $template;
     }
 
+
     public function filter_taxonomy_template($template)
-    {
-        if (is_tax($this->post_type . '_category')) {
-            return plugin()->getPath() . 'templates/' . $this->templates['taxonomy']['category'];
+{
+    foreach ($this->templates['taxonomy'] as $type => $file) {
+        $taxonomy_name = $this->post_type . '_' . $type;
+        if (is_tax($taxonomy_name)) {
+            return plugin()->getPath() . 'templates/' . $file;
         }
-
-        if (is_tax($this->post_type . '_tag')) {
-            return plugin()->getPath() . 'templates/' . $this->templates['taxonomy']['tag'];
-        }
-
-        return $template;
     }
 
+    return $template;
+}
+ 
     /**
      * Flush rewrite rules if slug changed
      */

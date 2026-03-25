@@ -25,6 +25,8 @@ class CPTGlossary extends CPT
         'default_slug'    => 'glossary',
     ];
 
+    protected $supports = ['title', 'editor', 'revisions'];
+
     protected $labels = [];
     protected $taxonomies = [];
 
