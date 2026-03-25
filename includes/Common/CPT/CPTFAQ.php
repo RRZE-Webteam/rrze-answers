@@ -23,10 +23,9 @@ class CPTFAQ extends CPT
     ];
 
     protected $labels = [];
-    protected $taxonomies = [
-        'rrze_faq_category', 
-        'rrze_faq_tag'
-    ];
+    protected $taxonomies = [];
+
+    protected $supports = ['title', 'editor', 'revisions'];
 
 
     public function __construct()
