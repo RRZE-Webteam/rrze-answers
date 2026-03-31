@@ -399,7 +399,8 @@ details.rrze-answers-item summary {
     &[open] .rrze-answers-content p,
     .rrze-answers-content,
     .rrze-answers-content p {
-      color: var(--FAU-Col-FAU-Blau-100, #{$default-fau}) !important;
+      color: var(#{$default-fau-ctr-d}, #fff) !important;
+      // color: var(--FAU-Col-FAU-Blau-100, #{$default-fau}) !important;
     }
   }
 
