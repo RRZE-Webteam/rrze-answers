@@ -324,7 +324,7 @@ class Main
         $allowed_tags['details'] = array_merge($allowed_tags['details'], [
             'id' => true,
             'class' => true,
-            'open' => true, // render expanded by default
+            'open' => true, 
         ]);
 
         if (!isset($allowed_tags['summary'])) {
@@ -343,7 +343,7 @@ class Main
             $allowed_tags[$tag] = array_merge($allowed_tags[$tag], $schema_attrs);
         }
 
-        // 4) Add form elements
+        // 4) keep form elements
         $allowed_tags['select'] = array_merge($allowed_tags['select'] ?? [], [
             'name' => true,
             'id' => true,
@@ -373,6 +373,24 @@ class Main
             'max' => true,
             'step' => true,
         ]);
+
+        // Allow minimal SVG markup for rrze-elements icons
+        $allowed_tags['svg'] = array_merge($allowed_tags['svg'] ?? [], [
+            'class' => true,
+            'aria-hidden' => true,
+            'role' => true,
+            'focusable' => true,
+            'xmlns' => true,
+            'viewbox' => true,
+            'width' => true,
+            'height' => true,
+        ]);
+
+        $allowed_tags['use'] = array_merge($allowed_tags['use'] ?? [], [
+            'href' => true,
+            'xlink:href' => true,
+        ]);
+
 
         return $allowed_tags;
     }
