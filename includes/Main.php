@@ -376,18 +376,25 @@ class Main
 
         // Allow minimal SVG markup for rrze-elements icons
         $allowed_tags['svg'] = array_merge($allowed_tags['svg'] ?? [], [
-            'class' => true,
+            'class'       => true,
             'aria-hidden' => true,
-            'role' => true,
-            'focusable' => true,
-            'xmlns' => true,
-            'viewbox' => true,
-            'width' => true,
-            'height' => true,
+            'aria-label'  => true,
+            'role'        => true,
+            'focusable'   => true,
+            'xmlns'       => true,
+            'viewbox'     => true,
+            'width'       => true,
+            'height'      => true,
+            'style'       => true,
+        ]);
+
+        $allowed_tags['path'] = array_merge($allowed_tags['path'] ?? [], [
+            'fill' => true,
+            'd'    => true,
         ]);
 
         $allowed_tags['use'] = array_merge($allowed_tags['use'] ?? [], [
-            'href' => true,
+            'href'       => true,
             'xlink:href' => true,
         ]);
 
