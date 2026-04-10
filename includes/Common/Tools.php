@@ -162,7 +162,7 @@ class Tools
 
         if ($isFaq) {
             $title = $hide_title
-                ? ''
+                ? '<h' . $hstart . ' itemprop="name" class="screen-reader-text">' . esc_html($question) . '</h' . $hstart . '>'
                 : '<h' . $hstart . ' itemprop="name">' . esc_html($question) . '</h' . $hstart . '>';
 
             return
@@ -177,7 +177,9 @@ class Tools
         if ($isGlossary) {
             // title may be hidden — but must keep schema structure intact
             $title = $hide_title
-                ? ''
+                ? '<h' . $hstart . ' itemscope itemprop="name" itemtype="https://schema.org/name" class="screen-reader-text">'
+                . '<span itemprop="name">' . esc_html($question) . '</span>'
+                . '</h' . $hstart . '>'
                 : '<h' . $hstart . ' itemscope itemprop="name" itemtype="https://schema.org/name">'
                 . '<span itemprop="name">' . esc_html($question) . '</span>'
                 . '</h' . $hstart . '>';
