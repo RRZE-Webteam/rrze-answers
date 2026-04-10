@@ -67,4 +67,7 @@ $masonry = false;
 $color = '';
 $additional_class = '';
 
+wp_enqueue_style('rrze-answers-css');
+wp_enqueue_script('rrze-answers-accordion');
+
 echo wp_kses_post($tools->renderWrapper('faq', $content, $headerID, $masonry, $color, $additional_class, $bSchema, $postID));

@@ -37,5 +37,8 @@ $details = '<article class="news-details">
 the_content(); 
 echo $details;
 
+wp_enqueue_style('rrze-answers-css');
+wp_enqueue_script('rrze-answers-accordion');
+
 echo '</div>';
 
