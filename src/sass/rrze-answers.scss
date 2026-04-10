@@ -208,6 +208,11 @@ details.rrze-answers-item summary {
     --rrze-answers-contrast-dark: var(--rrze-answers-accordion-text-active-hover);
   }
 
+  /* Tagcloud */
+  .letters a.rrze-answers-tagcloud-item {
+    font-size: var(--rrze-answers-tagcloud-size, 1rem);
+  }
+
   /* A–Z letters / pagination bar */
   .letters {
     margin: 1.25rem 0 0.5rem;

@@ -4,3 +4,67 @@
     box-sizing: border-box;  
 }
 
+/* Admin Dashboard */
+.rrze-answers-dashboard-cards {
+    display: grid;
+    gap: .5rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    max-width: 900px;
+
+    li {
+        border: 1px solid #dadada;
+        border-radius: 8px;
+        padding: 12px;
+        background: #fff;
+
+        h2 {
+            margin: .2em 0;
+        }
+
+        p {
+            margin: .3em 0 1em;
+            color: #555;
+        }
+    }
+}
+
+.rrze-hub {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+
+    .button-secondary {
+        min-width: 180px;
+        height: auto;
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+}
+
+/* Settings section menu */
+.rrze-answers-section-menu {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+/* Admin notices */
+.rrze-answers-notice-list {
+    margin-left: 1.2em;
+}
+
+.rrze-answers-error {
+    color: #b32d2e;
+}
+
+/* Placeholder format popover */
+.rrze-placeholder-popover {
+    padding: 12px;
+    width: 360px;
+    max-width: 90vw;
+}
+
+.rrze-placeholder-popover-actions {
+    margin-top: 10px;
+}

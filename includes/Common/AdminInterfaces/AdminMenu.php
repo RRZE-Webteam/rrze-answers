@@ -57,7 +57,7 @@ class AdminMenu {
     public function renderAnswersDashboard(): void {
         echo '<div class="wrap"><h1>'.esc_html__('Answers', 'rrze-answers').'</h1>';
         echo '<p>'.esc_html__('Choose a section:', 'rrze-answers').'</p>';
-        echo '<ul style="display:grid;gap:.5rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));max-width:900px">';
+        echo '<ul class="rrze-answers-dashboard-cards">';
         $cards = [
             ['slug'=>'rrze-answers_faq',      'title'=>__('FAQ', 'rrze-answers'),      'desc'=>__('Manage questions & answers', 'rrze-answers')],
             ['slug'=>'rrze-answers_glossary', 'title'=>__('Glossary', 'rrze-answers'), 'desc'=>__('Manage glossary terms', 'rrze-answers')],
@@ -65,7 +65,7 @@ class AdminMenu {
         ];
         foreach ($cards as $c) {
             printf(
-                '<li style="border:1px solid #dadada;border-radius:8px;padding:12px;background:#fff"><h2 style="margin:.2em 0">%s</h2><p style="margin:.3em 0 1em;color:#555">%s</p><a class="button button-primary" href="%s">%s</a></li>',
+                '<li><h2>%s</h2><p>%s</p><a class="button button-primary" href="%s">%s</a></li>',
                 esc_html($c['title']),
                 esc_html($c['desc']),
                 esc_url(admin_url('admin.php?page='.$c['slug'])),
@@ -83,7 +83,7 @@ class AdminMenu {
 
         echo '<div class="wrap">';
         printf('<h1>%s</h1>', esc_html($title));
-        echo '<div class="rrze-hub" style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px">';
+        echo '<div class="rrze-hub">';
         $items = [
             ['label'=>sprintf(__('All %s', 'rrze-answers'), $title), 'url'=>$all_url],
             ['label'=>sprintf(__('Add %s', 'rrze-answers'), $title), 'url'=>$add_url],
@@ -92,7 +92,7 @@ class AdminMenu {
         ];
         foreach ($items as $i) {
             printf(
-                '<a class="button button-secondary" style="min-width:180px;height:auto;padding:10px 16px;font-size:14px" href="%s">%s</a>',
+                '<a class="button button-secondary" href="%s">%s</a>',
                 esc_url($i['url']),
                 esc_html($i['label'])
             );

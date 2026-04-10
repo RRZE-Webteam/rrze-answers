@@ -334,7 +334,7 @@ class Tools
             $aSizes[$ID] = ($aSizes[$ID] < $smallest ? $smallest : $aSizes[$ID]);
         }
         foreach ($aTerms as $name => $aDetails) {
-            $ret .= '<a href="#ID-' . $aDetails['ID'] . '" style="font-size:' . $aSizes[$aDetails['ID']] . 'px">' . $name .
+            $ret .= '<a href="#ID-' . $aDetails['ID'] . '" class="rrze-answers-tagcloud-item" style="--rrze-answers-tagcloud-size:' . $aSizes[$aDetails['ID']] . 'px">' . $name .
                 '</a> | ';
         }
         return rtrim($ret, ' | ');
