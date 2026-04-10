@@ -25,7 +25,6 @@
   },
   "textdomain": "rrze-answers",
   "editorScript": "file:../../build/faq-widget.js",
-  "style": "file:../../build/css/rrze-answers.css",
   "editorStyle": "file:../../build/css/rrze-answers.css",
   "render": "file:./render.php"
 }
