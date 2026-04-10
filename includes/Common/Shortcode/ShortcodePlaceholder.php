@@ -160,8 +160,6 @@ class ShortcodePlaceholder
             }
         }
 
-        wp_enqueue_style('rrze-placeholder-css');
-
         return $output;
     }
 

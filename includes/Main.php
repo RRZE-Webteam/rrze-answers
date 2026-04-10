@@ -73,7 +73,6 @@ class Main
 
         // $this->adminMenue = new AdminMenu(); // in admin menu there is a maximum of 2 levels. Deactivated this workaround because it wouldn't be best practice.
         add_action('wp_enqueue_scripts', [$this, 'enqueueAssets']);
-        add_action('enqueue_block_assets', [$this, 'enqueueAssets']);
         add_action('admin_enqueue_scripts', [$this, 'enqueueAdminAssets']);
         // add_action('wp_ajax_rrze_answers_get_categories', [$this, 'rrze_answers_get_categories_cb']);
 
@@ -534,6 +533,21 @@ class Main
 
     public function enqueueAdminAssets()
     {
+        $screen = get_current_screen();
+        $relevant_post_types = ['rrze_faq', 'rrze_glossary', 'rrze_placeholder'];
+        $relevant_taxonomies = ['rrze_faq_category', 'rrze_faq_tag', 'rrze_glossary_category', 'rrze_glossary_tag', 'rrze_placeholder_group', 'rrze_placeholder_tag'];
+        $relevant_pages = ['rrze-answers', 'rrze-answers_faq', 'rrze-answers_glossary', 'rrze-answers_placeholder'];
+
+        $is_relevant = $screen && (
+            in_array($screen->post_type ?? '', $relevant_post_types, true) ||
+            in_array($screen->taxonomy ?? '', $relevant_taxonomies, true) ||
+            in_array($screen->id ?? '', $relevant_pages, true) ||
+            ($screen->base === 'post' && in_array($screen->post_type ?? '', $relevant_post_types, true))
+        );
+
+        if (!$is_relevant) {
+            return;
+        }
         wp_register_style(
             'rrze-answers-admin-css',
             plugins_url('build/css/rrze-answers-admin.css', plugin()->getBasename()),

@@ -144,7 +144,7 @@ const PlaceholderUI = ( props ) => {
 					variant="toolbar"
 					onClose={ () => setIsOpen( false ) }
 				>
-					<div style={{ padding: 12, width: 360, maxWidth: '90vw' }}>
+					<div className="rrze-placeholder-popover">
 						{ loading && (
 							<Flex align="center" gap={8}>
 								<Spinner />
@@ -168,7 +168,7 @@ const PlaceholderUI = ( props ) => {
 							/>
 						) }
 
-						<Flex style={{ marginTop: 10 }} justify="flex-end" gap={ 8 }>
+						<Flex className="rrze-placeholder-popover-actions" justify="flex-end" gap={ 8 }>
 							{ !!current && (
 								<FlexItem>
 									<Button variant="secondary" onClick={ removeFormatHere }>

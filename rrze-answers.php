@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            1.2.6
+Version:            1.2.7
 Description:        Explain your content with FAQ, glossary and placeholders.
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
@@ -497,7 +497,7 @@ function rrze_answers_migrate_multisite_notice(): void
     echo '</p>';
 
     if (!empty($items)) {
-        echo '<ul style="margin-left:1.2em">';
+        echo '<ul class="rrze-answers-notice-list">';
         foreach ($items as $row) {
             echo '<li>' . wp_kses_post($row) . '</li>';
         }
@@ -596,7 +596,7 @@ function rrze_answers_migrate_multisite_core(): array
 
             if ($activation_error !== '') {
                 $parts[] = sprintf(
-                    '<strong style="color:#b32d2e">%s</strong> %s',
+                    '<strong class="rrze-answers-error">%s</strong> %s',
                     esc_html__('RRZE-Answers activation failed:', 'rrze-answers'),
                     esc_html($activation_error)
                 );
