@@ -48,7 +48,7 @@
     $select.attr('name', 'rrze-answers[remote_url_faq]');
     $select.empty();
 
-    // Add a placeholder if there are items, otherwise clear completely
+    // Add a synonym if there are items, otherwise clear completely
     if (Array.isArray(urls) && urls.length) {
       $select.append($('<option/>', { value: '', text: '— Auswahl —' }));
       urls.forEach(function (u) {

@@ -13,7 +13,7 @@ use function RRZE\Answers\plugin;
 /**
  * Shortcode
  */
-class ShortcodePlaceholder
+class ShortcodeSynonym
 {
 
     private $settings = '';
@@ -23,8 +23,8 @@ class ShortcodePlaceholder
     {
         $this->settings = $this->getShortcodeSettings();
         $this->pluginname = $this->settings['block']['blockname'];
-        add_shortcode('placeholder', [$this, 'shortcodeOutput']); // liefert Langform (custom field) entweder nach slug oder id
-        add_shortcode('fau_abbr', [$this, 'shortcodeOutput']); // liefert <abbr title=" placeholder (custom field) " lang=" titleLang (custom field)" > title </abbr> nach slug oder id
+        add_shortcode('synonym', [$this, 'shortcodeOutput']); // liefert Langform (custom field) entweder nach slug oder id
+        add_shortcode('fau_abbr', [$this, 'shortcodeOutput']); // liefert <abbr title=" synonym (custom field) " lang=" titleLang (custom field)" > title </abbr> nach slug oder id
         add_action('admin_head', [$this, 'setMCEConfig']);
         add_filter('mce_external_plugins', [$this, 'addMCEButtons']);
     }
@@ -33,9 +33,9 @@ class ShortcodePlaceholder
     {
         return [
             'block' => [
-                'blocktype' => 'rrze-placeholder/placeholder',
-                'blockname' => 'placeholder',
-                'title' => 'RRZE Placeholder',
+                'blocktype' => 'rrze-synonym/synonym',
+                'blockname' => 'synonym',
+                'title' => 'RRZE Synonym',
                 'category' => 'widgets',
                 'icon' => 'translation',
                 'tinymce_icon' => 'translate',
@@ -49,15 +49,15 @@ class ShortcodePlaceholder
             'id' => [
                 'default' => 0,
                 'field_type' => 'text',
-                'label' => __('Placeholder', 'rrze-answers'),
+                'label' => __('Synonym', 'rrze-answers'),
                 'type' => 'number'
             ],
             'gutenberg_shortcode_type' => [
                 'values' => [
                     'fau_abbr' => __('Abbreviation', 'rrze-answers'), // Abkürzung
-                    'placeholder' => __('Longform', 'rrze-answers') // Ausgeschriebene Form
+                    'synonym' => __('Longform', 'rrze-answers') // Ausgeschriebene Form
                 ],
-                'default' => 'placeholder',
+                'default' => 'synonym',
                 'field_type' => 'radio',
                 'label' => __('Type of output', 'rrze-answers'),
                 'type' => 'string'
@@ -77,7 +77,7 @@ class ShortcodePlaceholder
     {
         $ret = get_posts([
             'name' => $slug,
-            'post_type' => 'rrze_placeholder',
+            'post_type' => 'rrze_synonym',
             'post_status' => 'publish',
             'posts_per_page' => 1
         ]);
@@ -117,7 +117,7 @@ class ShortcodePlaceholder
             $myPosts = array(get_post($id));
         } else {
             // show all
-            $myPosts = $this->getPostsByCPT('rrze_placeholder');
+            $myPosts = $this->getPostsByCPT('rrze_synonym');
         }
 
         // if ($gutenberg_shortcode_type) {
@@ -132,31 +132,31 @@ class ShortcodePlaceholder
                 case 'fau_abbr':
                     if (count($myPosts) == 1) {
                         $post = $myPosts[0];
-                        $output = '<abbr title="' . get_post_meta($post->ID, 'placeholder', TRUE) . '" lang="' . get_post_meta($post->ID, 'titleLang', TRUE) . '">' . html_entity_decode($post->post_title) . '</abbr>';
+                        $output = '<abbr title="' . get_post_meta($post->ID, 'synonym', TRUE) . '" lang="' . get_post_meta($post->ID, 'titleLang', TRUE) . '">' . html_entity_decode($post->post_title) . '</abbr>';
                     } else {
                         foreach ($myPosts as $post) {
                             $output .= '<div class="fau_abbr">';
-                            $output .= '<abbr title="' . get_post_meta($post->ID, 'placeholder', TRUE) . '" lang="' . get_post_meta($post->ID, 'titleLang', TRUE) . '">' . html_entity_decode($post->post_title) . '</abbr>';
+                            $output .= '<abbr title="' . get_post_meta($post->ID, 'synonym', TRUE) . '" lang="' . get_post_meta($post->ID, 'titleLang', TRUE) . '">' . html_entity_decode($post->post_title) . '</abbr>';
                             $output .= '</div>';
                         }
                     }
                     break;
-                case 'placeholder':
+                case 'synonym':
                     if (count($myPosts) == 1) {
                         $post = $myPosts[0];
-                        $output = get_post_meta($post->ID, 'placeholder', TRUE);
+                        $output = get_post_meta($post->ID, 'synonym', TRUE);
                     } else {
                         foreach ($myPosts as $post) {
-                            $output .= '<div class="placeholder">';
+                            $output .= '<div class="synonym">';
                             $output .= '<h2 class="small">' . html_entity_decode($post->post_title) . '</h2>';
-                            $output .= '<p>' . get_post_meta($post->ID, 'placeholder', TRUE) . '</p>';
+                            $output .= '<p>' . get_post_meta($post->ID, 'synonym', TRUE) . '</p>';
                             $output .= '<div>';
                         }
                     }
                     break;
             }
             if (count($myPosts) > 1) {
-                $output = '<div class="placeholder-outer">' . $output . '</div>';
+                $output = '<div class="synonym-outer">' . $output . '</div>';
             }
         }
 

@@ -42,9 +42,9 @@ class AdminUI_QA extends AdminUI
         ]);
     }
 
-    /* ---------------- Title placeholder ---------------- */
+    /* ---------------- Title synonym ---------------- */
 
-    protected function titlePlaceholder(): string
+    protected function titlesynonym(): string
     {
         return ($this->post_type === 'rrze_faq')
             ? __('Enter question here', 'rrze-answers')

@@ -26,8 +26,8 @@ export default function Edit({attributes, setAttributes}) {
         expand_all_link,
         hide_title,
         hide_accordion,
-        placeholderstyle,
-        placeholder
+        synonymstyle,
+        synonym
     } = attributes;
     const blockProps = useBlockProps();
     const [registerstate, setSelectedCategories] = useState(['']);
@@ -35,7 +35,7 @@ export default function Edit({attributes, setAttributes}) {
     const [idstate, setSelectedIDs] = useState(['']);
 
     const categories = useSelect((select) => {
-        return select('core').getEntityRecords('taxonomy', 'placeholder_category');
+        return select('core').getEntityRecords('taxonomy', 'synonym_category');
     }, []);
 
     const registeroptions = [
@@ -55,7 +55,7 @@ export default function Edit({attributes, setAttributes}) {
     }
 
     const tags = useSelect((select) => {
-        return select('core').getEntityRecords('taxonomy', 'placeholder_tag');
+        return select('core').getEntityRecords('taxonomy', 'synonym_tag');
     }, []);
 
     const tagoptions = [
@@ -74,22 +74,22 @@ export default function Edit({attributes, setAttributes}) {
         });
     }
 
-    const placeholders = useSelect((select) => {
-        return select('core').getEntityRecords('postType', 'placeholder', {per_page: -1, orderby: 'title', order: "asc"});
+    const synonyms = useSelect((select) => {
+        return select('core').getEntityRecords('postType', 'synonym', {per_page: -1, orderby: 'title', order: "asc"});
     }, []);
 
-    const placeholderoptions = [
+    const synonymoptions = [
         {
             label: __('all', 'rrze-answers'),
             value: 0
         }
     ];
 
-    if (!!placeholders) {
-        Object.values(placeholders).forEach(placeholder => {
-            placeholderoptions.push({
-                label: placeholder.title.rendered ? placeholder.title.rendered : __('No title', 'rrze-answers'),
-                value: placeholder.id,
+    if (!!synonyms) {
+        Object.values(synonyms).forEach(synonym => {
+            synonymoptions.push({
+                label: synonym.title.rendered ? synonym.title.rendered : __('No title', 'rrze-answers'),
+                value: synonym.id,
             });
         });
     }
@@ -129,7 +129,7 @@ export default function Edit({attributes, setAttributes}) {
     ];
 
 
-    const placeholderstyleoptions = [
+    const synonymstyleoptions = [
         {
             label: __('-- hidden --', 'rrze-answers'),
             value: ''
@@ -214,12 +214,12 @@ export default function Edit({attributes, setAttributes}) {
                 <PanelBody>
                     <SelectControl
                         label={__(
-                            "placeholder",
+                            "synonym",
                             'rrze-answers'
                         )}
-                        help={__('Show a selection of individual Placeholders', 'rrze-answers')}
+                        help={__('Show a selection of individual synonyms', 'rrze-answers')}
                         value={idstate}
-                        options={placeholderoptions}
+                        options={synonymoptions}
                         onChange={onChangeID}
                         multiple
                     />
@@ -228,7 +228,7 @@ export default function Edit({attributes, setAttributes}) {
                             "Language",
                             'rrze-answers'
                         )}
-                        help={__('Show only Placeholders matching the selected language.', 'rrze-answers')}
+                        help={__('Show only synonyms matching the selected language.', 'rrze-answers')}
                         value={lang}
                         options={langoptions}
                         onChange={(value) => setAttributes({lang: value})}
@@ -237,7 +237,7 @@ export default function Edit({attributes, setAttributes}) {
             </InspectorControls>
             <div {...blockProps}>
                 <ServerSideRender
-                    block="rrze-answers/placeholder"
+                    block="rrze-answers/synonym"
                     attributes={attributes}
                 />
             </div>

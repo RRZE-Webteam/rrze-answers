@@ -3,8 +3,8 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            1.2.9
-Description:        Explain your content with FAQ, glossary and placeholders.
+Version:            1.2.10
+Description:        Explain your content with FAQ, glossary and synonyms.
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
 License:            GNU General Public License Version 3
@@ -191,19 +191,19 @@ function register_blocks(): void
     register_block_type_from_metadata(__DIR__ . '/blocks/faq');
     register_block_type_from_metadata(__DIR__ . '/blocks/faq-widget');
     register_block_type_from_metadata(__DIR__ . '/blocks/glossary');
-    register_block_type_from_metadata(__DIR__ . '/blocks/placeholder');
+    register_block_type_from_metadata(__DIR__ . '/blocks/synonym');
 
     $faq_handle = generate_block_asset_handle('rrze-answers/faq', 'editorScript');
     $faq_widget_handle = generate_block_asset_handle('rrze-answers/faq-widget', 'editorScript');
     $glossary_handle = generate_block_asset_handle('rrze-answers/glossary', 'editorScript');
-    $placeholder_handle = generate_block_asset_handle('rrze-answers/placeholder', 'editorScript');
+    $synonym_handle = generate_block_asset_handle('rrze-answers/synonym', 'editorScript');
 
     $path = plugin_dir_path(__FILE__) . 'languages';
 
     wp_set_script_translations($faq_handle, 'rrze-answers', $path);
     wp_set_script_translations($faq_widget_handle, 'rrze-answers', $path);
     wp_set_script_translations($glossary_handle, 'rrze-answers', $path);
-    wp_set_script_translations($placeholder_handle, 'rrze-answers', $path);
+    wp_set_script_translations($synonym_handle, 'rrze-answers', $path);
 }
 
 /**
@@ -263,7 +263,7 @@ function loaded(): void
 
     add_action('init', __NAMESPACE__ . '\register_blocks');
     add_action('init', __NAMESPACE__ . '\rrze_update_glossary_cpt');
-    add_action('init', __NAMESPACE__ . '\rrze_update_placeholder_cpt');
+    add_action('init', __NAMESPACE__ . '\rrze_update_synonym_cpt');
     add_action('init', __NAMESPACE__ . '\rrze_migrate_domains');
     add_action('init', __NAMESPACE__ . '\rrze_migrate_blocks');
 }
@@ -306,24 +306,31 @@ function rrze_update_glossary_cpt(): void
     update_option('rrze_update_glossary_cpt_done', 1);
 }
 
-function rrze_update_placeholder_cpt(): void
+function rrze_update_synonym_cpt(): void
 {
     global $wpdb;
 
-    if (get_option('rrze_update_placeholder_cpt_done')) {
+    if (get_option('rrze_rename_synonym_to_synonym_done')) {
         return;
     }
 
-    $wpdb->update(
-        $wpdb->posts,
-        ['post_type' => 'rrze_placeholder'],
-        ['post_type' => 'placeholder']
-    );
+    // 1) post_type: rrze_synonym -> rrze_synonym
+    $wpdb->update($wpdb->posts, ['post_type' => 'rrze_synonym'], ['post_type' => 'rrze_synonym']);
+
+    // 2) post_type: old 'synonym' (legacy) -> rrze_synonym
+    $wpdb->update($wpdb->posts, ['post_type' => 'rrze_synonym'], ['post_type' => 'synonym']);
+
+    // 3) meta key: 'synonym' -> 'synonym'
+    $wpdb->update($wpdb->postmeta, ['meta_key' => 'synonym'], ['meta_key' => 'synonym']); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+
+    // 4) taxonomies: rrze_synonym_group -> rrze_synonym_group, rrze_synonym_tag -> rrze_synonym_tag
+    $wpdb->update($wpdb->term_taxonomy, ['taxonomy' => 'rrze_synonym_group'], ['taxonomy' => 'rrze_synonym_group']);
+    $wpdb->update($wpdb->term_taxonomy, ['taxonomy' => 'rrze_synonym_tag'],   ['taxonomy' => 'rrze_synonym_tag']);
 
     wp_cache_flush();
     flush_rewrite_rules();
 
-    update_option('rrze_update_placeholder_cpt_done', 1);
+    update_option('rrze_rename_synonym_to_synonym_done', 1);
 }
 
 function rrze_migrate_domains(): void

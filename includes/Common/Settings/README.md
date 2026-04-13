@@ -217,13 +217,13 @@ $section->addOption('text', [
 ]);
 ```
 
-#### Placeholder
+#### Synonym
 
 ```php
 $section->addOption('text', [
     'name' => 'custom_api_key',
     'label' => __('API Key', 'textdomain'),
-    'placeholder' => __('Enter the API key here.', 'textdomain')
+    'synonym' => __('Enter the API key here.', 'textdomain')
 ]);
 ```
 

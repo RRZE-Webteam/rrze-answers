@@ -11,19 +11,19 @@ use RRZE\Answers\Common\{
     API\RESTAPI,
     API\SyncAPI,
     AdminInterfaces\AdminUI_QA,
-    AdminInterfaces\AdminUI_Placeholder,
+    AdminInterfaces\AdminUI_Synonym,
     // AdminInterfaces\AdminMenu,
     // AdminInterfaces\AdminInterfaces,
-    // AdminInterfaces\AdminInterfacesPlaceholder,
+    // AdminInterfaces\AdminInterfacessynonym,
     Settings\Settings,
     CPT\CPTFAQ,
     CPT\CPTGlossary,
-    CPT\CPTPlaceholder,
+    CPT\CPTSynonym,
     Sync\Sync,
     Blocks\Blocks,
     Shortcode\ShortcodeFAQ,
     Shortcode\ShortcodeGlossary,
-    Shortcode\ShortcodePlaceholder
+    Shortcode\ShortcodeSynonym
 };
 
 defined('ABSPATH') || exit;
@@ -66,10 +66,10 @@ class Main
 
         // $this->adminInterface = new AdminInterfaces('rrze_faq');
         // $this->adminInterface = new AdminInterfaces('rrze_glossary');
-        // $this->adminInterface = new AdminInterfacesPlaceholder();
+        // $this->adminInterface = new AdminInterfacessynonym();
         $this->adminUI = new AdminUI_QA('rrze_faq');
         $this->adminUI = new AdminUI_QA('rrze_glossary');
-        $this->adminUI = new AdminUI_Placeholder();
+        $this->adminUI = new AdminUI_Synonym();
 
         // $this->adminMenue = new AdminMenu(); // in admin menu there is a maximum of 2 levels. Deactivated this workaround because it wouldn't be best practice.
         add_action('wp_enqueue_scripts', [$this, 'enqueueAssets']);
@@ -362,7 +362,7 @@ class Main
             'id' => true,
             'class' => true,
             'value' => true,
-            'placeholder' => true,
+            'synonym' => true,
             'checked' => true,
             'disabled' => true,
             'readonly' => true,
@@ -410,7 +410,7 @@ class Main
     {
         $cpt = new CPTFAQ();
         $cpt = new CPTGlossary();
-        $cpt = new CPTPlaceholder();
+        $cpt = new CPTSynonym();
     }
 
 
@@ -426,7 +426,7 @@ class Main
     {
         $shortcode = new ShortcodeFAQ();
         $shortcode = new ShortcodeGlossary();
-        $shortcode = new ShortcodePlaceholder();
+        $shortcode = new ShortcodeSynonym();
     }
 
     /**
@@ -445,7 +445,7 @@ class Main
                 'faq',
                 'faq-widget',
                 'glossary',
-                'placeholder'
+                'synonym'
             ],
             plugin()->getPath('build/blocks'), // Blocks directory path
             plugin()->getPath()                // Plugin directory path
@@ -481,7 +481,7 @@ class Main
             foreach ($this->defaults->get('fields')[$section['id']] as $field) {
                 $sec->addOption($field['type'], array_intersect_key(
                     $field,
-                    array_flip(['name', 'label', 'description', 'options', 'default', 'sanitize', 'validate', 'placeholder'])
+                    array_flip(['name', 'label', 'description', 'options', 'default', 'sanitize', 'validate', 'synonym'])
                 ));
             }
         }
@@ -502,10 +502,10 @@ class Main
         );
 
         // wp_register_style(
-        //     'rrze-placeholder-css',
-        //     plugins_url('build/css/rrze-placeholder.css', plugin()->getBasename()),
+        //     'rrze-synonym-css',
+        //     plugins_url('build/css/rrze-synonym.css', plugin()->getBasename()),
         //     [],
-        //     filemtime(plugin()->getPath() . 'build/css/rrze-placeholder.css')
+        //     filemtime(plugin()->getPath() . 'build/css/rrze-synonym.css')
         // );
 
         wp_register_script(
@@ -534,9 +534,9 @@ class Main
     public function enqueueAdminAssets()
     {
         $screen = get_current_screen();
-        $relevant_post_types = ['rrze_faq', 'rrze_glossary', 'rrze_placeholder'];
-        $relevant_taxonomies = ['rrze_faq_category', 'rrze_faq_tag', 'rrze_glossary_category', 'rrze_glossary_tag', 'rrze_placeholder_group', 'rrze_placeholder_tag'];
-        $relevant_pages = ['rrze-answers', 'rrze-answers_faq', 'rrze-answers_glossary', 'rrze-answers_placeholder'];
+        $relevant_post_types = ['rrze_faq', 'rrze_glossary', 'rrze_synonym'];
+        $relevant_taxonomies = ['rrze_faq_category', 'rrze_faq_tag', 'rrze_glossary_category', 'rrze_glossary_tag', 'rrze_synonym_group', 'rrze_synonym_tag'];
+        $relevant_pages = ['rrze-answers', 'rrze-answers_faq', 'rrze-answers_glossary', 'rrze-answers_synonym'];
 
         $is_relevant = $screen && (
             in_array($screen->post_type ?? '', $relevant_post_types, true) ||

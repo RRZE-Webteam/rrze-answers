@@ -55,7 +55,7 @@ class Defaults
                 'page_title' => __('RRZE Answers Settings', 'rrze-answers'),
                 'capability' => 'manage_options',
                 'checkbox_option' => false,
-                'text_placeholder' => __('Enter your text here...', 'rrze-answers'),
+                'text_synonym' => __('Enter your text here...', 'rrze-answers'),
                 'select_default' => 'none',
             ],
             'sections' => [
@@ -115,7 +115,7 @@ class Defaults
                         'description' => '',
                         'type' => 'text',
                         'default' => 'rrze_faq',
-                        'placeholder' => 'rrze_faq'
+                        'synonym' => 'rrze_faq'
                     ],
                     [
                         'name' => 'custom_faq_category_slug',
@@ -123,7 +123,7 @@ class Defaults
                         'description' => '',
                         'type' => 'text',
                         'default' => 'faq_category',
-                        'placeholder' => 'faq_category'
+                        'synonym' => 'faq_category'
 
                     ],
                     [
@@ -132,7 +132,7 @@ class Defaults
                         'description' => '',
                         'type' => 'text',
                         'default' => 'faq_tag',
-                        'placeholder' => 'faq_tag'
+                        'synonym' => 'faq_tag'
                     ],
                     [
                         'name' => 'label_glossary',
@@ -153,7 +153,7 @@ class Defaults
                         'description' => '',
                         'type' => 'text',
                         'default' => 'rrze_glossary',
-                        'placeholder' => 'rrze_glossary'
+                        'synonym' => 'rrze_glossary'
                     ],
                     [
                         'name' => 'custom_glossary_category_slug',
@@ -161,7 +161,7 @@ class Defaults
                         'description' => '',
                         'type' => 'text',
                         'default' => 'glossary_category',
-                        'placeholder' => 'glossary_category'
+                        'synonym' => 'glossary_category'
 
                     ],
                     [
@@ -170,15 +170,15 @@ class Defaults
                         'description' => '',
                         'type' => 'text',
                         'default' => 'glossary_tag',
-                        'placeholder' => 'glossary_tag'
+                        'synonym' => 'glossary_tag'
                     ],
                     [
-                        'name' => 'label_placeholder',
-                        'label' => __('Placeholder', 'rrze-answers'),
+                        'name' => 'label_synonym',
+                        'label' => __('Synonym', 'rrze-answers'),
                         'type' => 'hr',
                     ],
                     [
-                        'name' => 'redirect_archivpage_uri_placeholder',
+                        'name' => 'redirect_archivpage_uri_synonym',
                         'label' => __('Archive page', 'rrze-answers'),
                         'description' => '',
                         'type' => 'select',
@@ -186,12 +186,12 @@ class Defaults
                         'default' => ''
                     ],
                     [
-                        'name' => 'custom_placeholder_slug',
-                        'label' => __('Placeholder Slug', 'rrze-answers'),
+                        'name' => 'custom_synonym_slug',
+                        'label' => __('Synonym Slug', 'rrze-answers'),
                         'description' => '',
                         'type' => 'text',
-                        'default' => 'rrze_placeholder',
-                        'placeholder' => 'rrze_placeholder'
+                        'default' => 'rrze_synonym',
+                        'synonym' => 'rrze_synonym'
                     ],
                 ],
                 'import' => [],
@@ -262,7 +262,7 @@ class Defaults
                                 'label' => $label . ' ' . __('Categories', 'rrze-answers'),
                                 'description' => __('Please select the categories you\'d like to fetch ' . $label . ' to.', 'rrze-answers'),
                                 'type' => 'msg',
-                                'placeholder' => __('Category not found.', 'rrze-answers')
+                                'synonym' => __('Category not found.', 'rrze-answers')
                             ];
                         }
                     }

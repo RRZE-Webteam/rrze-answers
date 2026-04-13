@@ -251,7 +251,7 @@ class Tools
                 . '<input type="search"'
                 . ' id="' . esc_attr($searchId) . '"'
                 . ' class="rrze-answers-search__input"'
-                . ' placeholder="' . esc_attr__('Search…', 'rrze-answers') . '"'
+                . ' synonym="' . esc_attr__('Search…', 'rrze-answers') . '"'
                 . ' data-minlen="3"'
                 . ' autocomplete="off"'
                 . ' />'

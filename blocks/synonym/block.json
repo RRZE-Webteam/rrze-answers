@@ -1,11 +1,11 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "rrze-answers/placeholder",
+	"name": "rrze-answers/synonym",
 	"version": "3.0.4",
-	"title": "Placeholder",
+	"title": "Synonym",
 	"category": "rrze",
-	"description": "Display placeholders",
+	"description": "Display synonyms",
 	"icon": "translation",
 	"example": {},
 	"attributes": {
@@ -59,6 +59,6 @@
 		"html": false
 	},
 	"textdomain": "rrze-answers",
-	"editorScript": "file:../../build/placeholder.js",
+	"editorScript": "file:../../build/synonym.js",
 	"render": "file:./render.php"
 }
