@@ -44,7 +44,7 @@ class AdminUI_QA extends AdminUI
 
     /* ---------------- Title synonym ---------------- */
 
-    protected function titlesynonym(): string
+    protected function get_title(): string
     {
         return ($this->post_type === 'rrze_faq')
             ? __('Enter question here', 'rrze-answers')

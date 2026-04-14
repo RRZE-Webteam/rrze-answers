@@ -112,7 +112,7 @@ abstract class AdminUI
     public function enterTitleHere(string $title, \WP_Post $post): string
     {
         if ($post->post_type === $this->post_type) {
-            return $this->titlesynonym();
+            return $this->get_title();
         }
         return $title;
     }
@@ -205,7 +205,7 @@ abstract class AdminUI
      * Template methods
      * ----------------------------------------------------------------- */
 
-    abstract protected function titlesynonym(): string;
+    abstract protected function get_title(): string;
 
     protected function isSynced(int $post_id): bool
     {

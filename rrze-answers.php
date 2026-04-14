@@ -3,8 +3,8 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            1.2.10
-Description:        Explain your content with FAQ, glossary and synonyms.
+Version:            1.2.11
+Description:        Explain your content with FAQ, glossary, synonyms and placeholder.
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
 License:            GNU General Public License Version 3
@@ -314,18 +314,15 @@ function rrze_update_synonym_cpt(): void
         return;
     }
 
-    // 1) post_type: rrze_synonym -> rrze_synonym
-    $wpdb->update($wpdb->posts, ['post_type' => 'rrze_synonym'], ['post_type' => 'rrze_synonym']);
+    // 1) post_type: rrze_placeholder -> rrze_synonym
+    $wpdb->update($wpdb->posts, ['post_type' => 'rrze_synonym'], ['post_type' => 'rrze_placeholder']);
 
-    // 2) post_type: old 'synonym' (legacy) -> rrze_synonym
-    $wpdb->update($wpdb->posts, ['post_type' => 'rrze_synonym'], ['post_type' => 'synonym']);
+    // 2) meta key: 'placeholder' -> 'synonym'
+    $wpdb->update($wpdb->postmeta, ['meta_key' => 'placeholder'], ['meta_key' => 'synonym']); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 
-    // 3) meta key: 'synonym' -> 'synonym'
-    $wpdb->update($wpdb->postmeta, ['meta_key' => 'synonym'], ['meta_key' => 'synonym']); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-
-    // 4) taxonomies: rrze_synonym_group -> rrze_synonym_group, rrze_synonym_tag -> rrze_synonym_tag
-    $wpdb->update($wpdb->term_taxonomy, ['taxonomy' => 'rrze_synonym_group'], ['taxonomy' => 'rrze_synonym_group']);
-    $wpdb->update($wpdb->term_taxonomy, ['taxonomy' => 'rrze_synonym_tag'],   ['taxonomy' => 'rrze_synonym_tag']);
+    // 3) taxonomies: rrze_placeholder_group -> rrze_synonym_group, rrze_placeholder_tag -> rrze_synonym_tag
+    $wpdb->update($wpdb->term_taxonomy, ['taxonomy' => 'rrze_placeholder_group'], ['taxonomy' => 'rrze_synonym_group']);
+    $wpdb->update($wpdb->term_taxonomy, ['taxonomy' => 'rrze_placeholder_tag'],   ['taxonomy' => 'rrze_synonym_tag']);
 
     wp_cache_flush();
     flush_rewrite_rules();
