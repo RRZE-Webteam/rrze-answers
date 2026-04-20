@@ -81,7 +81,7 @@ class CPTGlossary extends CPT
 
         $redirect_id = (int) ($options['redirect_archivpage_uri_glossary'] ?? 0);
 
-        if ($redirect_id > 0 && self::is_slug_request($slug)) {
+        if ($redirect_id > 0 && parent::is_slug_request($slug)) {
             remove_filter('template_redirect', 'redirect_canonical');
         }
     }
@@ -109,7 +109,7 @@ class CPTGlossary extends CPT
         }
 
         // Redirect archive slug
-        if (self::is_slug_request($slug)) {
+        if (parent::is_slug_request($slug)) {
 
             $redirect_id = (int) ($options['redirect_archivpage_uri_glossary'] ?? 0);
 
