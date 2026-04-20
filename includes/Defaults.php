@@ -173,6 +173,27 @@ class Defaults
                         'synonym' => 'glossary_tag'
                     ],
                     [
+                        'name' => 'label_placeholder',
+                        'label' => __('Placeholder', 'rrze-answers'),
+                        'type' => 'hr',
+                    ],
+                    [
+                        'name' => 'redirect_archivpage_uri_placeholder',
+                        'label' => __('Archive page', 'rrze-answers'),
+                        'description' => '',
+                        'type' => 'select',
+                        'options' => $pagelist,
+                        'default' => ''
+                    ],
+                    [
+                        'name' => 'custom_placeholder_slug',
+                        'label' => __('Placeholder Slug', 'rrze-answers'),
+                        'description' => '',
+                        'type' => 'text',
+                        'default' => 'rrze_placeholder',
+                        'synonym' => 'rrze_placeholder'
+                    ],
+                    [
                         'name' => 'label_synonym',
                         'label' => __('Synonym', 'rrze-answers'),
                         'type' => 'hr',
