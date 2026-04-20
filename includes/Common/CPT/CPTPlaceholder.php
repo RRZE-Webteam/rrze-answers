@@ -54,11 +54,11 @@ class CPTPlaceholder extends CPT
     {
         $options = get_option('rrze-answers');
 
-        $slug = !empty($options['permalink_settings_custom_placeholder_slug'])
-            ? sanitize_title($options['permalink_settings_custom_placeholder_slug'])
+        $slug = !empty($options['custom_placeholder_slug'])
+            ? sanitize_title($options['custom_placeholder_slug'])
             : 'glossary';
 
-        $redirect_id = (int) ($options['permalink_settings_redirect_archivpage_uri_placeholder'] ?? 0);
+        $redirect_id = (int) ($options['redirect_archivpage_uri_placeholder'] ?? 0);
 
         if ($redirect_id > 0 && self::is_slug_request($slug)) {
             remove_filter('template_redirect', 'redirect_canonical');
@@ -74,8 +74,8 @@ class CPTPlaceholder extends CPT
 
         $options = get_option('rrze-answers');
 
-        $slug = !empty($options['permalink_settings_custom_placeholder_slug'])
-            ? sanitize_title($options['permalink_settings_custom_placeholder_slug'])
+        $slug = !empty($options['custom_placeholder_slug'])
+            ? sanitize_title($options['custom_placeholder_slug'])
             : 'faq';
 
         // CPT Single 404
@@ -90,7 +90,7 @@ class CPTPlaceholder extends CPT
         // Redirect archive slug
         if (self::is_slug_request($slug)) {
 
-            $redirect_id = (int) ($options['permalink_settings_redirect_archivpage_uri_placeholder'] ?? 0);
+            $redirect_id = (int) ($options['redirect_archivpage_uri_placeholder'] ?? 0);
 
             if ($redirect_id > 0) {
 

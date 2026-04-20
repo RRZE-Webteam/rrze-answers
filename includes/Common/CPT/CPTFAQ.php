@@ -73,11 +73,11 @@ class CPTFAQ extends CPT
     {
         $options = get_option('rrze-answers');
 
-        $slug = !empty($options['permalink_settings_custom_faq_slug'])
-            ? sanitize_title($options['permalink_settings_custom_faq_slug'])
+        $slug = !empty($options['custom_faq_slug'])
+            ? sanitize_title($options['custom_faq_slug'])
             : 'faq';
 
-        $redirect_id = (int) ($options['permalink_settings_redirect_archivpage_uri_faq'] ?? 0);
+        $redirect_id = (int) ($options['redirect_archivpage_uri_faq'] ?? 0);
 
         if ($redirect_id > 0 && self::is_slug_request($slug)) {
             remove_filter('template_redirect', 'redirect_canonical');
@@ -93,8 +93,8 @@ class CPTFAQ extends CPT
 
         $options = get_option('rrze-answers');
 
-        $slug = !empty($options['permalink_settings_custom_faq_slug'])
-            ? sanitize_title($options['permalink_settings_custom_faq_slug'])
+        $slug = !empty($options['custom_faq_slug'])
+            ? sanitize_title($options['custom_faq_slug'])
             : 'faq';
 
         // CPT Single 404
@@ -109,7 +109,7 @@ class CPTFAQ extends CPT
         // Redirect archive slug
         if (self::is_slug_request($slug)) {
 
-            $redirect_id = (int) ($options['permalink_settings_redirect_archivpage_uri_faq'] ?? 0);
+            $redirect_id = (int) ($options['redirect_archivpage_uri_faq'] ?? 0);
 
             if ($redirect_id > 0) {
 
