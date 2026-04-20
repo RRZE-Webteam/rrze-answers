@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            1.2.12
+Version:            1.2.13
 Description:        Explain your content with FAQ, glossary, synonyms and placeholder.
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
@@ -192,11 +192,13 @@ function register_blocks(): void
     register_block_type_from_metadata(__DIR__ . '/blocks/faq-widget');
     register_block_type_from_metadata(__DIR__ . '/blocks/glossary');
     register_block_type_from_metadata(__DIR__ . '/blocks/synonym');
+    register_block_type_from_metadata(__DIR__ . '/blocks/placeholder');
 
     $faq_handle = generate_block_asset_handle('rrze-answers/faq', 'editorScript');
     $faq_widget_handle = generate_block_asset_handle('rrze-answers/faq-widget', 'editorScript');
     $glossary_handle = generate_block_asset_handle('rrze-answers/glossary', 'editorScript');
     $synonym_handle = generate_block_asset_handle('rrze-answers/synonym', 'editorScript');
+    $placeholder_handle = generate_block_asset_handle('rrze-answers/placeholder', 'editorScript');
 
     $path = plugin_dir_path(__FILE__) . 'languages';
 
@@ -204,6 +206,7 @@ function register_blocks(): void
     wp_set_script_translations($faq_widget_handle, 'rrze-answers', $path);
     wp_set_script_translations($glossary_handle, 'rrze-answers', $path);
     wp_set_script_translations($synonym_handle, 'rrze-answers', $path);
+    wp_set_script_translations($placeholder_handle, 'rrze-answers', $path);
 }
 
 /**

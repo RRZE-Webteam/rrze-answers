@@ -10,7 +10,7 @@ import './synonym-format.js'; // <-- registers the toolbar-button to use it inli
  * Internal dependencies
  */
 import metadata from './block.json';
-import Edit from './edit'; // <-- we need the block to output the list of synonyms
+import Edit from './edit';
 import save from './save';
 
 registerBlockType( metadata.name, {

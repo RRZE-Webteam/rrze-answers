@@ -75,7 +75,7 @@ export default function Edit({attributes, setAttributes}) {
     }
 
     const synonyms = useSelect((select) => {
-        return select('core').getEntityRecords('postType', 'synonym', {per_page: -1, orderby: 'title', order: "asc"});
+        return select('core').getEntityRecords('postType', 'rrze_synonym', {per_page: -1, orderby: 'title', order: "asc"});
     }, []);
 
     const synonymoptions = [
@@ -214,7 +214,7 @@ export default function Edit({attributes, setAttributes}) {
                 <PanelBody>
                     <SelectControl
                         label={__(
-                            "synonym",
+                            "Synonym",
                             'rrze-answers'
                         )}
                         help={__('Show a selection of individual synonyms', 'rrze-answers')}

@@ -35,7 +35,7 @@ class ShortcodeGlossary
     {
         return [
             'block' => [
-                'blocktype' => 'rrze-glossary/glossary',
+                'blocktype' => 'rrze-answers/glossary',
                 'blockname' => 'glossary',
                 'title' => 'RRZE Glossary',
                 'category' => 'widgets',

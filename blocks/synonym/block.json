@@ -3,7 +3,7 @@
 	"apiVersion": 3,
 	"name": "rrze-answers/synonym",
 	"version": "3.0.4",
-	"title": "Synonym",
+	"title": "RRZE Synonym",
 	"category": "rrze",
 	"description": "Display synonyms",
 	"icon": "translation",

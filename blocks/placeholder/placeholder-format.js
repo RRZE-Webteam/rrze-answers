@@ -1,4 +1,4 @@
-// synonym-format.js — pick from CPT "synonym" and apply <abbr>
+// placeholder-format.js — pick from CPT "rrze-placeholder" and apply <abbr>
 import { __ } from '@wordpress/i18n';
 import {
 	registerFormatType,
@@ -23,11 +23,10 @@ import {
 import { useState, useRef, useEffect, useMemo } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 
-const FORMAT_NAME = 'rrze/synonym';
-const TAG_NAME = 'abbr';
-const CLASS_NAME = 'rrze-syn';
+const FORMAT_NAME = 'rrze/placeholder';
+const CLASS_NAME = 'rrze-placeholder';
 
-const SynonymUI = ( props ) => {
+const PlaceholderUI = ( props ) => {
 	const { value, onChange, isActive } = props;
 
 	const [items, setItems] = useState([]);
@@ -48,7 +47,7 @@ const SynonymUI = ( props ) => {
 			try {
 				while (true) {
 					const batch = await apiFetch({
-						path: `/wp/v2/synonym?status=publish&per_page=${perPage}&page=${page}&orderby=title&order=asc&_fields=id,title,synonym,titleLang,meta`,
+						path: `/wp/v2/placeholder?status=publish&per_page=${perPage}&page=${page}&orderby=title&order=asc&_fields=id,title,content`,
 					});
 					if (cancelled) return;
 
@@ -72,8 +71,8 @@ const SynonymUI = ( props ) => {
 	const options = useMemo(() => {
 		return (items || []).map(post => ({
 			value: String(post.id),
-			label: post?.title?.rendered || __('(no title)','rrze-synonym'),
-			long:  post?.synonym ?? post?.meta?.synonym ?? '',
+			label: post?.title?.rendered || __('(no title)','rrze-answers'),
+			long:  post?.content?.rendered || __('(no content)','rrze-answers'),
 			lang:  post?.titleLang ?? post?.meta?.titleLang ?? '',
 		}));
 	}, [items]);
@@ -132,7 +131,7 @@ const SynonymUI = ( props ) => {
 			<span ref={ anchorRef }>
 				<RichTextToolbarButton
 					icon="translation"
-					title={ __('Synonym','rrze-synonym') }
+					title={ __('Placeholder','rrze-answers') }
 					onClick={ () => setIsOpen( (o) => !o ) }
 					isActive={ isActive }
 				/>
@@ -144,45 +143,37 @@ const SynonymUI = ( props ) => {
 					variant="toolbar"
 					onClose={ () => setIsOpen( false ) }
 				>
-					<div className="rrze-synonym-popover">
+					<div className="rrze-placeholder-popover">
 						{ loading && (
 							<Flex align="center" gap={8}>
 								<Spinner />
-								<span>{ __('Loading synonyms…','rrze-synonym') }</span>
+								<span>{ __('Loading placeholders…','rrze-answers') }</span>
 							</Flex>
 						) }
 
 						{ (!loading && error) && (
 							<Notice status="error" isDismissible={ false }>
-								{ __('Failed to load synonyms. Check your REST setup.','rrze-synonym') }
+								{ __('Failed to load placeholders. Check your REST setup.','rrze-answers') }
 							</Notice>
 						) }
 
 						{ (!loading && !error) && (
 							<ComboboxControl
-								label={ __('Choose a synonym','rrze-synonym') }
-								help={ __('Type to search by title','rrze-synonym') }
+								label={ __('Choose a placeholder','rrze-answers') }
+								help={ __('Type to search by title','rrze-answers') }
 								value={ selectedId }
 								onChange={ setSelectedId }
 								options={ options }
 							/>
 						) }
 
-						<Flex className="rrze-synonym-popover-actions" justify="flex-end" gap={ 8 }>
-							{ !!current && (
-								<FlexItem>
-									<Button variant="secondary" onClick={ removeFormatHere }>
-										{ __('Remove','rrze-synonym') }
-									</Button>
-								</FlexItem>
-							) }
+						<Flex className="rrze-placeholder-popover-actions" justify="flex-end" gap={ 8 }>
 							<FlexItem>
 								<Button
 									variant="primary"
 									onClick={ applyFromSelected }
 									disabled={ !selectedId }
 								>
-									{ !!current ? __('Update','rrze-synonym') : __('Apply','rrze-synonym') }
 								</Button>
 							</FlexItem>
 						</Flex>
@@ -195,13 +186,12 @@ const SynonymUI = ( props ) => {
 
 // Register the format: renders <abbr class="rrze-syn" ...>…</abbr>
 registerFormatType( FORMAT_NAME, {
-	title: __('Synonym','rrze-synonym'),
-	tagName: TAG_NAME,
+	title: __('Placeholder','rrze-answers'),
+	tagName: 'placeholder',
 	className: CLASS_NAME,
 	attributes: {
 		title: 'title',
-		lang: 'lang',
-		'data-pron': 'data-pron', // reserved for future use: pronounciation 
+		lang: 'lang'
 	},
-	edit: SynonymUI,
+	edit: PlaceholderUI,
 } );

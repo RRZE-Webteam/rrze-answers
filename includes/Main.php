@@ -20,12 +20,13 @@ use RRZE\Answers\Common\{
     CPT\CPTFAQ,
     CPT\CPTGlossary,
     CPT\CPTSynonym,
-    // CPT\CPTPlaceholder,
+    CPT\CPTPlaceholder,
     Sync\Sync,
     Blocks\Blocks,
     Shortcode\ShortcodeFAQ,
     Shortcode\ShortcodeGlossary,
-    Shortcode\ShortcodeSynonym
+    Shortcode\ShortcodeSynonym,
+    Shortcode\ShortcodePlaceholder
 };
 
 defined('ABSPATH') || exit;
@@ -413,6 +414,7 @@ class Main
         $cpt = new CPTFAQ();
         $cpt = new CPTGlossary();
         $cpt = new CPTSynonym();
+        $cpt = new CPTPlaceholder();
     }
 
 
@@ -429,6 +431,7 @@ class Main
         $shortcode = new ShortcodeFAQ();
         $shortcode = new ShortcodeGlossary();
         $shortcode = new ShortcodeSynonym();
+        $shortcode = new ShortcodePlaceholder();
     }
 
     /**
@@ -447,7 +450,8 @@ class Main
                 'faq',
                 'faq-widget',
                 'glossary',
-                'synonym'
+                'synonym',
+                'placeholder'
             ],
             plugin()->getPath('build/blocks'), // Blocks directory path
             plugin()->getPath()                // Plugin directory path
@@ -536,9 +540,9 @@ class Main
     public function enqueueAdminAssets()
     {
         $screen = get_current_screen();
-        $relevant_post_types = ['rrze_faq', 'rrze_glossary', 'rrze_synonym'];
+        $relevant_post_types = ['rrze_faq', 'rrze_glossary', 'rrze_synonym', 'rrze_placeholder'];
         $relevant_taxonomies = ['rrze_faq_category', 'rrze_faq_tag', 'rrze_glossary_category', 'rrze_glossary_tag', 'rrze_synonym_group', 'rrze_synonym_tag'];
-        $relevant_pages = ['rrze-answers', 'rrze-answers_faq', 'rrze-answers_glossary', 'rrze-answers_synonym'];
+        $relevant_pages = ['rrze-answers', 'rrze-answers_faq', 'rrze-answers_glossary', 'rrze-answers_synonym', 'rrze-answers_placeholder'];
 
         $is_relevant = $screen && (
             in_array($screen->post_type ?? '', $relevant_post_types, true) ||

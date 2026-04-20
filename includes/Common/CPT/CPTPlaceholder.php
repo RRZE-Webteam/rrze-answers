@@ -12,7 +12,7 @@ class CPTPlaceholder extends CPT
         'archive' => 'rrze_placeholder-archive.php',
     ];
 
-    protected $rest_base   = 'synonym';
+    protected $rest_base   = 'placeholder';
     protected $menu_icon   = 'dashicons-editor-paste-text';
     protected $slug_options = [
         'slug_option_key' => 'website_custom_placeholder_slug',
@@ -22,7 +22,7 @@ class CPTPlaceholder extends CPT
     protected $labels = [];
     protected $taxonomies = [];
 
-    protected $supports = ['title'];
+    protected $supports = ['title', 'editor', 'revisions'];
 
 
 
