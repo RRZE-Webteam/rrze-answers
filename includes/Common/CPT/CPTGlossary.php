@@ -21,7 +21,7 @@ class CPTGlossary extends CPT
     protected $rest_base = 'glossary';
     protected $menu_icon = 'dashicons-book-alt';
     protected $slug_options = [
-        'slug_option_key' => 'website_custom_glossary_slug',
+        'slug_option_key' => 'custom_glossary_slug',
         'default_slug' => 'glossary',
     ];
 

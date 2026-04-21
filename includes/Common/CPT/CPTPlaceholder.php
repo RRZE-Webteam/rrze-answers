@@ -15,7 +15,7 @@ class CPTPlaceholder extends CPT
     protected $rest_base   = 'placeholder';
     protected $menu_icon   = 'dashicons-editor-paste-text';
     protected $slug_options = [
-        'slug_option_key' => 'website_custom_placeholder_slug',
+        'slug_option_key' => 'custom_placeholder_slug',
         'default_slug'    => 'placeholder'
     ];
 

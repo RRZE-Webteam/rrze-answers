@@ -15,7 +15,7 @@ class CPTSynonym extends CPT
     protected $rest_base   = 'synonym';
     protected $menu_icon   = 'dashicons-translation';
     protected $slug_options = [
-        'slug_option_key' => 'website_custom_synonym_slug',
+        'slug_option_key' => 'custom_synonym_slug',
         'default_slug'    => 'synonym'
     ];
 

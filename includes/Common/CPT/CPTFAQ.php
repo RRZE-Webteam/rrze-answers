@@ -18,7 +18,7 @@ class CPTFAQ extends CPT
     protected $rest_base  = 'faq';
     protected $menu_icon  = 'dashicons-editor-help';
     protected $slug_options = [
-        'slug_option_key' => 'website_custom_faq_slug',
+        'slug_option_key' => 'custom_faq_slug',
         'default_slug'    => 'faq',
     ];
 
