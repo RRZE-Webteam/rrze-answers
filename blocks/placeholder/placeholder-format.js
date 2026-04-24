@@ -93,22 +93,17 @@ const PlaceholderUI = ( props ) => {
 		const attrs = {};
 		if ( picked.long ) attrs.title = picked.long;
 		if ( picked.lang ) attrs.lang = picked.lang;
+		attrs[ 'data-placeholder-id' ] = selectedId;
+		if ( picked.label ) attrs[ 'data-placeholder-title' ] = picked.label;
+
+		const markerLabel = __( 'Placeholder', 'rrze-answers' );
+		const markerTitle = picked.label || __( '(no title)', 'rrze-answers' );
+		const markerText = `[${ markerLabel }: ${ markerTitle }]`;
 
 		let v = value;
-		const hasSelection = v.start !== v.end;
-
-		// If there is no selection, insert the short label and then wrap it
-		if ( !hasSelection ) {
-			const shortText = picked.label || '';
-			if ( shortText ) {
-				const beforeLen = v.text.length;
-				v = insert( v, shortText );
-				const afterLen = v.text.length;
-				const insertedLen = afterLen - beforeLen;
-				// select the inserted text
-				v = { ...v, start: v.end - insertedLen, end: v.end };
-			}
-		}
+		// Always replace selection with a stable backend marker text.
+		v = insert( v, markerText );
+		v = { ...v, start: v.end - markerText.length, end: v.end };
 
 		v = applyFormat( v, { type: FORMAT_NAME, attributes: attrs } );
 		onChange( v );
@@ -191,7 +186,9 @@ registerFormatType( FORMAT_NAME, {
 	className: CLASS_NAME,
 	attributes: {
 		title: 'title',
-		lang: 'lang'
+		lang: 'lang',
+		placeholderId: 'data-placeholder-id',
+		placeholderTitle: 'data-placeholder-title',
 	},
 	edit: PlaceholderUI,
 } );

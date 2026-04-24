@@ -59,6 +59,7 @@ class Main
         $this->cpt();
         add_action('init', [$this, 'onInit']);
         add_filter('wp_kses_allowed_html', [$this, 'my_custom_allowed_html'], 10, 2);
+        add_filter('the_content', [$this, 'renderInlinePlaceholders'], 9);
     }
 
     public function onInit()
@@ -400,8 +401,65 @@ class Main
             'xlink:href' => true,
         ]);
 
+        // Allow inline placeholder format tag stored by the block editor.
+        $allowed_tags['placeholder'] = array_merge($allowed_tags['placeholder'] ?? [], [
+            'class' => true,
+            'title' => true,
+            'lang' => true,
+            'data-placeholder-id' => true,
+            'data-placeholder-title' => true,
+        ]);
+
 
         return $allowed_tags;
+    }
+
+    /**
+     * Replace inline <placeholder> markers with their actual content on frontend output.
+     *
+     * @param string $content The post content.
+     * @return string
+     */
+    public function renderInlinePlaceholders($content)
+    {
+        if (!is_string($content) || strpos($content, '<placeholder') === false) {
+            return $content;
+        }
+
+        if (is_admin() && !wp_doing_ajax()) {
+            return $content;
+        }
+
+        return preg_replace_callback(
+            '/<placeholder\b([^>]*)>.*?<\/placeholder>/is',
+            static function ($matches) {
+                if (empty($matches[1])) {
+                    return '';
+                }
+
+                if (preg_match('/\bdata-placeholder-id=(["\'])(\d+)\1/is', $matches[1], $idMatch)) {
+                    $placeholderId = (int) $idMatch[2];
+                    $placeholderPost = get_post($placeholderId);
+
+                    if (
+                        $placeholderPost instanceof \WP_Post
+                        && $placeholderPost->post_type === 'rrze_placeholder'
+                        && $placeholderPost->post_status === 'publish'
+                    ) {
+                        $dynamicContent = html_entity_decode($placeholderPost->post_content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                        return wp_kses_post(do_shortcode($dynamicContent));
+                    }
+                }
+
+                if (!preg_match('/\btitle=(["\'])(.*?)\1/is', $matches[1], $titleMatch)) {
+                    return '';
+                }
+
+                $decoded = html_entity_decode($titleMatch[2], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                return wp_kses_post($decoded);
+            },
+            $content
+        );
     }
 
     // public function settingsAll()
