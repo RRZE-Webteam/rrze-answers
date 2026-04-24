@@ -12,7 +12,7 @@ use RRZE\Answers\Common\{
     API\SyncAPI,
     AdminInterfaces\AdminUI_QA,
     AdminInterfaces\AdminUI_Synonym,
-    // AdminInterfaces\AdminUI_Placeholder,
+    AdminInterfaces\AdminUI_Placeholder,
     // AdminInterfaces\AdminMenu,
     // AdminInterfaces\AdminInterfaces,
     // AdminInterfaces\AdminInterfacessynonym,
@@ -74,6 +74,7 @@ class Main
         $this->adminUI = new AdminUI_QA('rrze_faq');
         $this->adminUI = new AdminUI_QA('rrze_glossary');
         $this->adminUI = new AdminUI_Synonym();
+        $this->adminUI = new AdminUI_Placeholder();
 
         // $this->adminMenue = new AdminMenu(); // in admin menu there is a maximum of 2 levels. Deactivated this workaround because it wouldn't be best practice.
         add_action('wp_enqueue_scripts', [$this, 'enqueueAssets']);

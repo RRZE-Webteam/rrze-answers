@@ -51,6 +51,12 @@ class ShortcodePlaceholder
                 'label' => __('Placeholder', 'rrze-answers'),
                 'type' => 'number'
             ],
+            'lang' => [
+                'default' => '',
+                'field_type' => 'text',
+                'label' => __('Language', 'rrze-answers'),
+                'type' => 'text'
+            ],
             'gutenberg_shortcode_type' => [
                 'values' => [
                     'fau_abbr' => __('Abbreviation', 'rrze-answers'), // Abkürzung
@@ -90,6 +96,22 @@ class ShortcodePlaceholder
         return get_posts($postQuery);
     }
 
+    private function filterPostsByLanguage($posts, $lang)
+    {
+        if (!$lang || !is_array($posts)) {
+            return $posts;
+        }
+
+        $lang = sanitize_text_field((string) $lang);
+
+        return array_values(array_filter($posts, function ($post) use ($lang) {
+            if (!($post instanceof \WP_Post)) {
+                return false;
+            }
+            return ((string) get_post_meta($post->ID, 'lang', true)) === $lang;
+        }));
+    }
+
     public function shortcodeOutput($atts, $content = "", $shortcode_tag = "")
     {
         $myPosts = FALSE;
@@ -118,6 +140,8 @@ class ShortcodePlaceholder
             // show all
             $myPosts = $this->getPostsByCPT('rrze_placeholder');
         }
+
+        $myPosts = $this->filterPostsByLanguage($myPosts, $lang ?? '');
 
         $output = '';
 

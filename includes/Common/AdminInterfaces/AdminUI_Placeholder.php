@@ -11,6 +11,7 @@ class AdminUI_Placeholder extends AdminUI
 {
     /** @var array<string,string> */
     protected array $langChoices = [];
+    private bool $metaNoncePrinted = false;
 
     public function __construct()
     {
@@ -38,45 +39,32 @@ class AdminUI_Placeholder extends AdminUI
     {
         return [
             [
-                'id' => 'postmetabox',
-                'title' => __('Properties', 'rrze-answers'),
-                'callback' => [$this, 'postmetaCallback'],
-                'context' => 'normal',
-                'priority' => 'high',
+                'id' => 'langbox',
+                'title' => __('Language', 'rrze-answers'),
+                'callback' => [$this, 'langboxCallback'],
+                'context' => 'side',
             ],
         ];
     }
 
-    public function postmetaCallback(\WP_Post $post): void
+    public function langboxCallback(\WP_Post $post): void
     {
-        // Nonce
-        wp_nonce_field('rrze_placeholder_save_meta', 'rrze_placeholder_meta_nonce');
+        if (!$this->metaNoncePrinted) {
+            wp_nonce_field('rrze_placeholder_save_meta', 'rrze_placeholder_meta_nonce');
+            $this->metaNoncePrinted = true;
+        }
 
-        $source = (string) get_post_meta($post->ID, 'source', true);
-        $placeholder = (string) get_post_meta($post->ID, 'placeholder', true);
-        $titleLang = (string) get_post_meta($post->ID, 'titleLang', true);
+        $current = (string) get_post_meta($post->ID, 'lang', true);
+        if ($current === '') {
+            $current = substr(get_locale(), 0, 2);
+        }
 
-        // Properties
-        echo '<p><label for="placeholder">' . esc_html__('Full form', 'rrze-answers') . '</label></p>';
-        echo '<textarea rows="3" cols="60" name="placeholder" id="placeholder">' . esc_textarea($placeholder) . '</textarea>';
-        echo '<p class="description">' . esc_html__('Enter the long, written form of the placeholder. This text replaces the shortcode. Note: line breaks or HTML are not accepted.', 'rrze-answers') . '</p>';
-
-        // Language dropdown
-        $selectedLang = $titleLang !== '' ? $titleLang : substr(get_locale(), 0, 2);
-        echo '<br><label for="titleLang">' . esc_html__('Pronunciation language', 'rrze-answers') . '</label>';
-        echo '<select id="titleLang" name="titleLang">';
+        echo '<select name="lang" id="lang" class="lang">';
         foreach ($this->langChoices as $code => $desc) {
-            $sel = ($code === $selectedLang) ? ' selected' : '';
-            echo '<option value="' . esc_attr($code) . '"' . $sel . '>' . esc_html($desc) . '</option>';
+            echo '<option value="' . esc_attr($code) . '" ' . selected($current, $code, false) . '>' . esc_html($desc) . '</option>';
         }
         echo '</select>';
-        echo '<p class="description">' . esc_html__('Choose the language in which the long form is pronounced.', 'rrze-answers') . '</p>';
-
-        // Keep source (hidden)
-        if ($source === '') {
-            $source = 'website';
-        }
-        echo '<input type="hidden" name="source" id="source" value="' . esc_attr($source) . '">';
+        echo '<p class="description">' . esc_html__('Language of this placeholder', 'rrze-answers') . '</p>';
     }
 
     // public function renderShortcodeBox(): void
@@ -149,13 +137,10 @@ class AdminUI_Placeholder extends AdminUI
         }
 
         update_post_meta($post_id, 'source', 'website'); // placeholders are authored locally by default
+        update_post_meta($post_id, 'lang', substr(get_locale(), 0, 2));
         update_post_meta($post_id, 'remoteID', $post_id);
-
-        if (isset($_POST['placeholder'])) {
-            update_post_meta($post_id, 'placeholder', sanitize_text_field(wp_unslash((string) $_POST['placeholder'])));
-        }
-        if (isset($_POST['titleLang'])) {
-            update_post_meta($post_id, 'titleLang', sanitize_text_field(wp_unslash((string) $_POST['titleLang'])));
+        if (isset($_POST['lang']) && $_POST['lang'] !== '') {
+            update_post_meta($post_id, 'lang', sanitize_text_field(wp_unslash((string) $_POST['lang'])));
         }
 
         update_post_meta($post_id, 'remoteChanged', get_post_timestamp($post_id, 'modified'));
@@ -165,7 +150,8 @@ class AdminUI_Placeholder extends AdminUI
 
     protected function listTableColumns(array $cols): array
     {
-        $cols['title'] = __('Synonym', 'rrze-answers');
+        $cols['title'] = __('Placeholder', 'rrze-answers');
+        $cols['lang'] = __('Language', 'rrze-answers');
 
         if ((new Tools())->hasSync('rrze_placeholder')) {
             $cols['source'] = __('Source', 'rrze-answers');
@@ -176,6 +162,7 @@ class AdminUI_Placeholder extends AdminUI
 
     protected function listTableSortableColumns(array $cols): array
     {
+        $cols['lang'] = __('Language', 'rrze-answers');
         $cols['source'] = __('Source', 'rrze-answers');
         return $cols;
     }
@@ -184,6 +171,8 @@ class AdminUI_Placeholder extends AdminUI
     {
         if ($col === 'id') {
             echo (int) $post_id;
+        } elseif ($col === 'lang') {
+            echo esc_html((string) get_post_meta($post_id, 'lang', true));
         } elseif ($col === 'source') {
             echo esc_html((string) get_post_meta($post_id, 'source', true));
         }
