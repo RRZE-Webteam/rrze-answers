@@ -446,9 +446,19 @@ class Main
                         && $placeholderPost->post_type === 'rrze_placeholder'
                         && $placeholderPost->post_status === 'publish'
                     ) {
+                        static $renderStack = [];
+                        if (in_array($placeholderId, $renderStack, true)) {
+                            return '';
+                        }
+
+                        $renderStack[] = $placeholderId;
                         $dynamicContent = html_entity_decode($placeholderPost->post_content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                        $renderedContent = do_shortcode($dynamicContent);
-                        return wp_kses_post(wpautop($renderedContent));
+                        try {
+                            // Render placeholder content like normal post content, including blocks.
+                            return apply_filters('the_content', $dynamicContent);
+                        } finally {
+                            array_pop($renderStack);
+                        }
                     }
                 }
 
