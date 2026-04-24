@@ -447,7 +447,8 @@ class Main
                         && $placeholderPost->post_status === 'publish'
                     ) {
                         $dynamicContent = html_entity_decode($placeholderPost->post_content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                        return wp_kses_post(do_shortcode($dynamicContent));
+                        $renderedContent = do_shortcode($dynamicContent);
+                        return wp_kses_post(wpautop($renderedContent));
                     }
                 }
 
@@ -456,7 +457,7 @@ class Main
                 }
 
                 $decoded = html_entity_decode($titleMatch[2], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                return wp_kses_post($decoded);
+                return wp_kses_post(wpautop($decoded));
             },
             $content
         );
