@@ -1,42 +1,48 @@
 <?php
-/* 
-Template Name: CPT placeholder Archive Template
-*/
-use RRZE\Answers\Common\Tools;
+/**
+ * The template for displaying all placeholder entries
+ *
+ * @package WordPress
+ * @subpackage FAU
+ * @since FAU 1.0
+ */
 
 get_header();
 ?>
 
 <main id="main" class="site-main rrze-answers archive">
-    <div id="content">
-        <div class="content-container">
-            <h2><?php echo __('Placeholder', 'rrze-answers'); ?></h2>
-
-            <?php
-            if (have_posts()) {
-                echo '<table class="rrze_placeholder">';
-                while (have_posts()) {
-                    the_post();
-                    echo '<tr>';
-                    echo '<th scope="row">' . get_the_title() . '</th>';
-                    // echo '<td>' . get_post_meta($post->ID, 'synonym', true) . Tools::getPronunciation($post->ID) . '</td>';
-                    echo '</tr>';
-                }
-                echo '</table>';
-
-                // Pagination
-                echo '<nav class="pagination">';
-                echo paginate_links(array(
-                    'mid_size' => 2,
-                    'prev_text' => '← ' . esc_html__('Previous', 'fau'),
-                    'next_text' => esc_html__('Next', 'fau') . ' →',
-                ));
-                echo '</nav>';
+    <div id="content"><div class="content-container">
+        <?php
+        echo '<h2>' . __('Placeholder', 'rrze-answers') . '</h2>';
+        ?>
+        <ul>
+        <?php
+        if (have_posts()) {
+            while (have_posts()) {
+                the_post();
+                printf(
+                    '<li><a href="%s">%s</a></li>',
+                    esc_url(get_the_permalink()),
+                    esc_html(get_the_title())
+                );
             }
-            ?>
+        } else {
+            echo '<li>' . esc_html__('no placeholder found.', 'rrze-answers') . '</li>';
+        }
+        ?>
+        </ul>
 
-        </div>
-    </div>
+        <?php
+        // Pagination
+        the_posts_pagination([
+            'mid_size'           => 2,
+            'end_size'           => 1,
+            'prev_text'          => '← ' . esc_html__('Previous', 'fau'),
+            'next_text'          => esc_html__('Next', 'fau') . ' →',
+            'screen_reader_text' => esc_html__('Placeholder navigation', 'fau'),
+        ]);
+        ?>
+    </div></div>
 </main>
 
 <?php get_footer(); ?>
