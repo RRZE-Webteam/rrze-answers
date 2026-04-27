@@ -179,7 +179,6 @@ const PlaceholderUI = ( props ) => {
 	);
 };
 
-// Register the format: renders <abbr class="rrze-syn" ...>…</abbr>
 registerFormatType( FORMAT_NAME, {
 	title: __('Placeholder','rrze-answers'),
 	tagName: 'placeholder',

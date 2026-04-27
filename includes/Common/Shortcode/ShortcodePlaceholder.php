@@ -112,6 +112,13 @@ class ShortcodePlaceholder
         }));
     }
 
+    private function renderPlaceholderContent($rawContent): string
+    {
+        $decoded = html_entity_decode((string) $rawContent, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        // Preserve line breaks from plain text while keeping existing HTML intact.
+        return wpautop($decoded);
+    }
+
     public function shortcodeOutput($atts, $content = "", $shortcode_tag = "")
     {
         $myPosts = FALSE;
@@ -152,8 +159,8 @@ class ShortcodePlaceholder
         if ($myPosts) {
                 foreach ($myPosts as $post) {
                     $output .= '<div class="placeholder">';
-                    $output .= html_entity_decode($post->post_content);
-                    $output .= '<div>';
+                    $output .= $this->renderPlaceholderContent($post->post_content);
+                    $output .= '</div>';
                 }
             if (count($myPosts) > 1) {
                 $output = '<div class="placeholder-outer">' . $output . '</div>';
