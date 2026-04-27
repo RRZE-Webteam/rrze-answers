@@ -43,7 +43,7 @@ This block lets you display either a selected FAQ entry or a random one from a c
 The Glossary block displays glossary entries and offers similar flexibility. You can select entries, filter them by categories or tags, and control the register or grouping style, including A–Z lists, tab navigation, and tag cloud layouts. Display elements such as titles, accordion views, or the register can be hidden, while optional features like “expand all” or opening entries by default can be enabled. Additional styling classes, sorting behavior, and heading levels can be configured as needed.
 
 **RRZE Placeholder Block**
-The Placeholder block renders one, multiple, or all placeholder entries and can be filtered by language. In the editor sidebar you can select placeholders directly and choose a language filter (`de`, `en`, `fr`, `es`, `ru`, `zh`, or all). Rendering is server-side and uses the placeholder shortcode internally, so block and shortcode output stay consistent.
+The Placeholder block renders one, multiple, or all placeholder entries and can be filtered by language. In the editor sidebar you can select placeholders directly and choose a language filter. Rendering is server-side and uses the placeholder shortcode internally, so block and shortcode output stay consistent.
 
 **Inserting placeholders in the text editor**
 
@@ -184,9 +184,6 @@ Entries from synchronized domains behave like local entries and can be displayed
 - Category + Tag:  
   `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/glossary?filter[rrze_glossary_category]=Dienste&filter[rrze_glossary_tag]=Sprache`
 
-### Placeholder
-- All:  
-  `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/placeholder`
 
 **Pagination:**  
 Refer to [WordPress REST API Pagination](https://developer.wordpress.org/rest-api/using-the-rest-api/pagination/)
