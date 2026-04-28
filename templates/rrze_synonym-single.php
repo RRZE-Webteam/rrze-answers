@@ -7,29 +7,32 @@
  * @since FAU 1.0
  */
 
+use RRZE\Answers\Common\Tools;
+
 get_header();
 ?>
 
 <main id="main" class="site-main rrze-answers archive">
     <div id="content"><div class="content-container">
-        <h2><?php echo __('synonyms', 'rrze-answers'); ?></h2>
+        <h2><?php echo __('Synonym', 'rrze-answers'); ?></h2>
 
-        <ul>
         <?php
         if (have_posts()) {
             while (have_posts()) {
                 the_post();
+                $synonym = get_post_meta(get_the_ID(), 'synonym', true);
+                $pronunciation = Tools::getPronunciation(get_the_ID());
                 printf(
-                    '<li><a href="%s">%s</a></li>',
-                    esc_url(get_the_permalink()),
-                    esc_html(get_the_title())
+                    '<p>%s: %s%s</p>',
+                    esc_html(get_the_title()),
+                    esc_html($synonym),
+                    wp_kses_post($pronunciation)
                 );
             }
         } else {
-            echo '<li>' . esc_html__('No synonyms found.', 'rrze-answers') . '</li>';
+            echo '<p>' . esc_html__('No synonyms found.', 'rrze-answers') . '</p>';
         }
         ?>
-        </ul>
 
         <?php
         // Pagination
