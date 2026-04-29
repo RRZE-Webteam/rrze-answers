@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            1.2.27
+Version:            1.3.0
 Description:        Explain your content with FAQ, glossary, synonyms and placeholder.
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
@@ -269,6 +269,7 @@ function loaded(): void
     add_action('init', __NAMESPACE__ . '\rrze_update_synonym_cpt');
     add_action('init', __NAMESPACE__ . '\rrze_migrate_domains');
     add_action('init', __NAMESPACE__ . '\rrze_migrate_blocks');
+    add_action('init', __NAMESPACE__ . '\rrze_update_placeholder_cpt');    
 }
 
 function rrze_update_glossary_cpt(): void
@@ -410,6 +411,27 @@ function rrze_answers_migrate_targets(): array
         'rrze-synonym/rrze-synonym.php',
     ];
 }
+
+// new placeholder 1.3.0
+function rrze_update_placeholder_cpt(): void
+{
+
+    global $wpdb;
+
+    if (get_option('rrze_rename_placeholder_to_synonym_done')) {
+        return;
+    }
+
+    $wpdb->update($wpdb->posts, ['post_type' => 'rrze_synonym'], ['post_type' => 'rrze_placeholder']);
+
+    $wpdb->update($wpdb->postmeta, ['meta_key' => 'synonym'], ['meta_key' => 'placeholder']); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+
+    wp_cache_flush();
+    flush_rewrite_rules();
+
+    update_option('rrze_rename_placeholder_to_synonym_done', 1);
+}
+
 
 function rrze_answers_ensure_plugin_functions(): void
 {
