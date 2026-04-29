@@ -426,7 +426,8 @@ details.rrze-answers-item summary {
       font-weight: 700;
       font-family: var(--font-family-base), sans-serif;
       background: transparent;
-      color: inherit;
+      // color: inherit;
+      color: var(--FAU-Col-FAU-Blau-100, #{$default-fau}) !important;
       box-shadow: none !important;
       border: 0 !important;
       overflow: visible;

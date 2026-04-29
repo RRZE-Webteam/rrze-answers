@@ -1,4 +1,4 @@
-// placeholder-format.js — pick from CPT "rrze-placeholder" and apply <abbr>
+// synonym-format.js — pick from CPT "synonym" and apply <abbr>
 import { __ } from '@wordpress/i18n';
 import {
 	registerFormatType,
@@ -23,10 +23,11 @@ import {
 import { useState, useRef, useEffect, useMemo } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 
-const FORMAT_NAME = 'rrze/placeholder';
-const CLASS_NAME = 'rrze-placeholder';
+const FORMAT_NAME = 'rrze/synonym';
+const TAG_NAME = 'abbr';
+const CLASS_NAME = 'rrze-syn';
 
-const PlaceholderUI = ( props ) => {
+const SynonymUI = ( props ) => {
 	const { value, onChange, isActive } = props;
 
 	const [items, setItems] = useState([]);
@@ -47,7 +48,7 @@ const PlaceholderUI = ( props ) => {
 			try {
 				while (true) {
 					const batch = await apiFetch({
-						path: `/wp/v2/placeholder?status=publish&per_page=${perPage}&page=${page}&orderby=title&order=asc&_fields=id,title,content`,
+						path: `/wp/v2/synonym?status=publish&per_page=${perPage}&page=${page}&orderby=title&order=asc&_fields=id,title,synonym,titleLang,meta`,
 					});
 					if (cancelled) return;
 
@@ -72,7 +73,7 @@ const PlaceholderUI = ( props ) => {
 		return (items || []).map(post => ({
 			value: String(post.id),
 			label: post?.title?.rendered || __('(no title)','rrze-answers'),
-			long:  post?.content?.rendered || __('(no content)','rrze-answers'),
+			long:  post?.synonym ?? post?.meta?.synonym ?? '',
 			lang:  post?.titleLang ?? post?.meta?.titleLang ?? '',
 		}));
 	}, [items]);
@@ -93,17 +94,22 @@ const PlaceholderUI = ( props ) => {
 		const attrs = {};
 		if ( picked.long ) attrs.title = picked.long;
 		if ( picked.lang ) attrs.lang = picked.lang;
-		attrs[ 'data-placeholder-id' ] = selectedId;
-		if ( picked.label ) attrs[ 'data-placeholder-title' ] = picked.label;
-
-		const markerLabel = __( 'Placeholder', 'rrze-answers' );
-		const markerTitle = picked.label || __( '(no title)', 'rrze-answers' );
-		const markerText = `[${ markerLabel }: ${ markerTitle }]`;
 
 		let v = value;
-		// Always replace selection with a stable backend marker text.
-		v = insert( v, markerText );
-		v = { ...v, start: v.end - markerText.length, end: v.end };
+		const hasSelection = v.start !== v.end;
+
+		// If there is no selection, insert the short label and then wrap it
+		if ( !hasSelection ) {
+			const shortText = picked.label || '';
+			if ( shortText ) {
+				const beforeLen = v.text.length;
+				v = insert( v, shortText );
+				const afterLen = v.text.length;
+				const insertedLen = afterLen - beforeLen;
+				// select the inserted text
+				v = { ...v, start: v.end - insertedLen, end: v.end };
+			}
+		}
 
 		v = applyFormat( v, { type: FORMAT_NAME, attributes: attrs } );
 		onChange( v );
@@ -126,7 +132,7 @@ const PlaceholderUI = ( props ) => {
 			<span ref={ anchorRef }>
 				<RichTextToolbarButton
 					icon="translation"
-					title={ __('Placeholder','rrze-answers') }
+					title={ __('Synonym','rrze-answers') }
 					onClick={ () => setIsOpen( (o) => !o ) }
 					isActive={ isActive }
 				/>
@@ -138,23 +144,23 @@ const PlaceholderUI = ( props ) => {
 					variant="toolbar"
 					onClose={ () => setIsOpen( false ) }
 				>
-					<div className="rrze-placeholder-popover">
+					<div className="rrze-synonym-popover">
 						{ loading && (
 							<Flex align="center" gap={8}>
 								<Spinner />
-								<span>{ __('Loading placeholders…','rrze-answers') }</span>
+								<span>{ __('Loading synonyms…','rrze-answers') }</span>
 							</Flex>
 						) }
 
 						{ (!loading && error) && (
 							<Notice status="error" isDismissible={ false }>
-								{ __('Failed to load placeholders. Check your REST setup.','rrze-answers') }
+								{ __('Failed to load synonyms. Check your REST setup.','rrze-answers') }
 							</Notice>
 						) }
 
 						{ (!loading && !error) && (
 							<ComboboxControl
-								label={ __('Choose a placeholder','rrze-answers') }
+								label={ __('Choose a synonym','rrze-answers') }
 								help={ __('Type to search by title','rrze-answers') }
 								value={ selectedId }
 								onChange={ setSelectedId }
@@ -162,13 +168,21 @@ const PlaceholderUI = ( props ) => {
 							/>
 						) }
 
-						<Flex className="rrze-placeholder-popover-actions" justify="flex-end" gap={ 8 }>
+						<Flex className="rrze-synonym-popover-actions" justify="flex-end" gap={ 8 }>
+							{ !!current && (
+								<FlexItem>
+									<Button variant="secondary" onClick={ removeFormatHere }>
+										{ __('Remove','rrze-answers') }
+									</Button>
+								</FlexItem>
+							) }
 							<FlexItem>
 								<Button
 									variant="primary"
 									onClick={ applyFromSelected }
 									disabled={ !selectedId }
 								>
+									{ !!current ? __('Update','rrze-answers') : __('Apply','rrze-answers') }
 								</Button>
 							</FlexItem>
 						</Flex>
@@ -179,15 +193,15 @@ const PlaceholderUI = ( props ) => {
 	);
 };
 
+// Register the format: renders <abbr class="rrze-syn" ...>…</abbr>
 registerFormatType( FORMAT_NAME, {
-	title: __('Placeholder','rrze-answers'),
-	tagName: 'placeholder',
+	title: __('Synonym','rrze-answers'),
+	tagName: TAG_NAME,
 	className: CLASS_NAME,
 	attributes: {
 		title: 'title',
 		lang: 'lang',
-		placeholderId: 'data-placeholder-id',
-		placeholderTitle: 'data-placeholder-title',
+		'data-pron': 'data-pron', // reserved for future use: pronounciation 
 	},
-	edit: PlaceholderUI,
+	edit: SynonymUI,
 } );

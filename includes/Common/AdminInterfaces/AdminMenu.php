@@ -7,7 +7,7 @@ class AdminMenu {
     // CPT-Slugs
     private $faq_pt       = 'rrze_faq';
     private $glossary_pt  = 'rrze_glossary';
-    private $placeholder_pt   = 'rrze_placeholder';
+    private $synonym_pt   = 'rrze_synonym';
 
     private $faq_cat      = 'rrze_faq_category';
     private $faq_tag      = 'rrze_faq_tag';
@@ -15,8 +15,8 @@ class AdminMenu {
     private $glossary_cat = 'rrze_glossary_category';
     private $glossary_tag = 'rrze_glossary_tag';
 
-    private $syn_group    = 'rrze_placeholder_group';
-    private $syn_tag      = 'rrze_placeholder_tag';
+    private $syn_group    = 'rrze_synonym_group';
+    private $syn_tag      = 'rrze_synonym_tag';
 
     private $parent_slug  = 'rrze-answers';
 
@@ -30,7 +30,7 @@ class AdminMenu {
     }
 
     public function hideCptMenus(array $args, string $post_type): array {
-        $targets = [$this->faq_pt, $this->glossary_pt, $this->placeholder_pt];
+        $targets = [$this->faq_pt, $this->glossary_pt, $this->synonym_pt];
         if (in_array($post_type, $targets, true)) {
             $args['show_in_menu']       = false;
             $args['show_in_admin_bar']  = false;
@@ -51,7 +51,7 @@ class AdminMenu {
 
         add_submenu_page($this->parent_slug, __('FAQ', 'rrze-answers'), __('FAQ', 'rrze-answers'), 'edit_posts', 'rrze-answers_faq',      function () { $this->renderHub($this->faq_pt, $this->faq_cat, $this->faq_tag, __('FAQ', 'rrze-answers')); });
         add_submenu_page($this->parent_slug, __('Glossary', 'rrze-answers'), __('Glossary', 'rrze-answers'), 'edit_posts', 'rrze-answers_glossary', function () { $this->renderHub($this->glossary_pt, $this->glossary_cat, $this->glossary_tag, __('Glossary', 'rrze-answers')); });
-        add_submenu_page($this->parent_slug, __('Placeholder', 'rrze-answers'), __('Placeholder', 'rrze-answers'), 'edit_posts', 'rrze-answers_placeholder', function () { $this->renderHub($this->placeholder_pt, $this->syn_group, $this->syn_tag, __('Placeholder', 'rrze-answers')); });
+        add_submenu_page($this->parent_slug, __('Synonym', 'rrze-answers'), __('Synonym', 'rrze-answers'), 'edit_posts', 'rrze-answers_synonym', function () { $this->renderHub($this->synonym_pt, $this->syn_group, $this->syn_tag, __('Synonym', 'rrze-answers')); });
     }
 
     public function renderAnswersDashboard(): void {
@@ -61,7 +61,7 @@ class AdminMenu {
         $cards = [
             ['slug'=>'rrze-answers_faq',      'title'=>__('FAQ', 'rrze-answers'),      'desc'=>__('Manage questions & answers', 'rrze-answers')],
             ['slug'=>'rrze-answers_glossary', 'title'=>__('Glossary', 'rrze-answers'), 'desc'=>__('Manage glossary terms', 'rrze-answers')],
-            ['slug'=>'rrze-answers_placeholder',  'title'=>__('Placeholder', 'rrze-answers'),  'desc'=>__('Manage placeholders & groups', 'rrze-answers')],
+            ['slug'=>'rrze-answers_synonym',  'title'=>__('Synonym', 'rrze-answers'),  'desc'=>__('Manage synonyms & groups', 'rrze-answers')],
         ];
         foreach ($cards as $c) {
             printf(
@@ -104,7 +104,7 @@ class AdminMenu {
         $screen = get_current_screen();
         if (!$screen) return $parent_file;
 
-        $targets = [$this->faq_pt, $this->glossary_pt, $this->placeholder_pt];
+        $targets = [$this->faq_pt, $this->glossary_pt, $this->synonym_pt];
         if (in_array($screen->post_type, $targets, true) || in_array($screen->taxonomy ?? '', [$this->faq_cat, $this->faq_tag, $this->glossary_cat, $this->glossary_tag, $this->syn_group, $this->syn_tag], true)) {
             return $this->parent_slug;
         }
@@ -121,8 +121,8 @@ class AdminMenu {
         if ($screen->post_type === $this->glossary_pt || in_array($screen->taxonomy ?? '', [$this->glossary_cat, $this->glossary_tag], true)) {
             return 'rrze-answers_glossary';
         }
-        if ($screen->post_type === $this->placeholder_pt || in_array($screen->taxonomy ?? '', [$this->syn_group, $this->syn_tag], true)) {
-            return 'rrze-answers_placeholder';
+        if ($screen->post_type === $this->synonym_pt || in_array($screen->taxonomy ?? '', [$this->syn_group, $this->syn_tag], true)) {
+            return 'rrze-answers_synonym';
         }
         return $submenu_file;
     }

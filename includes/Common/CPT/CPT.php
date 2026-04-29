@@ -19,6 +19,18 @@ abstract class CPT
     protected $templates = [];
     protected $slug_options = ['slug_option_key' => '', 'default_slug' => ''];
 
+    protected $rewriteKeys = [
+        'custom_faq_slug',
+        'custom_faq_category_slug',
+        'custom_faq_tag_slug',
+        'custom_glossary_slug',
+        'custom_glossary_category_slug',
+        'custom_glossary_tag_slug',
+        'custom_placeholder_slug',
+        'custom_synonym_slug'
+    ];
+
+
     public function __construct($posttype)
     {
         $this->post_type = $posttype;
@@ -45,11 +57,23 @@ abstract class CPT
         add_filter('archive_template', [$this, 'filter_archive_template']);
         add_filter('taxonomy_template', [$this, 'filter_taxonomy_template']);
 
-        add_action('init', [$this, 'maybeFlushRewriteRules'], 20);
         add_action('update_option_rrze-answers', [$this, 'checkSlugChange'], 10, 2);
 
-        add_action('template_redirect', [$this, 'maybe_disable_canonical_redirect'], 1);
-        add_action('template_redirect', [$this, 'custom_cpt_404_message'], 10);
+        add_filter('pre_update_option_rrze-answers', [$this, 'sanitizeOptions'], 10, 2);
+    }
+
+
+    public function sanitizeOptions($input)
+    {
+        foreach ($this->rewriteKeys as $key) {
+            if (isset($input[$key])) {
+                $slug = sanitize_title($input[$key]);
+
+                $input[$key] = $slug;
+            }
+        }
+
+        return $input;
     }
 
     public function add_category_page_field($taxonomy)
@@ -238,43 +262,31 @@ abstract class CPT
 
 
     public function filter_taxonomy_template($template)
-{
-    foreach ($this->templates['taxonomy'] as $type => $file) {
-        $taxonomy_name = $this->post_type . '_' . $type;
-        if (is_tax($taxonomy_name)) {
-            return plugin()->getPath() . 'templates/' . $file;
+    {
+        foreach ($this->templates['taxonomy'] as $type => $file) {
+            $taxonomy_name = $this->post_type . '_' . $type;
+            if (is_tax($taxonomy_name)) {
+                return plugin()->getPath() . 'templates/' . $file;
+            }
         }
+
+        return $template;
     }
 
-    return $template;
-}
- 
     /**
      * Flush rewrite rules if slug changed
      */
     public function checkSlugChange($old_value, $value)
     {
-        $rewriteKeys = [
-            'permalink_settings_custom_faq_slug',
-            'permalink_settings_custom_faq_category_slug',
-            'permalink_settings_custom_faq_tag_slug',
-        ];
-
-        foreach ($rewriteKeys as $key) {
+        foreach ($this->rewriteKeys as $key) {
             if (isset($old_value[$key], $value[$key]) && $old_value[$key] !== $value[$key]) {
-                set_transient('rrze_faq_flush_rewrite_needed', true, 60);
+                do_action('init');
+                flush_rewrite_rules();
                 break;
             }
         }
     }
 
-    public function maybeFlushRewriteRules()
-    {
-        if (get_transient('rrze_faq_flush_rewrite_needed')) {
-            flush_rewrite_rules();
-            delete_transient('rrze_faq_flush_rewrite_needed');
-        }
-    }
 
     /**
      * Check if request matches slug
@@ -292,24 +304,6 @@ abstract class CPT
     }
 
     /**
-     * Disable canonical redirect if redirect page exists
-     */
-    public function maybe_disable_canonical_redirect(): void
-    {
-        $options = get_option('rrze-answers');
-
-        $slug = !empty($options['permalink_settings_custom_faq_slug'])
-            ? sanitize_title($options['permalink_settings_custom_faq_slug'])
-            : 'faq';
-
-        $redirect_id = (int) ($options['permalink_settings_redirect_archivpage_uri'] ?? 0);
-
-        if ($redirect_id > 0 && self::is_slug_request($slug)) {
-            remove_filter('template_redirect', 'redirect_canonical');
-        }
-    }
-
-    /**
      * Custom 404
      */
     public static function render_custom_404(): void
@@ -322,45 +316,5 @@ abstract class CPT
 
         include get_404_template();
         exit;
-    }
-
-    /**
-     * Handle CPT redirects
-     */
-    public function custom_cpt_404_message(): void
-    {
-        global $wp_query;
-
-        $options = get_option('rrze-answers');
-
-        $slug = !empty($options['permalink_settings_custom_faq_slug'])
-            ? sanitize_title($options['permalink_settings_custom_faq_slug'])
-            : 'faq';
-
-        // CPT Single 404
-        if (
-            isset($wp_query->query_vars['post_type']) &&
-            $wp_query->query_vars['post_type'] === $this->post_type &&
-            empty($wp_query->post)
-        ) {
-            self::render_custom_404();
-        }
-
-        // Redirect archive slug
-        if (self::is_slug_request($slug)) {
-
-            $redirect_id = (int) ($options['permalink_settings_redirect_archivpage_uri'] ?? 0);
-
-            if ($redirect_id > 0) {
-
-                $post = get_post($redirect_id);
-
-                if ($post && get_post_status($post) === 'publish') {
-
-                    wp_redirect(get_permalink($post), 301);
-                    exit;
-                }
-            }
-        }
     }
 }

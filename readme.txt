@@ -1,29 +1,33 @@
-=== RRZE FAQ ===
+=== RRZE Answers ===
 Contributors: rrze-webteam
-Tags: faq, shortcode, block, widget, categories
+Tags: faq, glossary, synonym, placeholder, shortcode, block, widget
 Requires at least: 6.1
 Tested up to: 6.8
 Requires PHP: 8.2
-Stable tag: 1.2.9
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Plugin for creating and synchronizing FAQs within the FAU network. Usable as a shortcode, block, or widget.
+Unified plugin for FAQs, glossary entries, synonyms, and placeholders with shortcode, block, widget, and REST API support.
 
 == Description ==
 
-The plugin enables the creation of FAQs and synchronization with other FAU websites.
+RRZE Answers combines the functionality of the former RRZE FAQ, RRZE Glossary, and RRZE Synonym plugins into one solution.
 
-Features:
-* Output of FAQs by category, tag, or domain
-* Grouping as accordion or list
-* Glossary as A-Z index, tabs, or tag cloud
-* Search-as-you-type
+It allows you to:
+* Create and display FAQs, glossary entries, synonyms, and placeholders
+* Synchronize content between websites in the FAU network
+* Display entries via shortcodes, Gutenberg blocks, or widgets
+* Filter and group entries by categories, tags, or domains
+* Access content via the WordPress REST API (v2)
+* Improve SEO with structured data output
+
+Main features:
+* Unified content management for FAQs, glossary entries, synonyms, and placeholders
+* Flexible display options (accordion, A-Z index, tabs, tag cloud, grid)
+* Cross-domain synchronization
+* Multilingual output and language filtering
 * REST API support
-* Support for multiple domains via synchronization
-* Widget to display a random or fixed FAQ
-* Shortcodes with extensive attributes
-* Support for Gutenberg block
 
 == Installation ==
 
@@ -31,31 +35,101 @@ Features:
 2. Unzip the ZIP file.
 3. Upload the `rrze-answers` folder to the `/wp-content/plugins/` directory of your WordPress installation.
 4. Activate the plugin via the `Plugins` menu in WordPress.
-5. Optional: Configure synchronization domains under `Settings > RRZE FAQ`.
+5. Optional: Configure synchronization domains under `Settings > RRZE Answers`.
 
 == Usage ==
 
-Examples of shortcodes:
+=== Blocks ===
 
-    [faq]
+* RRZE FAQ Block
+* RRZE FAQ Widget Block
+* RRZE Glossary Block
+* RRZE Placeholder Block 
+
+
+=== Inserting in the text editor ===
+In the classic text editor (TinyMCE), placeholders can be inserted via the shortcode menu/button. This inserts a `[placeholder: ...]` shortcode.
+The text editor provides a dedicated menu entry for inserting synonyms. From there, you can select any available synonym from a list and insert it directly into your content.
+
+
+=== Shortcodes ===
+
+FAQ:
+
+    [faq id="456,123"]
     [faq category="category-1"]
-    [faq tag="tag-1"]
-    [faq id="123, 456"]
-    [faq glossary="category tabs"]
-    [faq glossary="tag tagcloud"]
+    [faq tag="tag-1,tag-2"]
+    [faq category="category-1" tag="tag-2"]
 
-More details on usage can be found in the `readme.md` file or the documentation.
+Important FAQ attributes include:
+* `glossary`, `category`, `tag`, `domain`, `id`
+* `hide`, `masonry`, `search`, `lang`, `class`
+* `sort`, `order`, `hstart`
 
-== Frequently Asked Questions ==
+Glossary:
 
-= Can I display FAQs from other FAU websites? =
-Yes. To do this, the domain must be added under `Settings > RRZE FAQ > Domains` and synchronization must be executed.
+    [glossary id="123,456"]
+    [glossary category="category-1"]
+    [glossary tag="tag-1,tag-2"]
 
-= Is there a widget? =
-Yes. It is available under `Appearance > Widgets` as “FAQ Widget.”
+Important Glossary attributes include:
+* `register`, `category`, `tag`, `id`, `lang`
+* `hide`, `show`, `class`, `sort`, `order`, `hstart`
 
-= How does the REST API work? =
-The plugin supports the WordPress REST API v2 with extended filtering options.
+Synonyms:
+
+    [synonym id="123"]
+    [synonym slug="bildungsministerium"]
+    [fau_abbr id="987"]
+    [fau_abbr slug="url"]
+
+`[fau_abbr]` outputs `<abbr>` tags and supports language/pronunciation metadata when present.
+
+Placeholders:
+
+    [placeholder]
+    [placeholder id="123"]
+    [placeholder slug="semesterbeitrag"]
+    [placeholder lang="de"]
+    [placeholder id="123,456" lang="en"]
+
+Placeholder attributes:
+* `id` - one or more placeholder IDs (comma-separated)
+* `slug` - display a placeholder by slug
+* `lang` - filter by language meta value
+* no attributes - display all published placeholders
+
+Notes:
+* If `slug` is set, it takes precedence over `id`.
+* Output is rendered as placeholder content from the editor.
+
+=== Synchronization Across Domains ===
+
+External domains can be added and synchronized via:
+
+    Settings > RRZE Answers > Domains
+    Settings > RRZE Answers > Import
+
+Synchronized entries behave like local entries and can be displayed via shortcode, block, or widget.
+
+=== Widgets ===
+
+* Answers Widget: show a specific or random FAQ or glossary entry
+* Configurable options include layout and category selection
+
+=== REST API (v2) ===
+
+FAQ:
+* `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/faq`
+* `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/faq?filter[rrze_faq_tag]=Matrix`
+
+Glossary:
+* `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/glossary`
+* `https://www.anleitungen.rrze.fau.de/wp-json/wp/v2/glossary?filter[rrze_glossary_category]=Dienste&filter[rrze_glossary_tag]=Sprache`
+
+
+Pagination:
+https://developer.wordpress.org/rest-api/using-the-rest-api/pagination/
 
 == License ==
 

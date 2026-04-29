@@ -9,6 +9,6 @@ defined('ABSPATH') || exit;
         <label for="<?php echo $option->getIdAttribute(); ?>" <?php echo $option->getLabelClassAttribute(); ?>><?php echo $option->getLabel(); ?></label>
     </th>
     <td class="rrze-wp-form rrze-wp-form-input">
-        <?php echo $option->getPlaceholderAttribute(); ?>
+        <?php echo $option->getsynonymAttribute(); ?>
     </td>
 </tr>

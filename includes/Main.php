@@ -11,18 +11,21 @@ use RRZE\Answers\Common\{
     API\RESTAPI,
     API\SyncAPI,
     AdminInterfaces\AdminUI_QA,
+    AdminInterfaces\AdminUI_Synonym,
     AdminInterfaces\AdminUI_Placeholder,
     // AdminInterfaces\AdminMenu,
     // AdminInterfaces\AdminInterfaces,
-    // AdminInterfaces\AdminInterfacesPlaceholder,
+    // AdminInterfaces\AdminInterfacessynonym,
     Settings\Settings,
     CPT\CPTFAQ,
     CPT\CPTGlossary,
+    CPT\CPTSynonym,
     CPT\CPTPlaceholder,
     Sync\Sync,
     Blocks\Blocks,
     Shortcode\ShortcodeFAQ,
     Shortcode\ShortcodeGlossary,
+    Shortcode\ShortcodeSynonym,
     Shortcode\ShortcodePlaceholder
 };
 
@@ -56,6 +59,7 @@ class Main
         $this->cpt();
         add_action('init', [$this, 'onInit']);
         add_filter('wp_kses_allowed_html', [$this, 'my_custom_allowed_html'], 10, 2);
+        add_filter('the_content', [$this, 'renderInlinePlaceholders'], 9);
     }
 
     public function onInit()
@@ -66,9 +70,10 @@ class Main
 
         // $this->adminInterface = new AdminInterfaces('rrze_faq');
         // $this->adminInterface = new AdminInterfaces('rrze_glossary');
-        // $this->adminInterface = new AdminInterfacesPlaceholder();
+        // $this->adminInterface = new AdminInterfacessynonym();
         $this->adminUI = new AdminUI_QA('rrze_faq');
         $this->adminUI = new AdminUI_QA('rrze_glossary');
+        $this->adminUI = new AdminUI_Synonym();
         $this->adminUI = new AdminUI_Placeholder();
 
         // $this->adminMenue = new AdminMenu(); // in admin menu there is a maximum of 2 levels. Deactivated this workaround because it wouldn't be best practice.
@@ -362,7 +367,7 @@ class Main
             'id' => true,
             'class' => true,
             'value' => true,
-            'placeholder' => true,
+            'synonym' => true,
             'checked' => true,
             'disabled' => true,
             'readonly' => true,
@@ -397,8 +402,76 @@ class Main
             'xlink:href' => true,
         ]);
 
+        // Allow inline placeholder format tag stored by the block editor.
+        $allowed_tags['placeholder'] = array_merge($allowed_tags['placeholder'] ?? [], [
+            'class' => true,
+            'title' => true,
+            'lang' => true,
+            'data-placeholder-id' => true,
+            'data-placeholder-title' => true,
+        ]);
+
 
         return $allowed_tags;
+    }
+
+    /**
+     * Replace inline <placeholder> markers with their actual content on frontend output.
+     *
+     * @param string $content The post content.
+     * @return string
+     */
+    public function renderInlinePlaceholders($content)
+    {
+        if (!is_string($content) || strpos($content, '<placeholder') === false) {
+            return $content;
+        }
+
+        if (is_admin() && !wp_doing_ajax()) {
+            return $content;
+        }
+
+        return preg_replace_callback(
+            '/<placeholder\b([^>]*)>.*?<\/placeholder>/is',
+            static function ($matches) {
+                if (empty($matches[1])) {
+                    return '';
+                }
+
+                if (preg_match('/\bdata-placeholder-id=(["\'])(\d+)\1/is', $matches[1], $idMatch)) {
+                    $placeholderId = (int) $idMatch[2];
+                    $placeholderPost = get_post($placeholderId);
+
+                    if (
+                        $placeholderPost instanceof \WP_Post
+                        && $placeholderPost->post_type === 'rrze_placeholder'
+                        && $placeholderPost->post_status === 'publish'
+                    ) {
+                        static $renderStack = [];
+                        if (in_array($placeholderId, $renderStack, true)) {
+                            return '';
+                        }
+
+                        $renderStack[] = $placeholderId;
+                        $dynamicContent = html_entity_decode($placeholderPost->post_content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                        try {
+                            // Render placeholder content like normal post content, including blocks.
+                            return apply_filters('the_content', $dynamicContent);
+                        } finally {
+                            array_pop($renderStack);
+                        }
+                    }
+                }
+
+                if (!preg_match('/\btitle=(["\'])(.*?)\1/is', $matches[1], $titleMatch)) {
+                    return '';
+                }
+
+                $decoded = html_entity_decode($titleMatch[2], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                return wp_kses_post(wpautop($decoded));
+            },
+            $content
+        );
     }
 
     // public function settingsAll()
@@ -410,6 +483,7 @@ class Main
     {
         $cpt = new CPTFAQ();
         $cpt = new CPTGlossary();
+        $cpt = new CPTSynonym();
         $cpt = new CPTPlaceholder();
     }
 
@@ -426,6 +500,7 @@ class Main
     {
         $shortcode = new ShortcodeFAQ();
         $shortcode = new ShortcodeGlossary();
+        $shortcode = new ShortcodeSynonym();
         $shortcode = new ShortcodePlaceholder();
     }
 
@@ -445,6 +520,7 @@ class Main
                 'faq',
                 'faq-widget',
                 'glossary',
+                'synonym',
                 'placeholder'
             ],
             plugin()->getPath('build/blocks'), // Blocks directory path
@@ -481,7 +557,7 @@ class Main
             foreach ($this->defaults->get('fields')[$section['id']] as $field) {
                 $sec->addOption($field['type'], array_intersect_key(
                     $field,
-                    array_flip(['name', 'label', 'description', 'options', 'default', 'sanitize', 'validate', 'placeholder'])
+                    array_flip(['name', 'label', 'description', 'options', 'default', 'sanitize', 'validate', 'synonym'])
                 ));
             }
         }
@@ -502,10 +578,10 @@ class Main
         );
 
         // wp_register_style(
-        //     'rrze-placeholder-css',
-        //     plugins_url('build/css/rrze-placeholder.css', plugin()->getBasename()),
+        //     'rrze-synonym-css',
+        //     plugins_url('build/css/rrze-synonym.css', plugin()->getBasename()),
         //     [],
-        //     filemtime(plugin()->getPath() . 'build/css/rrze-placeholder.css')
+        //     filemtime(plugin()->getPath() . 'build/css/rrze-synonym.css')
         // );
 
         wp_register_script(
@@ -534,9 +610,9 @@ class Main
     public function enqueueAdminAssets()
     {
         $screen = get_current_screen();
-        $relevant_post_types = ['rrze_faq', 'rrze_glossary', 'rrze_placeholder'];
-        $relevant_taxonomies = ['rrze_faq_category', 'rrze_faq_tag', 'rrze_glossary_category', 'rrze_glossary_tag', 'rrze_placeholder_group', 'rrze_placeholder_tag'];
-        $relevant_pages = ['rrze-answers', 'rrze-answers_faq', 'rrze-answers_glossary', 'rrze-answers_placeholder'];
+        $relevant_post_types = ['rrze_faq', 'rrze_glossary', 'rrze_synonym', 'rrze_placeholder'];
+        $relevant_taxonomies = ['rrze_faq_category', 'rrze_faq_tag', 'rrze_glossary_category', 'rrze_glossary_tag', 'rrze_synonym_group', 'rrze_synonym_tag'];
+        $relevant_pages = ['rrze-answers', 'rrze-answers_faq', 'rrze-answers_glossary', 'rrze-answers_synonym', 'rrze-answers_placeholder'];
 
         $is_relevant = $screen && (
             in_array($screen->post_type ?? '', $relevant_post_types, true) ||

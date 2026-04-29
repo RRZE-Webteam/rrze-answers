@@ -30,7 +30,7 @@ abstract class Type
      * Arguments for the option.
      *
      * This array holds various arguments that define the behavior and appearance
-     * of the option, such as label, name, id, placeholder, and CSS classes.
+     * of the option, such as label, name, id, synonym, and CSS classes.
      *
      * @var array
      */
@@ -175,18 +175,18 @@ abstract class Type
     }
 
     /**
-     * Gets the placeholder attribute for the option.
+     * Gets the synonym attribute for the option.
      *
-     * This method retrieves the placeholder argument and returns it if set,
+     * This method retrieves the synonym argument and returns it if set,
      * otherwise returns null.
      *
-     * @return string|null The placeholder text or null if not set.
+     * @return string|null The synonym text or null if not set.
      */
-    public function getPlaceholderAttribute()
+    public function getsynonymAttribute()
     {
-        $placeholder = $this->getArg('placeholder') ?? null;
+        $synonym = $this->getArg('synonym') ?? null;
 
-        return $placeholder ?: null;
+        return $synonym ?: null;
     }
 
     /**

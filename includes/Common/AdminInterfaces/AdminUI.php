@@ -112,7 +112,7 @@ abstract class AdminUI
     public function enterTitleHere(string $title, \WP_Post $post): string
     {
         if ($post->post_type === $this->post_type) {
-            return $this->titlePlaceholder();
+            return $this->get_title();
         }
         return $title;
     }
@@ -128,17 +128,17 @@ abstract class AdminUI
             $this->makeReadOnlyUI($post_id);
         }
 
-        if (!function_exists('use_block_editor_for_post') || !use_block_editor_for_post($post_id)) {
-            if ($this->features['show_shortcode_box']) {
-                add_meta_box(
-                    'shortcode_box',
-                    __('Integration in pages and posts as a shortcode', 'rrze-answers'),
-                    [$this, 'renderShortcodeBox'],
-                    $this->post_type,
-                    'normal'
-                );
-            }
-        }
+        // if (!function_exists('use_block_editor_for_post') || !use_block_editor_for_post($post_id)) {
+            // if ($this->features['show_shortcode_box']) {
+            //     add_meta_box(
+            //         'shortcode_box',
+            //         __('Integration in pages and posts as a shortcode', 'rrze-answers'),
+            //         [$this, 'renderShortcodeBox'],
+            //         $this->post_type,
+            //         'normal'
+            //     );
+            // }
+        // }
     }
 
     public function columns(array $cols): array
@@ -205,7 +205,7 @@ abstract class AdminUI
      * Template methods
      * ----------------------------------------------------------------- */
 
-    abstract protected function titlePlaceholder(): string;
+    abstract protected function get_title(): string;
 
     protected function isSynced(int $post_id): bool
     {

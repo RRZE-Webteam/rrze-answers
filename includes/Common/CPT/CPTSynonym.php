@@ -4,25 +4,25 @@ namespace RRZE\Answers\Common\CPT;
 
 defined('ABSPATH') || exit;
 
-class CPTPlaceholder extends CPT
+class CPTSynonym extends CPT
 {
-    protected $post_type = 'rrze_placeholder';
+    protected $post_type = 'rrze_synonym';
     protected $templates = [
-        'single'  => 'rrze_placeholder-single.php',
-        'archive' => 'rrze_placeholder-archive.php',
+        'single'  => 'rrze_synonym-single.php',
+        'archive' => 'rrze_synonym-archive.php',
     ];
 
-    protected $rest_base   = 'placeholder';
-    protected $menu_icon   = 'dashicons-editor-paste-text';
+    protected $rest_base   = 'synonym';
+    protected $menu_icon   = 'dashicons-translation';
     protected $slug_options = [
-        'slug_option_key' => 'custom_placeholder_slug',
-        'default_slug'    => 'placeholder'
+        'slug_option_key' => 'custom_synonym_slug',
+        'default_slug'    => 'synonym'
     ];
 
     protected $labels = [];
     protected $taxonomies = [];
 
-    protected $supports = ['title', 'editor', 'revisions'];
+    protected $supports = ['title'];
 
 
 
@@ -30,35 +30,35 @@ class CPTPlaceholder extends CPT
     public function __construct()
     {
         $this->labels = [
-            'name' => _x('Placeholder', 'Placeholders', 'rrze-answers'),
-            'singular_name' => _x('Placeholder', 'Single placeholder', 'rrze-answers'),
-            'menu_name' => __('Placeholder', 'rrze-answers'),
-            'add_new' => __('Add placeholder', 'rrze-answers'),
-            'add_new_item' => __('Add new placeholder', 'rrze-answers'),
-            'edit_item' => __('Edit placeholder', 'rrze-answers'),
-            'all_items' => __('All placeholders', 'rrze-answers'),
-            'search_items' => __('Search placeholder', 'rrze-answers'),
+            'name' => _x('Synonym', 'Synonyms', 'rrze-answers'),
+            'singular_name' => _x('Synonym', 'Single synonym', 'rrze-answers'),
+            'menu_name' => __('Synonym', 'rrze-answers'),
+            'add_new' => __('Add synonym', 'rrze-answers'),
+            'add_new_item' => __('Add new synonym', 'rrze-answers'),
+            'edit_item' => __('Edit synonym', 'rrze-answers'),
+            'all_items' => __('All synonyms', 'rrze-answers'),
+            'search_items' => __('Search synonym', 'rrze-answers'),
         ];
 
         parent::__construct($this->post_type);
 
         add_action('template_redirect', [$this, 'maybe_disable_canonical_redirect'], 1);
         add_action('template_redirect', [$this, 'custom_cpt_404_message'], 10);
-
     }
 
-    /**
+
+        /**
      * Disable canonical redirect if redirect page exists
      */
     public function maybe_disable_canonical_redirect(): void
     {
         $options = get_option('rrze-answers');
 
-        $slug = !empty($options['custom_placeholder_slug'])
-            ? sanitize_title($options['custom_placeholder_slug'])
+        $slug = !empty($options['custom_synonym_slug'])
+            ? sanitize_title($options['custom_synonym_slug'])
             : 'glossary';
 
-        $redirect_id = (int) ($options['redirect_archivpage_uri_placeholder'] ?? 0);
+        $redirect_id = (int) ($options['redirect_archivpage_uri_synonym'] ?? 0);
 
         if ($redirect_id > 0 && parent::is_slug_request($slug)) {
             remove_filter('template_redirect', 'redirect_canonical');
@@ -74,8 +74,8 @@ class CPTPlaceholder extends CPT
 
         $options = get_option('rrze-answers');
 
-        $slug = !empty($options['custom_placeholder_slug'])
-            ? sanitize_title($options['custom_placeholder_slug'])
+        $slug = !empty($options['custom_synonym_slug'])
+            ? sanitize_title($options['custom_synonym_slug'])
             : 'faq';
 
         // CPT Single 404
@@ -90,7 +90,7 @@ class CPTPlaceholder extends CPT
         // Redirect archive slug
         if (parent::is_slug_request($slug)) {
 
-            $redirect_id = (int) ($options['redirect_archivpage_uri_placeholder'] ?? 0);
+            $redirect_id = (int) ($options['redirect_archivpage_uri_synonym'] ?? 0);
 
             if ($redirect_id > 0) {
 

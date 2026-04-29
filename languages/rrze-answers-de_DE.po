@@ -8,7 +8,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2025-02-27T09:48:14+00:00\n"
-"PO-Revision-Date: 2025-12-18 12:04+0000\n"
+"PO-Revision-Date: 2026-04-27 12:51+0000\n"
 "Language: de_DE\n"
 "X-Generator: Loco https://localise.biz/\n"
 "X-Poedit-Basepath: ..\n"
@@ -24,129 +24,127 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Loco-Version: 2.8.0; wp-6.8.3; php-8.4.10\n"
 
-#: includes/Common/Sync/Sync.php:100
+#: includes/Common/Sync/Sync.php:108
 msgid " contains sliders ([gallery]) and cannot be synchronized:"
-msgstr ""
+msgstr "enthält sliders ([gallery]) und kann nicht synchronisiert werden:"
 
-#: includes/Common/API/SyncAPI.php:626
+#: includes/Common/API/SyncAPI.php:628
 msgid " does not support this plugin."
 msgstr "unterstützt dieses Plugin nicht."
 
-#: includes/Defaults.php:252 includes/Defaults.php:260
+#: includes/Defaults.php:276 includes/Defaults.php:284
 msgid " to."
 msgstr ""
 
-#: includes/Common/Tools.php:471
+#: includes/Common/Tools.php:510
 msgid "-- Choose a website --"
 msgstr "-- Website wählen --"
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:69
-#: includes/Common/Shortcode/ShortcodeFAQ.php:79 blocks/faq/edit.js:220
-#: blocks/glossary/edit.js:220 blocks/placeholder/edit.js:134
+#: includes/Common/Shortcode/ShortcodeFAQ.php:79
 msgid "-- hidden --"
 msgstr "-- versteckt --"
 
-#: includes/Defaults.php:282
+#: includes/Defaults.php:306
 msgid "-- off --"
 msgstr "-- aus --"
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:73
-#: includes/Common/Shortcode/ShortcodeFAQ.php:83 blocks/faq/edit.js:208
-#: blocks/glossary/edit.js:208 blocks/placeholder/edit.js:138
+#: includes/Common/Shortcode/ShortcodeFAQ.php:83
 msgid "A - Z"
 msgstr "A - Z"
 
-#: includes/Common/Shortcode/ShortcodePlaceholder.php:57
+#: includes/Common/Shortcode/ShortcodeSynonym.php:57
+#: includes/Common/Shortcode/ShortcodePlaceholder.php:62
 msgid "Abbreviation"
 msgstr "Abkürzung"
 
-#: includes/Common/AdminInterfaces/AdminUI.php:289
+#: includes/Common/AdminInterfaces/AdminUI.php:280
 msgid "Accordion with all entries"
 msgstr "Akkordeon mit allen Einträgen"
 
-#: includes/Common/AdminInterfaces/AdminUI.php:282
+#: includes/Common/AdminInterfaces/AdminUI.php:273
 msgid "Accordion with category"
 msgstr "Akkordeon mit Kategorie"
 
-#: includes/Common/AdminInterfaces/AdminUI.php:286
+#: includes/Common/AdminInterfaces/AdminUI.php:277
 msgid "Accordion with tag"
 msgstr "Akkordeon mit Schlagwort"
-
-#: blocks/faq/edit.js:399 blocks/glossary/edit.js:416
-msgid "Accordion-Style"
-msgstr "Akkordeon-Stil"
 
 #: includes/Common/AdminInterfaces/AdminMenu.php:89
 #, php-format
 msgid "Add %s"
 msgstr "%s hinzufügen "
 
-#: includes/Common/CPT/CPTFAQ.php:38
+#: includes/Common/CPT/CPTFAQ.php:37
 msgid "Add FAQ"
 msgstr "FAQ hinzufügen"
 
-#: includes/Common/CPT/CPTGlossary.php:37
+#: includes/Common/CPT/CPTGlossary.php:39
 msgid "Add glossary"
 msgstr "Glossar hinzufügen"
 
-#: includes/Common/CPT/CPTFAQ.php:39
+#: includes/Common/CPT/CPTFAQ.php:38
 msgid "Add new FAQ"
 msgstr "Neue FAQ hinzufügen"
 
-#: includes/Common/CPT/CPTGlossary.php:38
+#: includes/Common/CPT/CPTGlossary.php:40
 msgid "Add new glossary"
 msgstr "Neues Glossar hinzufügen"
 
-#: includes/Common/CPT/CPTPlaceholder.php:38
+#: includes/Common/CPT/CPTPlaceholder.php:37
 msgid "Add new placeholder"
 msgstr "Neuen Platzhalter hinzufügen"
 
-#: includes/Common/CPT/CPTPlaceholder.php:37
+#: includes/Common/CPT/CPTSynonym.php:37
+msgid "Add new synonym"
+msgstr "Neues Synonym hinzufügen"
+
+#: includes/Common/CPT/CPTPlaceholder.php:36
 msgid "Add placeholder"
 msgstr "Platzhalter hinzufügen"
 
-#: includes/Common/Shortcode/ShortcodeGlossary.php:193
-#: includes/Common/Shortcode/ShortcodeFAQ.php:213
+#: includes/Common/CPT/CPTSynonym.php:36
+msgid "Add synonym"
+msgstr "Synonym hinzufügen"
+
+#: includes/Common/Shortcode/ShortcodeGlossary.php:200
+#: includes/Common/Shortcode/ShortcodeFAQ.php:220
 msgid "Additonal CSS-class(es) for sourrounding DIV"
 msgstr "Zusätzliche CSS-Klasse(n) für das umgebende DIV"
-
-#: blocks/faq/edit.js:97 blocks/faq/edit.js:118 blocks/faq/edit.js:144
-#: blocks/faq/edit.js:162 blocks/glossary/edit.js:97
-#: blocks/glossary/edit.js:118 blocks/glossary/edit.js:144
-#: blocks/glossary/edit.js:162 blocks/placeholder/edit.js:43
-#: blocks/placeholder/edit.js:63 blocks/placeholder/edit.js:83
-#: blocks/placeholder/edit.js:99
-msgid "all"
-msgstr "Alle"
 
 #: includes/Common/AdminInterfaces/AdminMenu.php:88
 #, php-format
 msgid "All %s"
 msgstr "Alle %s"
 
-#: includes/Common/CPT/CPTFAQ.php:41
+#: includes/Common/CPT/CPTFAQ.php:40
 msgid "All FAQ"
 msgstr "Alle FAQ"
 
-#: includes/Common/CPT/CPTGlossary.php:40
+#: includes/Common/CPT/CPTGlossary.php:42
 msgid "All glossaries"
 msgstr "Alle Glossare"
 
-#: includes/Defaults.php:207
+#: includes/Defaults.php:228
 msgid "All languages"
 msgstr "Alle Sprachen"
 
-#: includes/Common/CPT/CPTPlaceholder.php:40
+#: includes/Common/CPT/CPTPlaceholder.php:39
 msgid "All placeholders"
 msgstr "Alle Platzhalter"
 
-#: includes/Common/AdminInterfaces/AdminUI.php:371
+#: includes/Common/AdminInterfaces/AdminUI.php:350
 msgid "All Sources"
 msgstr "Alle Quellen"
 
-#: includes/Common/Sync/Sync.php:119
+#: includes/Common/Sync/Sync.php:127
 msgid "All synchronizations completed"
 msgstr "Alle Synchronisierungen abgeschlossen"
+
+#: includes/Common/CPT/CPTSynonym.php:39
+msgid "All synonyms"
+msgstr "Alle Synonyme"
 
 #: includes/Defaults.php:73
 msgid ""
@@ -174,11 +172,11 @@ msgstr "Import von FAQ erlauben"
 msgid "Allow to import glossary"
 msgstr "Import von Glossaren erlauben"
 
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:60
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:73
 msgid "Anchor"
 msgstr "Sprungmarke"
 
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:113
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:132
 #, fuzzy
 msgid ""
 "Anchor field (optional) to define jump marks when displayed in accordions"
@@ -186,7 +184,7 @@ msgstr ""
 "Ankerfeld (optional) zum Definieren von Sprungmarken bei der Anzeige in "
 "Akkordeons "
 
-#: includes/Common/Sync/Sync.php:108
+#: includes/Common/Sync/Sync.php:116
 msgid "and"
 msgstr "und"
 
@@ -202,19 +200,13 @@ msgid "API is deactivated for %s. Contact website owner %s"
 msgstr ""
 "API ist deaktiviert für %s. Kontaktieren Sie den Eigentümer der Website %s"
 
-#: blocks/faq/edit.js:366 blocks/faq/edit.js:367 blocks/glossary/edit.js:383
-#: blocks/glossary/edit.js:384
-msgid "Appearance"
-msgstr "Erscheinung"
-
 #: includes/Defaults.php:106 includes/Defaults.php:144
-#: includes/Defaults.php:182
+#: includes/Defaults.php:182 includes/Defaults.php:203
 msgid "Archive page"
 msgstr "Archiv Seite"
 
-#: includes/Common/Shortcode/ShortcodeGlossary.php:226
-#: includes/Common/Shortcode/ShortcodeFAQ.php:246 blocks/faq/edit.js:284
-#: blocks/glossary/edit.js:284 blocks/placeholder/edit.js:195
+#: includes/Common/Shortcode/ShortcodeGlossary.php:233
+#: includes/Common/Shortcode/ShortcodeFAQ.php:253
 msgid "ASC"
 msgstr "aufsteigend"
 
@@ -231,17 +223,17 @@ msgstr "Glossare anzeigen"
 #: blocks/placeholder/block.json:1
 msgctxt "block description"
 msgid "Display placeholders"
-msgstr "Platzhalter anzeigen"
+msgstr "Zeige Platzhalter an"
+
+#: blocks/synonym/block.json:1
+msgctxt "block description"
+msgid "Display synonyms"
+msgstr "Synonyme anzeigen"
 
 #: blocks/faq-widget/block.json:1
 msgctxt "block description"
 msgid "Displays a random FAQ from a category."
 msgstr "Zeigt ein zufälliges FAQ einer Kategorie an."
-
-#: blocks/placeholder/block.json:1
-msgctxt "block title"
-msgid "Placeholder"
-msgstr "Platzhalter"
 
 #: blocks/faq/block.json:1
 msgctxt "block title"
@@ -258,24 +250,34 @@ msgctxt "block title"
 msgid "RRZE Glossary"
 msgstr "RRZE Glossary"
 
-#: includes/Defaults.php:251 includes/Defaults.php:259
+#: blocks/placeholder/block.json:1
+msgctxt "block title"
+msgid "RRZE Placeholder"
+msgstr ""
+
+#: blocks/synonym/block.json:1
+#, fuzzy
+#| msgid "Synonym"
+msgctxt "block title"
+msgid "RRZE Synonym"
+msgstr "Synonym"
+
+#: includes/Defaults.php:275 includes/Defaults.php:283
 #: templates/template-parts/faq-content.php:48
 #: templates/template-parts/glossary-content.php:33
 #: includes/Common/Shortcode/ShortcodeGlossary.php:53
 #: includes/Common/Shortcode/ShortcodeGlossary.php:92
 #: includes/Common/Shortcode/ShortcodeFAQ.php:63
 #: includes/Common/Shortcode/ShortcodeFAQ.php:102
-#: includes/Common/AdminInterfaces/AdminMenu.php:90 blocks/faq/edit.js:197
-#: blocks/faq/edit.js:325 blocks/glossary/edit.js:197
-#: blocks/glossary/edit.js:325
+#: includes/Common/AdminInterfaces/AdminMenu.php:90
 msgid "Categories"
 msgstr "Kategorien"
 
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:209
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:228
 msgid "Category"
 msgstr "Kategorie"
 
-#: includes/Defaults.php:262
+#: includes/Defaults.php:286
 msgid "Category not found."
 msgstr "Kategorie nicht gefunden."
 
@@ -283,12 +285,11 @@ msgstr "Kategorie nicht gefunden."
 msgid "Category Slug"
 msgstr "Kategorien Slug"
 
-#: includes/Defaults.php:213 blocks/faq/edit.js:186 blocks/glossary/edit.js:186
-#: blocks/placeholder/edit.js:126
+#: includes/Defaults.php:234
 msgid "Chinese"
 msgstr "Chinesisch"
 
-#: includes/Common/Widgets/FAQ.php:104 blocks/faq-widget/edit.js:128
+#: includes/Common/Widgets/FAQ.php:104
 msgid "Choose a FAQ"
 msgstr "Wählen Sie eine FAQ"
 
@@ -296,25 +297,32 @@ msgstr "Wählen Sie eine FAQ"
 msgid "Choose a section:"
 msgstr "Abschnitt auswählen:"
 
-#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:73
+#: includes/Common/AdminInterfaces/AdminUI_Synonym.php:73
 msgid "Choose the language in which the long form is pronounced."
 msgstr "Wählen Sie die Sprache, in der die Langform ausgesprochen wird."
 
-#: includes/Common/Shortcode/ShortcodeGlossary.php:167
-#: includes/Common/Shortcode/ShortcodeFAQ.php:180 blocks/faq/edit.js:409
-#: blocks/glossary/edit.js:426
+#: includes/Common/Shortcode/ShortcodeGlossary.php:174
+#: includes/Common/Shortcode/ShortcodeFAQ.php:180
 msgid "Color"
 msgstr "Farbe"
 
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:106
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:123
 msgid "Criterion for sorting the output of the shortcode"
 msgstr "Kriterium für die Sortierung der Shortcode-Ausgabe"
 
-#: includes/Defaults.php:283
+#: includes/Defaults.php:307
 msgid "daily"
 msgstr "täglich"
 
-#: includes/Common/Tools.php:454
+#: rrze-answers.php:601
+msgid "Deactivated:"
+msgstr ""
+
+#: rrze-answers.php:602
+msgid "Deactivated: none."
+msgstr ""
+
+#: includes/Common/Tools.php:493
 msgid "Default archive"
 msgstr "Standard-Archiv"
 
@@ -322,19 +330,14 @@ msgstr "Standard-Archiv"
 msgid "Delete selected domains"
 msgstr "Ausgewählte Domains löschen"
 
-#: includes/Common/Sync/Sync.php:108
+#: includes/Common/Sync/Sync.php:116
 msgid "deleted"
 msgstr "gelöscht"
 
-#: includes/Common/Shortcode/ShortcodeGlossary.php:230
-#: includes/Common/Shortcode/ShortcodeFAQ.php:250 blocks/faq/edit.js:288
-#: blocks/glossary/edit.js:288 blocks/placeholder/edit.js:199
+#: includes/Common/Shortcode/ShortcodeGlossary.php:237
+#: includes/Common/Shortcode/ShortcodeFAQ.php:257
 msgid "DESC"
 msgstr "absteigend"
-
-#: blocks/faq-widget/edit.js:147
-msgid "Display options"
-msgstr "Anzeigeoptionen"
 
 #: includes/Common/Widgets/FAQ.php:125
 msgid "Display options:"
@@ -345,7 +348,8 @@ msgid "Displays a FAQ"
 msgstr "Zeigt eine FAQ an"
 
 #: includes/Common/Shortcode/ShortcodeFAQ.php:114
-#: includes/Common/Sync/Sync.php:100 includes/Common/Sync/Sync.php:108
+#: includes/Common/Sync/Sync.php:98 includes/Common/Sync/Sync.php:108
+#: includes/Common/Sync/Sync.php:116
 msgid "Domain"
 msgstr "Domain"
 
@@ -353,46 +357,53 @@ msgstr "Domain"
 msgid "Domains"
 msgstr "Domains"
 
-#: includes/Common/CPT/CPTFAQ.php:40
+#: includes/Common/CPT/CPTFAQ.php:39
 msgid "Edit FAQ"
 msgstr "FAQ editieren"
 
-#: includes/Common/CPT/CPTGlossary.php:39
+#: includes/Common/CPT/CPTGlossary.php:41
 msgid "Edit glossary"
 msgstr "Glossar editieren"
 
-#: includes/Common/CPT/CPTPlaceholder.php:39
+#: includes/Common/CPT/CPTPlaceholder.php:38
 msgid "Edit placeholder"
-msgstr "Platzhalter editieren"
+msgstr "Platzhalter bearbeiten"
+
+#: includes/Common/CPT/CPTSynonym.php:38
+msgid "Edit synonym"
+msgstr "Synonym bearbeiten"
 
 #: includes/Common/Widgets/FAQ.php:140
 msgid "End"
 msgstr "Ende"
 
-#: includes/Defaults.php:209 blocks/faq/edit.js:170 blocks/glossary/edit.js:170
-#: blocks/placeholder/edit.js:108
+#: includes/Defaults.php:230
 msgid "English"
 msgstr "Englisch"
 
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:38
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:51
 msgid "Enter glossary term here"
 msgstr "Glossarbegriff hier eingeben"
 
-#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:32
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:33
 msgid "Enter placeholder here"
-msgstr "Platzhalterbegriff hier eingeben"
+msgstr "Platzhalter hier eingeben"
 
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:37
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:50
 msgid "Enter question here"
 msgstr "Geben Sie hier die Frage ein"
+
+#: includes/Common/AdminInterfaces/AdminUI_Synonym.php:32
+msgid "Enter synonym here"
+msgstr "Synonym hier eingeben"
 
 #: includes/Defaults.php:87 includes/Defaults.php:93
 msgid "Enter the domain's URL you want to receive FAQ from."
 msgstr "Geben Sie die URL der Domain ein, von der Sie FAQ beziehen möchten."
 
-#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:62
+#: includes/Common/AdminInterfaces/AdminUI_Synonym.php:62
 msgid ""
-"Enter the long, written form of the placeholder. This text replaces the "
+"Enter the long, written form of the synonym. This text replaces the "
 "shortcode. Note: line breaks or HTML are not accepted."
 msgstr ""
 "Geben Sie die lange, schriftliche Form des Platzhalters ein. Dieser Text "
@@ -403,57 +414,57 @@ msgstr ""
 msgid "Enter your text here..."
 msgstr "Text hier eingeben..."
 
-#: includes/Common/CPT/CPT.php:37 includes/Common/CPT/CPT.php:38
-#: includes/Common/CPT/CPT.php:91 includes/Common/CPT/CPT.php:92
+#: includes/Common/CPT/CPT.php:158
 msgid "Entries"
 msgstr "Einträge"
 
-#: includes/Common/API/SyncAPI.php:330
+#: includes/Common/API/SyncAPI.php:317
 msgid "Error in absoluteUrl()."
 msgstr ""
 
-#: includes/Common/API/SyncAPI.php:116
+#: includes/Common/API/SyncAPI.php:103
 msgid "Error in deleteTaxonomies()."
 msgstr ""
 
-#: includes/Common/API/SyncAPI.php:447
+#: includes/Common/API/SyncAPI.php:445
 msgid "Error in getEntriesRemoteIDs()."
 msgstr ""
 
-#: includes/Common/API/SyncAPI.php:382
+#: includes/Common/API/SyncAPI.php:378
 msgid "Error in getEntry()."
 msgstr ""
 
-#: includes/Common/API/SyncAPI.php:92
+#: includes/Common/API/SyncAPI.php:79
 msgid "Error in getTaxonomies()."
 msgstr ""
 
-#: includes/Common/API/SyncAPI.php:583
+#: includes/Common/API/SyncAPI.php:585
 msgid "Error in remoteGet()."
 msgstr ""
 
-#: includes/Common/API/SyncAPI.php:179
+#: includes/Common/API/SyncAPI.php:166
 msgid "Error in setCategories()."
 msgstr ""
 
-#: includes/Common/API/SyncAPI.php:541
+#: includes/Common/API/SyncAPI.php:543
 msgid "Error in setEntries()."
 msgstr ""
 
-#: includes/Common/API/SyncAPI.php:428
+#: includes/Common/API/SyncAPI.php:424
 msgid "Error in setTags()."
 msgstr ""
 
-#: includes/Common/API/SyncAPI.php:223
+#: includes/Common/API/SyncAPI.php:210
 msgid "Error in sortCats()."
 msgstr ""
 
 #. Description of the plugin
-msgid "Explain your content with FAQ, glossary and placeholders."
-msgstr "Erläutern Sie Ihre Inhalte mit FAQ, Glossar und Platzhaltern."
+msgid "Explain your content with FAQ, glossary, synonyms and placeholder."
+msgstr ""
+"Erklären Sie Ihren Inhalt mit FAQ, Glossaren, Synonymen und Platzhalter."
 
-#: includes/Defaults.php:101 includes/Common/Tools.php:229
-#: includes/Common/CPT/CPTFAQ.php:37
+#: includes/Defaults.php:101 includes/Common/Tools.php:236
+#: includes/Common/CPT/CPTFAQ.php:36
 #: includes/Common/AdminInterfaces/AdminMenu.php:52
 #: includes/Common/AdminInterfaces/AdminMenu.php:52
 #: includes/Common/AdminInterfaces/AdminMenu.php:52
@@ -461,19 +472,15 @@ msgstr "Erläutern Sie Ihre Inhalte mit FAQ, Glossar und Platzhaltern."
 msgid "FAQ"
 msgstr "FAQ"
 
-#: includes/Common/CPT/CPTFAQ.php:48
+#: includes/Common/CPT/CPTFAQ.php:47
 msgid "FAQ Categories"
 msgstr "FAQ Kategorien"
-
-#: blocks/faq-widget/edit.js:113
-msgid "FAQ selection"
-msgstr "FAQ Auswahl"
 
 #: includes/Defaults.php:114
 msgid "FAQ Slug"
 msgstr ""
 
-#: includes/Common/CPT/CPTFAQ.php:56
+#: includes/Common/CPT/CPTFAQ.php:55
 msgid "FAQ Tags"
 msgstr "FAQ Schlagwörter"
 
@@ -481,43 +488,30 @@ msgstr "FAQ Schlagwörter"
 msgid "FAQ Widget"
 msgstr "FAQ-Widget"
 
-#: includes/Common/CPT/CPTFAQ.php:35
-msgctxt "FAQ, placeholder or glossary entries"
+#: includes/Common/CPT/CPTFAQ.php:34
+msgctxt "FAQ, synonym or glossary entries"
 msgid "FAQ"
 msgstr "FAQ"
 
-#: blocks/faq/edit.js:321 blocks/glossary/edit.js:321
-msgid "Filter options"
-msgstr "Filter Optionen"
-
-#: blocks/faq/edit.js:322
-msgid "Filter the FAQ-entries."
-msgstr "FAQ Einträge filtern."
-
-#: blocks/glossary/edit.js:322
-msgid "Filter the glossary-entries."
-msgstr "Glossar Einträge filtern."
-
-#: includes/Defaults.php:211 blocks/faq/edit.js:174 blocks/glossary/edit.js:174
-#: blocks/placeholder/edit.js:113
+#: includes/Defaults.php:232
 msgid "French"
 msgstr "Französisch"
 
-#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:60
-#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:132
+#: includes/Common/AdminInterfaces/AdminUI_Synonym.php:60
+#: includes/Common/AdminInterfaces/AdminUI_Synonym.php:132
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:120
 msgid "Full form"
 msgstr "Ausführliche Form"
 
-#: includes/Defaults.php:208 blocks/faq/edit.js:166 blocks/glossary/edit.js:166
-#: blocks/placeholder/edit.js:103
+#: includes/Defaults.php:229
 msgid "German"
 msgstr "Deutsch"
 
-#: includes/Defaults.php:139 includes/Defaults.php:234
-#: templates/rrze_glossary-archive.php:16 includes/Common/Tools.php:228
-#: includes/Common/CPT/CPTGlossary.php:36
+#: includes/Defaults.php:139 includes/Defaults.php:255
+#: templates/rrze_glossary-archive.php:16 includes/Common/Tools.php:235
+#: includes/Common/CPT/CPTGlossary.php:38
 #: includes/Common/Shortcode/ShortcodeGlossary.php:104
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:197
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:216
 #: includes/Common/AdminInterfaces/AdminMenu.php:53
 #: includes/Common/AdminInterfaces/AdminMenu.php:53
 #: includes/Common/AdminInterfaces/AdminMenu.php:53
@@ -526,7 +520,7 @@ msgstr "Deutsch"
 msgid "Glossary"
 msgstr "Glossar"
 
-#: includes/Common/CPT/CPTGlossary.php:47
+#: includes/Common/CPT/CPTGlossary.php:49
 msgid "Glossary Categories"
 msgstr "Glossar Kategorien"
 
@@ -534,7 +528,7 @@ msgstr "Glossar Kategorien"
 msgid "Glossary content"
 msgstr "Glossar Inhalt"
 
-#: includes/Common/CPT/CPTGlossary.php:34
+#: includes/Common/CPT/CPTGlossary.php:36
 msgctxt "Glossary entries"
 msgid "Glossary"
 msgstr "Glossar"
@@ -547,34 +541,17 @@ msgstr "Glossar Slug"
 msgid "Glossary style"
 msgstr "Style des Glossars"
 
-#: includes/Common/CPT/CPTGlossary.php:55
+#: includes/Common/CPT/CPTGlossary.php:57
 msgid "Glossary Tags"
 msgstr "Glossar Schlagwörter"
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:109
-#: includes/Common/Shortcode/ShortcodeFAQ.php:205 blocks/faq/edit.js:391
-#: blocks/glossary/edit.js:408
+#: includes/Common/Shortcode/ShortcodeFAQ.php:205
 msgid "Grid"
 msgstr ""
 
-#: blocks/faq/edit.js:358
-msgid "Group FAQ-entries by categories or tags."
-msgstr "FAQ-Einträge nach Kategorien oder Schlagwörtern gruppieren."
-
-#: blocks/faq/edit.js:357
-msgid "Group Glossary Content by"
-msgstr "Glossar gruppieren nach"
-
-#: blocks/glossary/edit.js:371
-msgid "Group glossary-entries by categories or tags."
-msgstr "Glossar nach Kategorien oder Schlagwörtern gruppieren."
-
-#: blocks/glossary/edit.js:370
-msgid "Group register Content by"
-msgstr "Register gruppieren nach"
-
-#: includes/Common/Shortcode/ShortcodeGlossary.php:241
-#: includes/Common/Shortcode/ShortcodeFAQ.php:261
+#: includes/Common/Shortcode/ShortcodeGlossary.php:248
+#: includes/Common/Shortcode/ShortcodeFAQ.php:268
 msgid "Heading level of the first heading"
 msgstr "Überschriftsebene der ersten Überschrift"
 
@@ -582,8 +559,7 @@ msgstr "Überschriftsebene der ersten Überschrift"
 msgid "Hide accordeon"
 msgstr "Ausgabe nicht in Akkordeons"
 
-#: includes/Common/Shortcode/ShortcodeGlossary.php:116 blocks/faq/edit.js:381
-#: blocks/glossary/edit.js:398
+#: includes/Common/Shortcode/ShortcodeGlossary.php:123
 msgid "Hide accordion"
 msgstr "Akkordion ausblenden"
 
@@ -591,13 +567,8 @@ msgstr "Akkordion ausblenden"
 msgid "hide question"
 msgstr "Frage ausblenden"
 
-#: blocks/faq-widget/edit.js:151
-msgid "Hide question title"
-msgstr "Frage ausblenden"
-
-#: includes/Common/Shortcode/ShortcodeGlossary.php:123
-#: includes/Common/Shortcode/ShortcodeFAQ.php:132 blocks/faq/edit.js:418
-#: blocks/glossary/edit.js:435
+#: includes/Common/Shortcode/ShortcodeGlossary.php:130
+#: includes/Common/Shortcode/ShortcodeFAQ.php:132
 msgid "Hide title"
 msgstr "Ausgabe ohne Frage"
 
@@ -609,23 +580,18 @@ msgstr ""
 msgid "https://www.wp.rrze.fau.de/"
 msgstr ""
 
-#: includes/Common/Shortcode/ShortcodeGlossary.php:210
-#: includes/Common/Shortcode/ShortcodeFAQ.php:230 blocks/faq/edit.js:273
-#: blocks/glossary/edit.js:273 blocks/placeholder/edit.js:184
+#: includes/Common/Shortcode/ShortcodeGlossary.php:217
+#: includes/Common/Shortcode/ShortcodeFAQ.php:237
 msgid "ID"
 msgstr "ID"
 
-#: blocks/faq-widget/edit.js:154
-msgid "If enabled, the FAQ title will be hidden."
-msgstr "Wenn diese Option aktiviert ist, wird der Titel der FAQ ausgeblendet."
-
-#: includes/Common/AdminInterfaces/AdminUI.php:283
+#: includes/Common/AdminInterfaces/AdminUI.php:274
 msgid "If there is more than one category listed, use at least one of them."
 msgstr ""
 "Wenn mehrere Kategorien aufgeführt sind, nutzen Sie bitte mindestens eine "
 "davon."
 
-#: includes/Common/AdminInterfaces/AdminUI.php:287
+#: includes/Common/AdminInterfaces/AdminUI.php:278
 msgid "If there is more than one tag listed, use at least one of them."
 msgstr ""
 "Wenn mehrere Schlagwörter aufgeführt sind, nutzen Sie bitte mindestens eines "
@@ -635,35 +601,42 @@ msgstr ""
 msgid "Import"
 msgstr ""
 
-#: includes/Common/AdminInterfaces/AdminUI.php:133
-msgid "Integration in pages and posts as a shortcode"
-msgstr "Integration in Seiten und Beiträgen als Shortcode"
+#: includes/Common/API/SyncAPI.php:44 includes/Common/API/SyncAPI.php:339
+msgid "Import not allowed by source site."
+msgstr "Quell-Website erlaubt den Import nicht."
 
-#: includes/Common/API/SyncAPI.php:607 includes/Common/API/SyncAPI.php:610
+#: includes/Common/API/SyncAPI.php:609 includes/Common/API/SyncAPI.php:612
 #, fuzzy
 msgid "is already in use."
 msgstr " ist bereits in Verwendung."
 
-#: includes/Common/API/SyncAPI.php:621
+#: includes/Common/API/SyncAPI.php:623
 #, fuzzy
 msgid "is not valid."
 msgstr " ist nicht gültig."
 
-#: includes/Common/Shortcode/ShortcodeGlossary.php:199
-#: includes/Common/Shortcode/ShortcodeFAQ.php:219
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:48
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:198
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:211
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:235 blocks/faq/edit.js:349
-#: blocks/glossary/edit.js:358 blocks/placeholder/edit.js:227
+#: includes/Common/Shortcode/ShortcodeGlossary.php:206
+#: includes/Common/Shortcode/ShortcodeFAQ.php:226
+#: includes/Common/Shortcode/ShortcodePlaceholder.php:57
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:61
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:217
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:230
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:254
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:43
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:154
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:165
 msgid "Language"
 msgstr "Sprache"
 
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:89
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:104
 msgid "Language of this FAQ"
 msgstr "Sprache dieser FAQ"
 
-#: includes/Common/CPT/CPT.php:160 includes/Common/CPT/CPT.php:176
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:67
+msgid "Language of this placeholder"
+msgstr "Sprache dieses Platzhalters"
+
+#: includes/Common/CPT/CPT.php:84 includes/Common/CPT/CPT.php:104
 msgid "Linked Page"
 msgstr "Verlinkte Seite"
 
@@ -671,7 +644,7 @@ msgstr "Verlinkte Seite"
 msgid "Load website with opened accordeons"
 msgstr "Website mit geöffneten Akkordeons laden"
 
-#: includes/Common/Shortcode/ShortcodeGlossary.php:137
+#: includes/Common/Shortcode/ShortcodeGlossary.php:144
 msgid "Load website with opened accordions"
 msgstr "Website mit geöffneten Akkordeons laden"
 
@@ -684,7 +657,8 @@ msgstr "Protokoll"
 msgid "Logfile is empty."
 msgstr "Logfile ist leer."
 
-#: includes/Common/Shortcode/ShortcodePlaceholder.php:58
+#: includes/Common/Shortcode/ShortcodeSynonym.php:58
+#: includes/Common/Shortcode/ShortcodePlaceholder.php:63
 msgid "Longform"
 msgstr "Lange Form"
 
@@ -692,15 +666,45 @@ msgstr "Lange Form"
 msgid "Manage glossary terms"
 msgstr "Glossarbegriffe verwalten"
 
-#: includes/Common/AdminInterfaces/AdminMenu.php:64
-msgid "Manage placeholders & groups"
-msgstr "Platzhalter & Gruppen verwalten"
-
 #: includes/Common/AdminInterfaces/AdminMenu.php:62
 msgid "Manage questions & answers"
 msgstr "Fragen & Antworten verwalten"
 
-#: includes/Common/Sync/Sync.php:108
+#: includes/Common/AdminInterfaces/AdminMenu.php:64
+msgid "Manage synonyms & groups"
+msgstr "Synonyme & Gruppen verwalten"
+
+#: rrze-answers.php:528
+msgid "Migration aborted: insufficient permissions (manage_network_plugins)."
+msgstr ""
+
+#: rrze-answers.php:120
+msgid ""
+"Migration aborted: RRZE-Answers could not be deactivated network-wide during "
+"activation."
+msgstr ""
+
+#: rrze-answers.php:542
+msgid ""
+"Migration aborted: RRZE-Answers is network-activated. Please deactivate it "
+"network-wide and retry."
+msgstr ""
+
+#: rrze-answers.php:101
+msgid "Migration already marked as done. No changes were made."
+msgstr ""
+
+#: rrze-answers.php:141
+msgid "Migration failed: RRZE-Answers is network-activated after migration."
+msgstr ""
+
+#: rrze-answers.php:626
+msgid ""
+"Migration result (old plugins deactivated, RRZE-Answers activated where "
+"needed):"
+msgstr ""
+
+#: includes/Common/Sync/Sync.php:116
 msgid "new"
 msgstr "neu"
 
@@ -714,80 +718,54 @@ msgstr "Domain hinzufügen"
 msgid "Next automatic synchronization:"
 msgstr "Nächste automatische Synchronisierung:"
 
-#: blocks/faq-widget/edit.js:120
-msgid "No FAQs found (post type \"rrze_faq\" must be public and show_in_rest)."
+#: templates/rrze_faq-archive.php:29
+msgid "No FAQ found."
+msgstr "Keine FAQ gefunden."
+
+#: templates/rrze_glossary-archive.php:30
+msgid "no glossary found."
+msgstr "Keine Glossar Einträge gefunden."
+
+#: templates/rrze_placeholder-archive.php:30
+msgid "no placeholder found."
+msgstr "Kein Platzhalter gefunden."
+
+#: rrze-answers.php:122
+msgid ""
+"No site changes were made. Please deactivate RRZE-Answers network-wide "
+"manually and retry."
 msgstr ""
 
-#: rrze-answers.php:341
+#: rrze-answers.php:633
 msgid "No sites required changes."
 msgstr ""
 
-#: blocks/faq/edit.js:154 blocks/glossary/edit.js:154
-#: blocks/placeholder/edit.js:91
-msgid "No title"
-msgstr "Kein Titel"
+#: templates/rrze_synonym-single.php:29
+msgid "No synonyms found."
+msgstr "Keine Synonyme gefunden."
 
-#: includes/Common/CPT/CPT.php:162 includes/Common/CPT/CPT.php:178
+#: includes/Common/CPT/CPT.php:86 includes/Common/CPT/CPT.php:107
 msgid "None"
 msgstr "Keine"
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:49
-#: includes/Common/Shortcode/ShortcodeGlossary.php:174
+#: includes/Common/Shortcode/ShortcodeGlossary.php:181
 #: includes/Common/Shortcode/ShortcodeFAQ.php:59
-#: includes/Common/Shortcode/ShortcodeFAQ.php:187 blocks/faq/edit.js:193
-#: blocks/faq/edit.js:254 blocks/glossary/edit.js:193
-#: blocks/glossary/edit.js:254
+#: includes/Common/Shortcode/ShortcodeFAQ.php:187
 msgid "none"
 msgstr "keine"
-
-#: blocks/faq/edit.js:350
-msgid "Only show FAQ-entries in this language."
-msgstr "Nur FAQ-Einträge in dieser Sprache anzeigen."
-
-#: blocks/faq/edit.js:326
-msgid "Only show FAQ-entries with these selected categories."
-msgstr "Nur FAQ-Einträge mit diesen ausgewählten Kategorien anzeigen."
-
-#: blocks/faq/edit.js:334
-msgid "Only show FAQ-entries with these selected tags."
-msgstr "Nur FAQ-Einträge mit diesen ausgewählten Tags anzeigen."
-
-#: blocks/glossary/edit.js:359
-msgid "Only show glossary-entries in this language."
-msgstr "Nur Glossar-Einträge in dieser Sprache anzeigen."
-
-#: blocks/glossary/edit.js:326
-msgid "Only show glossary-entries with these selected categories."
-msgstr "Nur Glossar-Einträge mit diesen ausgewählten Kategorien anzeigen."
-
-#: blocks/glossary/edit.js:337
-msgid "Only show glossary-entries with these selected tags."
-msgstr "Nur Glossar-Einträge mit diesen ausgewählten Tags anzeigen."
-
-#: blocks/faq/edit.js:342
-msgid "Only show these FAQ-entries."
-msgstr "Nur diese FAQ-Einträge anzeigen."
-
-#: blocks/glossary/edit.js:348
-msgid "Only show these glossary-entries."
-msgstr "Nur diese Glossar-Einträge anzeigen."
 
 #: includes/Common/AdminInterfaces/AdminMenu.php:72
 msgid "Open"
 msgstr "Öffnen"
-
-#: blocks/faq-widget/edit.js:135
-msgid "Or"
-msgstr "oder"
 
 #: includes/Common/Widgets/FAQ.php:174
 msgid "or choose a Category to display a FAQ randomly"
 msgstr ""
 "oder wählen Sie eine Kategorie aus der eine FAQ zufällig angezeigt wird"
 
-#: includes/Common/Shortcode/ShortcodeGlossary.php:235
-#: includes/Common/Shortcode/ShortcodeFAQ.php:255 blocks/faq/edit.js:435
-#: blocks/glossary/edit.js:453
+#: includes/Common/Shortcode/ShortcodeGlossary.php:242
+#: includes/Common/Shortcode/ShortcodeFAQ.php:262
 msgid "Order"
 msgstr "Reihenfolge"
 
@@ -799,29 +777,18 @@ msgstr "Permalink Einstellungen"
 msgid "Permissions"
 msgstr "Erlaubnisse"
 
-#: includes/Defaults.php:177 includes/Common/CPT/CPTPlaceholder.php:36
-#: includes/Common/Shortcode/ShortcodePlaceholder.php:52
-#: includes/Common/AdminInterfaces/AdminMenu.php:54
-#: includes/Common/AdminInterfaces/AdminMenu.php:54
-#: includes/Common/AdminInterfaces/AdminMenu.php:54
-#: includes/Common/AdminInterfaces/AdminMenu.php:64
-#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:168
+#: includes/Defaults.php:177 templates/rrze_placeholder-archive.php:16
+#: includes/Common/CPT/CPTPlaceholder.php:35
+#: includes/Common/Shortcode/ShortcodePlaceholder.php:51
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:153
 msgid "Placeholder"
-msgstr "Platzhalter"
-
-#: blocks/placeholder/edit.js:216
-msgid "placeholder"
 msgstr "Platzhalter"
 
 #: includes/Defaults.php:190
 msgid "Placeholder Slug"
 msgstr "Platzhalter Slug"
 
-#: templates/rrze_placeholder-archive.php:13
-msgid "Placeholders"
-msgstr "Platzhalter"
-
-#: includes/Common/CPT/CPTPlaceholder.php:34
+#: includes/Common/CPT/CPTPlaceholder.php:33
 msgctxt "Placeholders"
 msgid "Placeholder"
 msgstr "Platzhalter"
@@ -837,26 +804,26 @@ msgstr ""
 "Bitte beachten: \"Ausgewählte Domains löschen\" LÖSCHT alle FAQ udn Glossar "
 "Einträge auf dieser Website, die von den ausgewählten Domains bezogen wurden."
 
-#. 1: The plugin name, 2: The error string.
-#: rrze-answers.php:410
+#: rrze-answers.php:253
 #, php-format
 msgid "Plugins: %1$s: %2$s"
 msgstr ""
 
-#: includes/Common/Tools.php:535
-#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:135
+#: includes/Common/Tools.php:574
+#: includes/Common/AdminInterfaces/AdminUI_Synonym.php:135
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:123
 msgid "Pronunciation"
 msgstr "Aussprache"
 
-#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:66
+#: includes/Common/AdminInterfaces/AdminUI_Synonym.php:66
 msgid "Pronunciation language"
 msgstr "Sprache der Aussprache"
 
-#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:42
+#: includes/Common/AdminInterfaces/AdminUI_Synonym.php:42
 msgid "Properties"
 msgstr "Eigenschaften"
 
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:197
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:216
 msgid "Question"
 msgstr "Frage"
 
@@ -868,11 +835,7 @@ msgstr "Register Inhalt"
 msgid "Register style"
 msgstr "Register Stil"
 
-#: blocks/faq/edit.js:372 blocks/glossary/edit.js:389
-msgid "register style"
-msgstr "Register Stil"
-
-#: includes/Common/Sync/Sync.php:108 includes/Common/Sync/Sync.php:119
+#: includes/Common/Sync/Sync.php:116 includes/Common/Sync/Sync.php:127
 msgid "Required time:"
 msgstr "Benötigte Zeit:"
 
@@ -889,24 +852,43 @@ msgstr "RRZE Answers Einstellungen"
 msgid "RRZE Webteam"
 msgstr "RRZE Webteam"
 
-#: includes/Defaults.php:212 blocks/faq/edit.js:182 blocks/glossary/edit.js:182
-#: blocks/placeholder/edit.js:122
+#: rrze-answers.php:612
+msgid "RRZE-Answers activated."
+msgstr "RRZE-Answers aktiviert."
+
+#: rrze-answers.php:607
+msgid "RRZE-Answers activation failed:"
+msgstr "Aktivierung von RRZE-Answers schlug fehl:"
+
+#: rrze-answers.php:613
+msgid "RRZE-Answers already active (no change)."
+msgstr "RRZE-Answers ist bereits aktiv. Keine Veränderungen."
+
+#: includes/Defaults.php:233
 msgid "Russian"
 msgstr "Russisch"
 
-#: includes/Common/CPT/CPTFAQ.php:42
+#: includes/Common/Tools.php:249 includes/Common/CPT/CPTFAQ.php:41
 msgid "Search FAQ"
 msgstr "FAQ suchen"
 
-#: includes/Common/CPT/CPTGlossary.php:41
+#: includes/Common/CPT/CPTGlossary.php:43
 msgid "Search glossary"
 msgstr "Glossar suchen"
 
-#: includes/Common/CPT/CPTPlaceholder.php:41
+#: includes/Common/CPT/CPTPlaceholder.php:40
 msgid "Search placeholder"
 msgstr "Platzhalter suchen"
 
-#: includes/Common/Sync/Sync.php:108 includes/Common/Sync/Sync.php:119
+#: includes/Common/CPT/CPTSynonym.php:40
+msgid "Search synonym"
+msgstr "Synonym suchen"
+
+#: includes/Common/Tools.php:254
+msgid "Search…"
+msgstr "Suche..."
+
+#: includes/Common/Sync/Sync.php:116 includes/Common/Sync/Sync.php:127
 msgid "seconds"
 msgstr "Sekunden"
 
@@ -918,22 +900,14 @@ msgstr ""
 msgid "Settings saved."
 msgstr "Einstellungen gespeichert."
 
-#: includes/Common/Sync/Sync.php:121
+#: includes/Common/Sync/Sync.php:129
 msgid "Settings updated"
 msgstr "Einstellungen aktualisiert"
 
-#: includes/Common/Shortcode/ShortcodeGlossary.php:130
+#: includes/Common/Shortcode/ShortcodeGlossary.php:137
 #: includes/Common/Shortcode/ShortcodeFAQ.php:139
 msgid "Show \"expand all\" button"
 msgstr "\"Alle öffnen\" - Button anzeigen"
-
-#: blocks/placeholder/edit.js:220
-msgid "Show a selection of individual Placeholders"
-msgstr "Eine Auswahl einzelner Platzhalter anzeigen"
-
-#: blocks/placeholder/edit.js:231
-msgid "Show only Placeholders matching the selected language."
-msgstr "Nur Platzhalter anzeigen, die der ausgewählten Sprache entsprechen."
 
 #: includes/Common/Widgets/FAQ.php:121
 msgid "show question and answer"
@@ -943,72 +917,70 @@ msgstr "Zeige Frage und Antwort"
 msgid "show question and answer opened"
 msgstr "Zeige Frage und geöffnete Antwort"
 
-#: includes/Common/AdminInterfaces/AdminUI.php:280
+#: includes/Common/Shortcode/ShortcodeGlossary.php:116
+#: includes/Common/Shortcode/ShortcodeFAQ.php:212
+msgid "Show search field"
+msgstr "Suchfeld anzeigen"
+
+#: includes/Common/AdminInterfaces/AdminUI.php:271
 msgid "Single entries"
 msgstr "Einzelner Eintrag"
 
-#: includes/Common/CPT/CPTFAQ.php:36
-msgctxt "Single FAQ, placeholder or glossary "
+#: includes/Common/CPT/CPTFAQ.php:35
+msgctxt "Single FAQ, synonym or glossary "
 msgid "FAQ"
 msgstr "FAQ"
 
-#: blocks/faq/edit.js:341
-msgid "Single FAQ-Entries"
-msgstr "Einzelne FAQ-Einträge"
-
-#: includes/Common/CPT/CPTGlossary.php:35
+#: includes/Common/CPT/CPTGlossary.php:37
 msgctxt "Single glossary "
 msgid "Glossary"
 msgstr "Glossar"
 
-#: blocks/glossary/edit.js:347
-msgid "Single glossary-Entries"
-msgstr "Einzelne Glossareinträge"
-
-#: includes/Common/CPT/CPTPlaceholder.php:35
+#: includes/Common/CPT/CPTPlaceholder.php:34
 msgctxt "Single placeholder"
 msgid "Placeholder"
 msgstr "Platzhalter"
 
-#: includes/Common/Shortcode/ShortcodePlaceholder.php:46
+#: includes/Common/CPT/CPTSynonym.php:34
+msgctxt "Single synonym"
+msgid "Synonym"
+msgstr "Synonym"
+
+#: includes/Common/Shortcode/ShortcodeSynonym.php:46
+#: includes/Common/Shortcode/ShortcodePlaceholder.php:45
 msgid "Slug"
 msgstr ""
 
-#: includes/Common/Shortcode/ShortcodeGlossary.php:219
-#: includes/Common/Shortcode/ShortcodeFAQ.php:239
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:54 blocks/faq/edit.js:429
-#: blocks/glossary/edit.js:446
+#: includes/Common/Shortcode/ShortcodeGlossary.php:226
+#: includes/Common/Shortcode/ShortcodeFAQ.php:246
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:67
 msgid "Sort"
 msgstr "Sortierung"
 
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:212
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:231
 msgid "Sort by"
 msgstr "Sortieren nach"
 
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:199
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:218
 msgid "Sort criterion"
 msgstr "Sortierkriterium"
 
-#: includes/Common/Shortcode/ShortcodeGlossary.php:214
-#: includes/Common/Shortcode/ShortcodeFAQ.php:234 blocks/faq/edit.js:277
-#: blocks/glossary/edit.js:277 blocks/placeholder/edit.js:188
+#: includes/Common/Shortcode/ShortcodeGlossary.php:221
+#: includes/Common/Shortcode/ShortcodeFAQ.php:241
 msgid "Sort field"
 msgstr "Sortierfeld"
 
-#: blocks/faq/edit.js:427 blocks/glossary/edit.js:444
-msgid "Sorting options"
-msgstr "Sortier Optionen"
-
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:202
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:215
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:237
-#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:171
-#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:179
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:221
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:234
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:256
+#: includes/Common/AdminInterfaces/AdminUI_Synonym.php:171
+#: includes/Common/AdminInterfaces/AdminUI_Synonym.php:179
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:157
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:166
 msgid "Source"
 msgstr "Quelle"
 
-#: includes/Defaults.php:210 blocks/faq/edit.js:178 blocks/glossary/edit.js:178
-#: blocks/placeholder/edit.js:118
+#: includes/Defaults.php:231
 msgid "Spanish"
 msgstr "Spanisch"
 
@@ -1016,26 +988,48 @@ msgstr "Spanisch"
 msgid "Start"
 msgstr "Start"
 
-#: includes/Common/Shortcode/ShortcodeGlossary.php:187
+#: includes/Common/Shortcode/ShortcodeGlossary.php:194
 #: includes/Common/Shortcode/ShortcodeFAQ.php:200
 msgid "Style"
 msgstr "Stil"
 
-#: includes/Common/Sync/Sync.php:108
+#: includes/Common/Sync/Sync.php:116
 msgid "Synchronization completed."
 msgstr "Synchronisierung abgeschlossen."
 
-#: includes/Defaults.php:278
+#: includes/Defaults.php:302
 msgid "Synchronize automatically"
 msgstr "Automatisch synchronisieren"
 
+#: includes/Defaults.php:198 includes/Common/CPT/CPTSynonym.php:35
+#: includes/Common/Shortcode/ShortcodeSynonym.php:52
+#: includes/Common/AdminInterfaces/AdminMenu.php:54
+#: includes/Common/AdminInterfaces/AdminMenu.php:54
+#: includes/Common/AdminInterfaces/AdminMenu.php:54
+#: includes/Common/AdminInterfaces/AdminMenu.php:64
+#: includes/Common/AdminInterfaces/AdminUI_Synonym.php:168
+msgid "Synonym"
+msgstr "Synonym"
+
+#: includes/Defaults.php:211
+msgid "Synonym Slug"
+msgstr "Synonym-Slug"
+
+#: templates/rrze_synonym-single.php:15 templates/rrze_synonym-archive.php:13
+msgid "synonyms"
+msgstr "Synonyme"
+
+#: includes/Common/CPT/CPTSynonym.php:33
+msgctxt "Synonyms"
+msgid "Synonym"
+msgstr "Synonym"
+
 #: includes/Common/Shortcode/ShortcodeGlossary.php:81
-#: includes/Common/Shortcode/ShortcodeFAQ.php:91 blocks/faq/edit.js:216
-#: blocks/glossary/edit.js:216 blocks/placeholder/edit.js:146
+#: includes/Common/Shortcode/ShortcodeFAQ.php:91
 msgid "Tabs"
 msgstr "Tabs"
 
-#: includes/Common/AdminInterfaces/AdminUI_QA.php:210
+#: includes/Common/AdminInterfaces/AdminUI_QA.php:229
 msgid "Tag"
 msgstr "Schlagwort"
 
@@ -1044,8 +1038,7 @@ msgid "Tag Slug"
 msgstr ""
 
 #: includes/Common/Shortcode/ShortcodeGlossary.php:77
-#: includes/Common/Shortcode/ShortcodeFAQ.php:87 blocks/faq/edit.js:212
-#: blocks/glossary/edit.js:212 blocks/placeholder/edit.js:142
+#: includes/Common/Shortcode/ShortcodeFAQ.php:87
 msgid "Tagcloud"
 msgstr "Tagcloud"
 
@@ -1055,49 +1048,54 @@ msgstr "Tagcloud"
 #: includes/Common/Shortcode/ShortcodeGlossary.php:98
 #: includes/Common/Shortcode/ShortcodeFAQ.php:67
 #: includes/Common/Shortcode/ShortcodeFAQ.php:108
-#: includes/Common/AdminInterfaces/AdminMenu.php:91 blocks/faq/edit.js:201
-#: blocks/faq/edit.js:333 blocks/glossary/edit.js:201
-#: blocks/glossary/edit.js:336
+#: includes/Common/AdminInterfaces/AdminMenu.php:91
 msgid "Tags"
 msgstr "Schlagwörter"
 
-#. 1: Server PHP version number, 2: Required PHP version number.
-#: rrze-answers.php:398
+#: rrze-answers.php:143
+msgid ""
+"The migration was NOT marked as done. Please ensure RRZE-Answers is not "
+"network-activated and retry."
+msgstr ""
+
+#: rrze-answers.php:244
 #, php-format
 msgid ""
 "The server is running PHP version %1$s. The plugin requires at least PHP "
 "version %2$s."
 msgstr ""
 
-#. 1: Server WordPress version number, 2: Required WordPress version number.
-#: rrze-answers.php:391
+#: rrze-answers.php:238
 #, php-format
 msgid ""
 "The server is running WordPress version %1$s. The plugin requires at least "
 "WordPress version %2$s."
 msgstr ""
 
-#: includes/Common/AdminInterfaces/AdminUI.php:236
+#: includes/Common/AdminInterfaces/AdminUI.php:230
 #, fuzzy
 msgid "This item cannot be edited because it is synchronized"
 msgstr "Diese FAQ kann nicht bearbeitet werden, da sie synchronisiert ist"
 
-#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:115
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:103
 msgid "This placeholder cannot be edited because it is synchronized"
 msgstr ""
-"Dieser Platzhalter kann nicht bearbeitet werden, da er synchronisiert ist."
 
-#: includes/Common/Shortcode/ShortcodeGlossary.php:206
-#: includes/Common/Shortcode/ShortcodeFAQ.php:226 blocks/faq/edit.js:269
-#: blocks/glossary/edit.js:269 blocks/placeholder/edit.js:180
+#: includes/Common/AdminInterfaces/AdminUI_Synonym.php:115
+msgid "This synonym cannot be edited because it is synchronized"
+msgstr "Dieses Synonym kann nicht bearbeitet werden, da es synchronisiert ist."
+
+#: includes/Common/Shortcode/ShortcodeGlossary.php:213
+#: includes/Common/Shortcode/ShortcodeFAQ.php:233
 msgid "Title"
 msgstr "Titel"
 
-#: includes/Defaults.php:284
+#: includes/Defaults.php:308
 msgid "twicedaily"
 msgstr "Zwei Mal täglich"
 
-#: includes/Common/Shortcode/ShortcodePlaceholder.php:62
+#: includes/Common/Shortcode/ShortcodeSynonym.php:62
+#: includes/Common/Shortcode/ShortcodePlaceholder.php:67
 msgid "Type of output"
 msgstr "Art der Ausgabe"
 
@@ -1105,27 +1103,16 @@ msgstr "Art der Ausgabe"
 msgid "Unnamed tab"
 msgstr "Unbenannter Tab"
 
-#: includes/Common/Sync/Sync.php:108
+#: includes/Common/Sync/Sync.php:116
 msgid "updated"
 msgstr "aktualisiert"
 
-#: rrze-answers.php:335
-msgid "was activated and old plugins were deactivated on these sites:"
-msgstr ""
-
-#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:116
-#: includes/Common/AdminInterfaces/AdminUI.php:237
+#: includes/Common/AdminInterfaces/AdminUI_Synonym.php:116
+#: includes/Common/AdminInterfaces/AdminUI_Placeholder.php:104
+#: includes/Common/AdminInterfaces/AdminUI.php:231
 msgid "You can edit it at the source"
 msgstr "Sie können es auf der Quelle editieren"
 
 #: includes/Common/Settings/Settings.php:562
 msgid "You do not have enough permissions to do that."
 msgstr ""
-
-#: blocks/faq-widget/edit.js:81
-msgid "— Select category —"
-msgstr "— Kategorie auswählen —"
-
-#: blocks/faq-widget/edit.js:72
-msgid "— Select FAQ —"
-msgstr "— FAQ auswählen —"

@@ -13,71 +13,83 @@ import ServerSideRender from '@wordpress/server-side-render';
 
 export default function Edit({attributes, setAttributes}) {
     const {
+        register,
+        tag,
         id,
+        hstart,
         order,
         sort,
         lang,
-        additional_class
+        additional_class,
+        color,
+        load_open,
+        expand_all_link,
+        hide_title,
+        hide_accordion,
+        synonymstyle,
+        synonym
     } = attributes;
     const blockProps = useBlockProps();
+    const [registerstate, setSelectedCategories] = useState(['']);
+    const [tagstate, setSelectedTags] = useState(['']);
     const [idstate, setSelectedIDs] = useState(['']);
 
-    // const categories = useSelect((select) => {
-    //     return select('core').getEntityRecords('taxonomy', 'synonym_category');
-    // }, []);
-
-    // const registeroptions = [
-    //     {
-    //         label: __('all', 'rrze-answers'),
-    //         value: ''
-    //     }
-    // ];
-
-    // if (!!categories) {
-    //     Object.values(categories).forEach(register => {
-    //         registeroptions.push({
-    //             label: register.name,
-    //             value: register.slug,
-    //         });
-    //     });
-    // }
-
-    // const tags = useSelect((select) => {
-    //     return select('core').getEntityRecords('taxonomy', 'synonym_tag');
-    // }, []);
-
-    // const tagoptions = [
-    //     {
-    //         label: __('all', 'rrze-answers'),
-    //         value: ''
-    //     }
-    // ];
-
-    // if (!!tags) {
-    //     Object.values(tags).forEach(tag => {
-    //         tagoptions.push({
-    //             label: tag.name,
-    //             value: tag.slug,
-    //         });
-    //     });
-    // }
-
-    const placeholders = useSelect((select) => {
-        return select('core').getEntityRecords('postType', 'rrze_placeholder', {per_page: -1, orderby: 'title', order: "asc"});
+    const categories = useSelect((select) => {
+        return select('core').getEntityRecords('taxonomy', 'synonym_category');
     }, []);
 
-    const placeholderoptions = [
+    const registeroptions = [
+        {
+            label: __('all', 'rrze-answers'),
+            value: ''
+        }
+    ];
+
+    if (!!categories) {
+        Object.values(categories).forEach(register => {
+            registeroptions.push({
+                label: register.name,
+                value: register.slug,
+            });
+        });
+    }
+
+    const tags = useSelect((select) => {
+        return select('core').getEntityRecords('taxonomy', 'synonym_tag');
+    }, []);
+
+    const tagoptions = [
+        {
+            label: __('all', 'rrze-answers'),
+            value: ''
+        }
+    ];
+
+    if (!!tags) {
+        Object.values(tags).forEach(tag => {
+            tagoptions.push({
+                label: tag.name,
+                value: tag.slug,
+            });
+        });
+    }
+
+    const synonyms = useSelect((select) => {
+        return select('core').getEntityRecords('postType', 'rrze_synonym', {per_page: -1, orderby: 'title', order: "asc"});
+    }, []);
+
+    const synonymoptions = [
         {
             label: __('all', 'rrze-answers'),
             value: 0
         }
     ];
 
-    if (!!placeholders) {
-        Object.values(placeholders).forEach(placeholder => {
-            placeholderoptions.push({
-                label: placeholder.title.rendered ? placeholder.title.rendered : __('No title', 'rrze-answers'),
-                value: placeholder.id,
+    if (!!synonyms) {
+        Object.values(synonyms).forEach(synonym => {
+            synonymoptions.push({
+                label: synonym.title.rendered ? synonym.title.rendered : __('No title', 'rrze-answers'),
+                value: synonym.id,
             });
         });
     }
@@ -116,6 +128,53 @@ export default function Edit({attributes, setAttributes}) {
         }
     ];
 
+
+    const synonymstyleoptions = [
+        {
+            label: __('-- hidden --', 'rrze-answers'),
+            value: ''
+        },
+        {
+            label: __('A - Z', 'rrze-answers'),
+            value: 'a-z'
+        },
+        {
+            label: __('Tagcloud', 'rrze-answers'),
+            value: 'tagcloud'
+        },
+        {
+            label: __('Tabs', 'rrze-answers'),
+            value: 'tabs'
+        }
+    ];
+
+    const coloroptions = [
+        {
+            label: 'fau',
+            value: 'fau'
+        },
+        {
+            label: 'med',
+            value: 'med'
+        },
+        {
+            label: 'nat',
+            value: 'nat'
+        },
+        {
+            label: 'phil',
+            value: 'phil'
+        },
+        {
+            label: 'rw',
+            value: 'rw'
+        },
+        {
+            label: 'tf',
+            value: 'tf'
+        }
+    ];
+
     const sortoptions = [
         {
             label: __('Title', 'rrze-answers'),
@@ -147,7 +206,7 @@ export default function Edit({attributes, setAttributes}) {
     const onChangeID = (newValues) => {
         setSelectedIDs(newValues);
         setAttributes({id: String(newValues)})
-        };
+    };
 
     return (
         <>
@@ -155,12 +214,12 @@ export default function Edit({attributes, setAttributes}) {
                 <PanelBody>
                     <SelectControl
                         label={__(
-                            "Placeholder",
+                            "Synonym",
                             'rrze-answers'
                         )}
-                        help={__('Show a selection of individual placeholders', 'rrze-answers')}
+                        help={__('Show a selection of individual synonyms', 'rrze-answers')}
                         value={idstate}
-                        options={placeholderoptions}
+                        options={synonymoptions}
                         onChange={onChangeID}
                         multiple
                     />
@@ -169,7 +228,7 @@ export default function Edit({attributes, setAttributes}) {
                             "Language",
                             'rrze-answers'
                         )}
-                        help={__('Show only placeholders matching the selected language.', 'rrze-answers')}
+                        help={__('Show only synonyms matching the selected language.', 'rrze-answers')}
                         value={lang}
                         options={langoptions}
                         onChange={(value) => setAttributes({lang: value})}
@@ -178,7 +237,7 @@ export default function Edit({attributes, setAttributes}) {
             </InspectorControls>
             <div {...blockProps}>
                 <ServerSideRender
-                    block="rrze-answers/placeholder"
+                    block="rrze-answers/synonym"
                     attributes={attributes}
                 />
             </div>

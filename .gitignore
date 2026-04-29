@@ -63,3 +63,4 @@ __pycache__/
 
 # Temporary directories
 _tmp/
+/.tmp_py
