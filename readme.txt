@@ -46,6 +46,12 @@ Main features:
 * RRZE Glossary Block
 * RRZE Placeholder Block 
 
+
+=== Inserting in the text editor ===
+In the classic text editor (TinyMCE), placeholders can be inserted via the shortcode menu/button. This inserts a `[placeholder: ...]` shortcode.
+The text editor provides a dedicated menu entry for inserting synonyms. From there, you can select any available synonym from a list and insert it directly into your content.
+
+
 === Shortcodes ===
 
 FAQ:

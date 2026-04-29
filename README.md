@@ -46,10 +46,9 @@ The Glossary block displays glossary entries and offers similar flexibility. You
 The Placeholder block renders one, multiple, or all placeholder entries and can be filtered by language. In the editor sidebar you can select placeholders directly and choose a language filter. Rendering is server-side and uses the placeholder shortcode internally, so block and shortcode output stay consistent.
 
 **Inserting placeholders in the text editor**
-
 In the classic text editor (TinyMCE), placeholders can be inserted via the shortcode menu/button. This inserts a `[placeholder: ...]` shortcode.
 
-**Using synonyms**
+**Using synonyms in the text editor**
 The text editor provides a dedicated menu entry for inserting synonyms. From there, you can select any available synonym from a list and insert it directly into your content.
 
 ---
