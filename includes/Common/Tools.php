@@ -19,8 +19,10 @@ class Tools
     {
         global $post;
 
+        // Outside a normal singular post loop (REST block previews, AJAX, cron, CLI), $post
+        // may be unset — do not suppress shortcodes; only apply the typo escape on real posts.
         if (!($post instanceof \WP_Post) || !isset($post->post_content)) {
-            return '';
+            return false;
         }
 
         if (strpos($post->post_content, '[[' . $shortcode_tag . ']]') !== false) {
