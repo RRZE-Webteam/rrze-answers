@@ -20,6 +20,38 @@
   }
 
   /**
+   * Category/tag groups are wrapped in <section> with .answers-term-content.
+   * Show the section only if at least one accordion item inside is visible.
+   */
+  function resetGroupedTermSections(wrapper) {
+    wrapper.querySelectorAll(".answers-term-content").forEach((termContent) => {
+      const section = termContent.closest("section");
+      if (section) {
+        section.style.display = "";
+      }
+    });
+  }
+
+  function syncGroupedTermSections(wrapper) {
+    wrapper.querySelectorAll(".answers-term-content").forEach((termContent) => {
+      const section = termContent.closest("section");
+      if (!section) {
+        return;
+      }
+      const detailsInGroup = termContent.querySelectorAll(
+        "details.rrze-answers-item"
+      );
+      if (!detailsInGroup.length) {
+        return;
+      }
+      const anyVisible = Array.from(detailsInGroup).some(
+        (details) => getToggleElement(details).style.display !== "none"
+      );
+      section.style.display = anyVisible ? "" : "none";
+    });
+  }
+
+  /**
    * Initialize search for a single FAQ wrapper
    */
   function initFAQSearch(wrapper) {
@@ -49,12 +81,14 @@
         items.forEach(({ details }) => {
           getToggleElement(details).style.display = "";
         });
+        resetGroupedTermSections(wrapper);
         return;
       }
       items.forEach(({ details, question }) => {
         const match = question.includes(query);
         getToggleElement(details).style.display = match ? "" : "none";
       });
+      syncGroupedTermSections(wrapper);
     }
 
     input.addEventListener("input", () => applyFilter(input.value));
