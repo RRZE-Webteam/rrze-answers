@@ -416,6 +416,31 @@ class Main
     }
 
     /**
+     * Inline placeholders are replaced inside paragraphs; wpautop / paragraph blocks emit a
+     * single wrapping <p> which breaks flow and nests invalidly. Strip exactly one outer <p>.
+     *
+     * @param string $html Rendered placeholder body.
+     */
+    private static function unwrapOuterSingleParagraphForInline(string $html): string
+    {
+        $html = trim($html);
+        if ($html === '' || stripos($html, '<p') !== 0) {
+            return $html;
+        }
+
+        if (!preg_match('/^<p\b[^>]*>(.*)<\/p>$/is', $html, $m)) {
+            return $html;
+        }
+
+        $inner = trim($m[1]);
+        if ($inner !== '' && preg_match('/<\/(?:p|div|h[1-6]|blockquote|figure)\s*>/i', $inner)) {
+            return $html;
+        }
+
+        return $inner;
+    }
+
+    /**
      * Replace inline <placeholder> markers with their actual content on frontend output.
      *
      * @param string $content The post content.
@@ -456,7 +481,9 @@ class Main
                         $dynamicContent = html_entity_decode($placeholderPost->post_content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                         try {
                             // Render placeholder content like normal post content, including blocks.
-                            return apply_filters('the_content', $dynamicContent);
+                            return self::unwrapOuterSingleParagraphForInline(
+                                (string) apply_filters('the_content', $dynamicContent)
+                            );
                         } finally {
                             array_pop($renderStack);
                         }
@@ -468,7 +495,9 @@ class Main
                 }
 
                 $decoded = html_entity_decode($titleMatch[2], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                return wp_kses_post(wpautop($decoded));
+                return self::unwrapOuterSingleParagraphForInline(
+                    (string) wp_kses_post(wpautop($decoded))
+                );
             },
             $content
         );
