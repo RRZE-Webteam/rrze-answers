@@ -115,6 +115,12 @@ class ShortcodePlaceholder
     private function renderPlaceholderContent($rawContent): string
     {
         $decoded = html_entity_decode((string) $rawContent, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        // Render nested Gutenberg blocks when placeholder content contains block markup.
+        if (has_blocks($decoded)) {
+            return do_blocks($decoded);
+        }
+
         // Preserve line breaks from plain text while keeping existing HTML intact.
         return wpautop($decoded);
     }
