@@ -623,6 +623,10 @@ msgstr ""
 msgid "Logfile"
 msgstr ""
 
+#: blocks/placeholder/placeholder-format.js:169
+msgid "Insert"
+msgstr ""
+
 #: includes/Common/Settings/templates/options/logfile.php:22
 #: includes/Common/Settings/templates/options/logfile.php:25
 msgid "Logfile is empty."
