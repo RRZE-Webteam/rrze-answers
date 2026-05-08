@@ -125,7 +125,7 @@ const PlaceholderUI = ( props ) => {
 			/>
 			<span ref={ anchorRef }>
 				<RichTextToolbarButton
-					icon="translation"
+					icon="editor-paste-text"
 					title={ __('Placeholder','rrze-answers') }
 					onClick={ () => setIsOpen( (o) => !o ) }
 					isActive={ isActive }
@@ -169,6 +169,7 @@ const PlaceholderUI = ( props ) => {
 									onClick={ applyFromSelected }
 									disabled={ !selectedId }
 								>
+									{ __( 'Insert', 'rrze-answers' ) }
 								</Button>
 							</FlexItem>
 						</Flex>
