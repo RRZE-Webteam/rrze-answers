@@ -22,6 +22,7 @@ class AdminUI_Placeholder extends AdminUI
             'sortable_meta_keys' => [],
             'sync_readonly' => true,
             'show_shortcode_box' => true,
+            'lang_quick_bulk_edit' => true,
         ]);
 
         // Provide language choices (try Defaults, fallback to common choices)

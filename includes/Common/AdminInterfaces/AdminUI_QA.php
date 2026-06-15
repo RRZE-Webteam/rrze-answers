@@ -39,6 +39,7 @@ class AdminUI_QA extends AdminUI
             'sortable_meta_keys' => ['sortfield'],
             'sync_readonly' => true,
             'show_shortcode_box' => true,
+            'lang_quick_bulk_edit' => true,
         ]);
     }
 
