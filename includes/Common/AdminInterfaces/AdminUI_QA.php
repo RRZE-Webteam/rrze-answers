@@ -185,6 +185,10 @@ class AdminUI_QA extends AdminUI
             return;
         }
 
+        if (!empty($_REQUEST['bulk_edit']) || isset($_POST['_inline_edit'])) {
+            return;
+        }
+
         // Nonce must be present and valid
         $nonce_field = $this->post_type . '_meta_nonce';
         if (!isset($_POST[$nonce_field]) || !wp_verify_nonce(wp_unslash((string) $_POST[$nonce_field]), $this->post_type . '_save_meta')) {
@@ -194,7 +198,12 @@ class AdminUI_QA extends AdminUI
         // Sanitize incoming fields
         $source = isset($_POST['source']) ? sanitize_text_field(wp_unslash((string) $_POST['source'])) : 'website';
         update_post_meta($post_id, 'source', $source);
-        update_post_meta($post_id, 'lang', substr(get_locale(), 0, 2)); // store UI locale as default lang
+
+        $lang = (isset($_POST['lang']) && $_POST['lang'] !== '')
+            ? sanitize_text_field(wp_unslash((string) $_POST['lang']))
+            : (get_post_meta($post_id, 'lang', true) === '' ? substr(get_locale(), 0, 2) : (string) get_post_meta($post_id, 'lang', true));
+        update_post_meta($post_id, 'lang', $lang);
+
         update_post_meta($post_id, 'remoteID', $post_id);
         update_post_meta($post_id, 'remoteChanged', get_post_timestamp($post_id, 'modified'));
 
@@ -203,9 +212,6 @@ class AdminUI_QA extends AdminUI
         }
         if (isset($_POST['anchorfield'])) {
             update_post_meta($post_id, 'anchorfield', sanitize_title(wp_unslash((string) $_POST['anchorfield'])));
-        }
-        if (isset($_POST['lang']) && $_POST['lang'] !== '') {
-            update_post_meta($post_id, 'lang', sanitize_text_field(wp_unslash((string) $_POST['lang'])));
         }
     }
 
