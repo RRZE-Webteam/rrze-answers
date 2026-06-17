@@ -147,11 +147,13 @@ class AdminUI_Placeholder extends AdminUI
         }
 
         update_post_meta($post_id, 'source', 'website'); // placeholders are authored locally by default
-        update_post_meta($post_id, 'lang', substr(get_locale(), 0, 2));
+
+        $lang = (isset($_POST['lang']) && $_POST['lang'] !== '')
+            ? sanitize_text_field(wp_unslash((string) $_POST['lang']))
+            : (get_post_meta($post_id, 'lang', true) === '' ? substr(get_locale(), 0, 2) : (string) get_post_meta($post_id, 'lang', true));
+        update_post_meta($post_id, 'lang', $lang);
+
         update_post_meta($post_id, 'remoteID', $post_id);
-        if (isset($_POST['lang']) && $_POST['lang'] !== '') {
-            update_post_meta($post_id, 'lang', sanitize_text_field(wp_unslash((string) $_POST['lang'])));
-        }
 
         update_post_meta($post_id, 'remoteChanged', get_post_timestamp($post_id, 'modified'));
     }
