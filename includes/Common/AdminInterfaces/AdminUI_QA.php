@@ -185,6 +185,15 @@ class AdminUI_QA extends AdminUI
             return;
         }
 
+        if (!empty($_REQUEST['bulk_edit'])) {
+            $this->saveLangFromQuickOrBulkEdit($post_id);
+            return;
+        }
+
+        if ($this->saveLangFromQuickOrBulkEdit($post_id)) {
+            return;
+        }
+
         // Nonce must be present and valid
         $nonce_field = $this->post_type . '_meta_nonce';
         if (!isset($_POST[$nonce_field]) || !wp_verify_nonce(wp_unslash((string) $_POST[$nonce_field]), $this->post_type . '_save_meta')) {

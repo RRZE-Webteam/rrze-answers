@@ -1,30 +1,55 @@
-/* global inlineEditPost */
+/* global inlineEditPost, rrzeAnswersQuickBulkEdit */
 (function ($) {
 	'use strict';
 
-	const fieldName = 'rrze_answers_lang';
+	const fieldName =
+		(typeof rrzeAnswersQuickBulkEdit !== 'undefined' &&
+			rrzeAnswersQuickBulkEdit.fieldName) ||
+		'rrze_answers_lang';
+
+	function getLangForPost(postId) {
+		const $postRow = $('#post-' + postId);
+		const $langCell = $postRow.find('.column-lang .rrze-answers-inline-lang');
+
+		if ($langCell.length) {
+			return $langCell.text().trim();
+		}
+
+		return '';
+	}
 
 	function populateQuickEdit(postId) {
-		const $row = $('#edit-' + postId);
-		const lang = $('#rrze_answers_inline_lang_' + postId).text();
-		const $select = $row.find('select[name="' + fieldName + '"]');
+		const lang = getLangForPost(postId);
+		const $editRow = $('#edit-' + postId);
+		const $select = $editRow.find('select.rrze-answers-lang, select[name="' + fieldName + '"]');
 
-		if ($select.length) {
+		if ($select.length && lang !== '') {
 			$select.val(lang);
 		}
 	}
 
-	const $inlineEdit = inlineEditPost.edit;
-	inlineEditPost.edit = function (id) {
-		$inlineEdit.apply(this, arguments);
+	if (typeof inlineEditPost !== 'undefined') {
+		const inlineEdit = inlineEditPost.edit;
+		inlineEditPost.edit = function (id) {
+			inlineEdit.apply(this, arguments);
 
-		let postId = 0;
-		if (typeof id === 'object') {
-			postId = parseInt(this.getId(id), 10);
-		}
+			let postId = 0;
+			if (typeof id === 'object') {
+				postId = parseInt(this.getId(id), 10);
+			}
 
-		if (postId > 0) {
-			populateQuickEdit(postId);
+			if (postId > 0) {
+				populateQuickEdit(postId);
+			}
+		};
+	}
+
+	// Bulk edit uses the list-table form (method="get"). Switch to POST so custom
+	// fields like rrze_answers_lang are not dropped from long FAQ query strings.
+	$('#posts-filter').on('submit', function () {
+		const $bulkEdit = $('#bulk-edit');
+		if ($bulkEdit.length && $bulkEdit.is(':visible')) {
+			this.method = 'post';
 		}
-	};
+	});
 })(jQuery);

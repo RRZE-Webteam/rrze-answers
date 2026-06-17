@@ -133,6 +133,15 @@ class AdminUI_Placeholder extends AdminUI
             return;
         }
 
+        if (!empty($_REQUEST['bulk_edit'])) {
+            $this->saveLangFromQuickOrBulkEdit($post_id);
+            return;
+        }
+
+        if ($this->saveLangFromQuickOrBulkEdit($post_id)) {
+            return;
+        }
+
         if (!isset($_POST['rrze_placeholder_meta_nonce']) || !wp_verify_nonce(wp_unslash((string) $_POST['rrze_placeholder_meta_nonce']), 'rrze_placeholder_save_meta')) {
             return;
         }

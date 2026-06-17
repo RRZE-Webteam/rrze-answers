@@ -80,8 +80,11 @@ abstract class AdminUI
         if ($this->features['lang_quick_bulk_edit']) {
             add_action('quick_edit_custom_box', [$this, 'renderQuickEditLangField'], 10, 2);
             add_action('bulk_edit_custom_box', [$this, 'renderBulkEditLangField'], 10, 2);
-            add_action('save_post', [$this, 'saveQuickBulkEditLang'], 10, 1);
+            add_action('load-edit.php', [$this, 'maybeSaveBulkEditLang']);
+            add_action('bulk_edit_posts', [$this, 'saveBulkEditLangFromRequest'], 100, 2);
+            add_action("save_post_{$this->post_type}", [$this, 'saveQuickBulkEditLang'], 5, 1);
             add_action('admin_enqueue_scripts', [$this, 'enqueueQuickBulkEditScripts']);
+            add_action('admin_footer', [$this, 'ensureBulkEditLangField']);
         }
     }
 
@@ -167,7 +170,10 @@ abstract class AdminUI
 
         if ($col === 'lang' && $this->features['lang_quick_bulk_edit']) {
             $lang = (string) get_post_meta($post_id, 'lang', true);
-            echo '<div class="hidden" id="rrze_answers_inline_lang_' . (int) $post_id . '">' . esc_html($lang) . '</div>';
+            if ($lang === '') {
+                $lang = substr(get_locale(), 0, 2);
+            }
+            echo '<span class="rrze-answers-inline-lang" hidden>' . esc_html($lang) . '</span>';
         }
     }
 
@@ -423,48 +429,133 @@ abstract class AdminUI
 
     public function renderQuickEditLangField(string $column_name, string $post_type): void
     {
-        if ($column_name !== 'lang' || $post_type !== $this->post_type) {
+        if (!$this->shouldRenderLangQuickBulkField($column_name, $post_type)) {
             return;
         }
 
         static $rendered = [];
-        if (isset($rendered[$post_type])) {
+        $render_key = $post_type . ':quick';
+        if (isset($rendered[$render_key])) {
             return;
         }
-        $rendered[$post_type] = true;
+        $rendered[$render_key] = true;
 
-        echo '<fieldset class="inline-edit-col-right inline-edit-col">';
-        echo '<div class="inline-edit-group wp-clearfix">';
-        echo '<label class="alignleft">';
-        echo '<span class="title">' . esc_html__('Language', 'rrze-answers') . '</span>';
-        echo '<select name="rrze_answers_lang">';
-        foreach ($this->getLanguageChoices() as $code => $label) {
-            echo '<option value="' . esc_attr($code) . '">' . esc_html($label) . '</option>';
-        }
-        echo '</select>';
-        echo '</label>';
-        echo '</div>';
-        echo '</fieldset>';
+        $this->renderQuickBulkEditLangSelect(false);
     }
 
     public function renderBulkEditLangField(string $column_name, string $post_type): void
     {
-        if ($column_name !== 'lang' || $post_type !== $this->post_type) {
+        if (!$this->shouldRenderLangQuickBulkField($column_name, $post_type)) {
             return;
         }
 
         static $rendered = [];
-        if (isset($rendered[$post_type])) {
+        $render_key = $post_type . ':bulk';
+        if (isset($rendered[$render_key])) {
             return;
         }
-        $rendered[$post_type] = true;
+        $rendered[$render_key] = true;
 
-        echo '<fieldset class="inline-edit-col-right">';
-        echo '<div class="inline-edit-col">';
-        echo '<label>';
+        $this->renderQuickBulkEditLangSelect(true);
+    }
+
+    /**
+     * Ensure the bulk-edit lang dropdown exists (fallback if column hooks did not run).
+     */
+    public function ensureBulkEditLangField(): void
+    {
+        $screen = get_current_screen();
+        if (!$screen || $screen->base !== 'edit' || $screen->post_type !== $this->post_type) {
+            return;
+        }
+
+        ob_start();
+        $this->renderQuickBulkEditLangSelect(true);
+        $fieldset = ob_get_clean();
+
+        if ($fieldset === '') {
+            return;
+        }
+        ?>
+        <script>
+        jQuery(function($) {
+            var $wrapper = $('#bulk-edit .inline-edit-wrapper');
+            if (!$wrapper.length || $wrapper.find('select.rrze-answers-lang').length) {
+                return;
+            }
+            $wrapper.children('.submit.inline-edit-save').before(<?php echo wp_json_encode($fieldset); ?>);
+        });
+        </script>
+        <?php
+    }
+
+    protected function shouldRenderLangQuickBulkField(string $column_name, string $post_type): bool
+    {
+        if ($post_type !== $this->post_type) {
+            return false;
+        }
+
+        if (str_starts_with($column_name, 'taxonomy-')) {
+            return false;
+        }
+
+        $target_column = $this->getLangQuickBulkEditColumn();
+
+        return $target_column !== null && $column_name === $target_column;
+    }
+
+    protected function getLangQuickBulkEditColumn(): ?string
+    {
+        $screen = get_current_screen();
+        if (!$screen) {
+            return 'lang';
+        }
+
+        $columns = array_keys(get_column_headers($screen) ?: []);
+        $core_columns = ['cb', 'date', 'title', 'categories', 'tags', 'comments', 'author'];
+        $custom_columns = [];
+
+        foreach ($columns as $column_name) {
+            if (in_array($column_name, $core_columns, true)) {
+                continue;
+            }
+            if (str_starts_with($column_name, 'taxonomy-')) {
+                continue;
+            }
+            $custom_columns[] = $column_name;
+        }
+
+        if ($custom_columns === []) {
+            return null;
+        }
+
+        return in_array('lang', $custom_columns, true) ? 'lang' : $custom_columns[0];
+    }
+
+    protected function renderQuickBulkEditLangSelect(bool $bulk_edit): void
+    {
+        if ($bulk_edit) {
+            echo '<fieldset class="inline-edit-col-right">';
+            echo '<div class="inline-edit-col">';
+            echo '<label class="inline-edit-rrze-answers-lang">';
+            echo '<span class="title">' . esc_html__('Language', 'rrze-answers') . '</span>';
+            echo '<select name="rrze_answers_lang" class="rrze-answers-lang">';
+            echo '<option value="-1">' . esc_html__('— No Change —', 'rrze-answers') . '</option>';
+            foreach ($this->getLanguageChoices() as $code => $label) {
+                echo '<option value="' . esc_attr($code) . '">' . esc_html($label) . '</option>';
+            }
+            echo '</select>';
+            echo '</label>';
+            echo '</div>';
+            echo '</fieldset>';
+            return;
+        }
+
+        echo '<fieldset class="inline-edit-col-right inline-edit-col">';
+        echo '<div class="inline-edit-group wp-clearfix">';
+        echo '<label class="alignleft inline-edit-rrze-answers-lang">';
         echo '<span class="title">' . esc_html__('Language', 'rrze-answers') . '</span>';
-        echo '<select name="rrze_answers_lang">';
-        echo '<option value="-1">' . esc_html__('— No Change —', 'rrze-answers') . '</option>';
+        echo '<select name="rrze_answers_lang" class="rrze-answers-lang">';
         foreach ($this->getLanguageChoices() as $code => $label) {
             echo '<option value="' . esc_attr($code) . '">' . esc_html($label) . '</option>';
         }
@@ -476,47 +567,171 @@ abstract class AdminUI
 
     public function saveQuickBulkEditLang(int $post_id): void
     {
-        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        $this->saveLangFromQuickOrBulkEdit($post_id);
+    }
+
+    /**
+     * Save bulk-edit language changes.
+     *
+     * The posts list table form uses method="get", so bulk-edit values arrive
+     * in $_REQUEST rather than $_POST.
+     */
+    public function maybeSaveBulkEditLang(): void
+    {
+        if (empty($_REQUEST['bulk_edit']) || empty($_REQUEST['post'])) {
             return;
         }
 
-        if (!current_user_can('edit_post', $post_id) || get_post_type($post_id) !== $this->post_type) {
+        $post_type = $this->resolveBulkEditPostTypeFromRequest($_REQUEST);
+        if ($post_type === '' || $post_type !== $this->post_type) {
             return;
         }
 
-        if ($this->features['sync_readonly'] && $this->isSynced($post_id)) {
+        if (
+            !isset($_REQUEST['_wpnonce'])
+            || !wp_verify_nonce(sanitize_text_field(wp_unslash((string) $_REQUEST['_wpnonce'])), 'bulk-posts')
+        ) {
             return;
         }
 
-        if (!isset($_REQUEST['rrze_answers_lang'])) {
+        $this->applyBulkEditLangToPosts((array) $_REQUEST['post'], $this->getBulkEditLangFromRequest());
+    }
+
+    /**
+     * @param int[] $updated
+     * @param array<string, mixed> $shared_post_data
+     */
+    public function saveBulkEditLangFromRequest(array $updated, array $shared_post_data): void
+    {
+        unset($updated);
+
+        $post_type = $this->resolveBulkEditPostTypeFromRequest($shared_post_data);
+        if ($post_type === '' || $post_type !== $this->post_type || empty($shared_post_data['post'])) {
             return;
         }
 
-        $lang = sanitize_text_field(wp_unslash((string) $_REQUEST['rrze_answers_lang']));
-        $choices = $this->getLanguageChoices();
+        $this->applyBulkEditLangToPosts((array) $shared_post_data['post'], $this->getBulkEditLangFromRequest($shared_post_data));
+    }
 
-        if (isset($_REQUEST['bulk_edit'])) {
-            if ($lang === '' || $lang === '-1' || !isset($choices[$lang])) {
-                return;
+    /**
+     * @param array<int|string> $post_ids
+     */
+    protected function applyBulkEditLangToPosts(array $post_ids, ?string $lang): void
+    {
+        if ($lang === null) {
+            return;
+        }
+
+        foreach (array_map('intval', $post_ids) as $post_id) {
+            if ($post_id <= 0 || get_post_type($post_id) !== $this->post_type) {
+                continue;
+            }
+
+            if (!current_user_can('edit_post', $post_id)) {
+                continue;
+            }
+
+            if ($this->features['sync_readonly'] && $this->isSynced($post_id)) {
+                continue;
             }
 
             update_post_meta($post_id, 'lang', $lang);
-            return;
+        }
+    }
+
+    /**
+     * @param array<string, mixed>|null $request
+     */
+    protected function getBulkEditLangFromRequest(?array $request = null): ?string
+    {
+        $request ??= $_REQUEST;
+
+        if (!isset($request['rrze_answers_lang'])) {
+            return null;
         }
 
-        if (!isset($_REQUEST['_inline_edit'])) {
-            return;
+        $lang = $request['rrze_answers_lang'];
+        if (is_array($lang)) {
+            $lang = end($lang);
         }
 
-        if (!wp_verify_nonce(wp_unslash((string) $_REQUEST['_inline_edit']), 'inlineeditnonce')) {
-            return;
+        $lang = sanitize_text_field(wp_unslash((string) $lang));
+        $choices = $this->getLanguageChoices();
+
+        if ($lang === '' || $lang === '-1' || !isset($choices[$lang])) {
+            return null;
         }
+
+        return $lang;
+    }
+
+    protected function resolveBulkEditPostTypeFromRequest(array $request): string
+    {
+        if (isset($request['post_type']) && $request['post_type'] !== '') {
+            return sanitize_key((string) $request['post_type']);
+        }
+
+        if (!empty($request['post'])) {
+            $post_ids = array_map('intval', (array) $request['post']);
+            $first_id = (int) reset($post_ids);
+            if ($first_id > 0) {
+                $detected = get_post_type($first_id);
+                if (is_string($detected) && $detected !== '') {
+                    return $detected;
+                }
+            }
+        }
+
+        $screen = get_current_screen();
+
+        return ($screen && !empty($screen->post_type)) ? (string) $screen->post_type : '';
+    }
+
+    protected function saveLangFromQuickOrBulkEdit(int $post_id): bool
+    {
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+            return false;
+        }
+
+        if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
+            return false;
+        }
+
+        if (!current_user_can('edit_post', $post_id) || get_post_type($post_id) !== $this->post_type) {
+            return false;
+        }
+
+        if ($this->features['sync_readonly'] && $this->isSynced($post_id)) {
+            return false;
+        }
+
+        if (!empty($_REQUEST['bulk_edit'])) {
+            $lang = $this->getBulkEditLangFromRequest();
+            if ($lang === null) {
+                return false;
+            }
+
+            update_post_meta($post_id, 'lang', $lang);
+            return true;
+        }
+
+        if (!isset($_POST['rrze_answers_lang']) || !isset($_POST['_inline_edit'])) {
+            return false;
+        }
+
+        if (!wp_verify_nonce(wp_unslash((string) $_POST['_inline_edit']), 'inlineeditnonce')) {
+            return false;
+        }
+
+        $lang = sanitize_text_field(wp_unslash((string) $_POST['rrze_answers_lang']));
+        $choices = $this->getLanguageChoices();
 
         if ($lang === '' || !isset($choices[$lang])) {
-            return;
+            return false;
         }
 
         update_post_meta($post_id, 'lang', $lang);
+        return true;
     }
 
     public function enqueueQuickBulkEditScripts(string $hook): void
@@ -535,13 +750,19 @@ abstract class AdminUI
             return;
         }
 
+        $handle = 'rrze-answers-quick-bulk-edit-' . $this->post_type;
+
         wp_enqueue_script(
-            'rrze-answers-quick-bulk-edit-' . $this->post_type,
+            $handle,
             plugin()->getUrl() . 'assets/js/rrze-answers-quick-bulk-edit.js',
             ['jquery', 'inline-edit-post'],
             (string) filemtime($script_path),
             true
         );
+
+        wp_localize_script($handle, 'rrzeAnswersQuickBulkEdit', [
+            'fieldName' => 'rrze_answers_lang',
+        ]);
     }
 
     /**
