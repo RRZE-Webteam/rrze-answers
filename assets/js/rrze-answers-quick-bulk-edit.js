@@ -48,8 +48,23 @@
 	// fields like rrze_answers_lang are not dropped from long FAQ query strings.
 	$('#posts-filter').on('submit', function () {
 		const $bulkEdit = $('#bulk-edit');
-		if ($bulkEdit.length && $bulkEdit.is(':visible')) {
-			this.method = 'post';
+		if (!$bulkEdit.length || !$bulkEdit.is(':visible')) {
+			return;
+		}
+
+		this.method = 'post';
+
+		const $selects = $bulkEdit.find(
+			'select.rrze-answers-lang, select[name="' + fieldName + '"]'
+		);
+		const $chosen = $selects
+			.filter(function () {
+				return $(this).val() !== '-1';
+			})
+			.last();
+
+		if ($chosen.length) {
+			$selects.not($chosen).prop('disabled', true);
 		}
 	});
 })(jQuery);

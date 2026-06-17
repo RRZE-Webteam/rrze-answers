@@ -133,12 +133,7 @@ class AdminUI_Placeholder extends AdminUI
             return;
         }
 
-        if (!empty($_REQUEST['bulk_edit'])) {
-            $this->saveLangFromQuickOrBulkEdit($post_id);
-            return;
-        }
-
-        if ($this->saveLangFromQuickOrBulkEdit($post_id)) {
+        if (!empty($_REQUEST['bulk_edit']) || isset($_POST['_inline_edit'])) {
             return;
         }
 

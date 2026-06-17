@@ -234,6 +234,23 @@ abstract class AdminUI
         return $source !== '' && $source !== 'website';
     }
 
+    protected function canEditLangViaQuickOrBulk(int $post_id): bool
+    {
+        if (!current_user_can('edit_post', $post_id) || get_post_type($post_id) !== $this->post_type) {
+            return false;
+        }
+
+        if ($this->features['sync_readonly'] && $this->isSynced($post_id)) {
+            /**
+             * Synced entries are read-only in the editor, but language may still
+             * be adjusted from the list table (bulk/quick edit).
+             */
+            return (bool) apply_filters('rrze_answers_allow_lang_quick_bulk_edit_synced', true, $post_id, $this->post_type);
+        }
+
+        return true;
+    }
+
     protected function makeReadOnlyUI(int $post_id): void
     {
         remove_post_type_support($this->post_type, 'title');
@@ -347,7 +364,7 @@ abstract class AdminUI
             ]);
         }
 
-        $selectedVal = $_GET['source'] ?? '';
+        $selectedVal = $_GET['rrze_answers_source'] ?? '';
         $posts = get_posts([
             'post_type' => $this->post_type,
             'post_status' => 'publish',
@@ -367,7 +384,7 @@ abstract class AdminUI
         sort($sources, SORT_NATURAL | SORT_FLAG_CASE);
 
         if (count($sources) > 1) {
-            echo "<select name='source'>";
+            echo "<select name='rrze_answers_source'>";
             echo '<option value="">' . esc_html__('All Sources', 'rrze-answers') . '</option>';
             foreach ($sources as $term) {
                 $sel = ($term === $selectedVal) ? 'selected' : '';
@@ -401,7 +418,7 @@ abstract class AdminUI
             $q->set('tax_query', $tax_query);
         }
 
-        $source = $_GET['source'] ?? '';
+        $source = $_GET['rrze_answers_source'] ?? '';
         if ($source !== '' && $source !== '0') {
             $meta_query = [[
                 'key' => 'source',
@@ -631,7 +648,7 @@ abstract class AdminUI
                 continue;
             }
 
-            if ($this->features['sync_readonly'] && $this->isSynced($post_id)) {
+            if (!$this->canEditLangViaQuickOrBulk($post_id)) {
                 continue;
             }
 
@@ -651,18 +668,16 @@ abstract class AdminUI
         }
 
         $lang = $request['rrze_answers_lang'];
-        if (is_array($lang)) {
-            $lang = end($lang);
-        }
-
-        $lang = sanitize_text_field(wp_unslash((string) $lang));
         $choices = $this->getLanguageChoices();
 
-        if ($lang === '' || $lang === '-1' || !isset($choices[$lang])) {
-            return null;
+        foreach ((array) $lang as $candidate) {
+            $candidate = sanitize_text_field(wp_unslash((string) $candidate));
+            if ($candidate !== '' && $candidate !== '-1' && isset($choices[$candidate])) {
+                return $candidate;
+            }
         }
 
-        return $lang;
+        return null;
     }
 
     protected function resolveBulkEditPostTypeFromRequest(array $request): string
@@ -701,7 +716,7 @@ abstract class AdminUI
             return false;
         }
 
-        if ($this->features['sync_readonly'] && $this->isSynced($post_id)) {
+        if (!$this->canEditLangViaQuickOrBulk($post_id)) {
             return false;
         }
 
