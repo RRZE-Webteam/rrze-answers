@@ -6,11 +6,11 @@ defined('ABSPATH') || exit;
 
 $tour_attr = $option->getName() === 'frequency' ? ' data-rrze-tour="import-frequency"' : '';
 ?>
-<tr valign="top"<?php echo $tour_attr; ?>>
+<tr valign="top">
     <th scope="row" class="rrze-wp-form-label">
         <label for="<?php echo $option->getIdAttribute(); ?>" <?php echo $option->getLabelClassAttribute(); ?>><?php echo $option->getLabel(); ?></label>
     </th>
-    <td class="rrze-wp-form rrze-wp-form-input">
+    <td class="rrze-wp-form rrze-wp-form-input"<?php echo $tour_attr; ?>>
         <select id="<?php echo $option->getIdAttribute(); ?>" name="<?php echo esc_attr($option->getNameAttribute()); ?>" <?php echo $option->getInputClassAttribute(); ?>>
             <?php foreach ($option->getArg('options', []) as $key => $label) { ?>
                 <option value="<?php echo $key; ?>" <?php selected($option->getValueAttribute(), $key); ?>><?php echo $label; ?></option>
