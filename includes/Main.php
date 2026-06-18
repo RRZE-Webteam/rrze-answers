@@ -76,6 +76,8 @@ class Main
         $this->adminUI = new AdminUI_Synonym();
         $this->adminUI = new AdminUI_Placeholder();
 
+        $this->sync = new Sync();
+
         // $this->adminMenue = new AdminMenu(); // in admin menu there is a maximum of 2 levels. Deactivated this workaround because it wouldn't be best practice.
         add_action('wp_enqueue_scripts', [$this, 'enqueueAssets']);
         add_action('admin_enqueue_scripts', [$this, 'enqueueAdminAssets']);
@@ -99,11 +101,10 @@ class Main
         $tab = (!empty($_GET['tab']) ? $_GET['tab'] : '');
 
         if ($tab == 'import') {
-            $sync = new Sync();
             $frequency = (!empty($newOptions['frequency']) ? $newOptions['frequency'] : '');
             $mode = ($frequency ? 'automatic' : 'manual');
-            $sync->doSync($mode);
-            $sync->setCronjob($frequency);
+            $this->sync->doSync($mode);
+            $this->sync->setCronjob($frequency);
             // settings_errors();
         }
     }

@@ -11,8 +11,6 @@ defined('ABSPATH') || exit;
 
 define('ENDPOINT', 'wp-json/wp/v2/');
 
-define('RRZEANSWERSLOGFILE', 'rrze-answers.log');
-
 /**
  * Class Defaults
  *
@@ -220,7 +218,7 @@ class Defaults
                     [
                         'name' => 'ANSWERSLOGFILE',
                         'type' => 'logfile',
-                        'default' => RRZEANSWERSLOGFILE
+                        'default' => Tools::getLogfilePath()
                     ]
                 ]
             ],
