@@ -311,52 +311,14 @@ class RESTAPI
     }
 
     /**
-     * Registers the taxonomies fields for the 'rrze_faq' and 'rrze_glossary' object types
+     * Registers read-only term meta fields on FAQ/Glossary taxonomies.
+     *
+     * Post taxonomies are exposed by WordPress core (term IDs) because
+     * show_in_rest is enabled. Do not register rrze_*_category/tag on posts:
+     * a custom field with the same name breaks block-editor saves.
      */
     public function registerTaxRestFields()
     {
-        // FAQ categories and tags
-        register_rest_field(
-            'rrze_faq',
-            'rrze_faq_category',
-            array(
-                'get_callback'    => [$this, 'getCategories'],
-                'update_callback' => null,
-                'schema'          => null,
-            )
-        );
-
-        register_rest_field(
-            'rrze_faq',
-            'rrze_faq_tag',
-            array(
-                'get_callback'    => [$this, 'getTags'],
-                'update_callback' => null,
-                'schema'          => null,
-            )
-        );
-
-        // Glossary categories and tags
-        register_rest_field(
-            'rrze_glossary',
-            'rrze_glossary_category',
-            array(
-                'get_callback'    => [$this, 'getCategories'],
-                'update_callback' => null,
-                'schema'          => null,
-            )
-        );
-
-        register_rest_field(
-            'rrze_glossary',
-            'rrze_glossary_tag',
-            array(
-                'get_callback'    => [$this, 'getTags'],
-                'update_callback' => null,
-                'schema'          => null,
-            )
-        );
-
         // Registers the 'source' and 'lang' meta fields for all FAQ/Glossary taxonomies
         $fields = array(
             'rrze_faq_category',
