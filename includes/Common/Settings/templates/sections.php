@@ -13,5 +13,5 @@ defined('ABSPATH') || exit;
 
     <?php wp_nonce_field('rrze-answers_settings_save_' . $settings->optionName, 'rrze-answers_settings_save'); ?>
 
-    <?php submit_button(); ?>
+    <?php submit_button(null, 'primary', 'submit', true, ['data-rrze-tour' => 'save-settings']); ?>
 </form>
