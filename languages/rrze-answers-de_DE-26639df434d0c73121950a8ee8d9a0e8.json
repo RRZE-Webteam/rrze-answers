@@ -1,0 +1,51 @@
+{
+	"translation-revision-date": "2026-06-15 12:00+0000",
+	"generator": "Manual",
+	"source": "build/rrze-answers-guided-tour.js",
+	"domain": "rrze-answers",
+	"locale_data": {
+		"rrze-answers": {
+			"": {
+				"domain": "",
+				"lang": "de_DE",
+				"plural-forms": "nplurals=2; plural=n != 1;"
+			},
+			"Welcome to RRZE Answers": ["Willkommen bei RRZE Answers"],
+			"This plugin helps you manage FAQ entries, glossary terms, synonyms, and placeholders — and embed them in pages with blocks or shortcodes.": ["Mit diesem Plugin verwalten Sie FAQ-Einträge, Glossarbegriffe, Synonyme und Platzhalter — und binden sie per Blöcken oder Shortcodes in Seiten ein."],
+			"Create and manage content": ["Inhalte erstellen und verwalten"],
+			"Use the FAQ and Glossary menus in the WordPress admin to add questions, terms, categories, and tags.": ["Nutzen Sie die FAQ- und Glossar-Menüs im WordPress-Backend, um Fragen, Begriffe, Kategorien und Schlagwörter hinzuzufügen."],
+			"Import from other sites": ["Von anderen Websites importieren"],
+			"Use the interactive setup tour to register domains, select categories, and synchronize FAQ and glossary content.": ["Mit der interaktiven Setup-Tour registrieren Sie Domains, wählen Kategorien und synchronisieren FAQ- und Glossar-Inhalte."],
+			"Logfile and blocks": ["Logdatei und Blöcke"],
+			"After each sync, details are written to the logfile. Insert FAQ and glossary blocks in the editor or use shortcodes.": ["Nach jeder Synchronisation werden Details in die Logdatei geschrieben. Fügen Sie FAQ- und Glossar-Blöcke im Editor ein oder nutzen Sie Shortcodes."],
+			"RRZE Answers guided tour": ["RRZE Answers Geführte Tour"],
+			"Get started": ["Loslegen"],
+			"Domains tab": ["Tab Domains"],
+			"Open the Domains tab to register websites you want to import FAQ or glossary content from.": ["Öffnen Sie den Tab Domains, um Websites zu registrieren, von denen Sie FAQ- oder Glossar-Inhalte importieren möchten."],
+			"Add a domain": ["Domain hinzufügen"],
+			"Enter the URL of the source website (for example https://example.org) and save your settings.": ["Geben Sie die URL der Quell-Website ein (z. B. https://example.org) und speichern Sie die Einstellungen."],
+			"Save the domain": ["Domain speichern"],
+			"Click Save changes to validate and store the new domain before configuring the import.": ["Klicken Sie auf Änderungen speichern, um die neue Domain zu prüfen und zu speichern, bevor Sie den Import konfigurieren."],
+			"Import tab": ["Tab Import"],
+			"Switch to Import to choose which FAQ and glossary categories should be synchronized for each domain.": ["Wechseln Sie zu Import, um festzulegen, welche FAQ- und Glossar-Kategorien pro Domain synchronisiert werden sollen."],
+			"Select categories": ["Kategorien auswählen"],
+			"Pick one or more categories per content type. Only entries from the selected categories will be imported.": ["Wählen Sie pro Inhaltstyp eine oder mehrere Kategorien. Es werden nur Einträge aus den ausgewählten Kategorien importiert."],
+			"Automatic sync": ["Automatische Synchronisation"],
+			"Optionally schedule automatic synchronization (daily or twice daily) instead of importing manually each time.": ["Optional können Sie eine automatische Synchronisation (täglich oder zweimal täglich) planen, statt jedes Mal manuell zu importieren."],
+			"Run synchronization": ["Synchronisation starten"],
+			"Save changes to start the import. Progress and results are written to the logfile.": ["Speichern Sie die Änderungen, um den Import zu starten. Fortschritt und Ergebnisse werden in die Logdatei geschrieben."],
+			"Logfile tab": ["Tab Logdatei"],
+			"Open the logfile to review sync results, errors, and timing details after each import.": ["Öffnen Sie die Logdatei, um Synchronisationsergebnisse, Fehler und Zeitangaben nach jedem Import einzusehen."],
+			"Review the log": ["Logdatei prüfen"],
+			"Each sync appends a timestamped entry here. Use it to verify imports or troubleshoot connection issues.": ["Jede Synchronisation fügt hier einen Eintrag mit Zeitstempel hinzu. Nutzen Sie ihn zur Kontrolle von Importen oder zur Fehlersuche bei Verbindungsproblemen."],
+			"Close setup tour": ["Setup-Tour schließen"],
+			"Continue to the next tab to see the highlighted field.": ["Wechseln Sie zum nächsten Tab, um das hervorgehobene Feld zu sehen."],
+			"Open tab": ["Tab öffnen"],
+			"Next": ["Weiter"],
+			"Step %1$d of %2$d": ["Schritt %1$d von %2$d"],
+			"Previous": ["Zurück"],
+			"Skip tour": ["Tour überspringen"],
+			"Finish": ["Fertig"]
+		}
+	}
+}

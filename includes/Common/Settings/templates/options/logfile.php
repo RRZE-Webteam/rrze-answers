@@ -8,7 +8,7 @@ defined('ABSPATH') || exit;
 
 ?>
 <tr>
-    <td colspan="2">
+    <td colspan="2" data-rrze-tour="logfile-content">
         <?php
         $lines = Tools::readLogfileLines();
 

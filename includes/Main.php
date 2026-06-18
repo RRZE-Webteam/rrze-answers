@@ -93,7 +93,6 @@ class Main
 
     public function maybeSync($oldOptions, $newOptions)
     {
-
         if ($oldOptions == $newOptions) {
             return;
         }

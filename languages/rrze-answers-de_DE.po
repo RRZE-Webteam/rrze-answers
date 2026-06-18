@@ -1120,3 +1120,155 @@ msgstr "Sie können es auf der Quelle editieren"
 #: includes/Common/Settings/Settings.php:562
 msgid "You do not have enough permissions to do that."
 msgstr ""
+
+#: includes/Common/Settings/templates/settings-page.php:13
+msgid "Guided tour"
+msgstr "Geführte Tour"
+
+#: includes/Common/Settings/templates/settings-page.php:16
+msgid "Setup tour"
+msgstr "Setup-Tour"
+
+#: src/js/rrze-answers-guided-tour.js
+msgid "Welcome to RRZE Answers"
+msgstr "Willkommen bei RRZE Answers"
+
+#: src/js/rrze-answers-guided-tour.js
+msgid "This plugin helps you manage FAQ entries, glossary terms, synonyms, and placeholders — and embed them in pages with blocks or shortcodes."
+msgstr "Mit diesem Plugin verwalten Sie FAQ-Einträge, Glossarbegriffe, Synonyme und Platzhalter — und binden sie per Blöcken oder Shortcodes in Seiten ein."
+
+#: src/js/rrze-answers-guided-tour.js
+msgid "Create and manage content"
+msgstr "Inhalte erstellen und verwalten"
+
+#: src/js/rrze-answers-guided-tour.js
+msgid "Use the FAQ and Glossary menus in the WordPress admin to add questions, terms, categories, and tags."
+msgstr "Nutzen Sie die FAQ- und Glossar-Menüs im WordPress-Backend, um Fragen, Begriffe, Kategorien und Schlagwörter hinzuzufügen."
+
+#: src/js/rrze-answers-guided-tour.js
+msgid "Import from other sites"
+msgstr "Von anderen Websites importieren"
+
+#: src/js/rrze-answers-guided-tour.js
+msgid "Use the interactive setup tour to register domains, select categories, and synchronize FAQ and glossary content."
+msgstr "Mit der interaktiven Setup-Tour registrieren Sie Domains, wählen Kategorien und synchronisieren FAQ- und Glossar-Inhalte."
+
+#: src/js/rrze-answers-guided-tour.js
+msgid "Logfile and blocks"
+msgstr "Logdatei und Blöcke"
+
+#: src/js/rrze-answers-guided-tour.js
+msgid "After each sync, details are written to the logfile. Insert FAQ and glossary blocks in the editor or use shortcodes."
+msgstr "Nach jeder Synchronisation werden Details in die Logdatei geschrieben. Fügen Sie FAQ- und Glossar-Blöcke im Editor ein oder nutzen Sie Shortcodes."
+
+#: src/js/rrze-answers-guided-tour.js
+msgid "RRZE Answers guided tour"
+msgstr "RRZE Answers Geführte Tour"
+
+#: src/js/rrze-answers-guided-tour.js
+msgid "Get started"
+msgstr "Loslegen"
+
+#: src/js/setup-tour.js
+msgid "Domains tab"
+msgstr "Tab Domains"
+
+#: src/js/setup-tour.js
+msgid "Open the Domains tab to register websites you want to import FAQ or glossary content from."
+msgstr "Öffnen Sie den Tab Domains, um Websites zu registrieren, von denen Sie FAQ- oder Glossar-Inhalte importieren möchten."
+
+#: src/js/setup-tour.js
+msgid "Add a domain"
+msgstr "Domain hinzufügen"
+
+#: src/js/setup-tour.js
+msgid "Enter the URL of the source website (for example https://example.org) and save your settings."
+msgstr "Geben Sie die URL der Quell-Website ein (z. B. https://example.org) und speichern Sie die Einstellungen."
+
+#: src/js/setup-tour.js
+msgid "Save the domain"
+msgstr "Domain speichern"
+
+#: src/js/setup-tour.js
+msgid "Click Save changes to validate and store the new domain before configuring the import."
+msgstr "Klicken Sie auf Änderungen speichern, um die neue Domain zu prüfen und zu speichern, bevor Sie den Import konfigurieren."
+
+#: src/js/setup-tour.js
+msgid "Import tab"
+msgstr "Tab Import"
+
+#: src/js/setup-tour.js
+msgid "Switch to Import to choose which FAQ and glossary categories should be synchronized for each domain."
+msgstr "Wechseln Sie zu Import, um festzulegen, welche FAQ- und Glossar-Kategorien pro Domain synchronisiert werden sollen."
+
+#: src/js/setup-tour.js
+msgid "Select categories"
+msgstr "Kategorien auswählen"
+
+#: src/js/setup-tour.js
+msgid "Pick one or more categories per content type. Only entries from the selected categories will be imported."
+msgstr "Wählen Sie pro Inhaltstyp eine oder mehrere Kategorien. Es werden nur Einträge aus den ausgewählten Kategorien importiert."
+
+#: src/js/setup-tour.js
+msgid "Automatic sync"
+msgstr "Automatische Synchronisation"
+
+#: src/js/setup-tour.js
+msgid "Optionally schedule automatic synchronization (daily or twice daily) instead of importing manually each time."
+msgstr "Optional können Sie eine automatische Synchronisation (täglich oder zweimal täglich) planen, statt jedes Mal manuell zu importieren."
+
+#: src/js/setup-tour.js
+msgid "Run synchronization"
+msgstr "Synchronisation starten"
+
+#: src/js/setup-tour.js
+msgid "Save changes to start the import. Progress and results are written to the logfile."
+msgstr "Speichern Sie die Änderungen, um den Import zu starten. Fortschritt und Ergebnisse werden in die Logdatei geschrieben."
+
+#: src/js/setup-tour.js
+msgid "Logfile tab"
+msgstr "Tab Logdatei"
+
+#: src/js/setup-tour.js
+msgid "Open the logfile to review sync results, errors, and timing details after each import."
+msgstr "Öffnen Sie die Logdatei, um Synchronisationsergebnisse, Fehler und Zeitangaben nach jedem Import einzusehen."
+
+#: src/js/setup-tour.js
+msgid "Review the log"
+msgstr "Logdatei prüfen"
+
+#: src/js/setup-tour.js
+msgid "Each sync appends a timestamped entry here. Use it to verify imports or troubleshoot connection issues."
+msgstr "Jede Synchronisation fügt hier einen Eintrag mit Zeitstempel hinzu. Nutzen Sie ihn zur Kontrolle von Importen oder zur Fehlersuche bei Verbindungsproblemen."
+
+#: src/js/setup-tour.js
+msgid "Close setup tour"
+msgstr "Setup-Tour schließen"
+
+#: src/js/setup-tour.js
+msgid "Continue to the next tab to see the highlighted field."
+msgstr "Wechseln Sie zum nächsten Tab, um das hervorgehobene Feld zu sehen."
+
+#: src/js/setup-tour.js
+msgid "Open tab"
+msgstr "Tab öffnen"
+
+#: src/js/setup-tour.js
+msgid "Next"
+msgstr "Weiter"
+
+#: src/js/setup-tour-step.js
+msgid "Step %1$d of %2$d"
+msgstr "Schritt %1$d von %2$d"
+
+#: src/js/setup-tour-step.js
+msgid "Previous"
+msgstr "Zurück"
+
+#: src/js/setup-tour-step.js
+msgid "Skip tour"
+msgstr "Tour überspringen"
+
+#: src/js/setup-tour-step.js
+msgid "Finish"
+msgstr "Fertig"

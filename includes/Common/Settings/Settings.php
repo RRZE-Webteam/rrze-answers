@@ -2,6 +2,8 @@
 
 namespace RRZE\Answers\Common\Settings;
 
+use function RRZE\Answers\plugin;
+
 use RRZE\Answers\Common\Settings\{
     Builder,
     Error,
@@ -287,6 +289,98 @@ class Settings
         add_action('admin_init', [$this, 'save'], 20);
         add_action('admin_menu', [$this, 'addToMenu'], 20);
         add_action('admin_head', [$this, 'styling'], 20);
+        add_action('admin_enqueue_scripts', [$this, 'enqueueGuidedTour']);
+        add_action('wp_ajax_rrze_answers_dismiss_guided_tour', [$this, 'dismissGuidedTour']);
+        add_action('wp_ajax_rrze_answers_dismiss_setup_tour', [$this, 'dismissSetupTour']);
+    }
+
+    /**
+     * Enqueue the guided tour on the plugin settings screen.
+     */
+    public function enqueueGuidedTour(string $hook): void
+    {
+        unset($hook);
+
+        if (!$this->isOnSettingsPage()) {
+            return;
+        }
+
+        $script_path = plugin()->getPath() . 'build/rrze-answers-guided-tour.js';
+        $asset_path = plugin()->getPath() . 'build/rrze-answers-guided-tour.asset.php';
+
+        if (!is_readable($script_path) || !is_readable($asset_path)) {
+            return;
+        }
+
+        /** @var array{dependencies: string[], version: string} $asset_file */
+        $asset_file = include $asset_path;
+
+        wp_enqueue_style('dashicons');
+        wp_enqueue_style('wp-components');
+
+        $admin_css = plugin()->getPath() . 'build/css/rrze-answers-admin.css';
+        if (is_readable($admin_css)) {
+            wp_enqueue_style(
+                'rrze-answers-admin-css',
+                plugin()->getUrl() . 'build/css/rrze-answers-admin.css',
+                [],
+                (string) filemtime($admin_css)
+            );
+        }
+
+        wp_enqueue_script(
+            'rrze-answers-guided-tour',
+            plugin()->getUrl() . 'build/rrze-answers-guided-tour.js',
+            $asset_file['dependencies'],
+            $asset_file['version'],
+            true
+        );
+
+        wp_set_script_translations(
+            'rrze-answers-guided-tour',
+            'rrze-answers',
+            plugin()->getPath() . 'languages'
+        );
+
+        $setupTourStepId = '';
+        if (isset($_GET['rrze_setup_tour_step'])) {
+            $setupTourStepId = sanitize_key((string) wp_unslash($_GET['rrze_setup_tour_step']));
+        }
+
+        wp_localize_script('rrze-answers-guided-tour', 'rrzeAnswersGuide', [
+            'autoStart' => !get_user_meta(get_current_user_id(), 'rrze_answers_guided_tour_dismissed', true),
+            'autoStartSetup' => isset($_GET['rrze_setup_tour']),
+            'setupTourStepId' => $setupTourStepId,
+            'settingsUrl' => $this->getUrl(),
+            'activeTab' => $this->getActiveTab()->slug,
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('rrze_answers_guided_tour'),
+            'setupTourNonce' => wp_create_nonce('rrze_answers_setup_tour'),
+        ]);
+    }
+
+    public function dismissSetupTour(): void
+    {
+        check_ajax_referer('rrze_answers_setup_tour', 'nonce');
+
+        if (!current_user_can($this->capability)) {
+            wp_send_json_error(null, 403);
+        }
+
+        update_user_meta(get_current_user_id(), 'rrze_answers_setup_tour_dismissed', 1);
+        wp_send_json_success();
+    }
+
+    public function dismissGuidedTour(): void
+    {
+        check_ajax_referer('rrze_answers_guided_tour', 'nonce');
+
+        if (!current_user_can($this->capability)) {
+            wp_send_json_error(null, 403);
+        }
+
+        update_user_meta(get_current_user_id(), 'rrze_answers_guided_tour_dismissed', 1);
+        wp_send_json_success();
     }
 
     /**
