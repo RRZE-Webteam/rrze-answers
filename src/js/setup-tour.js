@@ -1,7 +1,7 @@
 /**
  * Contextual setup tour for domains, import, and sync.
  */
-import { useCallback, useEffect, useMemo, useState } from '@wordpress/element';
+import { createPortal, useCallback, useEffect, useMemo, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { SetupTourStepPanel } from './setup-tour-step';
 
@@ -131,6 +131,43 @@ function findStepTarget( step ) {
 }
 
 const SPOTLIGHT_PADDING = 8;
+const TOUR_TARGET_CLASS = 'rrze-answers-setup-tour__target';
+
+function clearTourTargetMarkers() {
+	document
+		.querySelectorAll( `.${ TOUR_TARGET_CLASS }` )
+		.forEach( ( element ) => {
+			element.classList.remove( TOUR_TARGET_CLASS );
+		} );
+}
+
+function markTourTarget( element ) {
+	clearTourTargetMarkers();
+
+	if ( element ) {
+		element.classList.add( TOUR_TARGET_CLASS );
+	}
+}
+
+function getCutoutClipPath( rect ) {
+	const right = rect.left + rect.width;
+	const bottom = rect.top + rect.height;
+	const viewportWidth = window.innerWidth;
+	const viewportHeight = window.innerHeight;
+
+	return `polygon(
+		0px 0px,
+		${ viewportWidth }px 0px,
+		${ viewportWidth }px ${ viewportHeight }px,
+		0px ${ viewportHeight }px,
+		0px 0px,
+		${ rect.left }px ${ rect.top }px,
+		${ rect.left }px ${ bottom }px,
+		${ right }px ${ bottom }px,
+		${ right }px ${ rect.top }px,
+		${ rect.left }px ${ rect.top }px
+	)`;
+}
 
 function getSpotlightRect( element ) {
 	if ( ! element ) {
@@ -164,60 +201,12 @@ function SetupTourSpotlight( { rect, onClose, closeLabel } ) {
 		);
 	}
 
-	const viewportWidth = window.innerWidth;
-	const viewportHeight = window.innerHeight;
-	const bottom = rect.top + rect.height;
-	const right = rect.left + rect.width;
-
-	const panelClassName = 'rrze-answers-setup-tour__overlay-panel';
-
 	return (
 		<>
 			<button
 				type="button"
-				className={ panelClassName }
-				style={ {
-					top: 0,
-					left: 0,
-					width: viewportWidth,
-					height: rect.top,
-				} }
-				aria-label={ closeLabel }
-				onClick={ onClose }
-			/>
-			<button
-				type="button"
-				className={ panelClassName }
-				style={ {
-					top: bottom,
-					left: 0,
-					width: viewportWidth,
-					height: Math.max( 0, viewportHeight - bottom ),
-				} }
-				aria-label={ closeLabel }
-				onClick={ onClose }
-			/>
-			<button
-				type="button"
-				className={ panelClassName }
-				style={ {
-					top: rect.top,
-					left: 0,
-					width: rect.left,
-					height: rect.height,
-				} }
-				aria-label={ closeLabel }
-				onClick={ onClose }
-			/>
-			<button
-				type="button"
-				className={ panelClassName }
-				style={ {
-					top: rect.top,
-					left: right,
-					width: Math.max( 0, viewportWidth - right ),
-					height: rect.height,
-				} }
+				className="rrze-answers-setup-tour__overlay-panel rrze-answers-setup-tour__overlay-panel--cutout"
+				style={ { clipPath: getCutoutClipPath( rect ) } }
 				aria-label={ closeLabel }
 				onClick={ onClose }
 			/>
@@ -333,8 +322,32 @@ export function SetupTour( { initialStepId = '', onClose } ) {
 	const totalSteps = allSteps.length;
 	const stepNumber = globalStepIndex + 1;
 
+	const goToGlobalStep = useCallback(
+		( index, { switchTab = false } = {} ) => {
+			if ( index < 0 || index >= allSteps.length ) {
+				return;
+			}
+
+			const step = allSteps[ index ];
+
+			if ( step.tab !== rrzeAnswersGuide.activeTab ) {
+				if ( isTabStep( step ) && ! switchTab ) {
+					setGlobalStepIndex( index );
+					return;
+				}
+
+				window.location.href = buildSettingsUrl( step.tab, step.id );
+				return;
+			}
+
+			setGlobalStepIndex( index );
+		},
+		[ allSteps ]
+	);
+
 	const syncAnchor = useCallback( () => {
 		if ( ! currentStep ) {
+			clearTourTargetMarkers();
 			setAnchor( null );
 			setSpotlightRect( null );
 			return;
@@ -343,6 +356,7 @@ export function SetupTour( { initialStepId = '', onClose } ) {
 		const target = findStepTarget( currentStep );
 
 		if ( ! target ) {
+			clearTourTargetMarkers();
 			setAnchor( null );
 			setSpotlightRect( null );
 			return;
@@ -352,44 +366,58 @@ export function SetupTour( { initialStepId = '', onClose } ) {
 			! isTabStep( currentStep ) &&
 			! isStepOnActiveTab( currentStep )
 		) {
+			clearTourTargetMarkers();
 			setAnchor( null );
 			setSpotlightRect( null );
 			return;
 		}
 
+		markTourTarget( target );
 		setAnchor( target );
 		setSpotlightRect( getSpotlightRect( target ) );
 
-		target.scrollIntoView( { block: 'center', behavior: 'smooth' } );
+		target.scrollIntoView( { block: 'nearest', inline: 'nearest' } );
 	}, [ currentStep ] );
 
 	useEffect( () => {
-		syncAnchor();
+		let frameId = window.requestAnimationFrame( () => {
+			syncAnchor();
+		} );
 
-		const onLayoutChange = () => syncAnchor();
+		const onLayoutChange = () => {
+			window.cancelAnimationFrame( frameId );
+			frameId = window.requestAnimationFrame( () => {
+				syncAnchor();
+			} );
+		};
+
 		window.addEventListener( 'resize', onLayoutChange );
 		window.addEventListener( 'scroll', onLayoutChange, true );
 
 		return () => {
+			window.cancelAnimationFrame( frameId );
 			window.removeEventListener( 'resize', onLayoutChange );
 			window.removeEventListener( 'scroll', onLayoutChange, true );
+			clearTourTargetMarkers();
 		};
 	}, [ syncAnchor, globalStepIndex ] );
 
-	const goToGlobalStep = ( index ) => {
-		if ( index < 0 || index >= allSteps.length ) {
-			return;
+	useEffect( () => {
+		if ( ! anchor || ! currentStep || ! isTabStep( currentStep ) ) {
+			return undefined;
 		}
 
-		const step = allSteps[ index ];
+		const onTabClick = ( event ) => {
+			event.preventDefault();
+			goToGlobalStep( globalStepIndex, { switchTab: true } );
+		};
 
-		if ( step.tab !== rrzeAnswersGuide.activeTab ) {
-			window.location.href = buildSettingsUrl( step.tab, step.id );
-			return;
-		}
+		anchor.addEventListener( 'click', onTabClick );
 
-		setGlobalStepIndex( index );
-	};
+		return () => {
+			anchor.removeEventListener( 'click', onTabClick );
+		};
+	}, [ anchor, currentStep, globalStepIndex, goToGlobalStep ] );
 
 	const finishTour = () => {
 		dismissSetupTour();
@@ -429,24 +457,27 @@ export function SetupTour( { initialStepId = '', onClose } ) {
 		}
 
 		if ( needsTabSwitch ) {
-			goToGlobalStep( globalStepIndex );
+			goToGlobalStep( globalStepIndex, { switchTab: true } );
 			return;
 		}
 
 		if ( isTabStep( currentStep ) && ! isStepOnActiveTab( currentStep ) ) {
 			if ( currentStep.id === 'tab-domains' ) {
-				goToGlobalStep( findNextStepIndex( allSteps, globalStepIndex ) );
+				goToGlobalStep(
+					findNextStepIndex( allSteps, globalStepIndex ),
+					{ switchTab: true }
+				);
 				return;
 			}
 
-			goToGlobalStep( globalStepIndex );
+			goToGlobalStep( globalStepIndex, { switchTab: true } );
 			return;
 		}
 
 		goToGlobalStep( nextStepIndex );
 	};
 
-	return (
+	return createPortal(
 		<>
 			<SetupTourSpotlight
 				rect={ spotlightRect }
@@ -476,6 +507,7 @@ export function SetupTour( { initialStepId = '', onClose } ) {
 					onNext={ handleNext }
 				/>
 			</div>
-		</>
+		</>,
+		document.body
 	);
 }
