@@ -351,20 +351,19 @@ class SyncAPI
                                 $content = $this->absoluteUrl($content, $url);
 
                                 $remote_id = $entry['remoteID'] ?? $entry['id'];
+                                $category_names = $this->restTermsToNames($entry[$field_cat] ?? [], $field_cat);
+                                $tag_names = $this->restTermsToNames($entry[$field_tag] ?? [], $field_tag);
+
                                 $ret[$entry['id']] = array(
                                     'id' => $entry['id'],
                                     'title' => $entry['title']['rendered'],
                                     'content' => $content,
                                     'lang' => $entry['lang'],
-                                    $field_cat => $entry[$field_cat],
+                                    $field_cat => $category_names,
                                     'remoteID' => $remote_id,
                                     'remoteChanged' => $entry['remoteChanged'],
                                 );
-                                $sTag = '';
-                                foreach ($entry[$field_tag] as $tag) {
-                                    $sTag .= $tag . ',';
-                                }
-                                $ret[$entry['id']][$field_tag] = trim($sTag, ',');
+                                $ret[$entry['id']][$field_tag] = implode(',', $tag_names);
                                 $ret[$entry['id']]['URLhasSlider'] = ((strpos($content, 'slider') !== false) ? $entry['link'] : false); // we cannot handle sliders, see note in Shortcode.php shortcodeOutput()
                             }
                         }
@@ -552,6 +551,38 @@ class SyncAPI
      * @param bool $safe
      * @return mixed
      */
+    /**
+     * Normalize REST taxonomy values (term IDs or legacy names) to term names.
+     *
+     * @param mixed  $terms
+     * @param string $taxonomy
+     * @return string[]
+     */
+    private function restTermsToNames($terms, string $taxonomy): array
+    {
+        if (!is_array($terms)) {
+            return [];
+        }
+
+        $names = [];
+
+        foreach ($terms as $term) {
+            if (is_numeric($term)) {
+                $term_object = get_term((int) $term, $taxonomy);
+                if ($term_object && !is_wp_error($term_object)) {
+                    $names[] = $term_object->name;
+                }
+                continue;
+            }
+
+            if (is_string($term) && $term !== '') {
+                $names[] = $term;
+            }
+        }
+
+        return $names;
+    }
+
     private function remoteGet(string $url, array $args = [], bool $safe = true)
     {
         $cache_key = 'rrze_remote_' . md5($url);
