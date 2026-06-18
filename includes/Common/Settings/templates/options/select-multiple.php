@@ -14,11 +14,11 @@ if (str_starts_with($field_name, 'faq_categories_')) {
     }
 }
 ?>
-<tr valign="top"<?php echo $tour_attr; ?>>
+<tr valign="top">
     <th scope="row" class="rrze-wp-form-label">
         <label for="<?php echo $option->getIdAttribute(); ?>" <?php echo $option->getLabelClassAttribute(); ?>><?php echo $option->getLabel(); ?></label>
     </th>
-    <td class="rrze-wp-form rrze-wp-form-input">
+    <td class="rrze-wp-form rrze-wp-form-input"<?php echo $tour_attr; ?>>
         <select id="<?php echo $option->getIdAttribute(); ?>" name="<?php echo esc_attr($option->getNameAttribute()); ?>" multiple <?php echo $option->getInputClassAttribute(); ?>>
             <?php foreach ($option->getArg('options', []) as $key => $label) { ?>
                 <option value="<?php echo $key; ?>" <?php echo in_array($key, $option->getValueAttribute() ?? []) ? 'selected' : null; ?>><?php echo $label; ?></option>

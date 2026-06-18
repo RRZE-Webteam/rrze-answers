@@ -1,7 +1,7 @@
 /**
  * Contextual setup tour for domains, import, and sync.
  */
-import { useCallback, useEffect, useMemo, useState } from '@wordpress/element';
+import { createPortal, useCallback, useEffect, useMemo, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { SetupTourStepPanel } from './setup-tour-step';
 
@@ -130,102 +130,294 @@ function findStepTarget( step ) {
 	return document.querySelector( step.target );
 }
 
-function buildTourPath( steps ) {
-	const seenTargets = new Set();
+const SPOTLIGHT_PADDING = 8;
+const TOUR_TARGET_CLASS = 'rrze-answers-setup-tour__target';
 
-	return steps.filter( ( step ) => {
-		if ( ! findStepTarget( step ) ) {
-			return false;
-		}
-
-		const isTabStep = step.id.startsWith( 'tab-' );
-		if ( ! isTabStep && step.tab !== rrzeAnswersGuide.activeTab ) {
-			return false;
-		}
-
-		if ( seenTargets.has( step.target ) ) {
-			return false;
-		}
-
-		seenTargets.add( step.target );
-		return true;
-	} );
+function clearTourTargetMarkers() {
+	document
+		.querySelectorAll( `.${ TOUR_TARGET_CLASS }` )
+		.forEach( ( element ) => {
+			element.classList.remove( TOUR_TARGET_CLASS );
+		} );
 }
 
-function resolveStepIndex( path, stepId ) {
-	if ( ! stepId ) {
-		return 0;
+function markTourTarget( element ) {
+	clearTourTargetMarkers();
+
+	if ( element ) {
+		element.classList.add( TOUR_TARGET_CLASS );
+	}
+}
+
+function getCutoutClipPath( rect ) {
+	const right = rect.left + rect.width;
+	const bottom = rect.top + rect.height;
+	const viewportWidth = window.innerWidth;
+	const viewportHeight = window.innerHeight;
+
+	return `polygon(
+		0px 0px,
+		${ viewportWidth }px 0px,
+		${ viewportWidth }px ${ viewportHeight }px,
+		0px ${ viewportHeight }px,
+		0px 0px,
+		${ rect.left }px ${ rect.top }px,
+		${ rect.left }px ${ bottom }px,
+		${ right }px ${ bottom }px,
+		${ right }px ${ rect.top }px,
+		${ rect.left }px ${ rect.top }px
+	)`;
+}
+
+function getSpotlightRect( element ) {
+	if ( ! element ) {
+		return null;
 	}
 
-	const index = path.findIndex( ( step ) => step.id === stepId );
+	const rect = element.getBoundingClientRect();
+	if ( rect.width <= 0 || rect.height <= 0 ) {
+		return null;
+	}
 
-	return index >= 0 ? index : 0;
+	const pad = SPOTLIGHT_PADDING;
+
+	return {
+		top: Math.max( 0, rect.top - pad ),
+		left: Math.max( 0, rect.left - pad ),
+		width: rect.width + pad * 2,
+		height: rect.height + pad * 2,
+	};
+}
+
+function SetupTourSpotlight( { rect, onClose, closeLabel } ) {
+	if ( ! rect ) {
+		return (
+			<button
+				type="button"
+				className="rrze-answers-setup-tour__overlay"
+				aria-label={ closeLabel }
+				onClick={ onClose }
+			/>
+		);
+	}
+
+	return (
+		<>
+			<button
+				type="button"
+				className="rrze-answers-setup-tour__overlay-panel rrze-answers-setup-tour__overlay-panel--cutout"
+				style={ { clipPath: getCutoutClipPath( rect ) } }
+				aria-label={ closeLabel }
+				onClick={ onClose }
+			/>
+			<div
+				className="rrze-answers-setup-tour__spotlight"
+				style={ {
+					top: rect.top,
+					left: rect.left,
+					width: rect.width,
+					height: rect.height,
+				} }
+				aria-hidden="true"
+			/>
+		</>
+	);
+}
+
+function resolveGlobalStepIndex( steps, stepId ) {
+	if ( stepId ) {
+		const resolved = steps.findIndex( ( step ) => step.id === stepId );
+
+		return resolved >= 0 ? resolved : 0;
+	}
+
+	return skipRedundantTabSteps( steps, 0 );
+}
+
+function isTabStep( step ) {
+	return step.id.startsWith( 'tab-' );
+}
+
+function isStepOnActiveTab( step ) {
+	return step.tab === rrzeAnswersGuide.activeTab;
+}
+
+function needsTabSwitchForStep( step ) {
+	if ( isTabStep( step ) ) {
+		return false;
+	}
+
+	return ! isStepOnActiveTab( step );
+}
+
+function isStepTargetVisible( step ) {
+	if ( isTabStep( step ) ) {
+		return Boolean( findStepTarget( step ) );
+	}
+
+	if ( ! isStepOnActiveTab( step ) ) {
+		return false;
+	}
+
+	return Boolean( findStepTarget( step ) );
+}
+
+function skipRedundantTabSteps( steps, startIndex ) {
+	let index = startIndex;
+
+	while ( index < steps.length ) {
+		const step = steps[ index ];
+
+		if ( ! step.id.startsWith( 'tab-' ) || ! isStepOnActiveTab( step ) ) {
+			break;
+		}
+
+		index++;
+	}
+
+	return index;
+}
+
+function findNextStepIndex( steps, fromIndex ) {
+	let index = fromIndex + 1;
+
+	while ( index < steps.length ) {
+		const step = steps[ index ];
+
+		if ( ! step.optional || isStepTargetVisible( step ) ) {
+			return index;
+		}
+
+		index++;
+	}
+
+	return fromIndex;
+}
+
+function findPreviousStepIndex( steps, fromIndex ) {
+	let index = fromIndex - 1;
+
+	while ( index >= 0 ) {
+		const step = steps[ index ];
+
+		if ( ! step.optional || isStepTargetVisible( step ) ) {
+			return index;
+		}
+
+		index--;
+	}
+
+	return fromIndex;
 }
 
 export function SetupTour( { initialStepId = '', onClose } ) {
 	const allSteps = useMemo( getSetupSteps, [] );
-	const path = useMemo( () => buildTourPath( allSteps ), [ allSteps ] );
-	const [ stepIndex, setStepIndex ] = useState( () =>
-		resolveStepIndex( path, initialStepId )
+	const [ globalStepIndex, setGlobalStepIndex ] = useState( () =>
+		resolveGlobalStepIndex( allSteps, initialStepId )
 	);
 	const [ anchor, setAnchor ] = useState( null );
+	const [ spotlightRect, setSpotlightRect ] = useState( null );
 
-	const currentStep = path[ stepIndex ];
+	const currentStep = allSteps[ globalStepIndex ];
+	const totalSteps = allSteps.length;
+	const stepNumber = globalStepIndex + 1;
+
+	const goToGlobalStep = useCallback(
+		( index, { switchTab = false } = {} ) => {
+			if ( index < 0 || index >= allSteps.length ) {
+				return;
+			}
+
+			const step = allSteps[ index ];
+
+			if ( step.tab !== rrzeAnswersGuide.activeTab ) {
+				if ( isTabStep( step ) && ! switchTab ) {
+					setGlobalStepIndex( index );
+					return;
+				}
+
+				window.location.href = buildSettingsUrl( step.tab, step.id );
+				return;
+			}
+
+			setGlobalStepIndex( index );
+		},
+		[ allSteps ]
+	);
 
 	const syncAnchor = useCallback( () => {
 		if ( ! currentStep ) {
+			clearTourTargetMarkers();
 			setAnchor( null );
-			return;
-		}
-
-		if ( currentStep.tab !== rrzeAnswersGuide.activeTab ) {
-			setAnchor( null );
+			setSpotlightRect( null );
 			return;
 		}
 
 		const target = findStepTarget( currentStep );
-		setAnchor( target );
 
-		if ( target ) {
-			target.classList.add( 'rrze-answers-setup-tour__highlight' );
-			target.scrollIntoView( { block: 'center', behavior: 'smooth' } );
+		if ( ! target ) {
+			clearTourTargetMarkers();
+			setAnchor( null );
+			setSpotlightRect( null );
+			return;
 		}
+
+		if (
+			! isTabStep( currentStep ) &&
+			! isStepOnActiveTab( currentStep )
+		) {
+			clearTourTargetMarkers();
+			setAnchor( null );
+			setSpotlightRect( null );
+			return;
+		}
+
+		markTourTarget( target );
+		setAnchor( target );
+		setSpotlightRect( getSpotlightRect( target ) );
+
+		target.scrollIntoView( { block: 'nearest', inline: 'nearest' } );
 	}, [ currentStep ] );
 
 	useEffect( () => {
-		syncAnchor();
+		let frameId = window.requestAnimationFrame( () => {
+			syncAnchor();
+		} );
 
-		const onLayoutChange = () => syncAnchor();
+		const onLayoutChange = () => {
+			window.cancelAnimationFrame( frameId );
+			frameId = window.requestAnimationFrame( () => {
+				syncAnchor();
+			} );
+		};
+
 		window.addEventListener( 'resize', onLayoutChange );
 		window.addEventListener( 'scroll', onLayoutChange, true );
 
 		return () => {
+			window.cancelAnimationFrame( frameId );
 			window.removeEventListener( 'resize', onLayoutChange );
 			window.removeEventListener( 'scroll', onLayoutChange, true );
-			document
-				.querySelectorAll( '.rrze-answers-setup-tour__highlight' )
-				.forEach( ( element ) => {
-					element.classList.remove(
-						'rrze-answers-setup-tour__highlight'
-					);
-				} );
+			clearTourTargetMarkers();
 		};
-	}, [ syncAnchor, stepIndex ] );
+	}, [ syncAnchor, globalStepIndex ] );
 
-	const goToStep = ( nextIndex ) => {
-		if ( nextIndex < 0 || nextIndex >= path.length ) {
-			return;
+	useEffect( () => {
+		if ( ! anchor || ! currentStep || ! isTabStep( currentStep ) ) {
+			return undefined;
 		}
 
-		const nextStep = path[ nextIndex ];
+		const onTabClick = ( event ) => {
+			event.preventDefault();
+			goToGlobalStep( globalStepIndex, { switchTab: true } );
+		};
 
-		if ( nextStep.tab !== rrzeAnswersGuide.activeTab ) {
-			window.location.href = buildSettingsUrl( nextStep.tab, nextStep.id );
-			return;
-		}
+		anchor.addEventListener( 'click', onTabClick );
 
-		setStepIndex( nextIndex );
-	};
+		return () => {
+			anchor.removeEventListener( 'click', onTabClick );
+		};
+	}, [ anchor, currentStep, globalStepIndex, goToGlobalStep ] );
 
 	const finishTour = () => {
 		dismissSetupTour();
@@ -237,22 +429,26 @@ export function SetupTour( { initialStepId = '', onClose } ) {
 		window.history.replaceState( {}, '', url.toString() );
 	};
 
-	if ( ! currentStep || path.length === 0 ) {
+	if ( ! currentStep || totalSteps === 0 ) {
 		return null;
 	}
 
-	const needsTabSwitch = currentStep.tab !== rrzeAnswersGuide.activeTab;
-	const isLast = stepIndex >= path.length - 1;
+	const needsTabSwitch = needsTabSwitchForStep( currentStep );
+	const nextStepIndex = findNextStepIndex( allSteps, globalStepIndex );
+	const isLast = nextStepIndex === globalStepIndex;
 	const stepText =
-		needsTabSwitch && ! anchor
+		needsTabSwitch && ! spotlightRect
 			? __(
 					'Continue to the next tab to see the highlighted field.',
 					'rrze-answers'
 			  )
 			: currentStep.text;
-	const nextLabel = needsTabSwitch
-		? __( 'Open tab', 'rrze-answers' )
-		: __( 'Next', 'rrze-answers' );
+	const nextLabel =
+		isTabStep( currentStep ) && ! isStepOnActiveTab( currentStep )
+			? __( 'Open tab', 'rrze-answers' )
+			: needsTabSwitch
+			? __( 'Open tab', 'rrze-answers' )
+			: __( 'Next', 'rrze-answers' );
 
 	const handleNext = () => {
 		if ( isLast ) {
@@ -261,20 +457,32 @@ export function SetupTour( { initialStepId = '', onClose } ) {
 		}
 
 		if ( needsTabSwitch ) {
-			goToStep( stepIndex );
+			goToGlobalStep( globalStepIndex, { switchTab: true } );
 			return;
 		}
 
-		goToStep( stepIndex + 1 );
+		if ( isTabStep( currentStep ) && ! isStepOnActiveTab( currentStep ) ) {
+			if ( currentStep.id === 'tab-domains' ) {
+				goToGlobalStep(
+					findNextStepIndex( allSteps, globalStepIndex ),
+					{ switchTab: true }
+				);
+				return;
+			}
+
+			goToGlobalStep( globalStepIndex, { switchTab: true } );
+			return;
+		}
+
+		goToGlobalStep( nextStepIndex );
 	};
 
-	return (
+	return createPortal(
 		<>
-			<button
-				type="button"
-				className="rrze-answers-setup-tour__overlay"
-				aria-label={ __( 'Close setup tour', 'rrze-answers' ) }
-				onClick={ finishTour }
+			<SetupTourSpotlight
+				rect={ spotlightRect }
+				onClose={ finishTour }
+				closeLabel={ __( 'Close setup tour', 'rrze-answers' ) }
 			/>
 			<div
 				className="rrze-answers-setup-tour__card"
@@ -283,18 +491,23 @@ export function SetupTour( { initialStepId = '', onClose } ) {
 				aria-label={ currentStep.title }
 			>
 				<SetupTourStepPanel
-					stepNumber={ stepIndex + 1 }
-					totalSteps={ path.length }
+					stepNumber={ stepNumber }
+					totalSteps={ totalSteps }
 					title={ currentStep.title }
 					text={ stepText }
-					showPrevious={ stepIndex > 0 }
+					showPrevious={ globalStepIndex > 0 }
 					isLast={ isLast }
 					nextLabel={ nextLabel }
-					onPrevious={ () => goToStep( stepIndex - 1 ) }
+					onPrevious={ () =>
+						goToGlobalStep(
+							findPreviousStepIndex( allSteps, globalStepIndex )
+						)
+					}
 					onSkip={ finishTour }
 					onNext={ handleNext }
 				/>
 			</div>
-		</>
+		</>,
+		document.body
 	);
 }

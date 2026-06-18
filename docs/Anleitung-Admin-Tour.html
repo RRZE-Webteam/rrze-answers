@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Anleitung: Admin-Tour in einem WordPress-Plugin</title>
+  <style>
+    @page { margin: 2cm; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 11pt; line-height: 1.55; color: #1d2327; max-width: 800px; margin: 0 auto; padding: 24px; }
+    h1 { color: #2271b1; font-size: 24pt; border-bottom: 2px solid #2271b1; padding-bottom: 8px; }
+    h2 { color: #2271b1; font-size: 16pt; margin-top: 28px; page-break-after: avoid; }
+    h3 { font-size: 12pt; margin-top: 18px; }
+    p { margin: 0 0 10px; }
+    ul, ol { margin: 0 0 12px; padding-left: 22px; }
+    li { margin-bottom: 4px; }
+    pre, code { font-family: Menlo, Monaco, Consolas, monospace; font-size: 9pt; }
+    pre { background: #f6f7f7; border: 1px solid #dcdcde; border-radius: 4px; padding: 12px; overflow-x: auto; white-space: pre-wrap; page-break-inside: avoid; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0 16px; font-size: 10pt; }
+    th, td { border: 1px solid #c3c4c7; padding: 8px 10px; text-align: left; vertical-align: top; }
+    th { background: #f0f0f1; }
+    .subtitle { color: #646970; font-size: 12pt; margin-bottom: 24px; }
+    .footer { margin-top: 32px; padding-top: 12px; border-top: 1px solid #dcdcde; color: #646970; font-size: 9pt; }
+    .page-break { page-break-before: always; }
+  </style>
+</head>
+<body>
+
+<h1>Anleitung: Admin-Tour in einem WordPress-Plugin</h1>
+<p class="subtitle">Nach dem Vorbild des Plugins <strong>RRZE Answers</strong> – für die Umsetzung in anderen Plugins.</p>
+
+<h2>Überblick</h2>
+<p>RRZE Answers bietet <strong>zwei Tour-Typen</strong>:</p>
+<table>
+  <tr><th>Tour</th><th>Zweck</th><th>WordPress-Komponente</th></tr>
+  <tr><td><strong>Guided Tour</strong></td><td>Einführung mit mehreren Info-Seiten (Modal)</td><td><code>@wordpress/components</code> → <code>Guide</code></td></tr>
+  <tr><td><strong>Setup Tour</strong></td><td>Kontextuelle Schritt-für-Schritt-Anleitung auf der Einstellungsseite</td><td>Eigenes React-Overlay + <code>data-*</code>-Anker</td></tr>
+</table>
+
+<h2>1. Dateistruktur (rrze-answers)</h2>
+<pre>src/js/
+  rrze-answers-guided-tour.js   ← Einstiegspunkt, rendert React-App
+  setup-tour.js                 ← Kontextuelle Setup-Tour
+  setup-tour-step.js            ← Wiederverwendbares Schritt-Panel
+
+includes/Common/Settings/
+  Settings.php                  ← Script enqueue, AJAX, User-Meta
+  templates/settings-page.php   ← Buttons + React-Root
+  templates/tab-menu.php        ← data-rrze-tour auf Tabs
+  templates/options/*.php       ← data-rrze-tour auf Formularfeldern
+
+src/sass/rrze-answers-admin.scss
+build/rrze-answers-guided-tour.js</pre>
+
+<h2>2. PHP: Script laden und Konfiguration übergeben</h2>
+<p>In <code>Settings.php</code> werden Hooks registriert, das Script nur auf der Plugin-Seite geladen und per <code>wp_localize_script</code> Daten an JavaScript übergeben.</p>
+<p><strong>Für dein Plugin anpassen:</strong></p>
+<ol>
+  <li><code>admin_enqueue_scripts</code> – nur auf der relevanten Admin-Seite</li>
+  <li><code>wp_enqueue_script</code> mit <code>.asset.php</code> aus dem Build</li>
+  <li><code>wp_enqueue_style('wp-components')</code> und <code>dashicons</code></li>
+  <li><code>wp_set_script_translations()</code> für Übersetzungen</li>
+  <li><code>wp_localize_script()</code> mit autoStart, activeTab, settingsUrl, ajaxUrl, Nonces</li>
+  <li>Zwei AJAX-Handler zum Speichern in <strong>User Meta</strong> (<code>*_dismissed</code>)</li>
+</ol>
+<pre>add_action('admin_enqueue_scripts', [$this, 'enqueueGuidedTour']);
+add_action('wp_ajax_rrze_answers_dismiss_guided_tour', [$this, 'dismissGuidedTour']);
+add_action('wp_ajax_rrze_answers_dismiss_setup_tour', [$this, 'dismissSetupTour']);
+
+wp_localize_script('rrze-answers-guided-tour', 'rrzeAnswersGuide', [
+    'autoStart'      => !get_user_meta(..., 'rrze_answers_guided_tour_dismissed', true),
+    'autoStartSetup' => isset($_GET['rrze_setup_tour']),
+    'setupTourStepId'=> $setupTourStepId,
+    'settingsUrl'    => $this->getUrl(),
+    'activeTab'      => $this->getActiveTab()->slug,
+    'ajaxUrl'        => admin_url('admin-ajax.php'),
+    'nonce'          => wp_create_nonce('rrze_answers_guided_tour'),
+]);</pre>
+
+<h2>3. HTML: Root-Container und Start-Buttons</h2>
+<pre>&lt;button type="button" id="rrze-answers-start-guided-tour" class="page-title-action"&gt;
+    Guided tour
+&lt;/button&gt;
+&lt;button type="button" id="rrze-answers-start-setup-tour" class="page-title-action"&gt;
+    Setup tour
+&lt;/button&gt;
+&lt;div id="rrze-answers-guided-tour-root"&gt;&lt;/div&gt;</pre>
+<p>React mountet in <code>#rrze-answers-guided-tour-root</code>. Die Button-IDs müssen mit dem JavaScript übereinstimmen.</p>
+
+<h2>4. Anker im Markup: data-rrze-tour</h2>
+<p>Die Setup-Tour findet UI-Elemente per CSS-Selektor. Setze ein einheitliches Attribut:</p>
+<ul>
+  <li><strong>Tabs:</strong> <code>data-rrze-tour="tab-domains"</code></li>
+  <li><strong>Formularfelder:</strong> <code>data-rrze-tour="new-domain"</code> (bedingt im Template)</li>
+  <li><strong>Speichern-Button:</strong> <code>data-rrze-tour="save-settings"</code></li>
+</ul>
+<p><strong>Namenskonvention:</strong> Für ein anderes Plugin z. B. <code>data-meinplugin-tour="eindeutige-id"</code>.</p>
+
+<div class="page-break"></div>
+
+<h2>5. Guided Tour (einfache Einführung)</h2>
+<p>Die Guided Tour nutzt die WordPress-Komponente <code>Guide</code>:</p>
+<pre>import { Guide } from '@wordpress/components';
+
+&lt;Guide
+    className="rrze-answers-guided-tour"
+    finishButtonText={__('Get started', 'rrze-answers')}
+    onFinish={finishGuide}
+    pages={guidePages}
+/&gt;</pre>
+<p><strong>Schritte:</strong></p>
+<ol>
+  <li><code>Guide</code> aus <code>@wordpress/components</code> importieren</li>
+  <li><code>guidePages</code> als Array mit <code>image</code> und <code>content</code> definieren</li>
+  <li>Beim Beenden per AJAX <code>dismissed</code> in User Meta speichern</li>
+  <li><code>autoStart</code> nur, wenn der User die Tour noch nicht abgeschlossen hat</li>
+</ol>
+
+<h2>6. Setup Tour (kontextuelle Schritt-für-Schritt-Tour)</h2>
+
+<h3>6.1 Schritte definieren</h3>
+<pre>{
+    id: 'new-domain',
+    tab: 'domains',
+    target: '[data-rrze-tour="new-domain"]',
+    title: __('Add a domain', 'rrze-answers'),
+    text: __('Enter the URL...', 'rrze-answers'),
+    optional: true,
+}</pre>
+<table>
+  <tr><th>Feld</th><th>Bedeutung</th></tr>
+  <tr><td><code>id</code></td><td>Eindeutige Schritt-ID (für URL-Parameter)</td></tr>
+  <tr><td><code>tab</code></td><td>Tab-Slug, auf dem der Schritt sichtbar ist</td></tr>
+  <tr><td><code>target</code></td><td>CSS-Selektor zum DOM-Element</td></tr>
+  <tr><td><code>title</code> / <code>text</code></td><td>Anzeige im Dialog</td></tr>
+  <tr><td><code>optional</code></td><td>Schritt wird übersprungen, wenn target fehlt</td></tr>
+</table>
+
+<h3>6.2 Tab-Wechsel über URL</h3>
+<p>Wechselt ein Schritt den Tab, lädt die Seite neu mit:</p>
+<pre>?tab=import&amp;rrze_setup_tour=1&amp;rrze_setup_tour_step=import-categories</pre>
+<p>PHP liest <code>rrze_setup_tour_step</code> und übergibt <code>setupTourStepId</code> an JavaScript.</p>
+
+<h3>6.3 Highlight und Scroll</h3>
+<p>Das Ziel-Element erhält die CSS-Klasse <code>rrze-answers-setup-tour__highlight</code> und wird per <code>scrollIntoView</code> in den sichtbaren Bereich gescrollt.</p>
+
+<h3>6.4 Schritt-Panel</h3>
+<p><code>setup-tour-step.js</code> nutzt WordPress-<code>Button</code> mit Zurück, Überspringen und Weiter/Fertig.</p>
+
+<h2>7. CSS</h2>
+<ul>
+  <li><code>__overlay</code> – halbtransparenter Hintergrund (z-index: 99990)</li>
+  <li><code>__highlight</code> – blauer Outline um das Ziel-Element (z-index: 99995)</li>
+  <li><code>__card</code> – fixiertes Panel unten mittig (z-index: 100000)</li>
+</ul>
+<p>Styles in <code>src/sass/rrze-answers-admin.scss</code>, Build mit <code>sass</code> nach <code>build/css/</code>.</p>
+
+<h2>8. Build-Pipeline</h2>
+<pre>"build:js": "wp-scripts build ... src/js/rrze-answers-guided-tour.js"
+npm run build:js
+npm run build:css</pre>
+<p>Ergebnis: <code>build/rrze-answers-guided-tour.js</code> + <code>.asset.php</code></p>
+
+<div class="page-break"></div>
+
+<h2>9. Checkliste für ein neues Plugin</h2>
+
+<h3>Minimal (nur Guided Tour)</h3>
+<ul>
+  <li><code>src/js/mein-plugin-guided-tour.js</code> mit <code>Guide</code></li>
+  <li>React-Root + Start-Button im Admin-Template</li>
+  <li><code>enqueueGuidedTour()</code> in PHP</li>
+  <li>AJAX-Handler <code>dismiss_*_tour</code></li>
+  <li>User Meta <code>mein_plugin_guided_tour_dismissed</code></li>
+  <li>SCSS + Build</li>
+  <li>Strings mit <code>__()</code> und Textdomain</li>
+</ul>
+
+<h3>Mit Setup Tour zusätzlich</h3>
+<ul>
+  <li><code>data-meinplugin-tour</code> an Tabs, Feldern, Buttons</li>
+  <li><code>setup-tour.js</code> mit Schritt-Array</li>
+  <li>URL-Parameter für Tab-Wechsel</li>
+  <li><code>activeTab</code> per PHP an JS übergeben</li>
+  <li><code>buildTourPath()</code> – nur Schritte mit sichtbarem target</li>
+  <li>Overlay + Highlight-CSS</li>
+</ul>
+
+<h2>10. Typische Fehler</h2>
+<table>
+  <tr><th>Problem</th><th>Ursache</th><th>Lösung</th></tr>
+  <tr><td>Tour startet nicht</td><td>Script nicht geladen oder Root fehlt</td><td>Hook-Prüfung, Root-Container vorhanden?</td></tr>
+  <tr><td>Schritt fehlt</td><td>target nicht im DOM</td><td>data-*-Attribut setzen, optional: true</td></tr>
+  <tr><td>Falscher Tab</td><td>activeTab stimmt nicht</td><td>Slug in PHP und JS abgleichen</td></tr>
+  <tr><td>Tour bei jedem Besuch</td><td>User Meta nicht gespeichert</td><td>AJAX-Nonce und Handler prüfen</td></tr>
+  <tr><td>Unübersetzte Texte</td><td>Keine Sprachdateien</td><td>wp_set_script_translations() + Build</td></tr>
+</table>
+
+<h2>11. Zusammenfassung</h2>
+<p>RRZE Answers nutzt <strong>WordPress-eigene Bausteine</strong> (<code>Guide</code>, <code>Button</code>, <code>@wordpress/element</code>) statt einer externen Tour-Library. Die Guided Tour erklärt das Plugin allgemein; die Setup Tour verknüpft Schritte mit echten UI-Elementen über <code>data-rrze-tour</code>-Anker und Tab-Navigation per URL.</p>
+<p>Für ein anderes Plugin: Präfixe, Schritte und Anker anpassen, Build-Pipeline einrichten – die Architektur bleibt gleich.</p>
+
+<p class="footer">Erstellt aus der RRZE Answers Codebasis – github.com/RRZE-Webteam/rrze-answers</p>
+
+</body>
+</html>
