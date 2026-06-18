@@ -16,15 +16,7 @@ class Sync
     public function __construct()
     {
         $this->syncAPI = new SyncAPI();
-
-        // $this->type = $type;
-        // $this->frequency = $frequency;
-
-        // foreach (['faq', 'glossary', 'synonym'] as $type) {
-        //     add_action("rrze_answers_auto_sync_{$type}", function () use ($type) {
-        //         $this->runCronjob($type);
-        //     });
-        // }
+        add_action('rrze_answers_auto_sync', [$this, 'runCronjob']);
     }
 
     public function runCronjob()

@@ -577,31 +577,49 @@ class Tools
     }
 
 
+    public static function getLogfilePath(): string
+    {
+        return WP_CONTENT_DIR . '/rrze-answers.log';
+    }
+
+    /**
+     * @return string[]|false
+     */
+    public static function readLogfileLines(): array|false
+    {
+        $path = self::getLogfilePath();
+
+        if (!is_readable($path)) {
+            return false;
+        }
+
+        $lines = file($path, FILE_IGNORE_NEW_LINES);
+
+        return $lines !== false ? $lines : false;
+    }
+
     public static function logIt(string $msg): void
     {
-        global $wp_filesystem;
+        $path = self::getLogfilePath();
+        $msg = wp_date('Y-m-d H:i:s') . ' | ' . $msg;
 
-        if (!function_exists('WP_Filesystem')) {
-            require_once ABSPATH . 'wp-admin/includes/file.php';
-        }
-        WP_Filesystem();
-
-        $msg = wp_date("Y-m-d H:i:s") . ' | ' . $msg;
-
-        if ($wp_filesystem->exists(RRZEANSWERSLOGFILE)) {
-            $content = $wp_filesystem->get_contents(RRZEANSWERSLOGFILE);
-            $content = $msg . "\n" . $content;
-        } else {
-            $content = $msg;
+        $content = $msg;
+        if (is_readable($path)) {
+            $existing = file_get_contents($path);
+            if ($existing !== false && $existing !== '') {
+                $content = $msg . "\n" . $existing;
+            }
         }
 
-        $wp_filesystem->put_contents(RRZEANSWERSLOGFILE, $content, FS_CHMOD_FILE);
+        file_put_contents($path, $content, LOCK_EX);
     }
 
     public static function deleteLogfile(): void
     {
-        if (file_exists(RRZEANSWERSLOGFILE)) {
-            wp_delete_file(RRZEANSWERSLOGFILE);
+        $path = self::getLogfilePath();
+
+        if (file_exists($path)) {
+            wp_delete_file($path);
         }
     }
 
