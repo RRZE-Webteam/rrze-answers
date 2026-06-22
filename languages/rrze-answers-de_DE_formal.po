@@ -1166,6 +1166,10 @@ msgid "RRZE Answers is open source on"
 msgstr "RRZE Answers ist Open Source auf"
 
 #: src/js/rrze-answers-guided-tour.js
+msgid "Documentation"
+msgstr "Dokumentation"
+
+#: src/js/rrze-answers-guided-tour.js
 msgid "About RRZE Answers"
 msgstr "Über RRZE Answers"
 
