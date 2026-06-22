@@ -4,7 +4,12 @@ namespace RRZE\Answers\Common\Settings;
 
 defined('ABSPATH') || exit;
 
-$tour_attr = $option->getName() === 'new_url' ? ' data-rrze-tour="new-domain"' : '';
+$tour_attr = '';
+if ($option->getName() === 'new_url') {
+    $tour_attr = ' data-rrze-tour="new-domain"';
+} elseif ($option->getName() === 'custom_faq_slug') {
+    $tour_attr = ' data-rrze-tour="permalink-settings"';
+}
 ?>
 <tr valign="top">
     <th scope="row" class="rrze-wp-form-label">

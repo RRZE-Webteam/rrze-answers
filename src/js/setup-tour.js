@@ -8,6 +8,47 @@ import { SetupTourStepPanel } from './setup-tour-step';
 function getSetupSteps() {
 	return [
 		{
+			id: 'tab-permissions',
+			tab: 'permissions',
+			target: '[data-rrze-tour="tab-permissions"]',
+			title: __( 'Permissions tab', 'rrze-answers' ),
+			text: __(
+				'Start with Permissions. Here you decide whether other websites may import your FAQ and glossary content.',
+				'rrze-answers'
+			),
+		},
+		{
+			id: 'permissions-import',
+			tab: 'permissions',
+			target: '[data-rrze-tour="permissions-import"]',
+			title: __( 'Allow imports', 'rrze-answers' ),
+			text: __(
+				'Allowing imports is useful when you want to share content across FAU websites. Structured data is output only on your own site — your SEO will not be negatively affected.',
+				'rrze-answers'
+			),
+		},
+		{
+			id: 'tab-permalink_settings',
+			tab: 'permalink_settings',
+			target: '[data-rrze-tour="tab-permalink_settings"]',
+			title: __( 'Permalink settings tab', 'rrze-answers' ),
+			text: __(
+				'Permalink settings let you customize URLs and archive pages. These options are mainly for experienced users.',
+				'rrze-answers'
+			),
+		},
+		{
+			id: 'permalink-settings',
+			tab: 'permalink_settings',
+			target: '[data-rrze-tour="permalink-settings"]',
+			title: __( 'Permalink settings', 'rrze-answers' ),
+			text: __(
+				'Change slugs and archive pages only if you know what you are doing. The default values work well for most websites.',
+				'rrze-answers'
+			),
+			optional: true,
+		},
+		{
 			id: 'tab-domains',
 			tab: 'domains',
 			target: '[data-rrze-tour="tab-domains"]',
@@ -231,7 +272,7 @@ function resolveGlobalStepIndex( steps, stepId ) {
 		return resolved >= 0 ? resolved : 0;
 	}
 
-	return skipRedundantTabSteps( steps, 0 );
+	return 0;
 }
 
 function isTabStep( step ) {
@@ -260,22 +301,6 @@ function isStepTargetVisible( step ) {
 	}
 
 	return Boolean( findStepTarget( step ) );
-}
-
-function skipRedundantTabSteps( steps, startIndex ) {
-	let index = startIndex;
-
-	while ( index < steps.length ) {
-		const step = steps[ index ];
-
-		if ( ! step.id.startsWith( 'tab-' ) || ! isStepOnActiveTab( step ) ) {
-			break;
-		}
-
-		index++;
-	}
-
-	return index;
 }
 
 function findNextStepIndex( steps, fromIndex ) {
@@ -331,12 +356,12 @@ export function SetupTour( { initialStepId = '', onClose } ) {
 			const step = allSteps[ index ];
 
 			if ( step.tab !== rrzeAnswersGuide.activeTab ) {
-				if ( isTabStep( step ) && ! switchTab ) {
-					setGlobalStepIndex( index );
+				if ( switchTab ) {
+					window.location.href = buildSettingsUrl( step.tab, step.id );
 					return;
 				}
 
-				window.location.href = buildSettingsUrl( step.tab, step.id );
+				setGlobalStepIndex( index );
 				return;
 			}
 
@@ -456,17 +481,15 @@ export function SetupTour( { initialStepId = '', onClose } ) {
 			return;
 		}
 
-		if ( needsTabSwitch ) {
-			goToGlobalStep( globalStepIndex, { switchTab: true } );
-			return;
-		}
+		const nextIndex = findNextStepIndex( allSteps, globalStepIndex );
+		const nextStep = allSteps[ nextIndex ];
 
 		if ( isTabStep( currentStep ) && ! isStepOnActiveTab( currentStep ) ) {
-			if ( currentStep.id === 'tab-domains' ) {
-				goToGlobalStep(
-					findNextStepIndex( allSteps, globalStepIndex ),
-					{ switchTab: true }
-				);
+			const nextIndex = findNextStepIndex( allSteps, globalStepIndex );
+			const nextStep = allSteps[ nextIndex ];
+
+			if ( nextStep && nextStep.tab === currentStep.tab ) {
+				goToGlobalStep( nextIndex, { switchTab: true } );
 				return;
 			}
 
@@ -474,7 +497,17 @@ export function SetupTour( { initialStepId = '', onClose } ) {
 			return;
 		}
 
-		goToGlobalStep( nextStepIndex );
+		if ( needsTabSwitch ) {
+			goToGlobalStep( globalStepIndex, { switchTab: true } );
+			return;
+		}
+
+		if ( nextStep.tab !== rrzeAnswersGuide.activeTab ) {
+			goToGlobalStep( nextIndex, { switchTab: true } );
+			return;
+		}
+
+		goToGlobalStep( nextIndex );
 	};
 
 	return createPortal(

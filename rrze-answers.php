@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            1.4.3
+Version:            1.4.4
 Description:        Explain your content with FAQ, glossary, synonyms and placeholder.
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
@@ -177,10 +177,25 @@ function main(): Main
     return $instance;
 }
 
-function load_textdomain(): void
+function load_plugin_translations(): void
 {
-    load_plugin_textdomain(
-        'rrze-answers',
+    $domain = 'rrze-answers';
+    $locale = determine_locale();
+    $mofile = plugin()->getPath() . 'languages/' . $domain . '-' . $locale . '.mo';
+
+    if (!is_readable($mofile) && str_starts_with($locale, 'de')) {
+        $mofile = plugin()->getPath() . 'languages/' . $domain . '-de_DE.mo';
+    }
+
+    if (is_readable($mofile)) {
+        \unload_textdomain($domain);
+        \load_textdomain($domain, $mofile);
+
+        return;
+    }
+
+    \load_plugin_textdomain(
+        $domain,
         false,
         dirname(plugin_basename(__FILE__)) . '/languages'
     );
@@ -218,7 +233,7 @@ function loaded(): void
     plugin()->loaded();
 
     // Load the plugin textdomain for translations.
-    add_action('init', __NAMESPACE__ . '\load_textdomain');
+    load_plugin_translations();
 
     $wpCompatibe = is_wp_version_compatible(plugin()->getRequiresWP());
     $phpCompatible = is_php_version_compatible(plugin()->getRequiresPHP());

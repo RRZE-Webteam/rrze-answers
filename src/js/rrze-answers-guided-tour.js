@@ -1,5 +1,5 @@
 /**
- * RRZE Answers admin tours: overview Guide + contextual setup tour.
+ * RRZE Answers admin tours: About guide + contextual setup tour.
  */
 import { useEffect, useState } from '@wordpress/element';
 import { render } from '@wordpress/element';
@@ -74,6 +74,11 @@ function ToursApp( { autoStartGuide, autoStartSetup, setupTourStepId } ) {
 		dismissTour();
 	};
 
+	const githubUrl =
+		typeof rrzeAnswersGuide !== 'undefined'
+			? rrzeAnswersGuide.githubUrl
+			: 'https://github.com/RRZE-Webteam/rrze-answers';
+
 	const guidePages = [
 		{
 			image: <GuideIcon dashicon="dashicons-welcome-learn-more" />,
@@ -116,7 +121,7 @@ function ToursApp( { autoStartGuide, autoStartSetup, setupTourStepId } ) {
 					</h1>
 					<p className="rrze-answers-guided-tour__text">
 						{ __(
-							'Use the interactive setup tour to register domains, select categories, and synchronize FAQ and glossary content.',
+							'Use the setup tour to configure permissions, register domains, select categories, and synchronize FAQ and glossary content.',
 							'rrze-answers'
 						) }
 					</p>
@@ -139,6 +144,33 @@ function ToursApp( { autoStartGuide, autoStartSetup, setupTourStepId } ) {
 				</>
 			),
 		},
+		{
+			image: <GuideIcon dashicon="dashicons-heart" />,
+			content: (
+				<>
+					<h1 className="rrze-answers-guided-tour__heading">
+						{ __( 'Feedback and open source', 'rrze-answers' ) }
+					</h1>
+					<p className="rrze-answers-guided-tour__text">
+						{ __(
+							'We welcome your feedback. Everyone who wants to contribute is invited to take part.',
+							'rrze-answers'
+						) }
+					</p>
+					<p className="rrze-answers-guided-tour__text">
+						{ __( 'RRZE Answers is open source on', 'rrze-answers' ) }{ ' ' }
+						<a
+							href={ githubUrl }
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							GitHub
+						</a>
+						.
+					</p>
+				</>
+			),
+		},
 	];
 
 	return (
@@ -147,7 +179,7 @@ function ToursApp( { autoStartGuide, autoStartSetup, setupTourStepId } ) {
 				<Guide
 					className="rrze-answers-guided-tour"
 					contentLabel={ __(
-						'RRZE Answers guided tour',
+						'About RRZE Answers',
 						'rrze-answers'
 					) }
 					finishButtonText={ __( 'Get started', 'rrze-answers' ) }
