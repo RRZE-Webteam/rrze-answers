@@ -74,10 +74,9 @@ function ToursApp( { autoStartGuide, autoStartSetup, setupTourStepId } ) {
 		dismissTour();
 	};
 
-	const githubUrl =
-		typeof rrzeAnswersGuide !== 'undefined'
-			? rrzeAnswersGuide.githubUrl
-			: 'https://github.com/RRZE-Webteam/rrze-answers';
+	const githubUrl = 'https://github.com/RRZE-Webteam/rrze-answers';
+
+	const docuUrl = 'https://www.wp.rrze.fau.de/plugins/inhaltsseiten-mit-funktionen-erweitern/rrze-answers/';
 
 	const guidePages = [
 		{
@@ -161,12 +160,21 @@ function ToursApp( { autoStartGuide, autoStartSetup, setupTourStepId } ) {
 						{ __( 'RRZE Answers is open source on', 'rrze-answers' ) }{ ' ' }
 						<a
 							href={ githubUrl }
-							target="_blank"
+							target="_self"
 							rel="noopener noreferrer"
 						>
 							GitHub
 						</a>
 						.
+					</p>
+					<p className="rrze-answers-guided-tour__text">
+						<a
+							href={ docuUrl }
+							target="_self"
+							rel="noopener noreferrer"
+						>
+							{ __( 'Documentation', 'rrze-answers' ) }
+						</a>
 					</p>
 				</>
 			),
