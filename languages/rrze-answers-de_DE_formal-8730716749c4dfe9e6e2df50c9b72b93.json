@@ -7,7 +7,7 @@
 		"rrze-answers": {
 			"": {
 				"domain": "",
-				"lang": "de_DE",
+				"lang": "de_DE_formal",
 				"plural-forms": "nplurals=2; plural=n != 1;"
 			},
 			"Welcome to RRZE Answers": ["Willkommen bei RRZE Answers"],

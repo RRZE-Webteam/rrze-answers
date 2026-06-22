@@ -70,10 +70,7 @@ class Tab
     {
         $this->title = $title;
         $this->settings = $settings;
-
-        if ($this->slug === null) {
-            $this->slug = sanitize_title($title);
-        }
+        $this->slug = $slug ?? sanitize_title($title);
     }
 
     /**

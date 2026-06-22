@@ -3,8 +3,10 @@
 namespace RRZE\Answers\Common\Settings;
 
 defined('ABSPATH') || exit;
+
+$tour_attr = $option->getName() === 'api_active_rrze_faq' ? ' data-rrze-tour="permissions-import"' : '';
 ?>
-<tr valign="top">
+<tr valign="top"<?php echo $tour_attr; ?>>
     <th scope="row" class="rrze-wp-form-label">
         <label for="<?php echo $option->getIdAttribute(); ?>" <?php echo $option->getLabelClassAttribute(); ?>><?php echo $option->getLabel(); ?></label>
     </th>

@@ -344,7 +344,7 @@ class Settings
 
         $setupTourStepId = '';
         if (isset($_GET['rrze_setup_tour_step'])) {
-            $setupTourStepId = sanitize_key((string) wp_unslash($_GET['rrze_setup_tour_step']));
+            $setupTourStepId = sanitize_text_field((string) wp_unslash($_GET['rrze_setup_tour_step']));
         }
 
         wp_localize_script('rrze-answers-guided-tour', 'rrzeAnswersGuide', [
@@ -356,6 +356,7 @@ class Settings
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('rrze_answers_guided_tour'),
             'setupTourNonce' => wp_create_nonce('rrze_answers_setup_tour'),
+            'githubUrl' => 'https://github.com/RRZE-Webteam/rrze-answers',
         ]);
     }
 
