@@ -130,13 +130,14 @@ class ShortcodeSynonym
         if ($myPosts) {
             switch ($shortcode_tag) {
                 case 'fau_abbr':
+                    wp_enqueue_style('rrze-answers-css');
                     if (count($myPosts) == 1) {
                         $post = $myPosts[0];
-                        $output = '<abbr title="' . get_post_meta($post->ID, 'synonym', TRUE) . '" lang="' . get_post_meta($post->ID, 'titleLang', TRUE) . '">' . html_entity_decode($post->post_title) . '</abbr>';
+                        $output = '<abbr class="rrze-syn" title="' . get_post_meta($post->ID, 'synonym', TRUE) . '" lang="' . get_post_meta($post->ID, 'titleLang', TRUE) . '">' . html_entity_decode($post->post_title) . '</abbr>';
                     } else {
                         foreach ($myPosts as $post) {
                             $output .= '<div class="fau_abbr">';
-                            $output .= '<abbr title="' . get_post_meta($post->ID, 'synonym', TRUE) . '" lang="' . get_post_meta($post->ID, 'titleLang', TRUE) . '">' . html_entity_decode($post->post_title) . '</abbr>';
+                            $output .= '<abbr class="rrze-syn" title="' . get_post_meta($post->ID, 'synonym', TRUE) . '" lang="' . get_post_meta($post->ID, 'titleLang', TRUE) . '">' . html_entity_decode($post->post_title) . '</abbr>';
                             $output .= '</div>';
                         }
                     }
