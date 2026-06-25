@@ -50,6 +50,12 @@ $borderColor: #dfe6ec;
   padding: 1rem 1rem 0.5rem;
 }
 
+abbr.rrze-syn {
+  text-decoration: underline dotted;
+  text-underline-offset: 0.12em;
+  cursor: help;
+}
+
 .rrze-answers-term-content {
   margin-left: 1em;
 }

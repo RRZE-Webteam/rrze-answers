@@ -81,6 +81,7 @@ class Main
         // $this->adminMenue = new AdminMenu(); // in admin menu there is a maximum of 2 levels. Deactivated this workaround because it wouldn't be best practice.
         add_action('wp_enqueue_scripts', [$this, 'enqueueAssets']);
         add_action('admin_enqueue_scripts', [$this, 'enqueueAdminAssets']);
+        add_action('enqueue_block_editor_assets', [$this, 'enqueueBlockEditorStyles']);
         // add_action('wp_ajax_rrze_answers_get_categories', [$this, 'rrze_answers_get_categories_cb']);
 
         add_action('pre_update_option_rrze-answers', [$this, 'switchTask'], 10, 1);
@@ -632,8 +633,18 @@ class Main
         if (is_admin()) {
             wp_enqueue_script('rrze-answers-accordion');
             wp_enqueue_script('rrze-answers-search');
+        } elseif (is_singular()) {
+            $post = get_queried_object();
+            if ($post instanceof \WP_Post && str_contains($post->post_content, 'rrze-syn')) {
+                wp_enqueue_style('rrze-answers-css');
+            }
         }
 
+    }
+
+    public function enqueueBlockEditorStyles(): void
+    {
+        wp_enqueue_style('rrze-answers-css');
     }
 
     public function enqueueAdminAssets()
