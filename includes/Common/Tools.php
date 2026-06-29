@@ -92,7 +92,6 @@ class Tools
         }
 
         $out .= '<details'
-            . ($load_open ? ' open' : '')
             . ' id="' . esc_attr($anchor) . '"'
             . ' class="rrze-answers-item is-' . esc_attr($color) . '">';
 
@@ -206,7 +205,8 @@ class Tools
         string &$additional_class,
         bool &$bSchema,
         ?int $postID = null,
-        bool $search = false
+        bool $search = false,
+        bool $load_open = false
     ): string {
         $isFaq = ($type === 'faq');
         $isGlossary = ($type === 'glossary');
@@ -264,6 +264,7 @@ class Tools
             . ' class="' . esc_attr($classes) . '" role="region" aria-labelledby="' . esc_attr($headerID) . '"'
             . ' data-accordion="single"'
             . ' data-scroll-offset="96"'
+            . ($load_open ? ' data-load-open="true"' : '')
             . '>'
             . '<h2 id="' . esc_attr($headerID) . '" class="screen-reader-text">' . esc_html($title) . '</h2>'
             . $searchMarkup

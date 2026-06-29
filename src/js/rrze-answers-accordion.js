@@ -107,7 +107,7 @@ window.addEventListener('load', setHeaderVar);
         return true;
       }
 
-      // Initial: honor hash; otherwise keep only the first pre-open item
+      // Initial: honor hash; open first item only when load-open is enabled; otherwise all closed
       $items.each(function () {
         var $d = $(this);
         var $content = getContent($d);
@@ -119,10 +119,15 @@ window.addEventListener('load', setHeaderVar);
       });
 
       if (!openByHash(false)) {
-        var $firstOpen = $items.filter('[open]').first();
-        if ($firstOpen.length) {
-          closeSiblings($firstOpen, false);
-          setOpen($firstOpen, true, false);
+        if ($group.attr('data-load-open') === 'true') {
+          var $first = $items.first();
+          if ($first.length) {
+            openItem($first, false);
+          }
+        } else {
+          $items.each(function () {
+            setOpen($(this), false, false);
+          });
         }
       }
 

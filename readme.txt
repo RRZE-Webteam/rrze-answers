@@ -4,7 +4,7 @@ Tags: faq, glossary, synonym, placeholder, shortcode, block, widget
 Requires at least: 6.1
 Tested up to: 6.8
 Requires PHP: 8.2
-Stable tag: 1.4.6
+Stable tag: 1.4.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,8 +48,8 @@ Main features:
 
 
 === Inserting in the text editor ===
-In the classic text editor (TinyMCE), placeholders can be inserted via the shortcode menu/button. This inserts a `[placeholder: ...]` shortcode.
 The text editor provides a dedicated menu entry for inserting synonyms. From there, you can select any available synonym from a list and insert it directly into your content.
+In the classic text editor (TinyMCE), placeholders can be inserted via the shortcode menu/button. This inserts a `[placeholder: ...]` shortcode.
 
 
 === Shortcodes ===

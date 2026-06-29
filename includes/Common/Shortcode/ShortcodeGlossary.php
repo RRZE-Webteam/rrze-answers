@@ -665,7 +665,7 @@ class ShortcodeGlossary
             wp_enqueue_script('rrze-answers-search');
         }
 
-        $content = Tools::renderWrapper('glossary', $content, $headerID, $masonry, $color, $additional_class, $this->bSchema, $postID, $search);
+        $content = Tools::renderWrapper('glossary', $content, $headerID, $masonry, $color, $additional_class, $this->bSchema, $postID, $search, !empty($load_open));
 
         return $content;
 
