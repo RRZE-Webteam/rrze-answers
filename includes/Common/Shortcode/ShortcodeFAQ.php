@@ -743,7 +743,7 @@ class ShortcodeFAQ
             wp_enqueue_script('rrze-answers-search');
         }
 
-        $content = Tools::renderWrapper('faq', $content, $headerID, $masonry, $color, $additional_class, $this->bSchema, $postID, $search);
+        $content = Tools::renderWrapper('faq', $content, $headerID, $masonry, $color, $additional_class, $this->bSchema, $postID, $search, !empty($load_open));
 
         return $content;
 
