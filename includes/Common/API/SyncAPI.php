@@ -324,56 +324,133 @@ class SyncAPI
             $ret = [];
             $field_cat = 'rrze_' . $type . '_category';
             $field_tag = 'rrze_' . $type . '_tag';
-            $filter = '&filter[rrze_' . $type . '_category]=' . $categories;
+            $filter = '&filter[rrze_' . $type . '_category]=' . rawurlencode($categories);
             $page = 1;
+            $total_pages = null;
 
             do {
-                $request = $this->remoteGet($url . '/' . ENDPOINT . $type . '?page=' . $page . $filter);
+                $request = $this->remoteGet(
+                    $url . '/' . ENDPOINT . $type . '?per_page=100&page=' . $page . $filter,
+                    [],
+                    true,
+                    false
+                );
+
                 if (is_wp_error($request)) {
                     return $request;
                 }
 
-                $status_code = wp_remote_retrieve_response_code($request);
+                $status_code = (int) wp_remote_retrieve_response_code($request);
 
                 if ($status_code === 403) {
                     return new \WP_Error('remote_forbidden', __('Import not allowed by source site.', 'rrze-answers'));
                 }
 
-                if ($status_code == 200) {
-                    $entries = json_decode(wp_remote_retrieve_body($request), true);
-                    if (!empty($entries)) {
-                        if (!isset($entries[0])) {
-                            $entries = array($entries);
-                        }
-                        foreach ($entries as $entry) {
-                            if ($entry['source'] == 'website') {
-                                $content = $entry['content']['rendered'];
-                                $content = $this->absoluteUrl($content, $url);
-
-                                $remote_id = $entry['remoteID'] ?? $entry['id'];
-                                $category_names = $this->restTermsToNames($entry[$field_cat] ?? [], $field_cat);
-                                $tag_names = $this->restTermsToNames($entry[$field_tag] ?? [], $field_tag);
-
-                                $ret[$entry['id']] = array(
-                                    'id' => $entry['id'],
-                                    'title' => $entry['title']['rendered'],
-                                    'content' => $content,
-                                    'lang' => $entry['lang'],
-                                    $field_cat => $category_names,
-                                    'remoteID' => $remote_id,
-                                    'remoteChanged' => $entry['remoteChanged'],
-                                );
-                                $ret[$entry['id']][$field_tag] = implode(',', $tag_names);
-                                $ret[$entry['id']]['URLhasSlider'] = ((strpos($content, 'slider') !== false) ? $entry['link'] : false); // we cannot handle sliders, see note in Shortcode.php shortcodeOutput()
-                            }
-                        }
-                    }
+                if ($status_code !== 200) {
+                    return new \WP_Error(
+                        'remote_http_error',
+                        sprintf(
+                            /* translators: %d: HTTP response status code. */
+                            __('The source site returned HTTP status %d. Existing synchronized entries were preserved.', 'rrze-answers'),
+                            $status_code
+                        )
+                    );
                 }
+
+                $body = wp_remote_retrieve_body($request);
+                $entries = json_decode($body, true);
+
+                if (json_last_error() !== JSON_ERROR_NONE || !is_array($entries) || !array_is_list($entries)) {
+                    return new \WP_Error(
+                        'remote_invalid_response',
+                        __('The source site returned an invalid response. Existing synchronized entries were preserved.', 'rrze-answers')
+                    );
+                }
+
+                $response_total_pages = (int) wp_remote_retrieve_header($request, 'x-wp-totalpages');
+                if ($response_total_pages > 0) {
+                    if ($total_pages !== null && $total_pages !== $response_total_pages) {
+                        return new \WP_Error(
+                            'remote_inconsistent_pagination',
+                            __('The source content changed while it was being fetched. Existing synchronized entries were preserved.', 'rrze-answers')
+                        );
+                    }
+
+                    $total_pages = $response_total_pages;
+                }
+
+                if (empty($entries)) {
+                    if ($total_pages !== null && $page <= $total_pages) {
+                        return new \WP_Error(
+                            'remote_incomplete_response',
+                            __('The source site returned an incomplete response. Existing synchronized entries were preserved.', 'rrze-answers')
+                        );
+                    }
+
+                    break;
+                }
+
+                foreach ($entries as $entry) {
+                    if (
+                        !is_array($entry)
+                        || !array_key_exists('source', $entry)
+                        || !isset($entry['id'], $entry['title']['rendered'], $entry['content']['rendered'])
+                    ) {
+                        return new \WP_Error(
+                            'remote_invalid_entry',
+                            __('The source site returned an incomplete entry. Existing synchronized entries were preserved.', 'rrze-answers')
+                        );
+                    }
+
+                    if ($entry['source'] !== 'website') {
+                        continue;
+                    }
+
+                    $content = $this->absoluteUrl($entry['content']['rendered'], $url);
+                    if (is_wp_error($content)) {
+                        return $content;
+                    }
+
+                    $remote_id = $entry['remoteID'] ?? $entry['id'];
+                    $remote_changed = $entry['remoteChanged'] ?? null;
+
+                    if ($remote_id === '' || $remote_changed === null) {
+                        return new \WP_Error(
+                            'remote_invalid_entry',
+                            __('The source site returned an incomplete entry. Existing synchronized entries were preserved.', 'rrze-answers')
+                        );
+                    }
+
+                    if (isset($ret[$remote_id])) {
+                        return new \WP_Error(
+                            'remote_duplicate_entry',
+                            __('The source site returned duplicate entries. Existing synchronized entries were preserved.', 'rrze-answers')
+                        );
+                    }
+
+                    $category_names = $this->restTermsToNames($entry[$field_cat] ?? [], $field_cat);
+                    $tag_names = $this->restTermsToNames($entry[$field_tag] ?? [], $field_tag);
+
+                    $ret[$remote_id] = array(
+                        'id' => $entry['id'],
+                        'title' => $entry['title']['rendered'],
+                        'content' => $content,
+                        'lang' => $entry['lang'] ?? '',
+                        $field_cat => $category_names,
+                        'remoteID' => $remote_id,
+                        'remoteChanged' => $remote_changed,
+                        $field_tag => implode(',', $tag_names),
+                        'URLhasSlider' => strpos($content, 'slider') !== false
+                            ? ($entry['link'] ?? $url)
+                            : false,
+                    );
+                }
+
                 $page++;
-            } while (($status_code == 200) && (!empty($entries)));
+            } while ($total_pages === null || $page <= $total_pages);
 
             return $ret;
-        } catch (CustomException $e) {
+        } catch (\Throwable $e) {
             return new \WP_Error('getEntry_error', __('Error in getEntry().', 'rrze-answers'));
         }
     }
@@ -460,69 +537,103 @@ class SyncAPI
 
             // get all remoteIDs of stored FAQ to this source ( key = remoteID, value = postID )
             $aRemoteIDs = $this->getEntriesRemoteIDs($identifier, $type);
+            if (is_wp_error($aRemoteIDs)) {
+                return $aRemoteIDs;
+            }
 
-            $this->deleteTags($identifier, $type);
-            $this->deleteCategories($identifier, $type);
             $aEntries = $this->getEntries($url, $categories, $type);
             if (is_wp_error($aEntries)) {
                 return $aEntries;
             }
 
+            // An empty response can be legitimate, but it is not safe to use one
+            // request to remove an existing synchronized collection. Removing a
+            // domain remains the explicit mechanism for deleting all of its data.
+            if (empty($aEntries) && !empty($aRemoteIDs)) {
+                return new \WP_Error(
+                    'remote_empty_response',
+                    __('The source site returned no entries. Existing synchronized entries were preserved.', 'rrze-answers')
+                );
+            }
+
             // set FAQ
             foreach ($aEntries as $entry) {
-
-                $tagIDs = $this->setTags($entry[$field_tag], $identifier, $type);
-                $categoryIDs = $this->setCategories($entry[$field_cat], $identifier, $type);
-
                 if ($entry['URLhasSlider']) {
                     $aURLhasSlider[] = $entry['URLhasSlider'];
-                } else {
-                    if (isset($aRemoteIDs[$entry['remoteID']])) {
-                        if ($aRemoteIDs[$entry['remoteID']]['remoteChanged'] < $entry['remoteChanged']) {
-                            // update FAQ
-                            $post_id = wp_update_post(array(
-                                'ID' => $aRemoteIDs[$entry['remoteID']]['postID'],
-                                'post_name' => sanitize_title($entry['title']),
-                                'post_title' => $entry['title'],
-                                'post_content' => $entry['content'],
-                                'meta_input' => array(
-                                    'source' => $identifier,
-                                    'lang' => $entry['lang'],
-                                    'remoteID' => $entry['remoteID'],
-                                    'remoteChanged' => $entry['remoteChanged'],
-                                ),
-                                'tax_input' => array(
-                                    $field_cat => $categoryIDs,
-                                    $field_tag => $tagIDs,
-                                ),
-                            ));
-                            $iUpdated++;
-                        }
-                        unset($aRemoteIDs[$entry['remoteID']]);
-                    } else {
-                        // insert FAQ
-                        $post_id = wp_insert_post(array(
-                            'post_type' => $field_cpt,
+                    unset($aRemoteIDs[$entry['remoteID']]);
+                    continue;
+                }
+
+                $tagIDs = $this->setTags($entry[$field_tag], $identifier, $type);
+                if (is_wp_error($tagIDs)) {
+                    return $tagIDs;
+                }
+
+                $categoryIDs = $this->setCategories($entry[$field_cat], $identifier, $type);
+                if (is_wp_error($categoryIDs)) {
+                    return $categoryIDs;
+                }
+
+                if (isset($aRemoteIDs[$entry['remoteID']])) {
+                    if ($aRemoteIDs[$entry['remoteID']]['remoteChanged'] < $entry['remoteChanged']) {
+                        // update FAQ
+                        $post_id = wp_update_post(array(
+                            'ID' => $aRemoteIDs[$entry['remoteID']]['postID'],
                             'post_name' => sanitize_title($entry['title']),
                             'post_title' => $entry['title'],
                             'post_content' => $entry['content'],
-                            'comment_status' => 'closed',
-                            'ping_status' => 'closed',
-                            'post_status' => 'publish',
                             'meta_input' => array(
                                 'source' => $identifier,
                                 'lang' => $entry['lang'],
-                                'remoteID' => $entry['remoteID'] ?? $entry['id'],
+                                'remoteID' => $entry['remoteID'],
                                 'remoteChanged' => $entry['remoteChanged'],
-                                'sortfield' => '',
                             ),
                             'tax_input' => array(
                                 $field_cat => $categoryIDs,
                                 $field_tag => $tagIDs,
                             ),
-                        ));
-                        $iNew++;
+                        ), true);
+
+                        if (is_wp_error($post_id) || !$post_id) {
+                            return is_wp_error($post_id)
+                                ? $post_id
+                                : new \WP_Error('sync_update_failed', __('A synchronized entry could not be updated. No entries were deleted.', 'rrze-answers'));
+                        }
+
+                        $iUpdated++;
                     }
+
+                    unset($aRemoteIDs[$entry['remoteID']]);
+                } else {
+                    // insert FAQ
+                    $post_id = wp_insert_post(array(
+                        'post_type' => $field_cpt,
+                        'post_name' => sanitize_title($entry['title']),
+                        'post_title' => $entry['title'],
+                        'post_content' => $entry['content'],
+                        'comment_status' => 'closed',
+                        'ping_status' => 'closed',
+                        'post_status' => 'publish',
+                        'meta_input' => array(
+                            'source' => $identifier,
+                            'lang' => $entry['lang'],
+                            'remoteID' => $entry['remoteID'],
+                            'remoteChanged' => $entry['remoteChanged'],
+                            'sortfield' => '',
+                        ),
+                        'tax_input' => array(
+                            $field_cat => $categoryIDs,
+                            $field_tag => $tagIDs,
+                        ),
+                    ), true);
+
+                    if (is_wp_error($post_id) || !$post_id) {
+                        return is_wp_error($post_id)
+                            ? $post_id
+                            : new \WP_Error('sync_insert_failed', __('A synchronized entry could not be created. No entries were deleted.', 'rrze-answers'));
+                    }
+
+                    $iNew++;
                 }
             }
 
@@ -538,19 +649,11 @@ class SyncAPI
                 'iDeleted' => $iDeleted,
                 'URLhasSlider' => $aURLhasSlider,
             );
-        } catch (CustomException $e) {
+        } catch (\Throwable $e) {
             return new \WP_Error('setFAQ_error', __('Error in setEntries().', 'rrze-answers'));
         }
     }
 
-    /**
-     * Get remote content
-     * 
-     * @param string $url
-     * @param array $args
-     * @param bool $safe
-     * @return mixed
-     */
     /**
      * Normalize REST taxonomy values (term IDs or legacy names) to term names.
      *
@@ -583,10 +686,19 @@ class SyncAPI
         return $names;
     }
 
-    private function remoteGet(string $url, array $args = [], bool $safe = true)
+    /**
+     * Get remote content.
+     *
+     * @param string $url
+     * @param array  $args
+     * @param bool   $safe
+     * @param bool   $use_cache
+     * @return array|\WP_Error
+     */
+    private function remoteGet(string $url, array $args = [], bool $safe = true, bool $use_cache = true)
     {
         $cache_key = 'rrze_remote_' . md5($url);
-        $cached = get_transient($cache_key);
+        $cached = $use_cache ? get_transient($cache_key) : false;
 
         if (false !== $cached) {
             return $cached;
@@ -606,13 +718,14 @@ class SyncAPI
                 $ret = wp_remote_get($url, $args);
             }
 
-            // Cache only if this is not a WP_Error
-            if (!is_wp_error($ret)) {
+            // Only successful responses are safe to cache. Content sync bypasses
+            // this cache so deletion decisions are never based on stale pages.
+            if ($use_cache && !is_wp_error($ret) && (int) wp_remote_retrieve_response_code($ret) === 200) {
                 set_transient($cache_key, $ret, 10 * MINUTE_IN_SECONDS);
             }
 
             return $ret;
-        } catch (CustomException $e) {
+        } catch (\Throwable $e) {
             return new \WP_Error('remoteGet_error', __('Error in remoteGet().', 'rrze-answers'));
         }
     }
