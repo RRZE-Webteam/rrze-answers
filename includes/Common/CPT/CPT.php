@@ -263,7 +263,9 @@ abstract class CPT
 
     public function filter_taxonomy_template($template)
     {
-        foreach ($this->templates['taxonomy'] as $type => $file) {
+        $taxonomy_templates = $this->templates['taxonomy'] ?? [];
+
+        foreach ($taxonomy_templates as $type => $file) {
             $taxonomy_name = $this->post_type . '_' . $type;
             if (is_tax($taxonomy_name)) {
                 return plugin()->getPath() . 'templates/' . $file;

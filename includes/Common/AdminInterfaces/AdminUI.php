@@ -360,6 +360,7 @@ abstract class AdminUI
                 'selected' => sanitize_text_field(wp_unslash((string)$selected)),
                 'hierarchical' => true,
                 'hide_empty' => true,
+                'hide_if_empty' => true,
                 'show_count' => true,
             ]);
         }

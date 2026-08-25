@@ -102,7 +102,10 @@ class AdminUI_QA extends AdminUI
             );
         }
         $output .= '</select>';
-        $output .= '<p class="description">' . esc_html__('Language of this FAQ', 'rrze-answers') . '</p>';
+        $description = $this->post_type === 'rrze_faq'
+            ? __('Language of this FAQ', 'rrze-answers')
+            : __('Language of this glossary entry', 'rrze-answers');
+        $output .= '<p class="description">' . esc_html($description) . '</p>';
 
         echo wp_kses_post($output);
     }

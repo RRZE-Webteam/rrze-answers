@@ -97,7 +97,7 @@ class CPTGlossary extends CPT
 
         $slug = !empty($options['custom_glossary_slug'])
             ? sanitize_title($options['custom_glossary_slug'])
-            : 'faq';
+            : $this->slug_options['default_slug'];
 
         // CPT Single 404
         if (

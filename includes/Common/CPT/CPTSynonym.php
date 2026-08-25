@@ -56,7 +56,7 @@ class CPTSynonym extends CPT
 
         $slug = !empty($options['custom_synonym_slug'])
             ? sanitize_title($options['custom_synonym_slug'])
-            : 'glossary';
+            : $this->slug_options['default_slug'];
 
         $redirect_id = (int) ($options['redirect_archivpage_uri_synonym'] ?? 0);
 
@@ -76,7 +76,7 @@ class CPTSynonym extends CPT
 
         $slug = !empty($options['custom_synonym_slug'])
             ? sanitize_title($options['custom_synonym_slug'])
-            : 'faq';
+            : $this->slug_options['default_slug'];
 
         // CPT Single 404
         if (
