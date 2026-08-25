@@ -433,6 +433,152 @@ final class SyncAPITest extends WP_UnitTestCase
         self::assertNotNull($this->findSynchronizedPost('faq', 20));
     }
 
+    public function testNewSourceTermNameFieldsTakePrecedenceOverNativeIds(): void
+    {
+        $remoteEntry = $this->remoteEntry('faq', 10, 100, 'New contract entry');
+        $remoteEntry['rrze_faq_category'] = [9001];
+        $remoteEntry['rrze_faq_tag'] = [9002];
+        $remoteEntry['rrze_answers_category_names'] = ['New contract category'];
+        $remoteEntry['rrze_answers_tag_names'] = ['New contract tag'];
+
+        $this->mockHttpPages([
+            1 => $this->httpResponse([$remoteEntry], 200, 1),
+        ]);
+
+        $result = $this->synchronize('faq');
+        $postId = $this->findSynchronizedPost('faq', 10);
+
+        self::assertIsArray($result);
+        self::assertNotNull($postId);
+        self::assertSame(
+            ['New contract category'],
+            wp_get_post_terms($postId, 'rrze_faq_category', ['fields' => 'names'])
+        );
+        self::assertSame(
+            ['New contract tag'],
+            wp_get_post_terms($postId, 'rrze_faq_tag', ['fields' => 'names'])
+        );
+    }
+
+    public function testLegacySourceNativeIdsAreResolvedFromEmbeddedRemoteTerms(): void
+    {
+        $remoteEntry = $this->remoteEntry('faq', 10, 100, 'Legacy embedded entry');
+        $remoteEntry['rrze_faq_category'] = [9001];
+        $remoteEntry['rrze_faq_tag'] = [9002];
+        $remoteEntry['_embedded']['wp:term'] = [
+            [
+                [
+                    'id' => 9001,
+                    'name' => 'Legacy embedded category',
+                    'taxonomy' => 'rrze_faq_category',
+                ],
+            ],
+            [
+                [
+                    'id' => 9002,
+                    'name' => 'Legacy embedded tag',
+                    'taxonomy' => 'rrze_faq_tag',
+                ],
+            ],
+        ];
+
+        $this->mockHttpPages([
+            1 => $this->httpResponse([$remoteEntry], 200, 1),
+        ]);
+
+        $result = $this->synchronize('faq');
+        $postId = $this->findSynchronizedPost('faq', 10);
+
+        self::assertIsArray($result);
+        self::assertNotNull($postId);
+        self::assertSame(
+            ['Legacy embedded category'],
+            wp_get_post_terms($postId, 'rrze_faq_category', ['fields' => 'names'])
+        );
+        self::assertSame(
+            ['Legacy embedded tag'],
+            wp_get_post_terms($postId, 'rrze_faq_tag', ['fields' => 'names'])
+        );
+    }
+
+    public function testLegacySourceIdsFallBackToRemoteTaxonomyEndpoints(): void
+    {
+        $remoteEntry = $this->remoteEntry('faq', 10, 100, 'Legacy fallback entry');
+        $remoteEntry['rrze_faq_category'] = [9001];
+        $remoteEntry['rrze_faq_tag'] = [9002];
+
+        $this->mockHttpRequests(
+            function (array $requestArguments, string $url) use ($remoteEntry): array {
+                unset($requestArguments);
+                $path = (string) wp_parse_url($url, PHP_URL_PATH);
+
+                if (str_ends_with($path, '/rrze_faq_category')) {
+                    return $this->httpResponse([
+                        [
+                            'id' => 9001,
+                            'name' => 'Legacy endpoint category',
+                            'taxonomy' => 'rrze_faq_category',
+                        ],
+                    ], 200, 1);
+                }
+
+                if (str_ends_with($path, '/rrze_faq_tag')) {
+                    return $this->httpResponse([
+                        [
+                            'id' => 9002,
+                            'name' => 'Legacy endpoint tag',
+                            'taxonomy' => 'rrze_faq_tag',
+                        ],
+                    ], 200, 1);
+                }
+
+                return $this->httpResponse([$remoteEntry], 200, 1);
+            }
+        );
+
+        $result = $this->synchronize('faq');
+        $postId = $this->findSynchronizedPost('faq', 10);
+
+        self::assertIsArray($result);
+        self::assertNotNull($postId);
+        self::assertSame(
+            ['Legacy endpoint category'],
+            wp_get_post_terms($postId, 'rrze_faq_category', ['fields' => 'names'])
+        );
+        self::assertSame(
+            ['Legacy endpoint tag'],
+            wp_get_post_terms($postId, 'rrze_faq_tag', ['fields' => 'names'])
+        );
+    }
+
+    public function testIncompleteLegacyTaxonomyLookupPreservesExistingEntries(): void
+    {
+        $existingPostId = $this->createSynchronizedPost('faq', 20, 100);
+        $remoteEntry = $this->remoteEntry('faq', 50, 100, 'Unresolvable legacy entry');
+        $remoteEntry['rrze_faq_category'] = [9001];
+        $remoteEntry['rrze_faq_tag'] = [];
+
+        $this->mockHttpRequests(
+            function (array $requestArguments, string $url) use ($remoteEntry): array {
+                unset($requestArguments);
+                $path = (string) wp_parse_url($url, PHP_URL_PATH);
+
+                if (str_ends_with($path, '/rrze_faq_category')) {
+                    return $this->httpResponse([], 200, 0);
+                }
+
+                return $this->httpResponse([$remoteEntry], 200, 1);
+            }
+        );
+
+        $result = $this->synchronize('faq');
+
+        self::assertWPError($result);
+        self::assertSame('remote_incomplete_taxonomy_response', $result->get_error_code());
+        self::assertSame('publish', get_post_status($existingPostId));
+        self::assertNull($this->findSynchronizedPost('faq', 50));
+    }
+
     public function testRemoteContentUrlsAreNormalizedAtTheFetcherBoundary(): void
     {
         $fetcher = new RemoteEntryFetcher();

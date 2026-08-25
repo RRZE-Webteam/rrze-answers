@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace RRZE\Answers\Common\Sync;
 
+use RRZE\Answers\Common\API\REST\EntryTaxonomyFields;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -15,6 +17,16 @@ defined('ABSPATH') || exit;
  */
 final class RemoteEntryFetcher
 {
+    private RemoteTaxonomyResolver $taxonomyResolver;
+
+    /**
+     * Create a fetcher with a backwards-compatible taxonomy resolver.
+     */
+    public function __construct(?RemoteTaxonomyResolver $taxonomyResolver = null)
+    {
+        $this->taxonomyResolver = $taxonomyResolver ?? new RemoteTaxonomyResolver();
+    }
+
     /**
      * Fetch a complete remote collection indexed by its stable remote IDs.
      *
@@ -30,6 +42,7 @@ final class RemoteEntryFetcher
     ) {
         try {
             $remoteEntriesById = [];
+            $this->taxonomyResolver->reset();
             $categoryTaxonomy = 'rrze_' . $contentType . '_category';
             $tagTaxonomy = 'rrze_' . $contentType . '_tag';
             $categoryFilter = '&filter[' . $categoryTaxonomy . ']=' . rawurlencode($selectedCategories);
@@ -39,7 +52,8 @@ final class RemoteEntryFetcher
             do {
                 $response = $this->request(
                     $sourceUrl . '/' . ENDPOINT . $contentType
-                        . '?per_page=100&page=' . $currentPage . $categoryFilter
+                        . '?per_page=100&page=' . $currentPage
+                        . '&_embed=wp:term' . $categoryFilter
                 );
 
                 if (is_wp_error($response)) {
@@ -249,14 +263,25 @@ final class RemoteEntryFetcher
             );
         }
 
-        $categoryNames = $this->termsToNames(
-            $remoteEntry[$categoryTaxonomy] ?? [],
-            $categoryTaxonomy
+        $categoryNames = $this->taxonomyResolver->resolveNames(
+            $remoteEntry,
+            $sourceUrl,
+            $categoryTaxonomy,
+            EntryTaxonomyFields::CATEGORY_NAMES_FIELD
         );
-        $tagNames = $this->termsToNames(
-            $remoteEntry[$tagTaxonomy] ?? [],
-            $tagTaxonomy
+        if (is_wp_error($categoryNames)) {
+            return $categoryNames;
+        }
+
+        $tagNames = $this->taxonomyResolver->resolveNames(
+            $remoteEntry,
+            $sourceUrl,
+            $tagTaxonomy,
+            EntryTaxonomyFields::TAG_NAMES_FIELD
         );
+        if (is_wp_error($tagNames)) {
+            return $tagNames;
+        }
 
         return [
             'id' => $remoteEntry['id'],
@@ -298,37 +323,6 @@ final class RemoteEntryFetcher
         }
 
         return trailingslashit($sourceUrl) . ltrim($url, '/');
-    }
-
-    /**
-     * Normalize REST taxonomy values (term IDs or legacy names) to names.
-     *
-     * @param mixed $terms
-     * @return string[]
-     */
-    private function termsToNames($terms, string $taxonomy): array
-    {
-        if (!is_array($terms)) {
-            return [];
-        }
-
-        $names = [];
-
-        foreach ($terms as $term) {
-            if (is_numeric($term)) {
-                $termObject = get_term((int) $term, $taxonomy);
-                if ($termObject && !is_wp_error($termObject)) {
-                    $names[] = $termObject->name;
-                }
-                continue;
-            }
-
-            if (is_string($term) && $term !== '') {
-                $names[] = $term;
-            }
-        }
-
-        return $names;
     }
 
     /**

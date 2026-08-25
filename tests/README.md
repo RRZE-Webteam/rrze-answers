@@ -46,3 +46,6 @@ The suite runs WordPress in multisite mode through `phpunit.xml.dist`.
   isolation, taxonomy failures, post-write failures, compensating rollback,
   recoverable Trash cleanup, term ownership, remote URL normalization and
   multisite isolation across the fetcher, store and SyncAPI facade boundaries.
+- Producer/consumer REST compatibility for native source term IDs, WordPress
+  embedded terms, remote taxonomy lookup and the collision-free name fields
+  emitted by current plugin versions.
