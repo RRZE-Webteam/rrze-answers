@@ -53,7 +53,7 @@ abstract class AdminUI
         }
 
         // Core hooks
-        add_filter('pre_get_posts', [$this, 'preGetPosts']);
+        add_action('pre_get_posts', [$this, 'preGetPosts']);
         add_filter('enter_title_here', [$this, 'enterTitleHere'], 10, 2);
         add_action('admin_menu', [$this, 'maybeToggleEditor']);
 
@@ -70,9 +70,12 @@ abstract class AdminUI
             add_filter("manage_edit-{$this->post_type}_tag_columns", [$this, 'taxColumns']);
             add_action("manage_{$this->post_type}_tag_custom_column", [$this, 'taxColumnValue'], 10, 3);
 
-            add_action('restrict_manage_posts', [$this, 'renderListFilters'], 10, 1);
-            add_filter('parse_query', [$this, 'applyListFilters'], 10);
         }
+
+        // Source filtering is useful for every synchronized post type, including
+        // post types without taxonomies such as synonyms.
+        add_action('restrict_manage_posts', [$this, 'renderListFilters'], 10, 1);
+        add_action('parse_query', [$this, 'applyListFilters'], 10);
 
         add_action('add_meta_boxes', [$this, 'registerMetaboxes']);
         add_action("save_post_{$this->post_type}", [$this, 'savePostMeta']);
@@ -114,11 +117,11 @@ abstract class AdminUI
             $q->set('order', $this->features['default_order']);
         }
 
-        // Meta-Key basiertes Sorting
+        // Meta-based sorting via WP_Query. The EXISTS/NOT EXISTS clauses keep
+        // legacy posts without the selected meta key in the result set.
         $orderby = (string) $q->get('orderby');
         if (in_array($orderby, $this->features['sortable_meta_keys'], true)) {
-            $q->set('meta_key', $orderby);
-            $q->set('orderby', 'meta_value');
+            $this->applyMetaSorting($q, $orderby);
         }
     }
 
@@ -196,16 +199,16 @@ abstract class AdminUI
         $this->listFiltersUI();
     }
 
-    public function applyListFilters(\WP_Query $q): \WP_Query
+    public function applyListFilters(\WP_Query $q): void
     {
         if (!(is_admin() && $q->is_main_query())) {
-            return $q;
+            return;
         }
         $post_type = $q->get('post_type');
         if ($post_type !== $this->post_type && !(is_array($post_type) && in_array($this->post_type, $post_type, true))) {
-            return $q;
+            return;
         }
-        return $this->applyFiltersToQuery($q);
+        $this->applyFiltersToQuery($q);
     }
 
     public function registerMetaboxes(): void
@@ -365,31 +368,14 @@ abstract class AdminUI
             ]);
         }
 
-        $selectedVal = $_GET['rrze_answers_source'] ?? '';
-        $posts = get_posts([
-            'post_type' => $this->post_type,
-            'post_status' => 'publish',
-            'numberposts' => -1,
-            'fields' => 'ids',
-            'meta_key' => 'source',
-            'orderby' => 'meta_value',
-        ]);
-
-        $sources = [];
-        foreach ($posts as $pid) {
-            $val = get_post_meta((int)$pid, 'source', true);
-            if ($val !== '') $sources[] = (string)$val;
-        }
-
-        $sources = array_values(array_unique($sources, SORT_STRING));
-        sort($sources, SORT_NATURAL | SORT_FLAG_CASE);
+        $selectedVal = sanitize_text_field(wp_unslash((string) ($_GET['rrze_answers_source'] ?? '')));
+        $sources = $this->getSourceChoices();
 
         if (count($sources) > 1) {
             echo "<select name='rrze_answers_source'>";
             echo '<option value="">' . esc_html__('All Sources', 'rrze-answers') . '</option>';
             foreach ($sources as $term) {
-                $sel = ($term === $selectedVal) ? 'selected' : '';
-                echo "<option value='" . esc_attr($term) . "' $sel>" . esc_html($term) . "</option>";
+                echo '<option value="' . esc_attr($term) . '" ' . selected($term, $selectedVal, false) . '>' . esc_html($term) . '</option>';
             }
             echo '</select>';
         }
@@ -421,19 +407,122 @@ abstract class AdminUI
 
         $source = $_GET['rrze_answers_source'] ?? '';
         if ($source !== '' && $source !== '0') {
-            $meta_query = [[
-                'key' => 'source',
-                'value' => sanitize_text_field(wp_unslash((string)$source)),
-                'compare' => '=',
-            ]];
+            $source = sanitize_text_field(wp_unslash((string) $source));
+            $source_query = $source === 'website'
+                ? [
+                    'relation' => 'OR',
+                    [
+                        'key' => 'source',
+                        'value' => 'website',
+                        'compare' => '=',
+                    ],
+                    [
+                        'key' => 'source',
+                        'compare' => 'NOT EXISTS',
+                    ],
+                    [
+                        'key' => 'source',
+                        'value' => '',
+                        'compare' => '=',
+                    ],
+                ]
+                : [[
+                    'key' => 'source',
+                    'value' => $source,
+                    'compare' => '=',
+                ]];
+
             $existing_meta = $q->get('meta_query');
             if (is_array($existing_meta) && !empty($existing_meta)) {
-                $meta_query = array_merge($existing_meta, $meta_query);
+                $source_query = [
+                    'relation' => 'AND',
+                    $existing_meta,
+                    $source_query,
+                ];
             }
-            $q->set('meta_query', $meta_query);
+            $q->set('meta_query', $source_query);
         }
 
         return $q;
+    }
+
+    /**
+     * Configure a legacy-safe meta sort through WP_Query only.
+     */
+    protected function applyMetaSorting(\WP_Query $q, string $meta_key): void
+    {
+        $sort_clause = 'rrze_answers_sort_value';
+        $sort_query = [
+            'relation' => 'OR',
+            $sort_clause => [
+                'key' => $meta_key,
+                'compare' => 'EXISTS',
+                'type' => 'CHAR',
+            ],
+            'rrze_answers_sort_missing' => [
+                'key' => $meta_key,
+                'compare' => 'NOT EXISTS',
+            ],
+        ];
+
+        $existing_meta = $q->get('meta_query');
+        if (is_array($existing_meta) && !empty($existing_meta)) {
+            $sort_query = [
+                'relation' => 'AND',
+                $existing_meta,
+                $sort_query,
+            ];
+        }
+
+        $order = strtoupper((string) $q->get('order')) === 'DESC' ? 'DESC' : 'ASC';
+        $q->set('meta_query', $sort_query);
+        $q->set('orderby', [
+            $sort_clause => $order,
+            'title' => 'ASC',
+        ]);
+    }
+
+    /**
+     * Return source identifiers from the plugin settings without scanning all
+     * posts in the list table request.
+     *
+     * @return string[]
+     */
+    protected function getSourceChoices(): array
+    {
+        if (!(new \RRZE\Answers\Common\Tools())->hasSync($this->post_type)) {
+            return [];
+        }
+
+        $sources = ['website'];
+        $options = get_option('rrze-answers', []);
+        $domains = is_array($options) && isset($options['registeredDomains']) && is_array($options['registeredDomains'])
+            ? $options['registeredDomains']
+            : [];
+
+        foreach (array_keys($domains) as $identifier) {
+            $identifier = sanitize_text_field((string) $identifier);
+            if ($identifier !== '' && $identifier !== 'website') {
+                $sources[] = $identifier;
+            }
+        }
+
+        $sources = array_values(array_unique($sources, SORT_STRING));
+        sort($sources, SORT_NATURAL | SORT_FLAG_CASE);
+
+        return $sources;
+    }
+
+    protected function getPostSourceLabel(int $post_id): string
+    {
+        $source = (string) get_post_meta($post_id, 'source', true);
+        return $source !== '' ? $source : 'website';
+    }
+
+    protected function getPostLanguage(int $post_id, string $meta_key = 'lang'): string
+    {
+        $lang = (string) get_post_meta($post_id, $meta_key, true);
+        return $lang !== '' ? $lang : substr(get_locale(), 0, 2);
     }
 
     protected function metaboxes(): array

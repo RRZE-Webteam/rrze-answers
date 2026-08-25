@@ -36,7 +36,7 @@ class AdminUI_QA extends AdminUI
             'has_taxonomies' => true,
             'default_orderby' => 'title',
             'default_order' => 'ASC',
-            'sortable_meta_keys' => ['sortfield'],
+            'sortable_meta_keys' => ['lang', 'sortfield', 'source'],
             'sync_readonly' => true,
             'show_shortcode_box' => true,
             'lang_quick_bulk_edit' => true,
@@ -235,13 +235,13 @@ class AdminUI_QA extends AdminUI
 
     protected function listTableSortableColumns(array $cols): array
     {
-        $cols["taxonomy-{$this->post_type}_category"] = __('Category', 'rrze-answers');
-        $cols["taxonomy-{$this->post_type}_tag"] = __('Tag', 'rrze-answers');
-        $cols['lang'] = __('Language', 'rrze-answers');
-        $cols['sortfield'] = __('Sort by', 'rrze-answers');
+        // Taxonomy columns are intentionally not marked sortable: WordPress
+        // does not provide taxonomy sorting for post list tables via WP_Query.
+        $cols['lang'] = 'lang';
+        $cols['sortfield'] = 'sortfield';
 
         if ((new Tools())->hasSync($this->post_type)) {
-            $cols['source'] = __('Source', 'rrze-answers');
+            $cols['source'] = 'source';
         }
         return $cols;
     }
@@ -249,9 +249,9 @@ class AdminUI_QA extends AdminUI
     protected function renderListTableColumn(string $col, int $post_id): void
     {
         if ($col === 'lang') {
-            echo esc_html((string) get_post_meta($post_id, 'lang', true));
+            echo esc_html($this->getPostLanguage($post_id));
         } elseif ($col === 'source' && (new Tools())->hasSync($this->post_type)) {
-            echo esc_html((string) get_post_meta($post_id, 'source', true));
+            echo esc_html($this->getPostSourceLabel($post_id));
         } elseif ($col === 'sortfield') {
             echo esc_html((string) get_post_meta($post_id, 'sortfield', true));
         }
@@ -271,11 +271,13 @@ class AdminUI_QA extends AdminUI
     protected function renderTaxonomyColumn(string $col, int $term_id): ?string
     {
         if ($col === 'lang') {
-            return esc_html((string) get_term_meta($term_id, 'lang', true));
+            $lang = (string) get_term_meta($term_id, 'lang', true);
+            return esc_html($lang !== '' ? $lang : substr(get_locale(), 0, 2));
         }
 
         if ($col === 'source' && (new Tools())->hasSync($this->post_type)) {
-            return esc_html((string) get_term_meta($term_id, 'source', true));
+            $source = (string) get_term_meta($term_id, 'source', true);
+            return esc_html($source !== '' ? $source : 'website');
         }
 
         return null;

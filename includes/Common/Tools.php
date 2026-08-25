@@ -467,6 +467,13 @@ class Tools
 
     public function hasSync($post_type): bool
     {
+        static $cache = [];
+
+        $post_type = sanitize_key((string) $post_type);
+        if (array_key_exists($post_type, $cache)) {
+            return $cache[$post_type];
+        }
+
         $query = new WP_Query([
             'post_type' => $post_type,
             'post_status' => 'publish',
@@ -482,7 +489,9 @@ class Tools
             'no_found_rows' => true,
         ]);
 
-        return $query->have_posts();
+        $cache[$post_type] = $query->have_posts();
+
+        return $cache[$post_type];
     }
 
     public static function getPageList(): array
