@@ -36,3 +36,11 @@ composer test
 ```
 
 The suite runs WordPress in multisite mode through `phpunit.xml.dist`.
+
+## Current integration coverage
+
+- Admin list tables for FAQ, glossary and synonym entries, including legacy
+  metadata, source filters, sorting and empty taxonomy filters.
+- FAQ and glossary synchronization with simulated WordPress HTTP responses,
+  including transport failures, malformed responses, pagination, source
+  isolation, taxonomy failures, post-write failures and multisite isolation.

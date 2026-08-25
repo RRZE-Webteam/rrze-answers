@@ -56,7 +56,10 @@ class Main
 
     public function __construct()
     {
-        $this->cpt();
+        // Construct translated CPT definitions on init. Their registration
+        // callbacks are added at priority 0 and therefore still run during the
+        // same init cycle, after the textdomain has loaded at priority -2.
+        add_action('init', [$this, 'cpt'], -1);
         add_action('init', [$this, 'onInit']);
         add_filter('wp_kses_allowed_html', [$this, 'my_custom_allowed_html'], 10, 2);
         add_filter('the_content', [$this, 'renderInlinePlaceholders'], 9);
@@ -509,12 +512,12 @@ class Main
     //     $this->settingsFAQ = new SettingsFAQ(plugin()->getFile());
     // }
 
-    public function cpt()
+    public function cpt(): void
     {
-        $cpt = new CPTFAQ();
-        $cpt = new CPTGlossary();
-        $cpt = new CPTSynonym();
-        $cpt = new CPTPlaceholder();
+        new CPTFAQ();
+        new CPTGlossary();
+        new CPTSynonym();
+        new CPTPlaceholder();
     }
 
 
@@ -711,5 +714,4 @@ class Main
     // }
 
 }
-
 

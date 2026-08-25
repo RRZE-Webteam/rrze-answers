@@ -124,8 +124,9 @@ function loaded(): void
     // Trigger the 'loaded' method of the main plugin instance.
     plugin()->loaded();
 
-    // Load the plugin textdomain for translations.
-    load_plugin_translations();
+    // WordPress 6.7+ expects translation loading at init or later. Load the
+    // textdomain immediately before translated CPT labels are constructed.
+    add_action('init', __NAMESPACE__ . '\load_plugin_translations', -2);
 
     $wpCompatibe = is_wp_version_compatible(plugin()->getRequiresWP());
     $phpCompatible = is_php_version_compatible(plugin()->getRequiresPHP());
