@@ -159,6 +159,158 @@ final class SyncAPITest extends WP_UnitTestCase
         self::assertSame('publish', get_post_status($obsoletePost));
     }
 
+    public function testLaterPostFailureRollsBackEarlierInsertAndCreatedTerms(): void
+    {
+        $obsoletePost = $this->createSynchronizedPost('faq', 90, 100);
+        $this->rejectPostWithTitle('Rejected entry');
+
+        $this->mockHttpPages([
+            1 => $this->httpResponse(
+                [
+                    $this->remoteEntry('faq', 10, 100, 'Accepted entry'),
+                    $this->remoteEntry('faq', 20, 100, 'Rejected entry'),
+                ],
+                200,
+                1
+            ),
+        ]);
+
+        $result = $this->synchronize('faq');
+
+        self::assertWPError($result);
+        self::assertNull($this->findSynchronizedPost('faq', 10));
+        self::assertNull(term_exists('Imported category', 'rrze_faq_category'));
+        self::assertNull(term_exists('Imported tag', 'rrze_faq_tag'));
+        self::assertSame('publish', get_post_status($obsoletePost));
+    }
+
+    public function testLaterPostFailureRestoresEarlierUpdate(): void
+    {
+        $postToUpdate = $this->createSynchronizedPost(
+            'faq',
+            10,
+            100,
+            self::SOURCE_IDENTIFIER,
+            'Original title'
+        );
+        wp_update_post([
+            'ID' => $postToUpdate,
+            'post_content' => '<p>Original content</p>',
+        ]);
+
+        $originalCategory = wp_insert_term('Original category', 'rrze_faq_category');
+        $originalTag = wp_insert_term('Original tag', 'rrze_faq_tag');
+        self::assertIsArray($originalCategory);
+        self::assertIsArray($originalTag);
+        wp_set_object_terms(
+            $postToUpdate,
+            [(int) $originalCategory['term_id']],
+            'rrze_faq_category'
+        );
+        wp_set_object_terms(
+            $postToUpdate,
+            [(int) $originalTag['term_id']],
+            'rrze_faq_tag'
+        );
+
+        $this->rejectPostWithTitle('Rejected entry');
+        $this->mockHttpPages([
+            1 => $this->httpResponse(
+                [
+                    $this->remoteEntry('faq', 10, 200, 'Updated title'),
+                    $this->remoteEntry('faq', 20, 100, 'Rejected entry'),
+                ],
+                200,
+                1
+            ),
+        ]);
+
+        $result = $this->synchronize('faq');
+
+        self::assertWPError($result);
+        self::assertSame('Original title', get_the_title($postToUpdate));
+        self::assertSame('<p>Original content</p>', get_post_field('post_content', $postToUpdate));
+        self::assertSame('100', (string) get_post_meta($postToUpdate, 'remoteChanged', true));
+        self::assertSame(
+            ['Original category'],
+            wp_get_post_terms($postToUpdate, 'rrze_faq_category', ['fields' => 'names'])
+        );
+        self::assertSame(
+            ['Original tag'],
+            wp_get_post_terms($postToUpdate, 'rrze_faq_tag', ['fields' => 'names'])
+        );
+        self::assertNull(term_exists('Imported category', 'rrze_faq_category'));
+        self::assertNull(term_exists('Imported tag', 'rrze_faq_tag'));
+    }
+
+    public function testExistingLocalTermsKeepTheirOwnershipDuringSync(): void
+    {
+        $category = wp_insert_term('Imported category', 'rrze_faq_category');
+        $tag = wp_insert_term('Imported tag', 'rrze_faq_tag');
+        self::assertIsArray($category);
+        self::assertIsArray($tag);
+        update_term_meta((int) $category['term_id'], 'source', 'website');
+        update_term_meta((int) $tag['term_id'], 'source', 'website');
+
+        $this->mockHttpPages([
+            1 => $this->httpResponse(
+                [$this->remoteEntry('faq', 10, 100, 'New entry')],
+                200,
+                1
+            ),
+        ]);
+
+        $result = $this->synchronize('faq');
+
+        self::assertIsArray($result);
+        self::assertSame('website', get_term_meta((int) $category['term_id'], 'source', true));
+        self::assertSame('website', get_term_meta((int) $tag['term_id'], 'source', true));
+    }
+
+    public function testCleanupFailureRestoresEntriesAlreadyMovedToTrash(): void
+    {
+        $failingObsoletePost = $this->createSynchronizedPost(
+            'faq',
+            20,
+            100,
+            self::SOURCE_IDENTIFIER,
+            'Trash fails'
+        );
+        $recoverableObsoletePost = $this->createSynchronizedPost(
+            'faq',
+            30,
+            100,
+            self::SOURCE_IDENTIFIER,
+            'Trash succeeds'
+        );
+        $currentPost = $this->createSynchronizedPost('faq', 40, 100);
+
+        add_filter(
+            'pre_trash_post',
+            static function ($trash, \WP_Post $post) {
+                return $post->post_title === 'Trash fails' ? false : $trash;
+            },
+            10,
+            2
+        );
+
+        $this->mockHttpPages([
+            1 => $this->httpResponse(
+                [$this->remoteEntry('faq', 40, 100, 'Existing synchronized post')],
+                200,
+                1
+            ),
+        ]);
+
+        $result = $this->synchronize('faq');
+
+        self::assertWPError($result);
+        self::assertSame('sync_trash_failed', $result->get_error_code());
+        self::assertSame('publish', get_post_status($failingObsoletePost));
+        self::assertSame('publish', get_post_status($recoverableObsoletePost));
+        self::assertSame('publish', get_post_status($currentPost));
+    }
+
     /** @dataProvider taxonomyWriteFailures */
     public function testTaxonomyWriteFailurePreventsObsoleteEntryDeletion(
         string $failingTaxonomy
@@ -233,7 +385,7 @@ final class SyncAPITest extends WP_UnitTestCase
             (string) get_post_field('post_content', $postToUpdate)
         );
 
-        self::assertFalse(get_post_status($obsoletePost));
+        self::assertSame('trash', get_post_status($obsoletePost));
         self::assertSame('publish', get_post_status($otherSourcePost));
         self::assertSame('publish', get_post_status($localPost));
 
@@ -454,6 +606,18 @@ final class SyncAPITest extends WP_UnitTestCase
             },
             10,
             3
+        );
+    }
+
+    private function rejectPostWithTitle(string $title): void
+    {
+        add_filter(
+            'wp_insert_post_empty_content',
+            static function (bool $isEmpty, array $postData) use ($title): bool {
+                return ($postData['post_title'] ?? '') === $title ? true : $isEmpty;
+            },
+            10,
+            2
         );
     }
 }

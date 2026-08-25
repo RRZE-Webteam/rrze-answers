@@ -3,6 +3,7 @@
 namespace RRZE\Answers\Common\API;
 
 use RRZE\Answers\Common\CustomException;
+use RRZE\Answers\Common\Sync\SyncOperationJournal;
 
 defined('ABSPATH') || exit;
 
@@ -13,7 +14,7 @@ defined('ABSPATH') || exit;
  * The class still contains older taxonomy-discovery helpers, but the entry
  * synchronization path follows a strict safety boundary: a complete remote
  * snapshot is validated before local writes begin, and obsolete local entries
- * are deleted only after every term and post write succeeds.
+ * are moved to Trash only after every term and post write succeeds.
  */
 class SyncAPI
 {
@@ -135,7 +136,8 @@ class SyncAPI
     protected function setCategories(
         array $categoryNames,
         string $sourceIdentifier,
-        string $contentType
+        string $contentType,
+        ?SyncOperationJournal $operationJournal = null
     ) {
         $termIds = [];
         $taxonomy = 'rrze_' . $contentType . '_category';
@@ -143,8 +145,9 @@ class SyncAPI
         try {
             foreach ($categoryNames as $categoryName) {
                 $term = term_exists($categoryName, $taxonomy);
+                $isNewTerm = !$term;
 
-                if (!$term) {
+                if ($isNewTerm) {
                     $term = wp_insert_term($categoryName, $taxonomy);
                 }
 
@@ -162,7 +165,11 @@ class SyncAPI
                 }
 
                 $termIds[] = $termId;
-                update_term_meta($termId, 'source', $sourceIdentifier);
+
+                if ($isNewTerm) {
+                    update_term_meta($termId, 'source', $sourceIdentifier);
+                    $operationJournal?->recordCreatedTerm($termId, $taxonomy);
+                }
             }
 
             return $termIds;
@@ -492,7 +499,12 @@ class SyncAPI
      *
      * @return int[]|\WP_Error
      */
-    public function setTags($terms, $sourceIdentifier, $contentType)
+    public function setTags(
+        $terms,
+        $sourceIdentifier,
+        $contentType,
+        ?SyncOperationJournal $operationJournal = null
+    )
     {
         $termIds = [];
         $taxonomy = 'rrze_' . $contentType . '_tag';
@@ -533,6 +545,7 @@ class SyncAPI
 
                 if ($isNewTerm) {
                     update_term_meta($termId, 'source', $sourceIdentifier);
+                    $operationJournal?->recordCreatedTerm($termId, $taxonomy);
                 }
 
                 $termIds[] = $termId;
@@ -590,7 +603,8 @@ class SyncAPI
      * Safety contract:
      * 1. Fetch and validate every remote page before writing locally.
      * 2. Abort immediately when a term or post write fails.
-     * 3. Delete obsolete entries only after every remote entry was processed.
+     * 3. Trash obsolete entries only after every remote entry was processed.
+     * 4. Compensate recorded writes if a later operation fails.
      *
      * Historic result keys are preserved because the admin and cron reporting
      * code consumes them directly.
@@ -599,6 +613,8 @@ class SyncAPI
      */
     public function setEntries($contentType, $sourceIdentifier, $selectedCategories, $sourceUrl)
     {
+        $operationJournal = new SyncOperationJournal();
+
         try {
             $newCount = 0;
             $updatedCount = 0;
@@ -639,44 +655,63 @@ class SyncAPI
                     continue;
                 }
 
+                $localEntry = $remainingLocalEntries[$remoteId] ?? null;
+
+                // Unchanged entries require no term or post writes. This also
+                // avoids creating orphaned remote terms unnecessarily.
+                if (
+                    $localEntry !== null
+                    && $localEntry['remoteChanged'] >= $remoteEntry['remoteChanged']
+                ) {
+                    unset($remainingLocalEntries[$remoteId]);
+                    continue;
+                }
+
+                if ($localEntry !== null) {
+                    $snapshotError = $operationJournal->capturePostBeforeUpdate(
+                        $localEntry['postID'],
+                        [$categoryTaxonomy, $tagTaxonomy]
+                    );
+                    if (is_wp_error($snapshotError)) {
+                        return $this->rollbackAfterFailure($snapshotError, $operationJournal);
+                    }
+                }
+
                 $tagIds = $this->setTags(
                     $remoteEntry[$tagTaxonomy],
                     $sourceIdentifier,
-                    $contentType
+                    $contentType,
+                    $operationJournal
                 );
                 if (is_wp_error($tagIds)) {
-                    return $tagIds;
+                    return $this->rollbackAfterFailure($tagIds, $operationJournal);
                 }
 
                 $categoryIds = $this->setCategories(
                     $remoteEntry[$categoryTaxonomy],
                     (string) $sourceIdentifier,
-                    (string) $contentType
+                    (string) $contentType,
+                    $operationJournal
                 );
                 if (is_wp_error($categoryIds)) {
-                    return $categoryIds;
+                    return $this->rollbackAfterFailure($categoryIds, $operationJournal);
                 }
 
-                if (isset($remainingLocalEntries[$remoteId])) {
-                    $localEntry = $remainingLocalEntries[$remoteId];
-
-                    if ($localEntry['remoteChanged'] < $remoteEntry['remoteChanged']) {
-                        $updatedPost = $this->updateSynchronizedPost(
-                            $localEntry['postID'],
-                            $remoteEntry,
-                            (string) $sourceIdentifier,
-                            $categoryTaxonomy,
-                            $tagTaxonomy,
-                            $categoryIds,
-                            $tagIds
-                        );
-                        if (is_wp_error($updatedPost)) {
-                            return $updatedPost;
-                        }
-
-                        $updatedCount++;
+                if ($localEntry !== null) {
+                    $updatedPost = $this->updateSynchronizedPost(
+                        $localEntry['postID'],
+                        $remoteEntry,
+                        (string) $sourceIdentifier,
+                        $categoryTaxonomy,
+                        $tagTaxonomy,
+                        $categoryIds,
+                        $tagIds
+                    );
+                    if (is_wp_error($updatedPost)) {
+                        return $this->rollbackAfterFailure($updatedPost, $operationJournal);
                     }
 
+                    $updatedCount++;
                     unset($remainingLocalEntries[$remoteId]);
                     continue;
                 }
@@ -691,15 +726,19 @@ class SyncAPI
                     $tagIds
                 );
                 if (is_wp_error($insertedPost)) {
-                    return $insertedPost;
+                    return $this->rollbackAfterFailure($insertedPost, $operationJournal);
                 }
 
+                $operationJournal->recordInsertedPost($insertedPost);
                 $newCount++;
             }
 
-            $deletedCount = $this->deleteObsoleteEntries($remainingLocalEntries);
+            $deletedCount = $this->trashObsoleteEntries(
+                $remainingLocalEntries,
+                $operationJournal
+            );
             if (is_wp_error($deletedCount)) {
-                return $deletedCount;
+                return $this->rollbackAfterFailure($deletedCount, $operationJournal);
             }
 
             return [
@@ -709,7 +748,10 @@ class SyncAPI
                 'URLhasSlider' => $sliderUrls,
             ];
         } catch (\Throwable $exception) {
-            return new \WP_Error('setFAQ_error', __('Error in setEntries().', 'rrze-answers'));
+            return $this->rollbackAfterFailure(
+                new \WP_Error('setFAQ_error', __('Error in setEntries().', 'rrze-answers')),
+                $operationJournal
+            );
         }
     }
 
@@ -796,29 +838,66 @@ class SyncAPI
     }
 
     /**
-     * Delete only entries left over after every remote entry was processed.
+     * Move entries left over after reconciliation to the WordPress Trash.
      *
      * @param array<int|string, array{postID: int, remoteChanged: mixed}> $obsoleteEntries
      * @return int|\WP_Error
      */
-    private function deleteObsoleteEntries(array $obsoleteEntries)
+    private function trashObsoleteEntries(
+        array $obsoleteEntries,
+        SyncOperationJournal $operationJournal
+    )
     {
-        $deletedCount = 0;
+        if ($obsoleteEntries !== [] && (!defined('EMPTY_TRASH_DAYS') || !EMPTY_TRASH_DAYS)) {
+            return new \WP_Error(
+                'sync_trash_disabled',
+                __('Obsolete synchronized entries were preserved because WordPress Trash is disabled.', 'rrze-answers')
+            );
+        }
+
+        $trashedCount = 0;
 
         foreach ($obsoleteEntries as $obsoleteEntry) {
-            $deletedPost = wp_delete_post($obsoleteEntry['postID'], true);
-
-            if (!$deletedPost) {
+            $post = get_post($obsoleteEntry['postID']);
+            if (!$post instanceof \WP_Post) {
                 return new \WP_Error(
-                    'sync_delete_failed',
-                    __('An obsolete synchronized entry could not be deleted.', 'rrze-answers')
+                    'sync_trash_failed',
+                    __('An obsolete synchronized entry could not be loaded for cleanup.', 'rrze-answers')
                 );
             }
 
-            $deletedCount++;
+            $previousStatus = $post->post_status;
+            $trashedPost = wp_trash_post($post->ID);
+
+            if (!$trashedPost) {
+                return new \WP_Error(
+                    'sync_trash_failed',
+                    __('An obsolete synchronized entry could not be moved to Trash.', 'rrze-answers')
+                );
+            }
+
+            $operationJournal->recordTrashedPost($post->ID, $previousStatus);
+            $trashedCount++;
         }
 
-        return $deletedCount;
+        return $trashedCount;
+    }
+
+    private function rollbackAfterFailure(
+        \WP_Error $syncError,
+        SyncOperationJournal $operationJournal
+    ): \WP_Error {
+        $rollbackError = $operationJournal->rollback();
+
+        if ($rollbackError !== null) {
+            $syncError->add(
+                'sync_rollback_failed',
+                __('Synchronization failed and some local changes could not be rolled back.', 'rrze-answers'),
+                ['rollbackErrors' => $rollbackError->get_error_messages()]
+            );
+        }
+
+        return $syncError;
     }
 
     /**
