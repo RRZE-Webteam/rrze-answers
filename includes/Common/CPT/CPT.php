@@ -63,7 +63,7 @@ abstract class CPT
     }
 
 
-    public function sanitizeOptions($input)
+    public function sanitizeOptions($input, $oldValue = null)
     {
         foreach ($this->rewriteKeys as $key) {
             if (isset($input[$key])) {

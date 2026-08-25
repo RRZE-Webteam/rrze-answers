@@ -150,8 +150,9 @@ class Tools
     ): string {
 
         $type = strtolower($type);
-        $isFaq = ($type === 'faq');
         $isGlossary = ($type === 'glossary');
+        // Keep the same unknown-type fallback as renderItemAccordion().
+        $isFaq = !$isGlossary;
 
         // No schema
         if (!$useSchema) {
@@ -702,8 +703,8 @@ class Tools
             $shortcode_attr
         );
 
-        // Return rendered shortcode.
-        echo do_shortcode($shortcode);
+        // Dynamic block render callbacks return their markup to WordPress.
+        return do_shortcode($shortcode);
     }
 
     /**
