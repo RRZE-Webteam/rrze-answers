@@ -22,6 +22,7 @@ use RRZE\Answers\Common\{
     CPT\CPTSynonym,
     CPT\CPTPlaceholder,
     Sync\Sync,
+    Sync\SynchronizedSourceRemovalService,
     Blocks\Blocks,
     Shortcode\ShortcodeFAQ,
     Shortcode\ShortcodeGlossary,
@@ -128,10 +129,12 @@ class Main
 
         switch ($tab) {
             case 'domains':
-                if ($options['new_url'] && ($options['new_url'] != 'https://')) {
+                $newUrl = isset($options['new_url']) ? (string) $options['new_url'] : '';
+
+                if ($newUrl !== '' && $newUrl !== 'https://') {
                     // add new domain
-                    $identifier = Tools::getIdentifier($options['new_url']);
-                    $url = 'https://' . Tools::getHost($options['new_url']);
+                    $identifier = Tools::getIdentifier($newUrl);
+                    $url = 'https://' . Tools::getHost($newUrl);
                     $aRet = $syncAPI->checkDomain($identifier, $url, $domains);
 
                     if ($aRet['status']) {
@@ -141,18 +144,34 @@ class Main
                         add_settings_error('new_url', 'domains_new_error', $aRet['msg'], 'error');
                     }
                 } else {
-                    // delete domain(s)
-                    $types = ['faq', 'glossary'];
+                    $sourceIdentifiers = $this->getRequestedSourceIdentifiers();
 
-                    foreach ($_POST as $key => $identifier) {
-                        if (substr($key, 0, 11) === "del_domain_") {
-                            if ((array_search($identifier, array_keys($domains))) !== false) {
-                                unset($domains[$identifier]);
-                                foreach ($types as $type) {
-                                    $syncAPI->deleteEntries($identifier, $type);
-                                    $syncAPI->deleteCategories($identifier, $type);
-                                    $syncAPI->deleteTags($identifier, $type);
-                                    unset($options[$type . '_categories_' . $identifier]);
+                    if ($sourceIdentifiers !== []) {
+                        if (!$this->isAuthorizedSourceRemovalRequest()) {
+                            add_settings_error(
+                                'rrze-answers',
+                                'source_removal_error',
+                                __('The synchronization sources could not be removed because the settings request was not authorized.', 'rrze-answers'),
+                                'error'
+                            );
+                        } else {
+                            $removalResult = (new SynchronizedSourceRemovalService())->remove(
+                                $sourceIdentifiers,
+                                $domains
+                            );
+
+                            if (is_wp_error($removalResult)) {
+                                add_settings_error(
+                                    'rrze-answers',
+                                    'source_removal_error',
+                                    $removalResult->get_error_message(),
+                                    'error'
+                                );
+                            } else {
+                                foreach ($removalResult['removedSourceIdentifiers'] as $identifier) {
+                                    unset($domains[$identifier]);
+                                    unset($options['faq_categories_' . $identifier]);
+                                    unset($options['glossary_categories_' . $identifier]);
                                 }
                             }
                         }
@@ -189,6 +208,59 @@ class Main
         // settings_errors();
 
         return $options;
+    }
+
+    /**
+     * Read selected source identifiers from the verified settings request.
+     *
+     * Non-scalar values are ignored and every scalar identifier is sanitized.
+     * The removal service performs the authoritative registered-source check
+     * before any synchronized post is changed.
+     *
+     * @return string[]
+     */
+    private function getRequestedSourceIdentifiers(): array
+    {
+        $sourceIdentifiers = [];
+
+        foreach ($_POST as $fieldName => $submittedValue) {
+            if (
+                !str_starts_with((string) $fieldName, 'del_domain_')
+                || !is_scalar($submittedValue)
+            ) {
+                continue;
+            }
+
+            $sourceIdentifier = sanitize_text_field(
+                (string) wp_unslash($submittedValue)
+            );
+
+            if ($sourceIdentifier !== '') {
+                $sourceIdentifiers[] = $sourceIdentifier;
+            }
+        }
+
+        return array_values(array_unique($sourceIdentifiers));
+    }
+
+    /**
+     * Verify the capability and nonce before interpreting deletion checkboxes.
+     */
+    private function isAuthorizedSourceRemovalRequest(): bool
+    {
+        if (!current_user_can('manage_options')) {
+            return false;
+        }
+
+        $submittedNonce = $_POST['rrze-answers_settings_save'] ?? null;
+        if (!is_scalar($submittedNonce)) {
+            return false;
+        }
+
+        return wp_verify_nonce(
+            sanitize_text_field((string) wp_unslash($submittedNonce)),
+            'rrze-answers_settings_save_rrze-answers'
+        ) !== false;
     }
 
 
@@ -714,4 +786,3 @@ class Main
     // }
 
 }
-

@@ -49,3 +49,5 @@ The suite runs WordPress in multisite mode through `phpunit.xml.dist`.
 - Producer/consumer REST compatibility for native source term IDs, WordPress
   embedded terms, remote taxonomy lookup and the collision-free name fields
   emitted by current plugin versions.
+- Recoverable synchronized-source removal, including atomic rollback, retained
+  taxonomy relationships, settings consistency and multisite isolation.
