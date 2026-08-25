@@ -44,4 +44,5 @@ The suite runs WordPress in multisite mode through `phpunit.xml.dist`.
 - FAQ and glossary synchronization with simulated WordPress HTTP responses,
   including transport failures, malformed responses, pagination, source
   isolation, taxonomy failures, post-write failures, compensating rollback,
-  recoverable Trash cleanup, term ownership and multisite isolation.
+  recoverable Trash cleanup, term ownership, remote URL normalization and
+  multisite isolation across the fetcher, store and SyncAPI facade boundaries.

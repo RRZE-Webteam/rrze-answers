@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace RRZE\Answers\Tests;
 
 use RRZE\Answers\Common\API\SyncAPI;
+use RRZE\Answers\Common\Sync\RemoteEntryFetcher;
 use WP_Error;
 use WP_UnitTestCase;
 
@@ -430,6 +431,37 @@ final class SyncAPITest extends WP_UnitTestCase
         self::assertSame(2, $result['iNew']);
         self::assertNotNull($this->findSynchronizedPost('faq', 10));
         self::assertNotNull($this->findSynchronizedPost('faq', 20));
+    }
+
+    public function testRemoteContentUrlsAreNormalizedAtTheFetcherBoundary(): void
+    {
+        $fetcher = new RemoteEntryFetcher();
+        $content = '<a href="relative-link">Relative</a>'
+            . '<img src="/media/image.jpg" '
+            . 'srcset="small.jpg 320w, /media/large.jpg 1280w, https://cdn.example.org/image.jpg 2x">'
+            . '<a href="mailto:answers@example.org">Mail</a>';
+
+        $normalizedContent = $fetcher->normalizeContentUrls($content, self::SOURCE_URL);
+
+        self::assertIsString($normalizedContent);
+        self::assertStringContainsString(
+            'href="' . self::SOURCE_URL . '/relative-link"',
+            $normalizedContent
+        );
+        self::assertStringContainsString(
+            'src="' . self::SOURCE_URL . '/media/image.jpg"',
+            $normalizedContent
+        );
+        self::assertStringContainsString(
+            'srcset="' . self::SOURCE_URL . '/small.jpg 320w, '
+                . self::SOURCE_URL . '/media/large.jpg 1280w, '
+                . 'https://cdn.example.org/image.jpg 2x"',
+            $normalizedContent
+        );
+        self::assertStringContainsString(
+            'href="mailto:answers@example.org"',
+            $normalizedContent
+        );
     }
 
     public function testSyncOnlyTouchesTheCurrentMultisiteSite(): void
