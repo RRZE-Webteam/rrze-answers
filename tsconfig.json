@@ -3,9 +3,14 @@
 		"target": "ES2020",
 		"module": "ESNext",
 		"moduleResolution": "Node",
+		"lib": ["DOM", "ES2020"],
+		"jsx": "react-jsx",
+		"resolveJsonModule": true,
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
 		"strict": true,
 		"noEmit": true,
 		"skipLibCheck": true
 	},
-	"include": ["src/editor/migrations/**/*.ts"]
+	"include": ["src/blocks/**/*.ts", "src/blocks/**/*.tsx", "src/editor/**/*.ts", "src/editor/**/*.tsx", "src/types/**/*.d.ts"]
 }

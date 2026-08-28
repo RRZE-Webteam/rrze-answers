@@ -4,7 +4,7 @@
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
 import { registerBlockType } from '@wordpress/blocks';
-import './synonym-format.js'; // <-- registers the toolbar-button to use it inline
+import type { BlockConfiguration } from '@wordpress/blocks';
 
 /**
  * Internal dependencies
@@ -12,10 +12,14 @@ import './synonym-format.js'; // <-- registers the toolbar-button to use it inli
 import metadata from './block.json';
 import Edit from './edit';
 import save from './save';
-import { synonymDeprecations } from '../../editor/deprecations';
+import { faqDeprecations } from '../../editor/deprecations';
+import type { FaqAttributes } from '../../editor/migrations/legacy-attributes';
 
-registerBlockType( metadata.name, {
-	edit: Edit,
-	save,
-	deprecated: synonymDeprecations,
-} );
+registerBlockType< FaqAttributes >(
+	metadata as unknown as BlockConfiguration< FaqAttributes >,
+	{
+		edit: Edit,
+		save,
+		deprecated: faqDeprecations,
+	}
+);

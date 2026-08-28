@@ -3,15 +3,24 @@ import { PanelBody } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import ServerSideRender from '@wordpress/server-side-render';
 
+import type { BlockEditProps } from '@wordpress/blocks';
+
 import { LanguageControl } from '../../editor/components/common-controls';
 import { EntityMultiSelectControl } from '../../editor/components/entity-controls';
 import { usePostOptions } from '../../editor/hooks/use-entity-options';
 import { useMultiSelect } from '../../editor/hooks/use-multi-select';
+import type { ListBlockAttributes } from '../../editor/migrations/legacy-attributes';
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( {
+	attributes,
+	setAttributes,
+}: BlockEditProps< ListBlockAttributes > ) {
 	const { id, lang } = attributes;
 	const blockProps = useBlockProps();
-	const posts = usePostOptions( 'rrze_synonym', __( 'all', 'rrze-answers' ) );
+	const posts = usePostOptions(
+		'rrze_placeholder',
+		__( 'all', 'rrze-answers' )
+	);
 	const selection = useMultiSelect( id, 'id', setAttributes, 'integer' );
 
 	return (
@@ -19,9 +28,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			<InspectorControls>
 				<PanelBody title={ __( 'Filter options', 'rrze-answers' ) }>
 					<EntityMultiSelectControl
-						label={ __( 'Synonyms', 'rrze-answers' ) }
+						label={ __( 'Placeholders', 'rrze-answers' ) }
 						help={ __(
-							'Show a selection of individual synonyms.',
+							'Show a selection of individual placeholders.',
 							'rrze-answers'
 						) }
 						value={ selection.selectedValues }
@@ -29,14 +38,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ selection.onChange }
 						isLoading={ posts.isLoading }
 						emptyMessage={ __(
-							'No synonyms found.',
+							'No placeholders found.',
 							'rrze-answers'
 						) }
 					/>
 					<LanguageControl
 						value={ lang }
 						help={ __(
-							'Show only synonyms matching the selected language.',
+							'Show only placeholders matching the selected language.',
 							'rrze-answers'
 						) }
 						onChange={ ( value ) =>
@@ -47,7 +56,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 			<div { ...blockProps }>
 				<ServerSideRender
-					block="rrze-answers/synonym"
+					block="rrze-answers/placeholder"
 					attributes={ attributes }
 				/>
 			</div>

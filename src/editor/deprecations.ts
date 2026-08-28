@@ -11,10 +11,31 @@ import {
 	migrateSynonymAttributes,
 } from './migrations/legacy-attributes';
 
+import type {
+	Block,
+	BlockAttribute,
+	BlockDeprecation,
+} from '@wordpress/blocks';
+
+type UnknownAttributes = Record< string, unknown >;
+type LegacyAttributeSchema = Record< string, BlockAttribute >;
+
+interface DeprecationData {
+	blockNode?: {
+		attrs?: UnknownAttributes;
+	};
+}
+
+type Migration< Attributes extends UnknownAttributes > = (
+	attributes: UnknownAttributes
+) => Attributes;
+
+type LegacyPredicate = ( attributes: UnknownAttributes ) => boolean;
+
 const save = () => null;
 const supports = { html: false };
 
-const faqAttributes = {
+const faqAttributes: LegacyAttributeSchema = {
 	glossary: { type: 'string' },
 	glossarystyle: { type: 'string' },
 	category: { type: 'string' },
@@ -33,7 +54,7 @@ const faqAttributes = {
 	hstart: { type: 'number', default: 2 },
 };
 
-const glossaryAttributes = {
+const glossaryAttributes: LegacyAttributeSchema = {
 	category: { type: 'string' },
 	tag: { type: 'string' },
 	id: { type: 'string' },
@@ -54,7 +75,7 @@ const glossaryAttributes = {
 	hstart: { type: 'number', default: 2 },
 };
 
-const synonymAttributes = {
+const synonymAttributes: LegacyAttributeSchema = {
 	register: { type: 'string' },
 	registerstyle: { type: 'string' },
 	category: { type: 'string' },
@@ -72,7 +93,7 @@ const synonymAttributes = {
 	hstart: { type: 'number' },
 };
 
-const placeholderAttributes = {
+const placeholderAttributes: LegacyAttributeSchema = {
 	id: { type: 'string' },
 	additional_class: { type: 'string' },
 	lang: { type: 'string' },
@@ -80,23 +101,34 @@ const placeholderAttributes = {
 	order: { type: 'string' },
 };
 
-const faqWidgetAttributes = {
+const faqWidgetAttributes: LegacyAttributeSchema = {
 	id: { type: 'integer', default: 0 },
 	catID: { type: 'integer', default: 0 },
 	hide_title: { type: 'integer', default: 0 },
 };
 
-function rawAttributes( attributes, data ) {
+function rawAttributes(
+	attributes: UnknownAttributes,
+	data?: DeprecationData
+): UnknownAttributes {
 	return data?.blockNode?.attrs || attributes;
 }
 
-function createDeprecation( attributes, migrate, hasLegacyAttributes ) {
+function createDeprecation< Attributes extends UnknownAttributes >(
+	attributes: LegacyAttributeSchema,
+	migrate: Migration< Attributes >,
+	hasLegacyAttributes: LegacyPredicate
+): BlockDeprecation< Attributes > {
 	return {
 		attributes,
 		supports,
 		save,
 		migrate,
-		isEligible( currentAttributes, _innerBlocks, data ) {
+		isEligible(
+			currentAttributes: UnknownAttributes,
+			_innerBlocks: Block[],
+			data?: DeprecationData
+		) {
 			return hasLegacyAttributes(
 				rawAttributes( currentAttributes, data )
 			);

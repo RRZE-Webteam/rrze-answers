@@ -5,7 +5,17 @@ import {
 	normalizeStringList,
 } from '../migrations/legacy-attributes';
 
-function normalizeSelection( value, itemType ) {
+type ItemType = 'string' | 'integer';
+type SetAttributes< Attributes > = (
+	attributes:
+		| Partial< Attributes >
+		| ( ( previous: Attributes ) => Partial< Attributes > )
+) => void;
+
+function normalizeSelection(
+	value: unknown,
+	itemType: ItemType
+): string[] | number[] {
 	return itemType === 'integer'
 		? normalizeIntegerList( value )
 		: normalizeStringList( value );
@@ -23,12 +33,15 @@ function normalizeSelection( value, itemType ) {
  * @param {'string'|'integer'}   itemType      Stored array item type.
  * @return {Object} Controlled selection value and change handler.
  */
-export function useMultiSelect(
-	value,
-	attributeName,
-	setAttributes,
-	itemType = 'string'
-) {
+export function useMultiSelect<
+	Attributes extends Record< string, unknown >,
+	AttributeName extends keyof Attributes & string,
+>(
+	value: Attributes[ AttributeName ],
+	attributeName: AttributeName,
+	setAttributes: SetAttributes< Attributes >,
+	itemType: ItemType = 'string'
+): { selectedValues: string[]; onChange: ( values: string[] ) => void } {
 	const selectedValues = useMemo( () => {
 		const normalizedValues = normalizeSelection( value, itemType ).map(
 			String
@@ -37,10 +50,10 @@ export function useMultiSelect(
 		return normalizedValues.length ? normalizedValues : [ '' ];
 	}, [ itemType, value ] );
 	const onChange = useCallback(
-		( nextValues ) => {
+		( nextValues: string[] ) => {
 			setAttributes( {
 				[ attributeName ]: normalizeSelection( nextValues, itemType ),
-			} );
+			} as Partial< Attributes > );
 		},
 		[ attributeName, itemType, setAttributes ]
 	);

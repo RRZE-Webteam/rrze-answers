@@ -3,13 +3,19 @@ import { CheckboxControl, PanelBody } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import ServerSideRender from '@wordpress/server-side-render';
 
+import type { BlockEditProps } from '@wordpress/blocks';
+
 import { EntitySelectControl } from '../../editor/components/entity-controls';
 import {
 	usePostOptions,
 	useTermOptions,
 } from '../../editor/hooks/use-entity-options';
+import type { FaqWidgetAttributes } from '../../editor/migrations/legacy-attributes';
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( {
+	attributes,
+	setAttributes,
+}: BlockEditProps< FaqWidgetAttributes > ) {
 	const { id, catID, hide_title: hideTitle } = attributes;
 	const blockProps = useBlockProps();
 	const posts = usePostOptions(

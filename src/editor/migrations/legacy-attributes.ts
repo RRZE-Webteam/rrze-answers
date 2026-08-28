@@ -1,6 +1,6 @@
 type UnknownAttributes = Record< string, unknown >;
 
-export interface FaqAttributes {
+export interface FaqAttributes extends Record< string, unknown > {
 	glossary: string;
 	glossarystyle: string;
 	category: string[];
@@ -19,7 +19,7 @@ export interface FaqAttributes {
 	hstart: number;
 }
 
-export interface GlossaryAttributes {
+export interface GlossaryAttributes extends Record< string, unknown > {
 	category: string[];
 	tag: string[];
 	id: number[];
@@ -40,7 +40,7 @@ export interface GlossaryAttributes {
 	hstart: number;
 }
 
-export interface ListBlockAttributes {
+export interface ListBlockAttributes extends Record< string, unknown > {
 	id: number[];
 	additional_class: string;
 	lang: string;
@@ -61,7 +61,7 @@ export interface SynonymAttributes extends ListBlockAttributes {
 	hstart: number;
 }
 
-export interface FaqWidgetAttributes {
+export interface FaqWidgetAttributes extends Record< string, unknown > {
 	id: number;
 	catID: number;
 	hide_title: boolean;

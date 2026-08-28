@@ -3,6 +3,8 @@ import { PanelBody, SelectControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import ServerSideRender from '@wordpress/server-side-render';
 
+import type { BlockEditProps } from '@wordpress/blocks';
+
 import {
 	AppearancePanel,
 	getGroupingOptions,
@@ -16,19 +18,23 @@ import {
 	useTermOptions,
 } from '../../editor/hooks/use-entity-options';
 import { useMultiSelect } from '../../editor/hooks/use-multi-select';
+import type { FaqAttributes } from '../../editor/migrations/legacy-attributes';
 
-export default function Edit( { attributes, setAttributes } ) {
-	const { category, hstart, id, lang, order, register, sort, style, tag } =
+export default function Edit( {
+	attributes,
+	setAttributes,
+}: BlockEditProps< FaqAttributes > ) {
+	const { category, glossary, hstart, id, lang, order, sort, style, tag } =
 		attributes;
 	const blockProps = useBlockProps( {
-		className: style === 'dark' ? 'is-style-dark' : undefined,
+		className: style === 'dark' ? 'is-style-dark' : 'is-style-light',
 	} );
 	const allLabel = __( 'all', 'rrze-answers' );
-	const categories = useTermOptions( 'rrze_glossary_category', allLabel, '', {
+	const categories = useTermOptions( 'rrze_faq_category', allLabel, '', {
 		hierarchical: true,
 	} );
-	const tags = useTermOptions( 'rrze_glossary_tag', allLabel );
-	const posts = usePostOptions( 'rrze_glossary', allLabel );
+	const tags = useTermOptions( 'rrze_faq_tag', allLabel );
+	const posts = usePostOptions( 'rrze_faq', allLabel );
 	const categorySelection = useMultiSelect(
 		category,
 		'category',
@@ -48,7 +54,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					<EntityMultiSelectControl
 						label={ __( 'Categories', 'rrze-answers' ) }
 						help={ __(
-							'Only show glossary entries with these selected categories.',
+							'Only show FAQ entries with these selected categories.',
 							'rrze-answers'
 						) }
 						value={ categorySelection.selectedValues }
@@ -59,7 +65,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					<EntityMultiSelectControl
 						label={ __( 'Tags', 'rrze-answers' ) }
 						help={ __(
-							'Only show glossary entries with these selected tags.',
+							'Only show FAQ entries with these selected tags.',
 							'rrze-answers'
 						) }
 						value={ tagSelection.selectedValues }
@@ -68,12 +74,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						isLoading={ tags.isLoading }
 					/>
 					<EntityMultiSelectControl
-						label={ __(
-							'Single glossary entries',
-							'rrze-answers'
-						) }
+						label={ __( 'Single FAQ entries', 'rrze-answers' ) }
 						help={ __(
-							'Only show these glossary entries.',
+							'Only show these FAQ entries.',
 							'rrze-answers'
 						) }
 						value={ postSelection.selectedValues }
@@ -81,14 +84,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ postSelection.onChange }
 						isLoading={ posts.isLoading }
 						emptyMessage={ __(
-							'No glossary entries found.',
+							'No FAQ entries found.',
 							'rrze-answers'
 						) }
 					/>
 					<LanguageControl
 						value={ lang }
 						help={ __(
-							'Only show glossary entries in this language.',
+							'Only show FAQ entries in this language.',
 							'rrze-answers'
 						) }
 						onChange={ ( value ) =>
@@ -97,26 +100,26 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					<SelectControl
 						label={ __(
-							'Group register content by',
+							'Group glossary content by',
 							'rrze-answers'
 						) }
 						help={ __(
-							'Group glossary entries by categories or tags.',
+							'Group FAQ entries by categories or tags.',
 							'rrze-answers'
 						) }
-						value={ register || '' }
+						value={ glossary || '' }
 						options={ getGroupingOptions() }
 						onChange={ ( value ) =>
-							setAttributes( { register: value } )
+							setAttributes( { glossary: value } )
 						}
 					/>
 				</PanelBody>
 				<AppearancePanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }
-					indexAttribute="registerstyle"
-					indexLabel={ __( 'Register style', 'rrze-answers' ) }
-					allowEmptyStyle
+					indexAttribute="glossarystyle"
+					indexLabel={ __( 'Glossary style', 'rrze-answers' ) }
+					showSearch
 				/>
 				<SortingPanel
 					order={ order }
@@ -126,7 +129,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 			<div { ...blockProps }>
 				<ServerSideRender
-					block="rrze-answers/glossary"
+					block="rrze-answers/faq"
 					attributes={ attributes }
 				/>
 			</div>
