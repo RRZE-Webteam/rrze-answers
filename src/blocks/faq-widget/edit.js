@@ -14,7 +14,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps();
 	const posts = usePostOptions(
 		'rrze_faq',
-		__( '— Select FAQ —', 'rrze-answers' )
+		__( '— Select FAQ —', 'rrze-answers' ),
+		0
 	);
 	const categories = useTermOptions(
 		'rrze_faq_category',
@@ -63,7 +64,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Hide question title', 'rrze-answers' ) }
 						checked={ !! hideTitle }
 						onChange={ ( value ) =>
-							setAttributes( { hide_title: value ? 1 : 0 } )
+							setAttributes( { hide_title: value } )
 						}
 						help={ __(
 							'If enabled, the FAQ title will be hidden.',

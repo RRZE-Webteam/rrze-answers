@@ -90,7 +90,7 @@ export function buildHierarchicalTermOptions( terms, valueField = 'slug' ) {
 	return flatten( roots );
 }
 
-export function usePostOptions( postType, firstLabel, firstValue = 0 ) {
+export function usePostOptions( postType, firstLabel, firstValue = '' ) {
 	const query = useMemo(
 		() => ( {
 			per_page: POSTS_PER_PAGE,

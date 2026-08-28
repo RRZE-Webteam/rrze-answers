@@ -12,8 +12,10 @@ import './synonym-format.js'; // <-- registers the toolbar-button to use it inli
 import metadata from './block.json';
 import Edit from './edit';
 import save from './save';
+import { synonymDeprecations } from '../../editor/deprecations';
 
 registerBlockType( metadata.name, {
-    edit: Edit,
-    save
+	edit: Edit,
+	save,
+	deprecated: synonymDeprecations,
 } );

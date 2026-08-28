@@ -5,61 +5,89 @@ return array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,
 		'name' => 'rrze-answers/faq',
-		'version' => '5.3.4',
+		'version' => '6.0.0',
 		'title' => 'RRZE FAQ',
 		'category' => 'rrze',
 		'description' => 'Display FAQ',
 		'icon' => 'editor-help',
 		'example' => array(
-			
+
 		),
 		'attributes' => array(
 			'glossary' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => ''
 			),
 			'glossarystyle' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => ''
 			),
 			'category' => array(
-				'type' => 'string'
+				'type' => 'array',
+				'items' => array(
+					'type' => 'string'
+				),
+				'default' => array(
+
+				)
 			),
 			'tag' => array(
-				'type' => 'string'
+				'type' => 'array',
+				'items' => array(
+					'type' => 'string'
+				),
+				'default' => array(
+
+				)
 			),
 			'id' => array(
-				'type' => 'string'
+				'type' => 'array',
+				'items' => array(
+					'type' => 'integer'
+				),
+				'default' => array(
+
+				)
 			),
 			'hide_accordion' => array(
-				'type' => 'boolean'
+				'type' => 'boolean',
+				'default' => false
 			),
 			'hide_title' => array(
-				'type' => 'boolean'
+				'type' => 'boolean',
+				'default' => false
 			),
 			'masonry' => array(
-				'type' => 'boolean'
+				'type' => 'boolean',
+				'default' => false
 			),
 			'search' => array(
 				'type' => 'boolean',
 				'default' => false
 			),
 			'color' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => ''
 			),
 			'style' => array(
 				'type' => 'string',
 				'default' => 'light'
 			),
 			'additional_class' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => ''
 			),
 			'lang' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => ''
 			),
 			'sort' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => 'title'
 			),
 			'order' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => 'ASC'
 			),
 			'hstart' => array(
 				'type' => 'number',
@@ -86,6 +114,7 @@ return array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,
 		'name' => 'rrze-answers/faq-widget',
+		'version' => '2.0.0',
 		'title' => 'RRZE FAQ Widget',
 		'category' => 'widgets',
 		'icon' => 'editor-help',
@@ -100,8 +129,8 @@ return array(
 				'default' => 0
 			),
 			'hide_title' => array(
-				'type' => 'integer',
-				'default' => 0
+				'type' => 'boolean',
+				'default' => false
 			)
 		),
 		'supports' => array(
@@ -116,67 +145,97 @@ return array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,
 		'name' => 'rrze-answers/glossary',
-		'version' => '2.1.11',
+		'version' => '3.0.0',
 		'title' => 'RRZE Glossary',
 		'category' => 'rrze',
 		'description' => 'Display glossaries',
 		'icon' => 'book',
 		'example' => array(
-			
+
 		),
 		'attributes' => array(
 			'category' => array(
-				'type' => 'string'
+				'type' => 'array',
+				'items' => array(
+					'type' => 'string'
+				),
+				'default' => array(
+
+				)
 			),
 			'tag' => array(
-				'type' => 'string'
+				'type' => 'array',
+				'items' => array(
+					'type' => 'string'
+				),
+				'default' => array(
+
+				)
 			),
 			'id' => array(
-				'type' => 'string'
+				'type' => 'array',
+				'items' => array(
+					'type' => 'integer'
+				),
+				'default' => array(
+
+				)
 			),
 			'register' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => ''
 			),
 			'registerstyle' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => ''
 			),
 			'hide_accordion' => array(
-				'type' => 'boolean'
+				'type' => 'boolean',
+				'default' => false
 			),
 			'hide_title' => array(
-				'type' => 'boolean'
+				'type' => 'boolean',
+				'default' => false
 			),
 			'masonry' => array(
-				'type' => 'boolean'
+				'type' => 'boolean',
+				'default' => false
 			),
 			'search' => array(
 				'type' => 'boolean',
 				'default' => false
 			),
 			'expand_all_link' => array(
-				'type' => 'boolean'
+				'type' => 'boolean',
+				'default' => false
 			),
 			'load_open' => array(
-				'type' => 'boolean'
+				'type' => 'boolean',
+				'default' => false
 			),
 			'color' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => ''
 			),
 			'style' => array(
 				'type' => 'string',
 				'default' => 'light'
 			),
 			'additional_class' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => ''
 			),
 			'lang' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => ''
 			),
 			'sort' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => 'title'
 			),
 			'order' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => 'ASC'
 			),
 			'hstart' => array(
 				'type' => 'number',
@@ -202,29 +261,39 @@ return array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,
 		'name' => 'rrze-answers/placeholder',
-		'version' => '3.0.4',
+		'version' => '4.0.0',
 		'title' => 'RRZE Placeholder',
 		'category' => 'rrze',
 		'description' => 'Display placeholders',
 		'icon' => 'editor-paste-text',
 		'example' => array(
-			
+
 		),
 		'attributes' => array(
 			'id' => array(
-				'type' => 'string'
+				'type' => 'array',
+				'items' => array(
+					'type' => 'integer'
+				),
+				'default' => array(
+
+				)
 			),
 			'additional_class' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => ''
 			),
 			'lang' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => ''
 			),
 			'sort' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => 'title'
 			),
 			'order' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => 'ASC'
 			)
 		),
 		'supports' => array(
@@ -239,59 +308,89 @@ return array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,
 		'name' => 'rrze-answers/synonym',
-		'version' => '3.0.4',
+		'version' => '4.0.0',
 		'title' => 'RRZE Synonym',
 		'category' => 'rrze',
 		'description' => 'Display synonyms',
 		'icon' => 'translation',
 		'example' => array(
-			
+
 		),
 		'attributes' => array(
 			'register' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => ''
 			),
 			'registerstyle' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => ''
 			),
 			'category' => array(
-				'type' => 'string'
+				'type' => 'array',
+				'items' => array(
+					'type' => 'string'
+				),
+				'default' => array(
+
+				)
 			),
 			'tag' => array(
-				'type' => 'string'
+				'type' => 'array',
+				'items' => array(
+					'type' => 'string'
+				),
+				'default' => array(
+
+				)
 			),
 			'id' => array(
-				'type' => 'string'
+				'type' => 'array',
+				'items' => array(
+					'type' => 'integer'
+				),
+				'default' => array(
+
+				)
 			),
 			'hide_accordion' => array(
-				'type' => 'boolean'
+				'type' => 'boolean',
+				'default' => false
 			),
 			'hide_title' => array(
-				'type' => 'boolean'
+				'type' => 'boolean',
+				'default' => false
 			),
 			'expand_all_link' => array(
-				'type' => 'boolean'
+				'type' => 'boolean',
+				'default' => false
 			),
 			'load_open' => array(
-				'type' => 'boolean'
+				'type' => 'boolean',
+				'default' => false
 			),
 			'color' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => ''
 			),
 			'additional_class' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => ''
 			),
 			'lang' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => ''
 			),
 			'sort' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => 'title'
 			),
 			'order' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'default' => 'ASC'
 			),
 			'hstart' => array(
-				'type' => 'number'
+				'type' => 'number',
+				'default' => 2
 			)
 		),
 		'supports' => array(

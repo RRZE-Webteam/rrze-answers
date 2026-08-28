@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "rrze-answers/faq",
-	"version": "5.3.4",
+	"version": "6.0.0",
 	"title": "RRZE FAQ",
 	"category": "rrze",
 	"description": "Display FAQ",
@@ -10,51 +10,73 @@
 	"example": {},
 	"attributes": {
 		"glossary": {
-			"type": "string"
+			"type": "string",
+			"default": ""
 		},
 		"glossarystyle": {
-			"type": "string"
+			"type": "string",
+			"default": ""
 		},
 		"category": {
-			"type": "string"
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"default": []
 		},
 		"tag": {
-			"type": "string"
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"default": []
 		},
 		"id": {
-			"type": "string"
+			"type": "array",
+			"items": {
+				"type": "integer"
+			},
+			"default": []
 		},
 		"hide_accordion": {
-			"type": "boolean"
+			"type": "boolean",
+			"default": false
 		},
 		"hide_title": {
-			"type": "boolean"
+			"type": "boolean",
+			"default": false
 		},
 		"masonry": {
-			"type": "boolean"
+			"type": "boolean",
+			"default": false
 		},
 		"search": {
 			"type": "boolean",
 			"default": false
 		},
 		"color": {
-			"type": "string"
+			"type": "string",
+			"default": ""
 		},
 		"style": {
 			"type": "string",
 			"default": "light"
 		},
 		"additional_class": {
-			"type": "string"
+			"type": "string",
+			"default": ""
 		},
 		"lang": {
-			"type": "string"
+			"type": "string",
+			"default": ""
 		},
 		"sort": {
-			"type": "string"
+			"type": "string",
+			"default": "title"
 		},
 		"order": {
-			"type": "string"
+			"type": "string",
+			"default": "ASC"
 		},
 		"hstart": {
 			"type": "number",

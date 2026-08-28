@@ -6,13 +6,13 @@ import ServerSideRender from '@wordpress/server-side-render';
 import { LanguageControl } from '../../editor/components/common-controls';
 import { EntityMultiSelectControl } from '../../editor/components/entity-controls';
 import { usePostOptions } from '../../editor/hooks/use-entity-options';
-import { useLegacyMultiSelect } from '../../editor/hooks/use-legacy-multi-select';
+import { useMultiSelect } from '../../editor/hooks/use-multi-select';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const { id, lang } = attributes;
 	const blockProps = useBlockProps();
 	const posts = usePostOptions( 'rrze_synonym', __( 'all', 'rrze-answers' ) );
-	const selection = useLegacyMultiSelect( id, 'id', setAttributes );
+	const selection = useMultiSelect( id, 'id', setAttributes, 'integer' );
 
 	return (
 		<>

@@ -1,5 +1,15 @@
 <?php
+use RRZE\Answers\Common\Blocks\BlockAttributes;
 use RRZE\Answers\Common\Tools;
+
+$attributes = BlockAttributes::normalize(
+    (array) ($attributes ?? []),
+    $block ?? null,
+    [],
+    [],
+    ['hide_title'],
+    ['id', 'catID']
+);
 
 $id = (!empty($attributes['id']) ? $attributes['id'] : 0);
 

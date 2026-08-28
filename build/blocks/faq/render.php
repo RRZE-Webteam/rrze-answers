@@ -1,4 +1,14 @@
 <?php
+use RRZE\Answers\Common\Blocks\BlockAttributes;
+
+$attributes = BlockAttributes::normalize(
+    (array) ($attributes ?? []),
+    $block ?? null,
+    ['category', 'tag'],
+    ['id'],
+    ['hide_accordion', 'hide_title', 'masonry', 'search']
+);
+
 $allowed = [
   'glossary', 'glossarystyle', 'category', 'tag', 'id',
   'hide_accordion', 'hide_title', 'masonry', 'color', 'style',

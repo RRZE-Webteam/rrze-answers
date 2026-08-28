@@ -15,7 +15,7 @@ import {
 	usePostOptions,
 	useTermOptions,
 } from '../../editor/hooks/use-entity-options';
-import { useLegacyMultiSelect } from '../../editor/hooks/use-legacy-multi-select';
+import { useMultiSelect } from '../../editor/hooks/use-multi-select';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const { category, hstart, id, lang, order, register, sort, style, tag } =
@@ -29,13 +29,13 @@ export default function Edit( { attributes, setAttributes } ) {
 	} );
 	const tags = useTermOptions( 'rrze_glossary_tag', allLabel );
 	const posts = usePostOptions( 'rrze_glossary', allLabel );
-	const categorySelection = useLegacyMultiSelect(
+	const categorySelection = useMultiSelect(
 		category,
 		'category',
 		setAttributes
 	);
-	const tagSelection = useLegacyMultiSelect( tag, 'tag', setAttributes );
-	const postSelection = useLegacyMultiSelect( id, 'id', setAttributes );
+	const tagSelection = useMultiSelect( tag, 'tag', setAttributes );
+	const postSelection = useMultiSelect( id, 'id', setAttributes, 'integer' );
 
 	return (
 		<>

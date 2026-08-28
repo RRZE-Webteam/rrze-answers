@@ -1,8 +1,22 @@
 <?php
+use RRZE\Answers\Common\Blocks\BlockAttributes;
+
+$attributes = BlockAttributes::normalize(
+    (array) ($attributes ?? []),
+    $block ?? null,
+    ['category', 'tag'],
+    ['id'],
+    [
+        'hide_accordion', 'hide_title', 'masonry', 'search',
+        'expand_all_link', 'load_open'
+    ]
+);
+
 $allowed = [
   'register', 'registerstyle', 'category', 'tag', 'id',
   'hide_accordion', 'hide_title', 'masonry', 'color', 'style',
-  'additional_class', 'lang', 'sort', 'order', 'hstart', 'search'
+  'additional_class', 'lang', 'sort', 'order', 'hstart', 'search',
+  'expand_all_link', 'load_open'
 ];
 
 $atts = [];

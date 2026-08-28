@@ -2,7 +2,7 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "rrze-answers/synonym",
-  "version": "3.0.4",
+  "version": "4.0.0",
   "title": "RRZE Synonym",
   "category": "rrze",
   "description": "Display synonyms",
@@ -10,49 +10,73 @@
   "example": {},
   "attributes": {
     "register": {
-      "type": "string"
+      "type": "string",
+      "default": ""
     },
     "registerstyle": {
-      "type": "string"
+      "type": "string",
+      "default": ""
     },
     "category": {
-      "type": "string"
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
     },
     "tag": {
-      "type": "string"
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
     },
     "id": {
-      "type": "string"
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "default": []
     },
     "hide_accordion": {
-      "type": "boolean"
+      "type": "boolean",
+      "default": false
     },
     "hide_title": {
-      "type": "boolean"
+      "type": "boolean",
+      "default": false
     },
     "expand_all_link": {
-      "type": "boolean"
+      "type": "boolean",
+      "default": false
     },
     "load_open": {
-      "type": "boolean"
+      "type": "boolean",
+      "default": false
     },
     "color": {
-      "type": "string"
+      "type": "string",
+      "default": ""
     },
     "additional_class": {
-      "type": "string"
+      "type": "string",
+      "default": ""
     },
     "lang": {
-      "type": "string"
+      "type": "string",
+      "default": ""
     },
     "sort": {
-      "type": "string"
+      "type": "string",
+      "default": "title"
     },
     "order": {
-      "type": "string"
+      "type": "string",
+      "default": "ASC"
     },
     "hstart": {
-      "type": "number"
+      "type": "number",
+      "default": 2
     }
   },
   "supports": {
