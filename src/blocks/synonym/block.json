@@ -59,6 +59,6 @@
 		"html": false
 	},
 	"textdomain": "rrze-answers",
-	"editorScript": "file:../../build/synonym.js",
+	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }

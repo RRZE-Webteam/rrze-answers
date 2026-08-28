@@ -1,0 +1,84 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "rrze-answers/glossary",
+  "version": "2.1.11",
+  "title": "RRZE Glossary",
+  "category": "rrze",
+  "description": "Display glossaries",
+  "icon": "book",
+  "example": {},
+  "attributes": {
+    "category": {
+      "type": "string"
+    },
+    "tag": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "register": {
+      "type": "string"
+    },
+    "registerstyle": {
+      "type": "string"
+    },
+    "hide_accordion": {
+      "type": "boolean"
+    },
+    "hide_title": {
+      "type": "boolean"
+    },
+    "masonry": {
+      "type": "boolean"
+    },
+    "search": {
+      "type": "boolean",
+      "default": false
+    },
+    "expand_all_link": {
+      "type": "boolean"
+    },
+    "load_open": {
+      "type": "boolean"
+    },
+    "color": {
+      "type": "string"
+    },
+    "style": {
+      "type": "string",
+      "default": "light"
+    },
+    "additional_class": {
+      "type": "string"
+    },
+    "lang": {
+      "type": "string"
+    },
+    "sort": {
+      "type": "string"
+    },
+    "order": {
+      "type": "string"
+    },
+    "hstart": {
+      "type": "number",
+      "default": 2
+    }
+  },
+  "supports": {
+    "html": false
+  },
+  "textdomain": "rrze-answers",
+  "viewScript": [
+    "rrze-answers-accordion",
+    "rrze-answers-search"
+  ],
+  "editorScript": [
+    "file:./index.js",
+    "rrze-answers-accordion",
+    "rrze-answers-search"
+  ],
+  "render": "file:./render.php"
+}

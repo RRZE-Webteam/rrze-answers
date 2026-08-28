@@ -29,7 +29,7 @@
 		"html": false
 	},
 	"textdomain": "rrze-answers",
-	"editorScript": "file:../../build/placeholder.js",
-	"editorStyle": "file:../../build/css/rrze-answers-admin.css",
+	"editorScript": "file:./index.js",
+	"editorStyle": "rrze-answers-admin-css",
 	"render": "file:./render.php"
 }

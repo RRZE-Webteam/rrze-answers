@@ -72,13 +72,13 @@
 	},
 	"textdomain": "rrze-answers",
 	"viewScript": [
-		"file:./rrze-answers-accordion.js",
-		"file:./rrze-answers-search.js"
+		"rrze-answers-accordion",
+		"rrze-answers-search"
 	],
 	"editorScript": [
-		"file:../../build/glossary.js",
-		"file:./rrze-answers-accordion.js",
-		"file:./rrze-answers-search.js"
+		"file:./index.js",
+		"rrze-answers-accordion",
+		"rrze-answers-search"
 	],
 	"render": "file:./render.php"
 }

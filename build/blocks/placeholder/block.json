@@ -1,0 +1,35 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "rrze-answers/placeholder",
+  "version": "3.0.4",
+  "title": "RRZE Placeholder",
+  "category": "rrze",
+  "description": "Display placeholders",
+  "icon": "editor-paste-text",
+  "example": {},
+  "attributes": {
+    "id": {
+      "type": "string"
+    },
+    "additional_class": {
+      "type": "string"
+    },
+    "lang": {
+      "type": "string"
+    },
+    "sort": {
+      "type": "string"
+    },
+    "order": {
+      "type": "string"
+    }
+  },
+  "supports": {
+    "html": false
+  },
+  "textdomain": "rrze-answers",
+  "editorScript": "file:./index.js",
+  "editorStyle": "rrze-answers-admin-css",
+  "render": "file:./render.php"
+}

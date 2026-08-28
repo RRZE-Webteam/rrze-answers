@@ -21,7 +21,6 @@ use RRZE\Answers\Common\{
     CPT\CPTPlaceholder,
     Sync\Sync,
     Sync\SynchronizedSourceRemovalService,
-    Blocks\Blocks,
     Shortcode\ShortcodeFAQ,
     Shortcode\ShortcodeGlossary,
     Shortcode\ShortcodeSynonym,
@@ -98,7 +97,6 @@ class Main
         add_action('update_option_' . self::SETTINGS_OPTION, [$this, 'maybeSync'], 10, 2);
 
         $this->shortcode();
-        $this->blocks();
     }
 
 
@@ -441,24 +439,6 @@ class Main
     }
 
     /**
-     * Register the server-side block integrations.
-     */
-    public function blocks(): void
-    {
-        new Blocks(
-            [
-                'faq',
-                'faq-widget',
-                'glossary',
-                'synonym',
-                'placeholder',
-            ],
-            plugin()->getPath('build/blocks'),
-            plugin()->getPath()
-        );
-    }
-
-    /**
      * Build the plugin settings page from Defaults configuration.
      */
     public function settings(): void
@@ -497,29 +477,6 @@ class Main
      */
     public function enqueueAssets(): void
     {
-        wp_register_style(
-            'rrze-answers-css',
-            plugins_url('build/css/rrze-answers.css', plugin()->getBasename()),
-            [],
-            filemtime(plugin()->getPath() . 'build/css/rrze-answers.css')
-        );
-
-        wp_register_script(
-            'rrze-answers-accordion',
-            plugins_url('build/rrze-answers-accordion.js', plugin()->getBasename()),
-            ['jquery'],
-            filemtime(plugin()->getPath() . 'build/rrze-answers-accordion.js'),
-            true
-        );
-
-        wp_register_script(
-            'rrze-answers-search',
-            plugins_url('build/rrze-answers-search.js', plugin()->getBasename()),
-            [],
-            filemtime(plugin()->getPath() . 'build/rrze-answers-search.js'),
-            true
-        );
-
         if (is_admin()) {
             wp_enqueue_script('rrze-answers-accordion');
             wp_enqueue_script('rrze-answers-search');
@@ -569,21 +526,6 @@ class Main
         if (!$isRelevantScreen) {
             return;
         }
-
-        wp_register_style(
-            'rrze-answers-admin-css',
-            plugins_url('build/css/rrze-answers-admin.css', plugin()->getBasename()),
-            [],
-            filemtime(plugin()->getPath() . 'build/css/rrze-answers-admin.css')
-        );
-
-        wp_register_script(
-            'rrze-answers-search',
-            plugins_url('build/rrze-answers-search.js', plugin()->getBasename()),
-            [],
-            filemtime(plugin()->getPath() . 'build/rrze-answers-search.js'),
-            true
-        );
 
         wp_enqueue_style('rrze-answers-admin-css');
         wp_enqueue_script('rrze-answers-accordion');

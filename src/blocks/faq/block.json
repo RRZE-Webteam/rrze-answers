@@ -66,14 +66,14 @@
 	},
 	"textdomain": "rrze-answers",
 	"viewScript": [
-		"file:./rrze-answers-accordion.js",
-		"file:./rrze-answers-search.js"
+		"rrze-answers-accordion",
+		"rrze-answers-search"
 	],
 	"editorScript": [
-		"file:../../build/faq.js",
-		"file:./rrze-answers-accordion.js",
-		"file:./rrze-answers-search.js"
+		"file:./index.js",
+		"rrze-answers-accordion",
+		"rrze-answers-search"
 	],
-	"editorStyle": "file:../../build/css/rrze-answers.css",
+	"editorStyle": "rrze-answers-css",
 	"render": "file:./render.php"
 }
