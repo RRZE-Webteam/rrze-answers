@@ -143,6 +143,8 @@ abstract class CPT
     {
         $options = get_option('rrze-answers');
 
+        $menuIcon = $this->getMenuIcon();
+
         $slug = !empty($options[$this->slug_options['slug_option_key']])
             ? sanitize_title($options[$this->slug_options['slug_option_key']])
             : $this->slug_options['default_slug'];
@@ -160,7 +162,7 @@ abstract class CPT
             'supports' => $this->supports,
             'public' => true,
             'show_ui' => true,
-            'menu_icon' => $this->menu_icon,
+            'menu_icon' => $menuIcon,
             'has_archive' => $this->has_archive,
             'publicly_queryable' => true,
             'query_var' => $this->rest_base,
@@ -169,6 +171,28 @@ abstract class CPT
             'rest_base' => $this->rest_base,
             'rest_controller_class' => 'WP_REST_Posts_Controller',
         ]);
+    }
+
+    /**
+     * Return the configured menu icon, encoding SVG assets for WordPress.
+     */
+    protected function getMenuIcon(): string
+    {
+        if (!str_starts_with($this->menu_icon, 'assets/')) {
+            return $this->menu_icon;
+        }
+
+        $iconPath = plugin()->getPath() . $this->menu_icon;
+        if (!is_readable($iconPath)) {
+            return 'dashicons-admin-post';
+        }
+
+        $svg = file_get_contents($iconPath);
+        if (!is_string($svg) || $svg === '') {
+            return 'dashicons-admin-post';
+        }
+
+        return 'data:image/svg+xml;base64,' . base64_encode($svg);
     }
 
     /**
