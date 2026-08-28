@@ -7,6 +7,7 @@ use function RRZE\Answers\plugin;
 use RRZE\Answers\Defaults;
 
 use RRZE\Answers\Common\{
+    HtmlSanitizer,
     Tools,
     API\RESTAPI,
     API\SyncAPI,
@@ -69,7 +70,7 @@ class Main
         // same init cycle, after the textdomain has loaded at priority -2.
         add_action('init', [$this, 'cpt'], -1);
         add_action('init', [$this, 'onInit']);
-        add_filter('wp_kses_allowed_html', [$this, 'my_custom_allowed_html'], 10, 2);
+        add_filter('wp_kses_allowed_html', [HtmlSanitizer::class, 'allowLegacyPlaceholder'], 10, 2);
         add_filter('the_content', [$this, 'renderInlinePlaceholders'], 9);
     }
 
@@ -326,129 +327,6 @@ class Main
         ) !== false;
     }
 
-
-    /**
-     * Allow needed HTML on post content sanitized by wp_kses_post().
-     *
-     * @param array<string, array<string, bool>> $allowedTags Current allowlist.
-     * @return array<string, array<string, bool>>
-     */
-    public function my_custom_allowed_html(array $allowedTags, string $context): array
-    {
-        if ($context !== 'post') {
-            return $allowedTags;
-        }
-
-        $schemaAttributes = [
-            'itemscope' => true,
-            'itemtype' => true,
-            'itemprop' => true,
-            'itemid' => true,
-            'itemref' => true,
-        ];
-        $microdataTags = [
-            'div',
-            'span',
-            'p',
-            'a',
-            'h1',
-            'h2',
-            'h3',
-            'h4',
-            'h5',
-            'h6',
-            'ul',
-            'ol',
-            'li',
-            'section',
-            'article',
-            'header',
-            'footer',
-            'main',
-            'nav',
-            'details',
-            'summary',
-        ];
-
-        $allowedTags['details'] = array_merge($allowedTags['details'] ?? [], [
-            'id' => true,
-            'class' => true,
-            'open' => true,
-        ]);
-        $allowedTags['summary'] = array_merge($allowedTags['summary'] ?? [], [
-            'id' => true,
-            'class' => true,
-        ]);
-
-        foreach ($microdataTags as $tag) {
-            $allowedTags[$tag] = array_merge(
-                $allowedTags[$tag] ?? [],
-                $schemaAttributes
-            );
-        }
-
-        $allowedTags['select'] = array_merge($allowedTags['select'] ?? [], [
-            'name' => true,
-            'id' => true,
-            'class' => true,
-            'multiple' => true,
-            'size' => true,
-        ]);
-
-        $allowedTags['option'] = array_merge($allowedTags['option'] ?? [], [
-            'value' => true,
-            'selected' => true,
-        ]);
-
-        $allowedTags['input'] = array_merge($allowedTags['input'] ?? [], [
-            'type' => true,
-            'name' => true,
-            'id' => true,
-            'class' => true,
-            'value' => true,
-            'synonym' => true,
-            'checked' => true,
-            'disabled' => true,
-            'readonly' => true,
-            'maxlength' => true,
-            'size' => true,
-            'min' => true,
-            'max' => true,
-            'step' => true,
-        ]);
-
-        $allowedTags['svg'] = array_merge($allowedTags['svg'] ?? [], [
-            'class'       => true,
-            'aria-hidden' => true,
-            'aria-label'  => true,
-            'role'        => true,
-            'focusable'   => true,
-            'xmlns'       => true,
-            'viewbox'     => true,
-            'width'       => true,
-            'height'      => true,
-            'style'       => true,
-        ]);
-
-        $allowedTags['path'] = array_merge($allowedTags['path'] ?? [], [
-            'fill' => true,
-            'd'    => true,
-        ]);
-
-        $allowedTags['use'] = array_merge($allowedTags['use'] ?? [], [
-            'href'       => true,
-            'xlink:href' => true,
-        ]);
-
-        $allowedTags['placeholder'] = array_merge($allowedTags['placeholder'] ?? [], [
-            'class' => true,
-            'title' => true,
-            'lang' => true,
-            'data-placeholder-id' => true,
-            'data-placeholder-title' => true,
-        ]);
-        return $allowedTags;
-    }
 
     /**
      * Inline placeholders are replaced inside paragraphs; wpautop / paragraph blocks emit a

@@ -6,7 +6,7 @@ defined('ABSPATH') || exit;
 
 require_once ABSPATH . 'wp-includes/class-wp-widget.php';
 
-use RRZE\Answers\Common\Config;
+use RRZE\Answers\Common\HtmlSanitizer;
 
 
 // Creating the widget
@@ -112,7 +112,7 @@ class FAQ extends \WP_Widget
         }
 
         $html = apply_filters('dropdownFAQs', $output, $args, $posts);
-        echo wp_kses_post($html);
+        echo HtmlSanitizer::sanitizePluginMarkup($html);
     }
 
     public function displaySelect($selectedID = 0)
@@ -129,7 +129,7 @@ class FAQ extends \WP_Widget
             $output .= "<option value='" . esc_attr($ID) . "' $sSelected>" . esc_html($txt) . "</option>";
         }
         $output .= "</select></p>";
-        echo wp_kses_post($output);
+        echo HtmlSanitizer::sanitizePluginMarkup($output);
     }
 
 
@@ -145,7 +145,7 @@ class FAQ extends \WP_Widget
             $output .= "<p><label for='" . esc_attr($field) . "'>" . esc_html($label) . ":</label><br>";
             $output .= "<input type='date' id='" . esc_attr($this->get_field_id($field)) . "' name='" . esc_attr($this->get_field_name($field)) . "' value='" . esc_attr($val) . "' class='widefat'></p>";
         }
-        echo wp_kses_post($output);
+        echo HtmlSanitizer::sanitizePluginMarkup($output);
     }
 
     // Widget Backend

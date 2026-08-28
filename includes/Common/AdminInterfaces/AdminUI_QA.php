@@ -5,6 +5,7 @@ namespace RRZE\Answers\Common\AdminInterfaces;
 
 defined('ABSPATH') || exit;
 
+use RRZE\Answers\Common\HtmlSanitizer;
 use RRZE\Answers\Common\Tools;
 use RRZE\Answers\Defaults;
 
@@ -107,7 +108,7 @@ class AdminUI_QA extends AdminUI
             : __('Language of this glossary entry', 'rrze-answers');
         $output .= '<p class="description">' . esc_html($description) . '</p>';
 
-        echo wp_kses_post($output);
+        echo HtmlSanitizer::sanitizePluginMarkup($output);
     }
 
     public function sortboxCallback(\WP_Post $post): void
