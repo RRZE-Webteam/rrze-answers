@@ -1,187 +1,59 @@
-/**
- * Retrieves the translation of text.
- *
- * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-i18n/
- */
-import {__} from '@wordpress/i18n';
-import {useState} from '@wordpress/element';
-import {useSelect} from '@wordpress/data';
-import {InspectorControls, useBlockProps} from '@wordpress/block-editor';
-import {PanelBody, SelectControl} from '@wordpress/components';
+import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
+import { PanelBody } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
 import ServerSideRender from '@wordpress/server-side-render';
 
+import { LanguageControl } from '../../editor/components/common-controls';
+import { EntityMultiSelectControl } from '../../editor/components/entity-controls';
+import { usePostOptions } from '../../editor/hooks/use-entity-options';
+import { useLegacyMultiSelect } from '../../editor/hooks/use-legacy-multi-select';
 
-export default function Edit({attributes, setAttributes}) {
-    const {
-        id,
-        order,
-        sort,
-        lang,
-        additional_class
-    } = attributes;
-    const blockProps = useBlockProps();
-    const [idstate, setSelectedIDs] = useState(['']);
+export default function Edit( { attributes, setAttributes } ) {
+	const { id, lang } = attributes;
+	const blockProps = useBlockProps();
+	const posts = usePostOptions(
+		'rrze_placeholder',
+		__( 'all', 'rrze-answers' )
+	);
+	const selection = useLegacyMultiSelect( id, 'id', setAttributes );
 
-    // const categories = useSelect((select) => {
-    //     return select('core').getEntityRecords('taxonomy', 'synonym_category');
-    // }, []);
-
-    // const registeroptions = [
-    //     {
-    //         label: __('all', 'rrze-answers'),
-    //         value: ''
-    //     }
-    // ];
-
-    // if (!!categories) {
-    //     Object.values(categories).forEach(register => {
-    //         registeroptions.push({
-    //             label: register.name,
-    //             value: register.slug,
-    //         });
-    //     });
-    // }
-
-    // const tags = useSelect((select) => {
-    //     return select('core').getEntityRecords('taxonomy', 'synonym_tag');
-    // }, []);
-
-    // const tagoptions = [
-    //     {
-    //         label: __('all', 'rrze-answers'),
-    //         value: ''
-    //     }
-    // ];
-
-    // if (!!tags) {
-    //     Object.values(tags).forEach(tag => {
-    //         tagoptions.push({
-    //             label: tag.name,
-    //             value: tag.slug,
-    //         });
-    //     });
-    // }
-
-    const placeholders = useSelect((select) => {
-        return select('core').getEntityRecords('postType', 'rrze_placeholder', {per_page: -1, orderby: 'title', order: "asc"});
-    }, []);
-
-    const placeholderoptions = [
-        {
-            label: __('all', 'rrze-answers'),
-            value: 0
-        }
-    ];
-
-    if (!!placeholders) {
-        Object.values(placeholders).forEach(placeholder => {
-            placeholderoptions.push({
-                label: placeholder.title.rendered ? placeholder.title.rendered : __('No title', 'rrze-answers'),
-                value: placeholder.id,
-            });
-        });
-    }
-
-    const langoptions = [
-        {
-            label: __('all', 'rrze-answers'),
-            value: ''
-        },
-        {
-            label: __('German', 'rrze-answers'),
-            value: 'de'
-        },
-        {
-
-            label: __('English', 'rrze-answers'),
-            value: 'en'
-        },
-        {
-
-            label: __('French', 'rrze-answers'),
-            value: 'fr'
-        },
-        {
-
-            label: __('Spanish', 'rrze-answers'),
-            value: 'es'
-        },
-        {
-            label: __('Russian', 'rrze-answers'),
-            value: 'ru'
-        },
-        {
-            label: __('Chinese', 'rrze-answers'),
-            value: 'zh'
-        }
-    ];
-
-    const sortoptions = [
-        {
-            label: __('Title', 'rrze-answers'),
-            value: 'title'
-        },
-        {
-            label: __('ID', 'rrze-answers'),
-            value: 'id'
-        },
-        {
-            label: __('Sort field', 'rrze-answers'),
-            value: 'sortfield'
-        }
-    ];
-
-    const orderoptions = [
-        {
-            label: __('ASC', 'rrze-answers'),
-            value: 'ASC'
-        },
-        {
-            label: __('DESC', 'rrze-answers'),
-            value: 'DESC'
-        }
-    ];
-
-    // console.log('edit.js attributes: ' + JSON.stringify(attributes));
-
-    const onChangeID = (newValues) => {
-        setSelectedIDs(newValues);
-        setAttributes({id: String(newValues)})
-        };
-
-    return (
-        <>
-            <InspectorControls>
-                <PanelBody>
-                    <SelectControl
-                        label={__(
-                            "Placeholder",
-                            'rrze-answers'
-                        )}
-                        help={__('Show a selection of individual placeholders', 'rrze-answers')}
-                        value={idstate}
-                        options={placeholderoptions}
-                        onChange={onChangeID}
-                        multiple
-                    />
-                    <SelectControl
-                        label={__(
-                            "Language",
-                            'rrze-answers'
-                        )}
-                        help={__('Show only placeholders matching the selected language.', 'rrze-answers')}
-                        value={lang}
-                        options={langoptions}
-                        onChange={(value) => setAttributes({lang: value})}
-                    />
-                </PanelBody>
-            </InspectorControls>
-            <div {...blockProps}>
-                <ServerSideRender
-                    block="rrze-answers/placeholder"
-                    attributes={attributes}
-                />
-            </div>
-        </>
-    );
+	return (
+		<>
+			<InspectorControls>
+				<PanelBody title={ __( 'Filter options', 'rrze-answers' ) }>
+					<EntityMultiSelectControl
+						label={ __( 'Placeholders', 'rrze-answers' ) }
+						help={ __(
+							'Show a selection of individual placeholders.',
+							'rrze-answers'
+						) }
+						value={ selection.selectedValues }
+						options={ posts.options }
+						onChange={ selection.onChange }
+						isLoading={ posts.isLoading }
+						emptyMessage={ __(
+							'No placeholders found.',
+							'rrze-answers'
+						) }
+					/>
+					<LanguageControl
+						value={ lang }
+						help={ __(
+							'Show only placeholders matching the selected language.',
+							'rrze-answers'
+						) }
+						onChange={ ( value ) =>
+							setAttributes( { lang: value } )
+						}
+					/>
+				</PanelBody>
+			</InspectorControls>
+			<div { ...blockProps }>
+				<ServerSideRender
+					block="rrze-answers/placeholder"
+					attributes={ attributes }
+				/>
+			</div>
+		</>
+	);
 }
