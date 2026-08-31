@@ -70,62 +70,18 @@ class Tools
         string $answer,
         string $color,
         string $load_open,
-        bool $useSchema
+        bool $useSchema,
+        int $hstart = 2
     ): string {
-        // Normalize type
-        $type = strtolower($type);
-        $isFaq = ($type === 'faq');
-        $isGlossary = ($type === 'glossary');
-
-        $out = '';
-
-        // Wrapper with schema depending on type
-        if ($useSchema) {
-            if ($isFaq) {
-                $out .= '<div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">';
-            } elseif ($isGlossary) {
-                $out .= '<div itemscope itemtype="https://schema.org/DefinedTerm">';
-            } else {
-                // Fallback: behave like FAQ
-                $out .= '<div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">';
-            }
-        }
-
-        $out .= '<details'
-            . ' id="' . esc_attr($anchor) . '"'
-            . ' class="rrze-answers-item is-' . esc_attr($color) . '">';
-
-        if ($useSchema) {
-            if ($isFaq) {
-                // FAQ schema: Question + acceptedAnswer/Answer/text
-                $out .= '<summary itemprop="name">' . esc_html($question) . '</summary>';
-                $out .= '<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">';
-                $out .= '<div class="rrze-answers-content" itemprop="text">' . $answer . '</div>';
-                $out .= '</div>';
-            } elseif ($isGlossary) {
-                // Glossary schema: DefinedTerm / name / description / text
-                // Based on the structure of the former constants, but visible (no display:none)
-                $out .= '<summary itemscope itemprop="name" itemtype="https://schema.org/name">'
-                    . '<span itemprop="name">' . esc_html($question) . '</span>'
-                    . '</summary>';
-
-                $out .= '<div itemscope itemprop="description" itemtype="https://schema.org/description">';
-                $out .= '<div class="rrze-answers-content" itemprop="text">' . $answer . '</div>';
-                $out .= '</div>';
-            }
-        } else {
-            // No schema at all
-            $out .= '<summary>' . esc_html($question) . '</summary>';
-            $out .= '<div class="answers-content">' . $answer . '</div>';
-        }
-
-        $out .= '</details>';
-
-        if ($useSchema) {
-            $out .= '</div>'; // close Question or DefinedTerm wrapper
-        }
-
-        return $out;
+        return AccordionRenderer::renderItem(
+            $type,
+            $anchor,
+            $question,
+            $answer,
+            $color,
+            $useSchema,
+            $hstart
+        );
     }
 
     /**
@@ -207,10 +163,23 @@ class Tools
         bool &$bSchema,
         ?int $postID = null,
         bool $search = false,
-        bool $load_open = false
+        bool $load_open = false,
+        int $hstart = 2,
+        bool $expand_all = false
     ): string {
         $isFaq = ($type === 'faq');
         $isGlossary = ($type === 'glossary');
+        $usesBlockAccordion = AccordionRenderer::hasBlockItems($content);
+
+        if ($usesBlockAccordion) {
+            $content = AccordionRenderer::renderCollections(
+                $type,
+                $content,
+                $hstart,
+                $expand_all,
+                $load_open
+            );
+        }
 
         $classes = 'rrze-answers';
         if ($masonry) {
@@ -221,7 +190,7 @@ class Tools
         }
 
         $schemaAttr = '';
-        if ($bSchema) {
+        if ($bSchema && !$usesBlockAccordion) {
             if ($isFaq) {
                 static $faqPageRendered = false;
                 if (!$faqPageRendered) {
@@ -263,9 +232,9 @@ class Tools
 
         return '<div' . $schemaAttr
             . ' class="' . esc_attr($classes) . '" role="region" aria-labelledby="' . esc_attr($headerID) . '"'
-            . ' data-accordion="single"'
+            . (!$usesBlockAccordion ? ' data-accordion="single"' : '')
             . ' data-scroll-offset="96"'
-            . ($load_open ? ' data-load-open="true"' : '')
+            . ($load_open && !$usesBlockAccordion ? ' data-load-open="true"' : '')
             . '>'
             . '<h2 id="' . esc_attr($headerID) . '" class="screen-reader-text">' . esc_html($title) . '</h2>'
             . $searchMarkup

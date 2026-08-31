@@ -98,10 +98,6 @@ return array(
 			'html' => false
 		),
 		'textdomain' => 'rrze-answers',
-		'viewScript' => array(
-			'rrze-answers-accordion',
-			'rrze-answers-search'
-		),
 		'editorScript' => array(
 			'file:./index.js',
 			'rrze-answers-accordion',
@@ -246,10 +242,6 @@ return array(
 			'html' => false
 		),
 		'textdomain' => 'rrze-answers',
-		'viewScript' => array(
-			'rrze-answers-accordion',
-			'rrze-answers-search'
-		),
 		'editorScript' => array(
 			'file:./index.js',
 			'rrze-answers-accordion',

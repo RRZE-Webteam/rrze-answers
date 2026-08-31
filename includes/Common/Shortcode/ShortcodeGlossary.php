@@ -4,6 +4,7 @@ namespace RRZE\Answers\Common\Shortcode;
 
 defined('ABSPATH') || exit;
 
+use RRZE\Answers\Common\AccordionRenderer;
 use function RRZE\Answers\plugin;
 
 
@@ -451,7 +452,7 @@ class ShortcodeGlossary
                             $anchorfield = 'innerID-' . $ID;
                         }
 
-                        $content .= Tools::renderItemAccordion('glossary', $anchorfield, $question, $answer, $color, $load_open, $useSchema);
+                        $content .= Tools::renderItemAccordion('glossary', $anchorfield, $question, $answer, $color, $load_open, $useSchema, (int) $hstart);
                     }
 
                     $content .= '</div></section>';
@@ -485,7 +486,7 @@ class ShortcodeGlossary
                             $content .= ($last_anchor != $letter ? '<h2 id="letter-' . $letter . '">' . $letter . '</h2>' : '');
                         }
 
-                        $content .= Tools::renderItemAccordion('glossary', $anchorfield, $question, $answer, $color, $load_open, $useSchema);
+                        $content .= Tools::renderItemAccordion('glossary', $anchorfield, $question, $answer, $color, $load_open, $useSchema, (int) $hstart);
                     } else {
                         $content .= Tools::renderItem('glossary', $question, $answer, $hstart, $useSchema, $hide_title);
                     }
@@ -658,14 +659,29 @@ class ShortcodeGlossary
         $postID = get_the_ID();
         $headerID = (new Tools())->getHeaderID($postID);
 
-        wp_enqueue_script('rrze-answers-accordion');
+        if (!AccordionRenderer::hasBlockItems($content)) {
+            wp_enqueue_script('rrze-answers-accordion');
+        }
         wp_enqueue_style('rrze-answers-css');
 
         if ($search) {
             wp_enqueue_script('rrze-answers-search');
         }
 
-        $content = Tools::renderWrapper('glossary', $content, $headerID, $masonry, $color, $additional_class, $this->bSchema, $postID, $search, !empty($load_open));
+        $content = Tools::renderWrapper(
+            'glossary',
+            $content,
+            $headerID,
+            $masonry,
+            $color,
+            $additional_class,
+            $this->bSchema,
+            $postID,
+            $search,
+            !empty($load_open),
+            (int) $hstart,
+            !empty($expand_all_link)
+        );
 
         return $content;
 
@@ -722,7 +738,7 @@ class ShortcodeGlossary
                 if ($hide_accordion) {
                     $content .= Tools::renderItem('faq', $question, $answer, $hstart, $useSchema, $hide_title);
                 } else {
-                    $content .= Tools::renderItemAccordion('faq', $anchorfield, $question, $answer, $color, $load_open, $useSchema);
+                    $content .= Tools::renderItemAccordion('faq', $anchorfield, $question, $answer, $color, $load_open, $useSchema, (int) $hstart);
                 }
             }
         }
@@ -761,7 +777,6 @@ class ShortcodeGlossary
         return $pluginArray;
     }
 }
-
 
 
 

@@ -1,138 +1,186 @@
-(function () {
-  "use strict";
+( function () {
+	'use strict';
 
-  /**
-   * Normalize a string for comparison
-   */
-  function normalize(str) {
-    return (str || "").toString().trim().toLowerCase();
-  }
+	const itemSelector = 'details.rrze-answers-item, .rrze-answers-block-item';
 
-  /**
-   * When Schema.org markup is active, <details> is wrapped
-   * in a Question <div>. We must hide/show that wrapper instead.
-   */
-  function getToggleElement(detailsEl) {
-    const schemaWrapper = detailsEl.closest(
-      '[itemscope][itemtype="https://schema.org/Question"]'
-    );
-    return schemaWrapper || detailsEl;
-  }
+	/**
+	 * Normalize a string for comparison
+	 *
+	 * @param {unknown} str Value to normalize.
+	 * @return {string} Normalized value.
+	 */
+	function normalize( str ) {
+		return ( str || '' ).toString().trim().toLowerCase();
+	}
 
-  /**
-   * Category/tag groups are wrapped in <section> with .answers-term-content.
-   * Show the section only if at least one accordion item inside is visible.
-   */
-  function resetGroupedTermSections(wrapper) {
-    wrapper.querySelectorAll(".answers-term-content").forEach((termContent) => {
-      const section = termContent.closest("section");
-      if (section) {
-        section.style.display = "";
-      }
-    });
-  }
+	/**
+	 * When Schema.org markup is active, <details> is wrapped
+	 * in a Question <div>. We must hide/show that wrapper instead.
+	 *
+	 * @param {Element} itemEl Accordion item.
+	 * @return {Element} Element that should be hidden or shown.
+	 */
+	function getToggleElement( itemEl ) {
+		const schemaWrapper = itemEl.closest(
+			'[itemscope][itemtype="https://schema.org/Question"]'
+		);
+		return schemaWrapper || itemEl;
+	}
 
-  function syncGroupedTermSections(wrapper) {
-    wrapper.querySelectorAll(".answers-term-content").forEach((termContent) => {
-      const section = termContent.closest("section");
-      if (!section) {
-        return;
-      }
-      const detailsInGroup = termContent.querySelectorAll(
-        "details.rrze-answers-item"
-      );
-      if (!detailsInGroup.length) {
-        return;
-      }
-      const anyVisible = Array.from(detailsInGroup).some(
-        (details) => getToggleElement(details).style.display !== "none"
-      );
-      section.style.display = anyVisible ? "" : "none";
-    });
-  }
+	/**
+	 * Locate the visible question label for every supported accordion backend.
+	 *
+	 * @param {Element} itemEl Accordion item.
+	 * @return {Element|null} Question label element.
+	 */
+	function getQuestionElement( itemEl ) {
+		if ( itemEl.matches( 'details.rrze-answers-item' ) ) {
+			return itemEl.querySelector( 'summary' );
+		}
 
-  /**
-   * Initialize search for a single FAQ wrapper
-   */
-  function initFAQSearch(wrapper) {
-    if (!wrapper || wrapper.dataset.rrzeFaqSearchInit === "1") return;
+		return itemEl.querySelector(
+			'.wp-block-accordion-heading__toggle-title, .accordion-toggle'
+		);
+	}
 
-    const input = wrapper.querySelector(".rrze-answers-search__input");
-    if (!input) return;
+	/**
+	 * Category/tag groups are wrapped in <section> with .answers-term-content.
+	 * Show the section only if at least one accordion item inside is visible.
+	 *
+	 * @param {Element} wrapper Answers wrapper.
+	 */
+	function resetGroupedTermSections( wrapper ) {
+		wrapper
+			.querySelectorAll( '.answers-term-content' )
+			.forEach( ( termContent ) => {
+				const section = termContent.closest( 'section' );
+				if ( section ) {
+					section.style.display = '';
+				}
+			} );
+	}
 
-    const detailsItems = Array.from(
-      wrapper.querySelectorAll("details.rrze-answers-item")
-    );
-    if (!detailsItems.length) return;
+	/**
+	 * Hide taxonomy sections that no longer contain a visible result.
+	 *
+	 * @param {Element} wrapper Answers wrapper.
+	 */
+	function syncGroupedTermSections( wrapper ) {
+		wrapper
+			.querySelectorAll( '.answers-term-content' )
+			.forEach( ( termContent ) => {
+				const section = termContent.closest( 'section' );
+				if ( ! section ) {
+					return;
+				}
+				const itemsInGroup =
+					termContent.querySelectorAll( itemSelector );
+				if ( ! itemsInGroup.length ) {
+					return;
+				}
+				const anyVisible = Array.from( itemsInGroup ).some(
+					( item ) =>
+						getToggleElement( item ).style.display !== 'none'
+				);
+				section.style.display = anyVisible ? '' : 'none';
+			} );
+	}
 
-    const minLen = parseInt(input.getAttribute("data-minlen") || "3", 10);
+	/**
+	 * Initialize search for a single FAQ wrapper
+	 *
+	 * @param {HTMLElement} wrapper Answers wrapper.
+	 */
+	function initFAQSearch( wrapper ) {
+		if ( ! wrapper || wrapper.dataset.rrzeFaqSearchInit === '1' ) {
+			return;
+		}
 
-    const items = detailsItems.map((details) => {
-      const summary = details.querySelector("summary");
-      return {
-        details,
-        question: normalize(summary ? summary.textContent : ""),
-      };
-    });
+		const input = wrapper.querySelector( '.rrze-answers-search__input' );
+		if ( ! input ) {
+			return;
+		}
 
-    function applyFilter(value) {
-      const query = normalize(value);
-      if (query.length < minLen) {
-        items.forEach(({ details }) => {
-          getToggleElement(details).style.display = "";
-        });
-        resetGroupedTermSections(wrapper);
-        return;
-      }
-      items.forEach(({ details, question }) => {
-        const match = question.includes(query);
-        getToggleElement(details).style.display = match ? "" : "none";
-      });
-      syncGroupedTermSections(wrapper);
-    }
+		const accordionItems = Array.from(
+			wrapper.querySelectorAll( itemSelector )
+		);
+		if ( ! accordionItems.length ) {
+			return;
+		}
 
-    input.addEventListener("input", () => applyFilter(input.value));
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        input.value = "";
-        applyFilter("");
-      }
-    });
+		const minLen = parseInt(
+			input.getAttribute( 'data-minlen' ) || '3',
+			10
+		);
 
-    wrapper.dataset.rrzeFaqSearchInit = "1";
-  }
+		const items = accordionItems.map( ( item ) => {
+			const question = getQuestionElement( item );
+			return {
+				item,
+				question: normalize( question ? question.textContent : '' ),
+			};
+		} );
 
-  function initAll(root = document) {
-    root.querySelectorAll(".rrze-answers").forEach(initFAQSearch);
-  }
+		function applyFilter( value ) {
+			const query = normalize( value );
+			if ( query.length < minLen ) {
+				items.forEach( ( { item } ) => {
+					getToggleElement( item ).style.display = '';
+				} );
+				resetGroupedTermSections( wrapper );
+				return;
+			}
+			items.forEach( ( { item, question } ) => {
+				const match = question.includes( query );
+				getToggleElement( item ).style.display = match ? '' : 'none';
+			} );
+			syncGroupedTermSections( wrapper );
+		}
 
-  initAll();
+		input.addEventListener( 'input', () => applyFilter( input.value ) );
+		input.addEventListener( 'keydown', ( e ) => {
+			if ( e.key === 'Escape' ) {
+				input.value = '';
+				applyFilter( '' );
+			}
+		} );
 
-  /**
-   * Observer initialization after document.body is available
-   */
-  function initObserver() {
-    if (!document.body) {
-      return setTimeout(initObserver, 50); // warten, falls body noch nicht da
-    }
+		wrapper.dataset.rrzeFaqSearchInit = '1';
+	}
 
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        for (const node of mutation.addedNodes) {
-          if (!(node instanceof HTMLElement)) continue;
+	function initAll( root = document ) {
+		root.querySelectorAll( '.rrze-answers' ).forEach( initFAQSearch );
+	}
 
-          if (node.matches && node.matches(".rrze-answers")) {
-            initFAQSearch(node);
-          }
-          if (node.querySelectorAll) {
-            initAll(node);
-          }
-        }
-      }
-    });
+	initAll();
 
-    observer.observe(document.body, { childList: true, subtree: true });
-  }
+	/**
+	 * Observer initialization after document.body is available
+	 */
+	function initObserver() {
+		if ( ! document.body ) {
+			return setTimeout( initObserver, 50 ); // warten, falls body noch nicht da
+		}
 
-  initObserver();
-})();
+		const observer = new window.MutationObserver( ( mutations ) => {
+			for ( const mutation of mutations ) {
+				for ( const node of mutation.addedNodes ) {
+					if ( ! ( node instanceof window.HTMLElement ) ) {
+						continue;
+					}
+
+					if ( node.matches && node.matches( '.rrze-answers' ) ) {
+						initFAQSearch( node );
+					}
+					if ( node.querySelectorAll ) {
+						initAll( node );
+					}
+				}
+			}
+		} );
+
+		observer.observe( document.body, { childList: true, subtree: true } );
+	}
+
+	initObserver();
+} )();

@@ -87,10 +87,6 @@
 		"html": false
 	},
 	"textdomain": "rrze-answers",
-	"viewScript": [
-		"rrze-answers-accordion",
-		"rrze-answers-search"
-	],
 	"editorScript": [
 		"file:./index.js",
 		"rrze-answers-accordion",
