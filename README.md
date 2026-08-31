@@ -24,7 +24,7 @@ It allows you to:
 ## Features
 
 - **Unified content management:** FAQs, Glossary entries, synonyms, and placeholders are managed in one place.  
-- **Flexible display options:** Accordion view, A–Z index, tabs, tag cloud or grid.
+- **Flexible display options:** Accordion view, A–Z index, RRZE Elements tabs, tag cloud or grid.
 - **Cross-domain synchronization:** Share and import entries from other FAU sites.  
 - **REST API support:** Access entries programmatically.  
 - **Multilingual and SEO-friendly:** Uses [`schema.org/FAQPage`](https://schema.org/FAQPage) for faq entries, [`schema.org/DefinedTerm`](https://schema.org/DefinedTerm) for glossary entries and `<abbr>` tags for synonyms.  
@@ -67,7 +67,7 @@ The text editor provides a dedicated menu entry for inserting synonyms. From the
 ```
 
 **Attributes:**
-- `glossary` – Index configuration. `a-z` works with a flat list; `tabs` and `tagcloud` require category or tag grouping, for example `glossary="category tabs"`.
+- `glossary` – Index configuration. `a-z` works with a flat list; `tabs` and `tagcloud` require category or tag grouping, for example `glossary="category tabs"`. Tabs are available only when RRZE Elements Blocks registers its Tabs and Tab blocks.
 - `category` – One or more category slugs  
 - `tag` – One or more tag slugs  
 - `domain` – Filter by domain(s)  
@@ -92,7 +92,7 @@ The text editor provides a dedicated menu entry for inserting synonyms. From the
 ```
 
 **Attributes:**
-- `register` – Index configuration. `a-z` works with a flat list; `tabs` and `tagcloud` require category or tag grouping, for example `register="category tabs"`.
+- `register` – Index configuration. `a-z` works with a flat list; `tabs` and `tagcloud` require category or tag grouping, for example `register="category tabs"`. Tabs are available only when RRZE Elements Blocks registers its Tabs and Tab blocks.
 - `category` – One or more categories  
 - `tag` – One or more tags  
 - `id` – Specific entries by ID  

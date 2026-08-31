@@ -181,6 +181,10 @@ class Tools
             );
         }
 
+        if (TabsRenderer::hasCollections($content)) {
+            $content = TabsRenderer::renderCollections($content);
+        }
+
         $classes = 'rrze-answers';
         if ($masonry) {
             $classes .= ' rrze-answers-masonry';
@@ -278,36 +282,6 @@ class Tools
         }
 
         return $ret . '</ul>';
-    }
-
-    public static function createTabs(array &$aTerms, $aPostIDs = []): string
-    {
-        if (!$aTerms) {
-            return '';
-        }
-
-        $tabListId = wp_unique_id('rrze-answers-tabs-');
-        $ret = '<div class="rrze-answers-tabs" role="tablist" aria-label="' . esc_attr__('Index navigation', 'rrze-answers') . '">';
-        $isFirst = true;
-
-        foreach ($aTerms as $name => &$aDetails) {
-            $termId = (int) ($aDetails['ID'] ?? 0);
-            $aDetails['tab_id'] = $tabListId . '-tab-' . $termId;
-            $aDetails['panel_id'] = $tabListId . '-panel-' . $termId;
-
-            $ret .= '<button type="button" class="rrze-answers-tab" role="tab"'
-                . ' id="' . esc_attr($aDetails['tab_id']) . '"'
-                . ' aria-controls="' . esc_attr($aDetails['panel_id']) . '"'
-                . ' aria-selected="' . ($isFirst ? 'true' : 'false') . '"'
-                . ' tabindex="' . ($isFirst ? '0' : '-1') . '">'
-                . esc_html($name)
-                . '</button>';
-
-            $isFirst = false;
-        }
-        unset($aDetails);
-
-        return $ret . '</div>';
     }
 
     public static function createTagcloud(array $aTerms, array $aPostIDs, string $anchorPrefix = 'ID'): string

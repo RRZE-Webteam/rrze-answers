@@ -5,6 +5,7 @@ namespace RRZE\Answers\Common\Shortcode;
 defined('ABSPATH') || exit;
 
 use RRZE\Answers\Common\AccordionRenderer;
+use RRZE\Answers\Common\TabsRenderer;
 use RRZE\Answers\Common\Tools;
 // use RRZE\Answers\Defaults;
 
@@ -616,13 +617,11 @@ class ShortcodeFAQ
                 ksort($aUsedTerms);
                 $indexPrefix = wp_unique_id('rrze-answers-index-');
                 $termAnchorPrefix = $indexPrefix . '-term';
+                $useElementsTabs = $glossarystyle === 'tabs' && TabsRenderer::isAvailable();
                 if ($aLetters) {
                     switch ($glossarystyle) {
                         case 'a-z':
                             $content = Tools::createAZ($aLetters, $indexPrefix);
-                            break;
-                        case 'tabs':
-                            $content = Tools::createTabs($aUsedTerms, $aPostIDs);
                             break;
                         case 'tagcloud':
                             $content = Tools::createTagCloud($aUsedTerms, $aPostIDs, $termAnchorPrefix);
@@ -631,25 +630,19 @@ class ShortcodeFAQ
                 }
 
                 $lastLetter = '';
-                $isFirstTerm = true;
+                $tabItems = [];
                 foreach ($aUsedTerms as $k => $aVal) {
                     if ($glossarystyle === 'a-z' && $lastLetter !== $aVal['letter']) {
                         $content .= '<h2 id="' . esc_attr($indexPrefix . '-' . $aVal['letter']) . '">' . esc_html($aVal['letter']) . '</h2>';
                     }
 
                     $sectionId = $termAnchorPrefix . '-' . (int) $aVal['ID'];
-                    $sectionAttributes = '';
                     $sectionClasses = 'rrze-answers-item is-' . $color;
-                    if ($glossarystyle === 'tabs') {
-                        $sectionId = $aVal['panel_id'];
-                        $sectionClasses .= ' rrze-answers-tabpanel';
-                        $sectionAttributes = ' role="tabpanel" aria-labelledby="' . esc_attr($aVal['tab_id']) . '"' . ($isFirstTerm ? '' : ' hidden');
-                    }
-
-                    $content .= '<section id="' . esc_attr($sectionId) . '" class="' . esc_attr($sectionClasses) . '"' . $sectionAttributes . '>';
-                    $content .= '<h3>' . esc_html($k) . '</h3>';
-
-                    $content .= '<div class="answers-term-content">';
+                    $termContent = $useElementsTabs
+                        ? '<div class="answers-term-content">'
+                        : '<section id="' . esc_attr($sectionId) . '" class="' . esc_attr($sectionClasses) . '">'
+                            . '<h3>' . esc_html($k) . '</h3>'
+                            . '<div class="answers-term-content">';
 
                     // find the postIDs to this tag
                     $aIDs = Tools::searchArrayByKey($aVal['ID'], $aPostIDs);
@@ -670,12 +663,23 @@ class ShortcodeFAQ
                             $anchorfield = 'innerID-' . $ID;
                         }
 
-                        $content .= Tools::renderItemAccordion('faq', $anchorfield, $question, $answer, $color, $load_open, $useSchema, (int) $hstart);
+                        $termContent .= Tools::renderItemAccordion('faq', $anchorfield, $question, $answer, $color, $load_open, $useSchema, (int) $hstart);
                     }
 
-                    $content .= '</div></section>';
+                    $termContent .= $useElementsTabs ? '</div>' : '</div></section>';
+                    if ($useElementsTabs) {
+                        $tabItems[] = [
+                            'title' => (string) $k,
+                            'content' => $termContent,
+                        ];
+                    } else {
+                        $content .= $termContent;
+                    }
                     $lastLetter = $aVal['letter'];
-                    $isFirstTerm = false;
+                }
+
+                if ($useElementsTabs) {
+                    $content .= TabsRenderer::createCollection($tabItems, $color);
                 }
             } else {
                 // attribut glossary is not given
@@ -784,10 +788,6 @@ class ShortcodeFAQ
             wp_enqueue_script('rrze-answers-accordion');
         }
         wp_enqueue_style('rrze-answers-css');
-
-        if (strpos($content, 'class="rrze-answers-tabs"') !== false) {
-            wp_enqueue_script('rrze-answers-tabs');
-        }
 
         if ($search) {
             wp_enqueue_script('rrze-answers-search');

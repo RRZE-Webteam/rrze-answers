@@ -29,6 +29,7 @@ interface AppearancePanelProps< Attributes extends AppearanceFields > {
 	indexLabel: string;
 	showSearch?: boolean;
 	allowGroupedIndexStyles?: boolean;
+	elementsTabsAvailable?: boolean;
 }
 
 interface SortingFields extends Record< string, unknown > {
@@ -62,21 +63,33 @@ export function getGroupingOptions(): SelectOption[] {
 	];
 }
 
-function getIndexStyleOptions( allowGroupedStyles: boolean ): SelectOption[] {
-	return [
+function getIndexStyleOptions(
+	allowGroupedStyles: boolean,
+	elementsTabsAvailable: boolean
+): SelectOption[] {
+	const options: SelectOption[] = [
 		{ label: __( 'A - Z', 'rrze-answers' ), value: 'a-z' },
 		{
 			label: __( 'Tagcloud', 'rrze-answers' ),
 			value: 'tagcloud',
 			disabled: ! allowGroupedStyles,
 		},
-		{
+	];
+
+	if ( elementsTabsAvailable ) {
+		options.push( {
 			label: __( 'Tabs', 'rrze-answers' ),
 			value: 'tabs',
 			disabled: ! allowGroupedStyles,
-		},
-		{ label: __( '-- hidden --', 'rrze-answers' ), value: '' },
-	];
+		} );
+	}
+
+	options.push( {
+		label: __( '-- hidden --', 'rrze-answers' ),
+		value: '',
+	} );
+
+	return options;
 }
 
 export function HeadingLevelToolbar( {
@@ -117,12 +130,26 @@ export function AppearancePanel< Attributes extends AppearanceFields >( {
 	indexLabel,
 	showSearch = false,
 	allowGroupedIndexStyles = false,
+	elementsTabsAvailable = false,
 }: AppearancePanelProps< Attributes > ) {
 	const {
 		hide_accordion: hideAccordion,
 		hide_title: hideTitle,
 		search,
 	} = attributes;
+	let indexHelp: string | undefined;
+
+	if ( ! allowGroupedIndexStyles ) {
+		indexHelp = elementsTabsAvailable
+			? __(
+					'Tabs and Tagcloud require category or tag grouping.',
+					'rrze-answers'
+			  )
+			: __(
+					'Tagcloud requires category or tag grouping.',
+					'rrze-answers'
+			  );
+	}
 
 	return (
 		<PanelBody
@@ -132,16 +159,12 @@ export function AppearancePanel< Attributes extends AppearanceFields >( {
 		>
 			<SelectControl
 				label={ indexLabel }
-				help={
-					allowGroupedIndexStyles
-						? undefined
-						: __(
-								'Tabs and Tagcloud require category or tag grouping.',
-								'rrze-answers'
-						  )
-				}
+				help={ indexHelp }
 				value={ String( attributes[ indexAttribute ] || '' ) }
-				options={ getIndexStyleOptions( allowGroupedIndexStyles ) }
+				options={ getIndexStyleOptions(
+					allowGroupedIndexStyles,
+					elementsTabsAvailable
+				) }
 				onChange={ ( value ) =>
 					setAttributes( {
 						[ indexAttribute ]: value,

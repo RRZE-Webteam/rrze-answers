@@ -20,6 +20,16 @@ import {
 import { useMultiSelect } from '../../editor/hooks/use-multi-select';
 import type { GlossaryAttributes } from '../../editor/migrations/legacy-attributes';
 
+const elementsTabsAvailable = Boolean(
+	(
+		window as Window & {
+			rrzeAnswersBlockSettings?: {
+				elementsTabsAvailable?: boolean;
+			};
+		}
+	 ).rrzeAnswersBlockSettings?.elementsTabsAvailable
+);
+
 export default function Edit( {
 	attributes,
 	setAttributes,
@@ -157,6 +167,7 @@ export default function Edit( {
 					allowGroupedIndexStyles={
 						Boolean( register ) && ! id.length
 					}
+					elementsTabsAvailable={ elementsTabsAvailable }
 				/>
 				<SortingPanel
 					order={ order }

@@ -101,8 +101,7 @@ return array(
 		'editorScript' => array(
 			'file:./index.js',
 			'rrze-answers-accordion',
-			'rrze-answers-search',
-			'rrze-answers-tabs'
+			'rrze-answers-search'
 		),
 		'editorStyle' => 'rrze-answers-css',
 		'render' => 'file:./render.php'
@@ -246,8 +245,7 @@ return array(
 		'editorScript' => array(
 			'file:./index.js',
 			'rrze-answers-accordion',
-			'rrze-answers-search',
-			'rrze-answers-tabs'
+			'rrze-answers-search'
 		),
 		'render' => 'file:./render.php'
 	),

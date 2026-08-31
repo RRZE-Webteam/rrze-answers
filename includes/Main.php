@@ -8,6 +8,7 @@ use RRZE\Answers\Defaults;
 
 use RRZE\Answers\Common\{
     HtmlSanitizer,
+    TabsRenderer,
     Tools,
     API\RESTAPI,
     API\SyncAPI,
@@ -491,6 +492,23 @@ class Main
     public function enqueueBlockEditorStyles(): void
     {
         wp_enqueue_style('rrze-answers-css');
+
+        $settings = 'window.rrzeAnswersBlockSettings = '
+            . wp_json_encode([
+                'elementsTabsAvailable' => TabsRenderer::isAvailable(),
+            ])
+            . ';';
+
+        foreach (['faq', 'glossary'] as $blockName) {
+            wp_add_inline_script(
+                generate_block_asset_handle(
+                    'rrze-answers/' . $blockName,
+                    'editorScript'
+                ),
+                $settings,
+                'before'
+            );
+        }
     }
 
     /**

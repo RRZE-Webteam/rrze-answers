@@ -26,10 +26,6 @@ module.exports = {
 			process.cwd(),
 			'src/js/rrze-answers-search.js'
 		),
-		'rrze-answers-tabs': path.resolve(
-			process.cwd(),
-			'src/js/rrze-answers-tabs.js'
-		),
 		'rrze-answers-guided-tour': path.resolve(
 			process.cwd(),
 			'src/js/rrze-answers-guided-tour.js'
