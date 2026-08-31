@@ -67,7 +67,7 @@ The text editor provides a dedicated menu entry for inserting synonyms. From the
 ```
 
 **Attributes:**
-- `glossary` – Grouping type (`category`, `tag`, or display style: `a-z`, `tabs`, `tagcloud`)
+- `glossary` – Index configuration. `a-z` works with a flat list; `tabs` and `tagcloud` require category or tag grouping, for example `glossary="category tabs"`.
 - `category` – One or more category slugs  
 - `tag` – One or more tag slugs  
 - `domain` – Filter by domain(s)  
@@ -92,7 +92,7 @@ The text editor provides a dedicated menu entry for inserting synonyms. From the
 ```
 
 **Attributes:**
-- `register` – Grouping type (`category`, `tag`) and style (`a-z`, `tabs`, `tagcloud`)
+- `register` – Index configuration. `a-z` works with a flat list; `tabs` and `tagcloud` require category or tag grouping, for example `register="category tabs"`.
 - `category` – One or more categories  
 - `tag` – One or more tags  
 - `id` – Specific entries by ID  

@@ -261,58 +261,87 @@ class Tools
         return mb_strtoupper(mb_substr($normalized, 0, 1), "UTF-8");
     }
 
-    public static function createAZ(&$aSearch)
+    public static function createAZ(array $aSearch, string $anchorPrefix = 'letter'): string
     {
-        if (count($aSearch) == 1) {
+        if (!$aSearch) {
             return '';
         }
+
         $ret = '<ul class="letters list-icons">';
 
         foreach (range('A', 'Z') as $a) {
             if (array_key_exists($a, $aSearch)) {
-                $ret .= '<li class="filled"><a href="#letter-' . $a . '">' . $a . '</a></li>';
+                $ret .= '<li class="filled"><a href="#' . esc_attr($anchorPrefix . '-' . $a) . '">' . esc_html($a) . '</a></li>';
             } else {
-                $ret .= '<li aria-hidden="true" role="presentation"><span>' . $a . '</span></li>';
+                $ret .= '<li aria-hidden="true" role="presentation"><span>' . esc_html($a) . '</span></li>';
             }
         }
+
         return $ret . '</ul>';
     }
 
-    public static function createTabs(&$aTerms, $aPostIDs)
+    public static function createTabs(array &$aTerms, $aPostIDs = []): string
     {
-        if (count($aTerms) == 1) {
+        if (!$aTerms) {
             return '';
         }
-        $ret = '';
-        foreach ($aTerms as $name => $aDetails) {
-            $ret .= '<a href="#ID-' . $aDetails['ID'] . '">' . $name . '</a> | ';
+
+        $tabListId = wp_unique_id('rrze-answers-tabs-');
+        $ret = '<div class="rrze-answers-tabs" role="tablist" aria-label="' . esc_attr__('Index navigation', 'rrze-answers') . '">';
+        $isFirst = true;
+
+        foreach ($aTerms as $name => &$aDetails) {
+            $termId = (int) ($aDetails['ID'] ?? 0);
+            $aDetails['tab_id'] = $tabListId . '-tab-' . $termId;
+            $aDetails['panel_id'] = $tabListId . '-panel-' . $termId;
+
+            $ret .= '<button type="button" class="rrze-answers-tab" role="tab"'
+                . ' id="' . esc_attr($aDetails['tab_id']) . '"'
+                . ' aria-controls="' . esc_attr($aDetails['panel_id']) . '"'
+                . ' aria-selected="' . ($isFirst ? 'true' : 'false') . '"'
+                . ' tabindex="' . ($isFirst ? '0' : '-1') . '">'
+                . esc_html($name)
+                . '</button>';
+
+            $isFirst = false;
         }
-        return rtrim($ret, ' | ');
+        unset($aDetails);
+
+        return $ret . '</div>';
     }
 
-    public static function createTagcloud(&$aTerms, $aPostIDs)
+    public static function createTagcloud(array $aTerms, array $aPostIDs, string $anchorPrefix = 'ID'): string
     {
-        if (count($aTerms) == 1) {
+        if (!$aTerms) {
             return '';
         }
-        $ret = '';
+
         $smallest = 12;
         $largest = 22;
         $aCounts = [];
         foreach ($aTerms as $name => $aDetails) {
-            $aCounts[$aDetails['ID']] = count($aPostIDs[$aDetails['ID']]);
+            $termId = (int) ($aDetails['ID'] ?? 0);
+            $aCounts[$termId] = count($aPostIDs[$termId] ?? []);
         }
-        $iMax = max($aCounts);
+
+        $iMax = max(1, max($aCounts));
         $aSizes = [];
         foreach ($aCounts as $ID => $cnt) {
             $aSizes[$ID] = round(($cnt / $iMax) * $largest, 0);
             $aSizes[$ID] = ($aSizes[$ID] < $smallest ? $smallest : $aSizes[$ID]);
         }
+
+        $ret = '<nav class="rrze-answers-tagcloud" aria-label="' . esc_attr__('Index navigation', 'rrze-answers') . '">';
         foreach ($aTerms as $name => $aDetails) {
-            $ret .= '<a href="#ID-' . $aDetails['ID'] . '" class="rrze-answers-tagcloud-item" style="--rrze-answers-tagcloud-size:' . $aSizes[$aDetails['ID']] . 'px">' . $name .
-                '</a> | ';
+            $termId = (int) ($aDetails['ID'] ?? 0);
+            $ret .= '<a href="#' . esc_attr($anchorPrefix . '-' . $termId) . '"'
+                . ' class="rrze-answers-tagcloud-item"'
+                . ' style="--rrze-answers-tagcloud-size:' . esc_attr((string) $aSizes[$termId]) . 'px">'
+                . esc_html($name)
+                . '</a>';
         }
-        return rtrim($ret, ' | ');
+
+        return $ret . '</nav>';
     }
 
     public static function getTaxQuery(&$aTax)

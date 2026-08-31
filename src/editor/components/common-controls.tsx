@@ -17,12 +17,9 @@ interface LanguageControlProps {
 }
 
 interface AppearanceFields extends Record< string, unknown > {
-	color: string;
 	hide_accordion: boolean;
 	hide_title: boolean;
-	masonry: boolean;
 	search: boolean;
-	style: string;
 }
 
 interface AppearancePanelProps< Attributes extends AppearanceFields > {
@@ -31,7 +28,7 @@ interface AppearancePanelProps< Attributes extends AppearanceFields > {
 	indexAttribute: keyof Attributes & string;
 	indexLabel: string;
 	showSearch?: boolean;
-	allowEmptyStyle?: boolean;
+	allowGroupedIndexStyles?: boolean;
 }
 
 interface SortingFields extends Record< string, unknown > {
@@ -65,31 +62,21 @@ export function getGroupingOptions(): SelectOption[] {
 	];
 }
 
-function getIndexStyleOptions(): SelectOption[] {
+function getIndexStyleOptions( allowGroupedStyles: boolean ): SelectOption[] {
 	return [
 		{ label: __( 'A - Z', 'rrze-answers' ), value: 'a-z' },
-		{ label: __( 'Tagcloud', 'rrze-answers' ), value: 'tagcloud' },
-		{ label: __( 'Tabs', 'rrze-answers' ), value: 'tabs' },
+		{
+			label: __( 'Tagcloud', 'rrze-answers' ),
+			value: 'tagcloud',
+			disabled: ! allowGroupedStyles,
+		},
+		{
+			label: __( 'Tabs', 'rrze-answers' ),
+			value: 'tabs',
+			disabled: ! allowGroupedStyles,
+		},
 		{ label: __( '-- hidden --', 'rrze-answers' ), value: '' },
 	];
-}
-
-function getColorOptions(): SelectOption[] {
-	return [ 'fau', 'med', 'nat', 'phil', 'rw', 'tf' ].map( ( value ) => ( {
-		label: value,
-		value,
-	} ) );
-}
-
-function getAccordionStyleOptions( allowEmptyStyle: boolean ): SelectOption[] {
-	const options = [
-		{ label: 'light', value: 'light' },
-		{ label: 'dark', value: 'dark' },
-	];
-
-	return allowEmptyStyle
-		? [ { label: __( 'none', 'rrze-answers' ), value: '' }, ...options ]
-		: options;
 }
 
 export function HeadingLevelToolbar( {
@@ -129,15 +116,12 @@ export function AppearancePanel< Attributes extends AppearanceFields >( {
 	indexAttribute,
 	indexLabel,
 	showSearch = false,
-	allowEmptyStyle = false,
+	allowGroupedIndexStyles = false,
 }: AppearancePanelProps< Attributes > ) {
 	const {
-		color,
 		hide_accordion: hideAccordion,
 		hide_title: hideTitle,
-		masonry,
 		search,
-		style,
 	} = attributes;
 
 	return (
@@ -148,8 +132,16 @@ export function AppearancePanel< Attributes extends AppearanceFields >( {
 		>
 			<SelectControl
 				label={ indexLabel }
+				help={
+					allowGroupedIndexStyles
+						? undefined
+						: __(
+								'Tabs and Tagcloud require category or tag grouping.',
+								'rrze-answers'
+						  )
+				}
 				value={ String( attributes[ indexAttribute ] || '' ) }
-				options={ getIndexStyleOptions() }
+				options={ getIndexStyleOptions( allowGroupedIndexStyles ) }
 				onChange={ ( value ) =>
 					setAttributes( {
 						[ indexAttribute ]: value,
@@ -180,29 +172,6 @@ export function AppearancePanel< Attributes extends AppearanceFields >( {
 					} as Partial< Attributes > )
 				}
 			/>
-			{/*<ToggleControl
-				checked={ masonry }
-				label={ __( 'Grid', 'rrze-answers' ) }
-				onChange={ ( value ) =>
-					setAttributes( { masonry: value } as Partial< Attributes > )
-				}
-			/>*/}
-			{/*<SelectControl
-				label={ __( 'Accordion style', 'rrze-answers' ) }
-				value={ style || 'light' }
-				options={ getAccordionStyleOptions( allowEmptyStyle ) }
-				onChange={ ( value ) =>
-					setAttributes( { style: value } as Partial< Attributes > )
-				}
-			/>*/}
-			{/*<SelectControl
-				label={ __( 'Color', 'rrze-answers' ) }
-				value={ color || '' }
-				options={ getColorOptions() }
-				onChange={ ( value ) =>
-					setAttributes( { color: value } as Partial< Attributes > )
-				}
-			/>*/}
 			<ToggleControl
 				checked={ hideTitle }
 				label={ __( 'Hide title', 'rrze-answers' ) }

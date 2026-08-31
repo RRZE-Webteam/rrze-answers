@@ -215,8 +215,61 @@ details.rrze-answers-item summary {
   }
 
   /* Tagcloud */
-  .letters a.rrze-answers-tagcloud-item {
+  .rrze-answers-tagcloud {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 0.875rem;
+    margin: 1.25rem 0;
+  }
+
+  a.rrze-answers-tagcloud-item {
     font-size: var(--rrze-answers-tagcloud-size, 1rem);
+    line-height: 1.25;
+  }
+
+  /* Category/tag tabs */
+  .rrze-answers-tabs {
+    display: flex;
+    gap: 0.25rem;
+    margin: 1.25rem 0 0;
+    overflow-x: auto;
+    border-bottom: 2px solid var(--rrze-answers-pagination-border-color, $rrze-answers-color-border-empty);
+  }
+
+  .rrze-answers-tab {
+    appearance: none;
+    margin: 0 0 -2px;
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--rrze-answers-pagination-border-color, $rrze-answers-color-border-empty);
+    border-bottom-width: 2px;
+    border-radius: var(--rrze-answers-pagination-border-radius, 4px) var(--rrze-answers-pagination-border-radius, 4px) 0 0;
+    color: var(--rrze-answers-pagination-color-active, #036);
+    background: var(--rrze-answers-pagination-background-color-default, transparent);
+    font: inherit;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: var(--rrze-answers-pagination-animation, all 0.2s ease-in-out);
+
+    &[aria-selected="true"] {
+      border-bottom-color: var(--rrze-answers-pagination-background-color-active-hover, #036);
+      color: var(--rrze-answers-pagination-color-active-hover, #fff);
+      background: var(--rrze-answers-pagination-background-color-active-hover, #036);
+    }
+
+    &:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: -4px;
+    }
+  }
+
+  .rrze-answers-tabpanel {
+    padding-top: 1rem;
+
+    &[hidden] {
+      display: none;
+    }
   }
 
   /* A–Z letters / pagination bar */

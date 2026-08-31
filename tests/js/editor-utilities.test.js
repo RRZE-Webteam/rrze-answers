@@ -7,10 +7,14 @@ jest.mock(
 );
 
 import { buildHierarchicalTermOptions } from '../../src/editor/hooks/use-entity-options';
-import { faqDeprecations } from '../../src/editor/deprecations';
+import {
+	faqDeprecations,
+	synonymDeprecations,
+} from '../../src/editor/deprecations';
 import {
 	hasLegacyFaqAttributes,
 	migrateFaqAttributes,
+	migrateSynonymAttributes,
 	normalizeIntegerList,
 	normalizeStringList,
 } from '../../src/editor/migrations/legacy-attributes';
@@ -93,5 +97,25 @@ describe( 'typed attribute normalization', () => {
 				},
 			} )
 		).toBe( true );
+	} );
+
+	it( 'drops obsolete synonym register attributes during migration', () => {
+		const legacy = {
+			id: '10',
+			register: 'category',
+			registerstyle: 'tabs',
+		};
+
+		expect(
+			synonymDeprecations[ 0 ].isEligible( {}, [], {
+				blockNode: { attrs: legacy },
+			} )
+		).toBe( true );
+		expect( migrateSynonymAttributes( legacy ) ).not.toHaveProperty(
+			'register'
+		);
+		expect( migrateSynonymAttributes( legacy ) ).not.toHaveProperty(
+			'registerstyle'
+		);
 	} );
 } );

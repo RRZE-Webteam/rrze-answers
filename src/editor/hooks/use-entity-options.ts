@@ -7,6 +7,7 @@ const POSTS_PER_PAGE = 100;
 export interface SelectOption {
 	label: string;
 	value: string;
+	disabled?: boolean;
 }
 
 interface EntityQuery {

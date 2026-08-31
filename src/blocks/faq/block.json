@@ -90,7 +90,8 @@
 	"editorScript": [
 		"file:./index.js",
 		"rrze-answers-accordion",
-		"rrze-answers-search"
+		"rrze-answers-search",
+		"rrze-answers-tabs"
 	],
 	"editorStyle": "rrze-answers-css",
 	"render": "file:./render.php"

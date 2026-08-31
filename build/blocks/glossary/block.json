@@ -98,7 +98,8 @@
   "editorScript": [
     "file:./index.js",
     "rrze-answers-accordion",
-    "rrze-answers-search"
+    "rrze-answers-search",
+    "rrze-answers-tabs"
   ],
   "render": "file:./render.php"
 }

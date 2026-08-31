@@ -49,8 +49,6 @@ export interface ListBlockAttributes extends Record< string, unknown > {
 }
 
 export interface SynonymAttributes extends ListBlockAttributes {
-	register: string;
-	registerstyle: string;
 	category: string[];
 	tag: string[];
 	hide_accordion: boolean;
@@ -180,8 +178,6 @@ export function migrateSynonymAttributes(
 	attributes: UnknownAttributes
 ): SynonymAttributes {
 	return {
-		register: stringValue( attributes.register ),
-		registerstyle: stringValue( attributes.registerstyle ),
 		category: normalizeStringList( attributes.category ),
 		tag: normalizeStringList( attributes.tag ),
 		id: normalizeIntegerList( attributes.id ),
@@ -267,6 +263,8 @@ export function hasLegacySynonymAttributes(
 	attributes: UnknownAttributes
 ): boolean {
 	return (
+		'register' in attributes ||
+		'registerstyle' in attributes ||
 		hasNonArrayValue( attributes, [ 'category', 'tag', 'id' ] ) ||
 		hasNonBooleanValue( attributes, [
 			'hide_accordion',

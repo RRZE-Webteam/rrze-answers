@@ -9,14 +9,6 @@
 	"icon": "translation",
 	"example": {},
 	"attributes": {
-		"register": {
-			"type": "string",
-			"default": ""
-		},
-		"registerstyle": {
-			"type": "string",
-			"default": ""
-		},
 		"category": {
 			"type": "array",
 			"items": {

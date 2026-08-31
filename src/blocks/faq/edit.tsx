@@ -24,8 +24,18 @@ export default function Edit( {
 	attributes,
 	setAttributes,
 }: BlockEditProps< FaqAttributes > ) {
-	const { category, glossary, hstart, id, lang, order, sort, style, tag } =
-		attributes;
+	const {
+		category,
+		glossary,
+		glossarystyle,
+		hstart,
+		id,
+		lang,
+		order,
+		sort,
+		style,
+		tag,
+	} = attributes;
 	const blockProps = useBlockProps( {
 		className: style === 'dark' ? 'is-style-dark' : 'is-style-light',
 	} );
@@ -81,7 +91,15 @@ export default function Edit( {
 						) }
 						value={ postSelection.selectedValues }
 						options={ posts.options }
-						onChange={ postSelection.onChange }
+						onChange={ ( values ) => {
+							postSelection.onChange( values );
+							if (
+								values.some( Boolean ) &&
+								[ 'tabs', 'tagcloud' ].includes( glossarystyle )
+							) {
+								setAttributes( { glossarystyle: 'a-z' } );
+							}
+						} }
 						isLoading={ posts.isLoading }
 						emptyMessage={ __(
 							'No FAQ entries found.',
@@ -103,15 +121,29 @@ export default function Edit( {
 							'Group glossary content by',
 							'rrze-answers'
 						) }
-						help={ __(
-							'Group FAQ entries by categories or tags.',
-							'rrze-answers'
-						) }
+						help={
+							id.length
+								? __(
+										'Grouping is unavailable while individual FAQ entries are selected.',
+										'rrze-answers'
+								  )
+								: __(
+										'Group FAQ entries by categories or tags.',
+										'rrze-answers'
+								  )
+						}
 						value={ glossary || '' }
 						options={ getGroupingOptions() }
-						onChange={ ( value ) =>
-							setAttributes( { glossary: value } )
-						}
+						disabled={ id.length > 0 }
+						onChange={ ( value ) => {
+							setAttributes( {
+								glossary: value,
+								...( ! value &&
+								[ 'tabs', 'tagcloud' ].includes( glossarystyle )
+									? { glossarystyle: 'a-z' }
+									: {} ),
+							} );
+						} }
 					/>
 				</PanelBody>
 				<AppearancePanel
@@ -120,6 +152,9 @@ export default function Edit( {
 					indexAttribute="glossarystyle"
 					indexLabel={ __( 'Glossary style', 'rrze-answers' ) }
 					showSearch
+					allowGroupedIndexStyles={
+						Boolean( glossary ) && ! id.length
+					}
 				/>
 				<SortingPanel
 					order={ order }

@@ -405,30 +405,39 @@ class ShortcodeGlossary
                     }
                 }
                 ksort($aUsedTerms);
-                $anchor = 'ID';
+                $indexPrefix = wp_unique_id('rrze-answers-index-');
+                $termAnchorPrefix = $indexPrefix . '-term';
                 if ($aLetters) {
                     switch ($registerstyle) {
                         case 'a-z':
-                            $content = Tools::createAZ($aLetters);
-                            $anchor = 'letter';
+                            $content = Tools::createAZ($aLetters, $indexPrefix);
                             break;
                         case 'tabs':
                             $content = Tools::createTabs($aUsedTerms, $aPostIDs);
                             break;
                         case 'tagcloud':
-                            $content = Tools::createTagCloud($aUsedTerms, $aPostIDs);
+                            $content = Tools::createTagCloud($aUsedTerms, $aPostIDs, $termAnchorPrefix);
                             break;
                     }
                 }
 
-                $last_anchor = '';
+                $lastLetter = '';
+                $isFirstTerm = true;
                 foreach ($aUsedTerms as $k => $aVal) {
-                    if ($registerstyle == 'a-z' && $content) {
-                        $content .= ($last_anchor != $aVal[$anchor] ? '<h2 id="' . $anchor . '-' . $aVal[$anchor] . '">' . esc_html($aVal[$anchor]) . '</h2>' : '');
+                    if ($registerstyle === 'a-z' && $lastLetter !== $aVal['letter']) {
+                        $content .= '<h2 id="' . esc_attr($indexPrefix . '-' . $aVal['letter']) . '">' . esc_html($aVal['letter']) . '</h2>';
                     }
 
-                    $term_id_attr = $anchor . '-' . $aVal[$anchor];
-                    $content .= '<section id="' . esc_attr($term_id_attr) . '" class="rrze-answers-item is-' . $color . '">';
+                    $sectionId = $termAnchorPrefix . '-' . (int) $aVal['ID'];
+                    $sectionAttributes = '';
+                    $sectionClasses = 'rrze-answers-item is-' . $color;
+                    if ($registerstyle === 'tabs') {
+                        $sectionId = $aVal['panel_id'];
+                        $sectionClasses .= ' rrze-answers-tabpanel';
+                        $sectionAttributes = ' role="tabpanel" aria-labelledby="' . esc_attr($aVal['tab_id']) . '"' . ($isFirstTerm ? '' : ' hidden');
+                    }
+
+                    $content .= '<section id="' . esc_attr($sectionId) . '" class="' . esc_attr($sectionClasses) . '"' . $sectionAttributes . '>';
                     $content .= '<h3>' . esc_html($k) . '</h3>';
 
                     $content .= '<div class="answers-term-content">';
@@ -456,11 +465,13 @@ class ShortcodeGlossary
                     }
 
                     $content .= '</div></section>';
-                    $last_anchor = $aVal[$anchor];
+                    $lastLetter = $aVal['letter'];
+                    $isFirstTerm = false;
                 }
             } else {
                 // attribut register is not given
-                $last_anchor = '';
+                $lastLetter = '';
+                $letterAnchorPrefix = wp_unique_id('rrze-answers-index-');
                 foreach ($posts as $post) {
                     $source = get_post_meta($post->ID, "source", true);
                     $useSchema = ($source === 'website');
@@ -475,6 +486,10 @@ class ShortcodeGlossary
                     $letter = Tools::getLetter($question);
                     $aLetters[$letter] = true;
 
+                    if ($registerstyle === 'a-z' && $lastLetter !== $letter) {
+                        $content .= '<h2 id="' . esc_attr($letterAnchorPrefix . '-' . $letter) . '">' . esc_html($letter) . '</h2>';
+                    }
+
                     if (!$hide_accordion) {
                         $anchorfield = get_post_meta($post->ID, 'anchorfield', true);
 
@@ -482,24 +497,15 @@ class ShortcodeGlossary
                             $anchorfield = 'ID-' . $post->ID;
                         }
 
-                        if ($registerstyle == 'a-z' && count($posts) > 1) {
-                            $content .= ($last_anchor != $letter ? '<h2 id="letter-' . $letter . '">' . $letter . '</h2>' : '');
-                        }
-
                         $content .= Tools::renderItemAccordion('glossary', $anchorfield, $question, $answer, $color, $load_open, $useSchema, (int) $hstart);
                     } else {
                         $content .= Tools::renderItem('glossary', $question, $answer, $hstart, $useSchema, $hide_title);
                     }
-                    $last_anchor = $letter;
+                    $lastLetter = $letter;
                 }
 
-                if ($aLetters) {
-                    switch ($registerstyle) {
-                        case 'a-z':
-                            $content = Tools::createAZ($aLetters) . $content;
-                            $anchor = 'letter';
-                            break;
-                    }
+                if ($aLetters && $registerstyle === 'a-z') {
+                    $content = Tools::createAZ($aLetters, $letterAnchorPrefix) . $content;
                 }
             }
         }
@@ -520,13 +526,14 @@ class ShortcodeGlossary
     {
         // translate new attributes
         if (isset($atts['register'])) {
+            $grouping = '';
             $parts = explode(' ', $atts['register']);
             foreach ($parts as $part) {
                 $part = trim($part);
                 switch ($part) {
                     case 'category':
                     case 'tag':
-                        $atts['register'] = $part;
+                        $grouping = $part;
                         break;
                     case 'a-z':
                     case 'tabs':
@@ -535,6 +542,7 @@ class ShortcodeGlossary
                         break;
                 }
             }
+            $atts['register'] = $grouping;
         }
 
         if (isset($atts['hide'])) {
@@ -644,7 +652,7 @@ class ShortcodeGlossary
         $gutenberg = (is_array($id) ? true : false);
 
         if ($id && (!$gutenberg || $gutenberg && $id[0])) {
-            $content = $this->renderExplicitItems($id, $gutenberg, $hstart, $style, $masonry, $expand_all_link, $hide_accordion, $hide_title, $color, $load_open);
+            $content = $this->renderExplicitItems($id, $gutenberg, $hstart, $style, $masonry, $expand_all_link, $hide_accordion, $hide_title, $color, $load_open, $registerstyle);
         } else {
             $content = $this->renderFilteredItems($atts, $hstart, $style, $expand_all_link, $hide_accordion, $hide_title, $color, $load_open, $sort, $order, $category, $tag, $register, $registerstyle);
         }
@@ -663,6 +671,10 @@ class ShortcodeGlossary
             wp_enqueue_script('rrze-answers-accordion');
         }
         wp_enqueue_style('rrze-answers-css');
+
+        if (strpos($content, 'class="rrze-answers-tabs"') !== false) {
+            wp_enqueue_script('rrze-answers-tabs');
+        }
 
         if ($search) {
             wp_enqueue_script('rrze-answers-search');
@@ -705,10 +717,12 @@ class ShortcodeGlossary
      * @param string $load_open Attribute for open state
      * @return string The generated HTML content
      */
-    private function renderExplicitItems($id, bool $gutenberg, string $hstart, string $style, bool $masonry, string $expand_all_link, bool $hide_accordion, bool $hide_title, string $color, string $load_open): string
+    private function renderExplicitItems($id, bool $gutenberg, string $hstart, string $style, bool $masonry, string $expand_all_link, bool $hide_accordion, bool $hide_title, string $color, string $load_open, string $registerstyle): string
     {
         $content = '';
         $this->bSchema = false;
+        $entries = [];
+        $letters = [];
 
         // EXPLICIT FAQ(s)
         if ($gutenberg) {
@@ -719,28 +733,61 @@ class ShortcodeGlossary
         }
 
         foreach ($aIDs as $id) {
-            $id = trim($id);
-            if ($id) {
-                $question = get_the_title($id);
-                $anchorfield = get_post_meta($id, 'anchorfield', true);
-
-                if (empty($anchorfield)) {
-                    $anchorfield = 'ID-' . $id;
-                }
-
-                $answer = str_replace(']]>', ']]&gt;', apply_filters('the_content', get_post_field('post_content', $id)));
-                $useSchema = (get_post_meta($id, 'source', true) === 'website');
-
-                if ($useSchema) {
-                    $this->bSchema = true;
-                }
-
-                if ($hide_accordion) {
-                    $content .= Tools::renderItem('faq', $question, $answer, $hstart, $useSchema, $hide_title);
-                } else {
-                    $content .= Tools::renderItemAccordion('faq', $anchorfield, $question, $answer, $color, $load_open, $useSchema, (int) $hstart);
-                }
+            $id = (int) trim((string) $id);
+            if (!$id) {
+                continue;
             }
+
+            $question = (string) get_the_title($id);
+            $letter = Tools::getLetter($question);
+            $letters[$letter] = true;
+            $entries[] = [
+                'id' => $id,
+                'question' => $question,
+                'letter' => $letter,
+            ];
+        }
+
+        if ($registerstyle === 'a-z') {
+            usort($entries, static function (array $first, array $second): int {
+                return strnatcasecmp(remove_accents($first['question']), remove_accents($second['question']));
+            });
+        }
+
+        $letterAnchorPrefix = wp_unique_id('rrze-answers-index-');
+        if ($registerstyle === 'a-z') {
+            $content = Tools::createAZ($letters, $letterAnchorPrefix);
+        }
+
+        $lastLetter = '';
+        foreach ($entries as $entry) {
+            $id = $entry['id'];
+            $question = $entry['question'];
+            $letter = $entry['letter'];
+            $anchorfield = get_post_meta($id, 'anchorfield', true);
+
+            if (empty($anchorfield)) {
+                $anchorfield = 'ID-' . $id;
+            }
+
+            if ($registerstyle === 'a-z' && $lastLetter !== $letter) {
+                $content .= '<h2 id="' . esc_attr($letterAnchorPrefix . '-' . $letter) . '">' . esc_html($letter) . '</h2>';
+            }
+
+            $answer = str_replace(']]>', ']]&gt;', apply_filters('the_content', get_post_field('post_content', $id)));
+            $useSchema = (get_post_meta($id, 'source', true) === 'website');
+
+            if ($useSchema) {
+                $this->bSchema = true;
+            }
+
+            if ($hide_accordion) {
+                $content .= Tools::renderItem('glossary', $question, $answer, $hstart, $useSchema, $hide_title);
+            } else {
+                $content .= Tools::renderItemAccordion('glossary', $anchorfield, $question, $answer, $color, $load_open, $useSchema, (int) $hstart);
+            }
+
+            $lastLetter = $letter;
         }
 
         return $content;
@@ -777,6 +824,3 @@ class ShortcodeGlossary
         return $pluginArray;
     }
 }
-
-
-

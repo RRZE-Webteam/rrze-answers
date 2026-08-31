@@ -24,8 +24,18 @@ export default function Edit( {
 	attributes,
 	setAttributes,
 }: BlockEditProps< GlossaryAttributes > ) {
-	const { category, hstart, id, lang, order, register, sort, style, tag } =
-		attributes;
+	const {
+		category,
+		hstart,
+		id,
+		lang,
+		order,
+		register,
+		registerstyle,
+		sort,
+		style,
+		tag,
+	} = attributes;
 	const blockProps = useBlockProps( {
 		className: style === 'dark' ? 'is-style-dark' : undefined,
 	} );
@@ -84,7 +94,15 @@ export default function Edit( {
 						) }
 						value={ postSelection.selectedValues }
 						options={ posts.options }
-						onChange={ postSelection.onChange }
+						onChange={ ( values ) => {
+							postSelection.onChange( values );
+							if (
+								values.some( Boolean ) &&
+								[ 'tabs', 'tagcloud' ].includes( registerstyle )
+							) {
+								setAttributes( { registerstyle: 'a-z' } );
+							}
+						} }
 						isLoading={ posts.isLoading }
 						emptyMessage={ __(
 							'No glossary entries found.',
@@ -106,15 +124,29 @@ export default function Edit( {
 							'Group register content by',
 							'rrze-answers'
 						) }
-						help={ __(
-							'Group glossary entries by categories or tags.',
-							'rrze-answers'
-						) }
+						help={
+							id.length
+								? __(
+										'Grouping is unavailable while individual glossary entries are selected.',
+										'rrze-answers'
+								  )
+								: __(
+										'Group glossary entries by categories or tags.',
+										'rrze-answers'
+								  )
+						}
 						value={ register || '' }
 						options={ getGroupingOptions() }
-						onChange={ ( value ) =>
-							setAttributes( { register: value } )
-						}
+						disabled={ id.length > 0 }
+						onChange={ ( value ) => {
+							setAttributes( {
+								register: value,
+								...( ! value &&
+								[ 'tabs', 'tagcloud' ].includes( registerstyle )
+									? { registerstyle: 'a-z' }
+									: {} ),
+							} );
+						} }
 					/>
 				</PanelBody>
 				<AppearancePanel
@@ -122,7 +154,9 @@ export default function Edit( {
 					setAttributes={ setAttributes }
 					indexAttribute="registerstyle"
 					indexLabel={ __( 'Register style', 'rrze-answers' ) }
-					allowEmptyStyle
+					allowGroupedIndexStyles={
+						Boolean( register ) && ! id.length
+					}
 				/>
 				<SortingPanel
 					order={ order }
