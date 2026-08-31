@@ -180,29 +180,29 @@ export function AppearancePanel< Attributes extends AppearanceFields >( {
 					} as Partial< Attributes > )
 				}
 			/>
-			<ToggleControl
+			{/*<ToggleControl
 				checked={ masonry }
 				label={ __( 'Grid', 'rrze-answers' ) }
 				onChange={ ( value ) =>
 					setAttributes( { masonry: value } as Partial< Attributes > )
 				}
-			/>
-			<SelectControl
+			/>*/}
+			{/*<SelectControl
 				label={ __( 'Accordion style', 'rrze-answers' ) }
 				value={ style || 'light' }
 				options={ getAccordionStyleOptions( allowEmptyStyle ) }
 				onChange={ ( value ) =>
 					setAttributes( { style: value } as Partial< Attributes > )
 				}
-			/>
-			<SelectControl
+			/>*/}
+			{/*<SelectControl
 				label={ __( 'Color', 'rrze-answers' ) }
 				value={ color || '' }
 				options={ getColorOptions() }
 				onChange={ ( value ) =>
 					setAttributes( { color: value } as Partial< Attributes > )
 				}
-			/>
+			/>*/}
 			<ToggleControl
 				checked={ hideTitle }
 				label={ __( 'Hide title', 'rrze-answers' ) }

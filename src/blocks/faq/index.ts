@@ -5,6 +5,7 @@
  */
 import { registerBlockType } from '@wordpress/blocks';
 import type { BlockConfiguration } from '@wordpress/blocks';
+import { ReactComponent as FaqIcon } from '../../../assets/svg/faq.svg';
 
 /**
  * Internal dependencies
@@ -18,6 +19,9 @@ import type { FaqAttributes } from '../../editor/migrations/legacy-attributes';
 registerBlockType< FaqAttributes >(
 	metadata as unknown as BlockConfiguration< FaqAttributes >,
 	{
+		icon: {
+			src: FaqIcon,
+		},
 		edit: Edit,
 		save,
 		deprecated: faqDeprecations,

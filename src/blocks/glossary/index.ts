@@ -5,6 +5,7 @@
  */
 import { registerBlockType } from '@wordpress/blocks';
 import type { BlockConfiguration } from '@wordpress/blocks';
+import { ReactComponent as GlossaryIcon } from '../../../assets/svg/glossary.svg';
 
 /**
  * Internal dependencies
@@ -18,6 +19,9 @@ import type { GlossaryAttributes } from '../../editor/migrations/legacy-attribut
 registerBlockType< GlossaryAttributes >(
 	metadata as unknown as BlockConfiguration< GlossaryAttributes >,
 	{
+		icon: {
+			src: GlossaryIcon,
+		},
 		edit: Edit,
 		save,
 		deprecated: glossaryDeprecations,

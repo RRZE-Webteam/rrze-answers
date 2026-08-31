@@ -5,6 +5,7 @@
  */
 import { registerBlockType } from '@wordpress/blocks';
 import type { BlockConfiguration } from '@wordpress/blocks';
+import { ReactComponent as SynonymIcon } from '../../../assets/svg/synonym.svg';
 import './synonym-format'; // Registers the inline toolbar format.
 
 /**
@@ -19,6 +20,9 @@ import type { SynonymAttributes } from '../../editor/migrations/legacy-attribute
 registerBlockType< SynonymAttributes >(
 	metadata as unknown as BlockConfiguration< SynonymAttributes >,
 	{
+		icon: {
+			src: SynonymIcon,
+		},
 		edit: Edit,
 		save,
 		deprecated: synonymDeprecations,
