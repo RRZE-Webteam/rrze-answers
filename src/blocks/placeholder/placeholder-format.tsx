@@ -1,4 +1,4 @@
-import apiFetch from '@wordpress/api-fetch';
+import { fetchPublishedEntries } from '../../editor/data/published-entries';
 import {
 	RichTextShortcut,
 	RichTextToolbarButton,
@@ -77,24 +77,14 @@ function PlaceholderUI( {
 		async function loadAll() {
 			setLoading( true );
 			setError( null );
-			const perPage = 100;
-			let page = 1;
-			const records: PlaceholderRecord[] = [];
-
 			try {
-				while ( true ) {
-					const batch = await apiFetch< PlaceholderRecord[] >( {
-						path: `/wp/v2/placeholder?status=publish&per_page=${ perPage }&page=${ page }&orderby=title&order=asc&_fields=id,title,content,titleLang,meta`,
-					} );
-					if ( cancelled ) {
-						return;
-					}
-
-					records.push( ...batch );
-					if ( batch.length < perPage ) {
-						break;
-					}
-					page += 1;
+				const records =
+					await fetchPublishedEntries< PlaceholderRecord >(
+						'placeholder',
+						'id,title,content,titleLang,meta'
+					);
+				if ( cancelled ) {
+					return;
 				}
 				setItems( records );
 			} catch ( fetchError ) {

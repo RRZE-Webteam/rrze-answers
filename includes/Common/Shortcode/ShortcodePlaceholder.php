@@ -4,7 +4,8 @@ namespace RRZE\Answers\Common\Shortcode;
 
 defined('ABSPATH') || exit;
 
-use RRZE\Answers\Common\Tools;
+use RRZE\Answers\Common\Content\EntryQuery;
+use RRZE\Answers\Common\Content\PlaceholderRenderer;
 
 use function RRZE\Answers\plugin;
 
@@ -78,102 +79,17 @@ class ShortcodePlaceholder
     }
 
 
-    private function getPostBySlug($slug)
-    {
-        $ret = get_posts([
-            'name' => $slug,
-            'post_type' => 'rrze_placeholder',
-            'post_status' => 'publish',
-            'posts_per_page' => 1
-        ]);
-
-        return (isset($ret[0]) ? $ret[0] : FALSE);
-    }
-
-    private function getPostsByCPT($cpt)
-    {
-        $postQuery = array('post_type' => $cpt, 'post_status' => 'publish', 'numberposts' => -1, 'suppress_filters' => false);
-        return get_posts($postQuery);
-    }
-
-    private function filterPostsByLanguage($posts, $lang)
-    {
-        if (!$lang || !is_array($posts)) {
-            return $posts;
-        }
-
-        $lang = sanitize_text_field((string) $lang);
-
-        return array_values(array_filter($posts, function ($post) use ($lang) {
-            if (!($post instanceof \WP_Post)) {
-                return false;
-            }
-            return ((string) get_post_meta($post->ID, 'lang', true)) === $lang;
-        }));
-    }
-
-    private function renderPlaceholderContent($rawContent): string
-    {
-        $decoded = html_entity_decode((string) $rawContent, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-
-        // Render nested Gutenberg blocks when placeholder content contains block markup.
-        if (has_blocks($decoded)) {
-            return do_blocks($decoded);
-        }
-
-        // Preserve line breaks from plain text while keeping existing HTML intact.
-        return wpautop($decoded);
-    }
-
     public function shortcodeOutput($atts, $content = "", $shortcode_tag = "")
     {
-        $myPosts = FALSE;
-
-        // in case shortcode is used with slug although Gutenberg is enabled, we need to store the given value because slug has been unset() in fillGutenbergOptions() for usability reasons
-        if (isset($atts['slug'])) {
-            $slug = $atts['slug'];
-        }
-
-        // merge given attributes with default ones
-        $atts_default = [];
-        foreach ($this->settings as $k => $v) {
-            if ($k != 'block') {
-                $atts_default[$k] = $v['default'];
-            }
-        }
-        $atts = shortcode_atts($atts_default, $atts);
-
-        extract($atts);
-
-        if (isset($slug) && $slug) {
-            $myPosts = array($this->getPostBySlug($slug));
-        } elseif ($id) {
-            $myPosts = array(get_post($id));
-        } else {
-            // show all
-            $myPosts = $this->getPostsByCPT('rrze_placeholder');
-        }
-
-        $myPosts = $this->filterPostsByLanguage($myPosts, $lang ?? '');
-
+        $attributes = shortcode_atts(['slug' => '', 'id' => '', 'lang' => ''], $atts);
+        $posts = EntryQuery::select('rrze_placeholder', $attributes);
         $output = '';
 
-        // echo '<pre>';
-        // var_dump($myPosts[0]->post_content);
-        // exit;
-
-        if ($myPosts) {
-                foreach ($myPosts as $post) {
-                    $output .= '<div class="placeholder">';
-                    $output .= $this->renderPlaceholderContent($post->post_content);
-                    $output .= '</div>';
-                }
-            if (count($myPosts) > 1) {
-                $output = '<div class="placeholder-outer">' . $output . '</div>';
-            }
+        foreach ($posts as $post) {
+            $output .= '<div class="placeholder">' . PlaceholderRenderer::render($post) . '</div>';
         }
 
-        return $output;
+        return count($posts) > 1 ? '<div class="placeholder-outer">' . $output . '</div>' : $output;
     }
 
 

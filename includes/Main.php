@@ -8,6 +8,7 @@ use RRZE\Answers\Defaults;
 
 use RRZE\Answers\Common\{
     HtmlSanitizer,
+    Content\PlaceholderRenderer,
     TabsRenderer,
     Tools,
     API\RESTAPI,
@@ -328,39 +329,14 @@ class Main
 
 
     /**
-     * Inline placeholders are replaced inside paragraphs; wpautop / paragraph blocks emit a
-     * single wrapping <p> which breaks flow and nests invalidly. Strip exactly one outer <p>.
+     * Replace legacy inline markers using the same renderer as placeholder blocks.
      *
-     * @param string $html Rendered placeholder body.
-     */
-    private static function unwrapOuterSingleParagraphForInline(string $html): string
-    {
-        $html = trim($html);
-        if ($html === '' || stripos($html, '<p') !== 0) {
-            return $html;
-        }
-
-        if (!preg_match('/^<p\b[^>]*>(.*)<\/p>$/is', $html, $m)) {
-            return $html;
-        }
-
-        $inner = trim($m[1]);
-        if ($inner !== '' && preg_match('/<\/(?:p|div|h[1-6]|blockquote|figure)\s*>/i', $inner)) {
-            return $html;
-        }
-
-        return $inner;
-    }
-
-    /**
-     * Replace inline <placeholder> markers with their actual content on frontend output.
-     *
-     * @param mixed $content The value passed through the WordPress filter.
-     * @return mixed The untouched value or rendered post content.
+     * @param mixed $content
+     * @return mixed
      */
     public function renderInlinePlaceholders($content)
     {
-        if (!is_string($content) || strpos($content, '<placeholder') === false) {
+        if (!is_string($content) || stripos($content, '<placeholder') === false) {
             return $content;
         }
 
@@ -368,53 +344,7 @@ class Main
             return $content;
         }
 
-        $renderedContent = preg_replace_callback(
-            '/<placeholder\b([^>]*)>.*?<\/placeholder>/is',
-            static function ($matches) {
-                if (empty($matches[1])) {
-                    return '';
-                }
-
-                if (preg_match('/\bdata-placeholder-id=(["\'])(\d+)\1/is', $matches[1], $idMatch)) {
-                    $placeholderId = (int) $idMatch[2];
-                    $placeholderPost = get_post($placeholderId);
-
-                    if (
-                        $placeholderPost instanceof \WP_Post
-                        && $placeholderPost->post_type === 'rrze_placeholder'
-                        && $placeholderPost->post_status === 'publish'
-                    ) {
-                        static $renderStack = [];
-                        if (in_array($placeholderId, $renderStack, true)) {
-                            return '';
-                        }
-
-                        $renderStack[] = $placeholderId;
-                        $dynamicContent = html_entity_decode($placeholderPost->post_content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                        try {
-                            // Render placeholder content like normal post content, including blocks.
-                            return self::unwrapOuterSingleParagraphForInline(
-                                (string) apply_filters('the_content', $dynamicContent)
-                            );
-                        } finally {
-                            array_pop($renderStack);
-                        }
-                    }
-                }
-
-                if (!preg_match('/\btitle=(["\'])(.*?)\1/is', $matches[1], $titleMatch)) {
-                    return '';
-                }
-
-                $decoded = html_entity_decode($titleMatch[2], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                return self::unwrapOuterSingleParagraphForInline(
-                    (string) wp_kses_post(wpautop($decoded))
-                );
-            },
-            $content
-        );
-
-        return $renderedContent ?? $content;
+        return PlaceholderRenderer::replaceInline($content);
     }
 
     /**

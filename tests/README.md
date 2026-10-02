@@ -51,3 +51,22 @@ The suite runs WordPress in multisite mode through `phpunit.xml.dist`.
   emitted by current plugin versions.
 - Recoverable synchronized-source removal, including atomic rollback, retained
   taxonomy relationships, settings consistency and multisite isolation.
+- Public embeds across all four entry types: unpublished and password-protected
+  content, wrong post types, missing IDs, ordered multiple selections, legacy
+  block attributes, slug precedence and language filters.
+- Escaped synonym output and sanitized legacy placeholder HTML, including inline
+  snapshots, nested blocks and cyclic references.
+
+## Editor checks
+
+```sh
+npm run test:unit -- --runInBand --watch=false
+npm run typecheck
+npm run build
+```
+
+The JavaScript suite parses, migrates, serializes and reopens legacy fixtures for
+all five blocks with the Gutenberg parser. REST pagination tests exercise the
+WordPress apiFetch middleware for empty collections, exact page boundaries,
+multiple pages and failures on later pages. These are automated checks, not a
+replacement for testing the editor with supported WordPress versions and themes.

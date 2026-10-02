@@ -1,7 +1,7 @@
 === RRZE Answers ===
 Contributors: rrze-webteam
 Tags: faq, glossary, synonym, placeholder, shortcode, block, widget
-Requires at least: 6.1
+Requires at least: 6.8
 Tested up to: 6.8
 Requires PHP: 8.2
 Stable tag: 1.4.7
@@ -54,6 +54,10 @@ In the classic text editor (TinyMCE), placeholders can be inserted via the short
 
 === Shortcodes ===
 
+Embeds only display published entries of the requested content type. Drafts,
+private entries and Trash are omitted, including explicit ID selections.
+Password-protected entries require the visitor to have entered their password.
+
 FAQ:
 
     [faq id="456,123"]
@@ -84,6 +88,8 @@ Synonyms:
     [fau_abbr slug="url"]
 
 `[fau_abbr]` outputs `<abbr>` tags and supports language/pronunciation metadata when present.
+Synonyms and abbreviations support comma-separated IDs and a `lang` filter.
+Their text and HTML attributes are escaped as plain text.
 
 Placeholders:
 
@@ -101,7 +107,9 @@ Placeholder attributes:
 
 Notes:
 * If `slug` is set, it takes precedence over `id`.
-* Output is rendered as placeholder content from the editor.
+* Legacy encoded HTML is decoded and sanitized before WordPress renders blocks and shortcodes.
+* Inline placeholders with an unavailable ID do not display their saved text snapshot.
+  Legacy markers without an ID retain their sanitized text fallback.
 
 === Synchronization Across Domains ===
 

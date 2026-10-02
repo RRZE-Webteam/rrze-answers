@@ -57,6 +57,10 @@ The text editor provides a dedicated menu entry for inserting synonyms. From the
 
 ## Shortcodes
 
+Embeds only display published entries of the requested content type. Drafts,
+private entries, and entries in Trash are omitted even when selected by ID.
+Password-protected entries require the visitor to have entered their password.
+
 ### FAQ Shortcode
 
 ```html
@@ -114,9 +118,13 @@ The text editor provides a dedicated menu entry for inserting synonyms. From the
 ```
 
 **Attributes:**
-- `id` – Display a specific synonym or abbreviation  
+- `id` – One or more synonym or abbreviation IDs (comma-separated, in display order)
 - `slug` – Use the entry’s slug  
-- No attributes → list all synonyms  
+- `lang` – Filter entries by their language metadata
+- No attributes → list all published synonyms
+
+If `slug` is set, it takes precedence over `id`. Synonym text and abbreviation
+attributes are escaped as plain text.
 
 The `[fau_abbr]` shortcode outputs abbreviations as `<abbr>` HTML tags, including language and pronunciation details if specified.
 
@@ -145,7 +153,10 @@ Example:
 
 Notes:
 - If `slug` is set, it takes precedence over `id`.
-- Output is rendered as placeholder content from the editor (decoded HTML).
+- Legacy encoded HTML is decoded and sanitized before WordPress renders blocks and shortcodes.
+- Inline placeholders with an ID follow the current entry. If it is unavailable,
+  its previously saved text is not displayed. Legacy markers without an ID keep
+  their sanitized text fallback.
 
 ---
 

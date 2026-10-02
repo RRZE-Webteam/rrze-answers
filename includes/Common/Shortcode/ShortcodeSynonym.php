@@ -4,7 +4,7 @@ namespace RRZE\Answers\Common\Shortcode;
 
 defined('ABSPATH') || exit;
 
-use RRZE\Answers\Common\Tools;
+use RRZE\Answers\Common\Content\EntryQuery;
 
 use function RRZE\Answers\plugin;
 
@@ -73,95 +73,36 @@ class ShortcodeSynonym
     }
 
 
-    private function getPostBySlug($slug)
-    {
-        $ret = get_posts([
-            'name' => $slug,
-            'post_type' => 'rrze_synonym',
-            'post_status' => 'publish',
-            'posts_per_page' => 1
-        ]);
-
-        return (isset($ret[0]) ? $ret[0] : FALSE);
-    }
-
-    private function getPostsByCPT($cpt)
-    {
-        $postQuery = array('post_type' => $cpt, 'post_status' => 'publish', 'numberposts' => -1, 'suppress_filters' => false);
-        return get_posts($postQuery);
-    }
-
     public function shortcodeOutput($atts, $content = "", $shortcode_tag = "")
     {
-        $myPosts = FALSE;
-
-        // in case shortcode is used with slug although Gutenberg is enabled, we need to store the given value because slug has been unset() in fillGutenbergOptions() for usability reasons
-        if (isset($atts['slug'])) {
-            $slug = $atts['slug'];
-        }
-
-        // merge given attributes with default ones
-        $atts_default = [];
-        foreach ($this->settings as $k => $v) {
-            if ($k != 'block') {
-                $atts_default[$k] = $v['default'];
-            }
-        }
-        $atts = shortcode_atts($atts_default, $atts);
-
-        extract($atts);
-
-        if (isset($slug) && $slug) {
-            $myPosts = array($this->getPostBySlug($slug));
-        } elseif ($id) {
-            $myPosts = array(get_post($id));
-        } else {
-            // show all
-            $myPosts = $this->getPostsByCPT('rrze_synonym');
-        }
-
-        // if ($gutenberg_shortcode_type) {
-        //     // Gutenberg
-        //     $shortcode_tag = $gutenberg_shortcode_type;
-        // }
-
+        $attributes = shortcode_atts(['slug' => '', 'id' => '', 'lang' => ''], $atts);
+        $posts = EntryQuery::select('rrze_synonym', $attributes);
+        $abbreviation = $shortcode_tag === 'fau_abbr';
+        $multiple = count($posts) > 1;
         $output = '';
 
-        if ($myPosts) {
-            switch ($shortcode_tag) {
-                case 'fau_abbr':
-                    wp_enqueue_style('rrze-answers-css');
-                    if (count($myPosts) == 1) {
-                        $post = $myPosts[0];
-                        $output = '<abbr class="rrze-syn" title="' . get_post_meta($post->ID, 'synonym', TRUE) . '" lang="' . get_post_meta($post->ID, 'titleLang', TRUE) . '">' . html_entity_decode($post->post_title) . '</abbr>';
-                    } else {
-                        foreach ($myPosts as $post) {
-                            $output .= '<div class="fau_abbr">';
-                            $output .= '<abbr class="rrze-syn" title="' . get_post_meta($post->ID, 'synonym', TRUE) . '" lang="' . get_post_meta($post->ID, 'titleLang', TRUE) . '">' . html_entity_decode($post->post_title) . '</abbr>';
-                            $output .= '</div>';
-                        }
-                    }
-                    break;
-                case 'synonym':
-                    if (count($myPosts) == 1) {
-                        $post = $myPosts[0];
-                        $output = get_post_meta($post->ID, 'synonym', TRUE);
-                    } else {
-                        foreach ($myPosts as $post) {
-                            $output .= '<div class="synonym">';
-                            $output .= '<h2 class="small">' . html_entity_decode($post->post_title) . '</h2>';
-                            $output .= '<p>' . get_post_meta($post->ID, 'synonym', TRUE) . '</p>';
-                            $output .= '<div>';
-                        }
-                    }
-                    break;
-            }
-            if (count($myPosts) > 1) {
-                $output = '<div class="synonym-outer">' . $output . '</div>';
+        if ($abbreviation && $posts !== []) {
+            wp_enqueue_style('rrze-answers-css');
+        }
+
+        foreach ($posts as $post) {
+            $title = esc_html(html_entity_decode($post->post_title, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+            $longForm = (string) get_post_meta($post->ID, 'synonym', true);
+
+            if ($abbreviation) {
+                $item = '<abbr class="rrze-syn" title="' . esc_attr($longForm)
+                    . '" lang="' . esc_attr((string) get_post_meta($post->ID, 'titleLang', true))
+                    . '">' . $title . '</abbr>';
+                $output .= $multiple ? '<div class="fau_abbr">' . $item . '</div>' : $item;
+            } else {
+                $item = esc_html($longForm);
+                $output .= $multiple
+                    ? '<div class="synonym"><h2 class="small">' . $title . '</h2><p>' . $item . '</p></div>'
+                    : $item;
             }
         }
 
-        return $output;
+        return $multiple ? '<div class="synonym-outer">' . $output . '</div>' : $output;
     }
 
 

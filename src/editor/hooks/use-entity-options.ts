@@ -2,7 +2,8 @@ import { useSelect } from '@wordpress/data';
 import { useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
-const POSTS_PER_PAGE = 100;
+// Core data delegates this to apiFetch, which follows the REST pagination links.
+const POSTS_PER_PAGE = -1;
 
 export interface SelectOption {
 	label: string;

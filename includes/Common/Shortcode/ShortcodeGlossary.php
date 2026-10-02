@@ -5,6 +5,7 @@ namespace RRZE\Answers\Common\Shortcode;
 defined('ABSPATH') || exit;
 
 use RRZE\Answers\Common\AccordionRenderer;
+use RRZE\Answers\Common\Content\EntryQuery;
 use RRZE\Answers\Common\TabsRenderer;
 use function RRZE\Answers\plugin;
 
@@ -338,7 +339,7 @@ class ShortcodeGlossary
             ], $metaQuery);
         }
 
-        $posts = get_posts($postQuery);
+        $posts = EntryQuery::get('rrze_glossary', $postQuery);
 
         if ($posts) {
             if ($register) {
@@ -724,20 +725,8 @@ class ShortcodeGlossary
         $entries = [];
         $letters = [];
 
-        // EXPLICIT FAQ(s)
-        if ($gutenberg) {
-            $aIDs = $id;
-        } else {
-            // classic editor
-            $aIDs = explode(',', $id);
-        }
-
-        foreach ($aIDs as $id) {
-            $id = (int) trim((string) $id);
-            if (!$id) {
-                continue;
-            }
-
+        foreach (EntryQuery::byIds('rrze_glossary', $id) as $post) {
+            $id = $post->ID;
             $question = (string) get_the_title($id);
             $letter = Tools::getLetter($question);
             $letters[$letter] = true;

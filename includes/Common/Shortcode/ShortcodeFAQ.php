@@ -5,6 +5,7 @@ namespace RRZE\Answers\Common\Shortcode;
 defined('ABSPATH') || exit;
 
 use RRZE\Answers\Common\AccordionRenderer;
+use RRZE\Answers\Common\Content\EntryQuery;
 use RRZE\Answers\Common\TabsRenderer;
 use RRZE\Answers\Common\Tools;
 // use RRZE\Answers\Defaults;
@@ -395,20 +396,8 @@ class ShortcodeFAQ
         $entries = [];
         $letters = [];
 
-        // EXPLICIT FAQ(s)
-        if ($gutenberg) {
-            $aIDs = $id;
-        } else {
-            // classic editor
-            $aIDs = explode(',', $id);
-        }
-
-        foreach ($aIDs as $id) {
-            $id = (int) trim((string) $id);
-            if (!$id) {
-                continue;
-            }
-
+        foreach (EntryQuery::byIds('rrze_faq', $id) as $post) {
+            $id = $post->ID;
             $question = (string) get_the_title($id);
             $letter = Tools::getLetter($question);
             $letters[$letter] = true;
@@ -547,7 +536,7 @@ class ShortcodeFAQ
             ], $metaQuery);
         }
 
-        $posts = get_posts($postQuery);
+        $posts = EntryQuery::get('rrze_faq', $postQuery);
 
         if ($posts) {
             if ($glossary) {

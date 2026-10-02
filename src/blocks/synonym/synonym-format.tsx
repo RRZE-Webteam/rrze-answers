@@ -1,4 +1,4 @@
-import apiFetch from '@wordpress/api-fetch';
+import { fetchPublishedEntries } from '../../editor/data/published-entries';
 import {
 	RichTextShortcut,
 	RichTextToolbarButton,
@@ -79,24 +79,13 @@ function SynonymUI( { value, onChange, isActive }: RichTextFormatEditProps ) {
 		async function loadAll() {
 			setLoading( true );
 			setError( null );
-			const perPage = 100;
-			let page = 1;
-			const records: SynonymRecord[] = [];
-
 			try {
-				while ( true ) {
-					const batch = await apiFetch< SynonymRecord[] >( {
-						path: `/wp/v2/synonym?status=publish&per_page=${ perPage }&page=${ page }&orderby=title&order=asc&_fields=id,title,synonym,titleLang,meta`,
-					} );
-					if ( cancelled ) {
-						return;
-					}
-
-					records.push( ...batch );
-					if ( batch.length < perPage ) {
-						break;
-					}
-					page += 1;
+				const records = await fetchPublishedEntries< SynonymRecord >(
+					'synonym',
+					'id,title,synonym,titleLang,meta'
+				);
+				if ( cancelled ) {
+					return;
 				}
 				setItems( records );
 			} catch ( fetchError ) {
