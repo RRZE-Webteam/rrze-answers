@@ -37,6 +37,29 @@ composer test
 
 The suite runs WordPress in multisite mode through `phpunit.xml.dist`.
 
+## Upgrade from v1.4.6
+
+```sh
+composer test:upgrade
+```
+
+This requires the Git history containing `v1.4.6`, installed Composer/npm
+dependencies and the same separate test database as the PHPUnit suite. It uses
+the fixed `rrze_upgrade_tests_` table prefix and recreates only those tables,
+including secondary-site tables from interrupted runs. Do not run two upgrade
+checks concurrently against the same database. The normal PHPUnit tables use a
+different prefix.
+
+To test a second WordPress installation, set `WP_CORE_DIR` and, if its directory
+has no configuration file, point `WP_TESTS_SOURCE_CONFIG` to the normal local
+`wp-config.php`. That file supplies connection settings and the database name to
+exclude; the test database remains `rrze_answers_tests` (or `WP_TESTS_DB_NAME`).
+
+The check starts the old and current plugins in separate PHP processes against
+the same stored data, then saves migrated blocks through the REST API. Failed
+runs retain diagnostic files in the printed temporary directory. Successful runs
+remove their temporary checkout. See [fixture provenance and coverage](fixtures/v1.4.6/README.md).
+
 ## Current integration coverage
 
 - Admin list tables for FAQ, glossary and synonym entries, including legacy

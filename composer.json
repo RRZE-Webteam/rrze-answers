@@ -32,6 +32,7 @@
   },
   "scripts": {
     "test": "phpunit",
+    "test:upgrade": "php tests/upgrade/run.php",
     "phpstan": "phpstan analyse --memory-limit=1G",
     "check": [
       "@test",
@@ -40,6 +41,7 @@
   },
   "scripts-descriptions": {
     "test": "Run the WordPress PHPUnit integration tests",
+    "test:upgrade": "Test an actual v1.4.6 database through startup and editor saves on the current plugin",
     "phpstan": "Run static analysis with WordPress type support",
     "check": "Run all PHP quality checks"
   }
