@@ -56,6 +56,9 @@ The suite runs WordPress in multisite mode through `phpunit.xml.dist`.
   block attributes, slug precedence and language filters.
 - Escaped synonym output and sanitized legacy placeholder HTML, including inline
   snapshots, nested blocks and cyclic references.
+- Shared FAQ/glossary rendering: explicit and filtered lists, combined taxonomy
+  and language filters, sorting, A–Z and tag-cloud navigation, grouped output,
+  legacy aliases and display options, and schema isolation for nested lists.
 
 ## Editor checks
 
