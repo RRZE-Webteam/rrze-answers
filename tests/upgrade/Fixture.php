@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace RRZE\Answers\Upgrade;
 
-/** Synthetic content created by the unmodified v1.4.6 plugin. */
+/** Synthetic, already-migrated content created by an unmodified legacy plugin. */
 final class Fixture
 {
     public static int $assertions = 0;
 
+    /**
+     * Count an assertion and fail with a diagnostic message when it is false.
+     */
     public static function check(bool $condition, string $message): void
     {
         self::$assertions++;
@@ -17,6 +20,12 @@ final class Fixture
         }
     }
 
+    /**
+     * Populate two isolated fixture sites with completed migration state.
+     *
+     * @param list<array<string, mixed>> $blocks Legacy serialized block fixtures.
+     * @return array<string, mixed> Site IDs, editor ID and the initial persisted snapshot.
+     */
     public static function seed(array $blocks): array
     {
         $editor = wp_insert_user(['user_login' => 'upgrade-editor', 'user_pass' => wp_generate_password(), 'role' => 'editor']);
@@ -27,9 +36,10 @@ final class Fixture
         foreach ($sites as $site) {
             switch_to_blog($site);
             try {
-                // Initialize an empty site through v1.4.6's actual one-time migrations.
-                foreach (['rrze_update_glossary_cpt', 'rrze_update_synonym_cpt', 'rrze_migrate_domains', 'rrze_migrate_blocks', 'rrze_update_placeholder_cpt'] as $migration) {
-                    call_user_func('RRZE\\Answers\\' . $migration);
+                // The rollout starts after migration. Mark only these empty,
+                // isolated fixture sites as initialized before creating content.
+                foreach (['rrze_update_glossary_cpt_done', 'rrze_rename_synonym_to_synonym_done', 'rrze_migrate_domains_done', 'rrze_migrate_blocks_done', 'rrze_rename_placeholder_to_synonym_done'] as $migrationFlag) {
+                    update_option($migrationFlag, 1);
                 }
                 add_user_to_blog($site, (int) $editor, 'editor');
                 wp_set_current_user(1);
@@ -41,6 +51,11 @@ final class Fixture
         return ['sites' => $sites, 'editor' => (int) $editor, 'snapshot' => self::snapshot($sites)];
     }
 
+    /**
+     * Insert stable IDs, settings and content for one fixture site.
+     *
+     * @param list<array<string, mixed>> $blocks Legacy serialized block fixtures.
+     */
     private static function seedSite(int $site, array $blocks): void
     {
         $entries = [
@@ -50,7 +65,9 @@ final class Fixture
             2101 => ['glossary', 'Campus', '<p>Campus definition</p>'],
             2102 => ['glossary', 'Imported term', '<p>Imported definition</p>'],
             2201 => ['synonym', 'RRZE', ''],
+            2202 => ['synonym', 'Unselected synonym', ''],
             2301 => ['placeholder', 'Opening hours', '&lt;p&gt;Office hours: &lt;strong&gt;09:00–12:00&lt;/strong&gt;&lt;/p&gt;'],
+            2302 => ['placeholder', 'Unselected placeholder', '&lt;p&gt;Unselected placeholder content&lt;/p&gt;'],
         ];
         foreach ($entries as $id => [$type, $title, $content]) {
             $postId = wp_insert_post([
@@ -76,6 +93,8 @@ final class Fixture
         }
         update_post_meta(2201, 'synonym', 'Regional Computing Centre');
         update_post_meta(2201, 'titleLang', 'en');
+        update_post_meta(2202, 'synonym', 'Unselected synonym value');
+        update_post_meta(2202, 'titleLang', 'en');
 
         foreach (['faq' => ['enrollment', 'admission'], 'glossary' => ['university', 'studies']] as $type => $slugs) {
             foreach (['category', 'tag'] as $index => $kind) {
@@ -120,6 +139,12 @@ final class Fixture
         wp_schedule_event(2000000000, 'daily', 'rrze_answers_auto_sync');
     }
 
+    /**
+     * Include mixed, classic and inline pages alongside individual block fixtures.
+     *
+     * @param list<array<string, mixed>> $blocks Legacy serialized block fixtures.
+     * @return list<array<string, mixed>> Pages with expected visible content.
+     */
     public static function pages(array $blocks): array
     {
         return array_merge($blocks, [
@@ -135,13 +160,18 @@ final class Fixture
             ],
             [
                 'name' => 'inline-formats',
-                'content' => '<p><abbr class="rrze-synonym" title="Regional Computing Centre" lang="en">RRZE</abbr>: <placeholder class="rrze-placeholder" data-placeholder-id="2301" data-placeholder-title="Opening hours" title="Office hours: &lt;strong&gt;09:00–12:00&lt;/strong&gt;">Opening hours</placeholder></p>',
+                'content' => '<p><abbr class="rrze-syn" title="Regional Computing Centre" lang="en">RRZE</abbr>: <placeholder class="rrze-placeholder" data-placeholder-id="2301" data-placeholder-title="Opening hours" title="Office hours: &lt;strong&gt;09:00–12:00&lt;/strong&gt;">Opening hours</placeholder></p>',
                 'contains' => ['Regional Computing Centre', 'Office hours', '<strong>09:00–12:00</strong>'],
             ],
         ]);
     }
 
-    /** Raw persisted state: rendering and plugin startup must not rewrite it. */
+    /**
+     * Read persisted state that rendering and plugin startup must not rewrite.
+     *
+     * @param list<int> $sites Fixture site IDs.
+     * @return array<int|string, mixed> Raw database records and scheduled event.
+     */
     public static function snapshot(array $sites): array
     {
         global $wpdb;
@@ -167,6 +197,12 @@ final class Fixture
         return $snapshot;
     }
 
+    /**
+     * Assert that each captured table still matches its previous state exactly.
+     *
+     * @param array<int|string, mixed> $expected Previous persisted state.
+     * @param array<int|string, mixed> $actual Current persisted state.
+     */
     public static function assertSnapshot(array $expected, array $actual, string $phase): void
     {
         foreach ($expected as $site => $tables) {
@@ -180,30 +216,71 @@ final class Fixture
         }
     }
 
+    /**
+     * Render all fixture pages and enforce their content and selection boundaries.
+     *
+     * @param list<int> $sites Fixture site IDs.
+     * @param list<array<string, mixed>> $blocks Legacy serialized block fixtures.
+     * @return array<int, array<string, string>> Rendered output by site and page.
+     */
     public static function renderPages(array $sites, array $blocks): array
     {
-        $result = [];
+        $inspection = self::inspectPages($sites, $blocks);
+        foreach ($inspection['failures'] as $failure) {
+            self::check(false, $failure);
+        }
+        self::check(true, 'All fixture pages preserved their content and selection boundaries.');
+        return $inspection['outputs'];
+    }
+
+    /**
+     * Collect every page failure so rollback diagnostics include all lost embeds.
+     *
+     * @param list<int> $sites Fixture site IDs.
+     * @param list<array<string, mixed>> $blocks Legacy serialized block fixtures.
+     * @return array{outputs: array<int, array<string, string>>, failures: list<string>}
+     */
+    public static function inspectPages(array $sites, array $blocks): array
+    {
+        $outputs = [];
+        $failures = [];
         foreach ($sites as $site) {
             switch_to_blog($site);
             try {
                 foreach (self::pages($blocks) as $index => $page) {
-                    $GLOBALS['post'] = get_post(3001 + $index);
-                    $output = apply_filters('the_content', $GLOBALS['post']->post_content);
-                    foreach ($page['contains'] as $text) {
-                        self::check(str_contains($output, $text), $site . '/' . $page['name'] . ': missing ' . $text);
+                    $label = $site . '/' . $page['name'];
+                    try {
+                        $GLOBALS['post'] = get_post(3001 + $index);
+                        $output = apply_filters('the_content', $GLOBALS['post']->post_content);
+                    } catch (\Throwable $error) {
+                        $failures[] = $label . ': rendering failed: ' . $error->getMessage();
+                        continue;
                     }
-                    self::check(!str_contains($output, 'Unpublished answer'), 'Draft leaked into ' . $page['name']);
-                    self::check(!str_contains($output, 'Imported answer') && !str_contains($output, 'Imported definition'), 'Selection broadened in ' . $page['name']);
-                    $result[$site][$page['name']] = $output;
+                    $outputs[$site][$page['name']] = $output;
+                    foreach ($page['contains'] as $text) {
+                        self::$assertions++;
+                        if (!str_contains($output, $text)) {
+                            $failures[] = $label . ': missing ' . $text;
+                        }
+                    }
+                    foreach (['Unpublished answer', 'Imported answer', 'Imported definition', 'Updated remote content', 'Unselected synonym value', 'Unselected placeholder content'] as $forbidden) {
+                        self::$assertions++;
+                        if (str_contains($output, $forbidden)) {
+                            $failures[] = $label . ': selection broadened to ' . $forbidden;
+                        }
+                    }
                 }
             } finally {
                 unset($GLOBALS['post']);
                 restore_current_blog();
             }
         }
-        return $result;
+        return ['outputs' => $outputs, 'failures' => $failures];
     }
 
+    /**
+     * Remove only request-generated identifiers and the once-per-request FAQ scope.
+     */
     public static function normalizeOutput(string $output): string
     {
         $output = preg_replace('/header-(?:noid|\d+)-\d+/', 'header-stable', $output);
@@ -212,6 +289,11 @@ final class Fixture
         return str_replace(' itemscope itemtype="https://schema.org/FAQPage"', '', $output);
     }
 
+    /**
+     * Exercise first and repeated sync using local HTTP fixtures only.
+     *
+     * @param list<int> $sites Fixture site IDs.
+     */
     public static function synchronizeImports(array $sites): void
     {
         foreach ($sites as $site) {
@@ -221,6 +303,14 @@ final class Fixture
                 $sourceUrl = 'https://source.example.org/site-' . $site;
                 self::check($api->getDomains() === ['remote' => $sourceUrl], 'Legacy source settings changed.');
                 foreach (['faq' => ['enrollment', 'admission', 2002], 'glossary' => ['university', 'studies', 2102]] as $type => [$category, $tag, $id]) {
+                    /**
+                     * Return one changed remote entry only for the selected fixture source.
+                     *
+                     * @param mixed $response Existing preemptive response or false.
+                     * @param array<string, mixed> $arguments HTTP request arguments.
+                     * @param string $url Requested endpoint.
+                     * @return mixed The existing response or a synthetic WordPress HTTP response.
+                     */
                     $mock = static function ($response, $arguments, $url) use ($sourceUrl, $type, $category, $tag) {
                         if (!str_starts_with($url, $sourceUrl . '/wp-json/wp/v2/' . $type . '?')) {
                             return $response;
