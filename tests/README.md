@@ -93,6 +93,10 @@ remove their temporary checkout. See [fixture provenance and coverage](fixtures/
 - Shared FAQ/glossary rendering: explicit and filtered lists, combined taxonomy
   and language filters, sorting, A–Z and tag-cloud navigation, grouped output,
   legacy aliases and display options, and schema isolation for nested lists.
+- Large accordion collections: 1,000 consecutive entries and single answers
+  larger than 1 MB with the normal PCRE backtrack limit, for both Elements and
+  Core. Regression checks preserve item order, group separators, schema output
+  and the first item's `load_open` state.
 
 ## Editor checks
 

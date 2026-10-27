@@ -133,3 +133,37 @@ Reproduktionsbefehle und Schutzprüfungen stehen in [README.md](README.md),
 [rollout-editor](rollout-editor/README.md), [rollout-browser](rollout-browser/README.md)
 und [rollout-sync](rollout-sync/README.md). Das historische Audit und dessen
 Baseline-Matrix wurden nicht nachträglich auf grün umgeschrieben.
+
+## Nachprüfung: große Akkordeon-Listen
+
+Nach der ersten Validierung wurde ein zusätzlicher Fehler bei sehr vielen
+Einträgen reproduziert. Ohne Kategorie oder Gruppierung entsteht eine große
+zusammenhängende Liste. Deren regulärer Ausdruck überschritt das normale
+`pcre.backtrack_limit=1000000`; die internen Blockmarkierungen blieben im Ergebnis
+stehen und die Akkordeon-Blöcke wurden nicht gerendert. Kleinere Gruppen konnten
+denselben Datenumfang erfolgreich ausgeben. Kategorien oder „Group by“ sind
+weiterhin keine Voraussetzung für Akkordeons.
+
+Die Sammlung liest ihre festen Anfangs-/Endmarkierungen jetzt nacheinander aus,
+ohne einen regulären Ausdruck über den gesamten Inhalt laufen zu lassen. Dabei
+bleiben Reihenfolge, Gruppengrenzen, Schema-Ausgabe und `load_open` erhalten.
+Unvollständige abschließende Markierungen werden samt Inhalt beibehalten.
+PHP-Limits, gespeicherte Daten und ausgelieferte JavaScript-Bundles werden durch
+diese Korrektur nicht verändert.
+
+- Vor der Korrektur: vier neue Mengenfälle fehlgeschlagen (Elements/Core,
+  jeweils 1.000 Einträge oder eine einzelne Antwort größer als 1 MB).
+- Nach der Korrektur: **9 Renderer-Tests / 76 Assertions bestanden**.
+- Vollständige PHP-Suite erneut bestanden: **170 Tests / 1.131 Assertions**
+  jeweils unter **WordPress 7.0 und 7.1.3 mit PHP 8.5.12**.
+- Reale installierte Backends: 1.000 Einträge ohne Gruppierung erfolgreich unter
+  WP 7.1.3 mit Elements sowie WP 7.0 mit Core; keine verbliebenen internen
+  Markierungen und kein PCRE-Fehler. Die Prüfung verwendet synthetischen Inhalt
+  im Arbeitsspeicher der isolierten Installationen.
+- PHPStan, PHP-Syntax und Diff-Whitespaceprüfung bestanden.
+
+Die große Liste wurde serverseitig erneut geprüft; eine zusätzliche visuelle
+Firefox-Prüfung dieser Mengenfälle wurde nicht durchgeführt. Unabhängig davon
+bleibt der zusätzlich festgestellte Anzeigeoptionsfehler offen: Gruppierte
+Listen ignorieren ein aktiviertes `hide_accordion`. Er ist nicht die Ursache des
+hier korrigierten Renderausfalls.

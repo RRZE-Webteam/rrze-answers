@@ -229,6 +229,161 @@ final class AccordionRendererTest extends WP_UnitTestCase
     }
 
     /**
+     * Large lists and individual answers must render without raising PCRE limits.
+     *
+     * @dataProvider largeCollectionCases
+     * @param string $backend Accordion implementation to exercise.
+     * @param int $itemCount Number of consecutive entries.
+     * @param int $answerRepeats Repetitions used to build each synthetic answer.
+     */
+    public function testLargeCollectionsRenderEveryItem(string $backend, int $itemCount, int $answerRepeats): void
+    {
+        $this->useCollectionBackend($backend);
+        $content = '';
+        for ($index = 0; $index < $itemCount; $index++) {
+            $content .= AccordionRenderer::renderItem(
+                'faq',
+                'large-question-' . $index,
+                'Question ' . $index,
+                '<p>Answer ' . $index . ': ' . str_repeat('Synthetic answer. ', $answerRepeats) . '</p>',
+                '',
+                $index === 0
+            ) . "\n";
+        }
+        self::assertGreaterThan(1000000, strlen($content));
+
+        $previousLimit = ini_set('pcre.backtrack_limit', '1000000');
+        self::assertNotFalse($previousLimit);
+        try {
+            $output = AccordionRenderer::renderCollections('faq', $content);
+        } finally {
+            ini_set('pcre.backtrack_limit', $previousLimit);
+        }
+
+        self::assertFalse(AccordionRenderer::hasBlockItems($output));
+        $itemClass = $backend === AccordionRenderer::BACKEND_ELEMENTS
+            ? 'class="elements-collapse"'
+            : 'class="wp-block-accordion-item ';
+        self::assertSame($itemCount, substr_count($output, $itemClass));
+        self::assertStringContainsString('Answer 0:', $output);
+        self::assertStringContainsString('Answer ' . ($itemCount - 1) . ':', $output);
+        self::assertStringContainsString('class="rrze-answers-schema"', $output);
+        self::assertStringNotContainsString('<!-- rrze-answers-schema:', $output);
+    }
+
+    /**
+     * Exercise both block backends with many short entries and one long entry.
+     *
+     * @return array<string, array{string, int, int}> Backend, count and answer size.
+     */
+    public static function largeCollectionCases(): array
+    {
+        return [
+            'elements, many entries' => [AccordionRenderer::BACKEND_ELEMENTS, 1000, 50],
+            'core, many entries' => [AccordionRenderer::BACKEND_CORE, 1000, 50],
+            'elements, long answer' => [AccordionRenderer::BACKEND_ELEMENTS, 1, 70000],
+            'core, long answer' => [AccordionRenderer::BACKEND_CORE, 1, 70000],
+        ];
+    }
+
+    /**
+     * Keep item order, whitespace-only joins and group boundaries when scanning.
+     * Only the first item across all collections may inherit load_open.
+     */
+    public function testCollectionBoundariesPreserveOrderAndInitialState(): void
+    {
+        $this->useCollectionBackend(AccordionRenderer::BACKEND_ELEMENTS);
+        $items = [];
+        $collections = 0;
+        /**
+         * Observe rendered block attributes without changing their values.
+         *
+         * @param array<string, mixed> $block Parsed block supplied by WordPress.
+         * @return array<string, mixed> Unchanged block.
+         */
+        $capture = static function (array $block) use (&$items, &$collections): array {
+            if ($block['blockName'] === 'rrze-elements/collapse') {
+                $items[] = $block['attrs'];
+            } elseif ($block['blockName'] === 'rrze-elements/collapsibles') {
+                $collections++;
+            }
+            return $block;
+        };
+        add_filter('render_block_data', $capture);
+        $separator = '</section><h2>Second group</h2><section>';
+        $incompleteItem = '<!-- rrze-answers-accordion-item:start -->unfinished';
+        try {
+            $first = AccordionRenderer::renderItem('faq', 'one', 'One', '<p>First answer</p>', '', false);
+            $second = AccordionRenderer::renderItem('faq', 'two', 'Two', '<p>Second answer</p>', '', false);
+            $third = AccordionRenderer::renderItem('faq', 'three', 'Three', '<p>Third answer</p>', '', false);
+            $output = AccordionRenderer::renderCollections(
+                'faq',
+                '<section>' . $first . " \t\r\n" . $second . $separator . $third . '</section>' . $incompleteItem,
+                3,
+                true,
+                true
+            );
+        } finally {
+            remove_filter('render_block_data', $capture);
+        }
+
+        self::assertSame(2, $collections);
+        self::assertSame(['one', 'two', 'three'], array_column($items, 'jumpName'));
+        self::assertSame([true, false, false], array_column($items, 'loadOpen'));
+        self::assertStringContainsString($separator, $output);
+        self::assertStringEndsWith('</section>' . $incompleteItem, $output);
+        self::assertLessThan(strpos($output, $separator), strpos($output, 'Second answer'));
+        self::assertGreaterThan(strpos($output, $separator), strpos($output, 'Third answer'));
+    }
+
+    /**
+     * Select Core or register lightweight Elements blocks for renderer tests.
+     *
+     * @param string $backend Requested block implementation.
+     */
+    private function useCollectionBackend(string $backend): void
+    {
+        if ($backend === AccordionRenderer::BACKEND_ELEMENTS) {
+            $this->registerTemporaryBlock(
+                'rrze-elements/collapse',
+                /**
+                 * Render an observable Elements item around its unchanged answer.
+                 *
+                 * @param array<string, mixed> $attributes Parsed block attributes.
+                 * @param string $content Rendered inner content.
+                 * @return string Item HTML.
+                 */
+                static function (array $attributes, string $content): string {
+                    return '<article class="elements-collapse">' . $content . '</article>';
+                },
+                ['loadOpen' => ['type' => 'boolean', 'default' => false]]
+            );
+            $this->registerTemporaryBlock(
+                'rrze-elements/collapsibles',
+                /**
+                 * Render a collection around its unchanged items.
+                 *
+                 * @param array<string, mixed> $attributes Parsed block attributes.
+                 * @param string $content Rendered items.
+                 * @return string Collection HTML.
+                 */
+                static function (array $attributes, string $content): string {
+                    return '<div class="elements-collapsibles">' . $content . '</div>';
+                },
+                []
+            );
+        }
+        /**
+         * Force the backend under test without changing the installed plugins.
+         *
+         * @return string Requested backend name.
+         */
+        $selectBackend = static fn (): string => $backend;
+        add_filter('rrze_answers_accordion_backend', $selectBackend);
+        self::assertSame($backend, AccordionRenderer::getBackend());
+    }
+
+    /**
      * @param callable(array<string, mixed>, string): string $renderCallback
      * @param array<string, array<string, mixed>> $attributes
      */

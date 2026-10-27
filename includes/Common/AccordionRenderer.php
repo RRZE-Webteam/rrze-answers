@@ -93,6 +93,14 @@ final class AccordionRenderer
     /**
      * Render every consecutive sequence of serialized items as one accordion.
      * Raw headings and taxonomy wrappers therefore remain outside the block wrapper.
+     * Scan fixed delimiters so large lists do not depend on PCRE backtrack limits.
+     *
+     * @param string $type Entry type used for the structured data.
+     * @param string $content Serialized items interspersed with group markup.
+     * @param int $headingLevel Heading level for the accordion collections.
+     * @param bool $expandAll Whether to show the expand-all control.
+     * @param bool $loadOpen Whether to open the first item across all collections.
+     * @return string Rendered collections, surrounding markup and structured data.
      */
     public static function renderCollections(
         string $type,
@@ -108,43 +116,66 @@ final class AccordionRenderer
         $schemaItems = [];
         $content = self::extractSchemaMarkers($content, $schemaItems);
         $openFirstItem = $loadOpen;
-        $sequencePattern = '~(?:\s*' . preg_quote(self::ITEM_START, '~')
-            . '.*?' . preg_quote(self::ITEM_END, '~') . '\s*)+~s';
+        $rendered = '';
+        $offset = 0;
 
-        $rendered = preg_replace_callback(
-            $sequencePattern,
-            static function (array $matches) use ($headingLevel, $expandAll, &$openFirstItem): string {
-                $itemPattern = '~' . preg_quote(self::ITEM_START, '~')
-                    . '(.*?)' . preg_quote(self::ITEM_END, '~') . '~s';
-                preg_match_all($itemPattern, $matches[0], $items);
-                $serializedItems = implode('', $items[1] ?? []);
+        while (($start = strpos($content, self::ITEM_START, $offset)) !== false) {
+            $rendered .= substr($content, $offset, $start - $offset);
+            $offset = $start;
+            $serializedItems = self::readItemSequence($content, $offset);
 
-                if ($serializedItems === '') {
-                    return '';
-                }
+            // Preserve an incomplete final item rather than discarding its content.
+            if ($offset === $start) {
+                break;
+            }
+            if ($serializedItems === '') {
+                continue;
+            }
 
-                $backend = str_contains($serializedItems, '<!-- wp:rrze-elements/collapse')
-                    ? self::BACKEND_ELEMENTS
-                    : self::BACKEND_CORE;
-                $group = self::renderBlockCollection(
-                    $backend,
-                    $serializedItems,
-                    $headingLevel,
-                    $expandAll,
-                    $openFirstItem
-                );
-                $openFirstItem = false;
-
-                return $group;
-            },
-            $content
-        );
-
-        if (!is_string($rendered)) {
-            $rendered = $content;
+            $backend = str_contains($serializedItems, '<!-- wp:rrze-elements/collapse')
+                ? self::BACKEND_ELEMENTS
+                : self::BACKEND_CORE;
+            $rendered .= self::renderBlockCollection(
+                $backend,
+                $serializedItems,
+                $headingLevel,
+                $expandAll,
+                $openFirstItem
+            );
+            $openFirstItem = false;
         }
 
-        return self::renderSchema($type, $schemaItems) . $rendered;
+        return self::renderSchema($type, $schemaItems) . $rendered . substr($content, $offset);
+    }
+
+    /**
+     * Read adjacent complete items, allowing only whitespace between them.
+     * Non-item markup and incomplete items remain outside the consumed range.
+     *
+     * @param string $content Content containing serialized accordion items.
+     * @param int $offset Start-marker position; advanced past the last complete item.
+     * @return string Serialized blocks with their internal item markers removed.
+     */
+    private static function readItemSequence(string $content, int &$offset): string
+    {
+        $items = [];
+        $start = $offset;
+        $startLength = strlen(self::ITEM_START);
+        $endLength = strlen(self::ITEM_END);
+
+        do {
+            $bodyStart = $start + $startLength;
+            $end = strpos($content, self::ITEM_END, $bodyStart);
+            if ($end === false) {
+                break;
+            }
+
+            $items[] = substr($content, $bodyStart, $end - $bodyStart);
+            $offset = $end + $endLength;
+            $start = $offset + strspn($content, " \t\n\r\v\f", $offset);
+        } while (substr($content, $start, $startLength) === self::ITEM_START);
+
+        return implode('', $items);
     }
 
     public static function hasBlockItems(string $content): bool
