@@ -58,6 +58,9 @@ define('MULTISITE', true);
 define('SUBDOMAIN_INSTALL', false);
 define('DISABLE_WP_CRON', true);
 define('WP_DEFAULT_THEME', 'default');
+// This harness loads its selected checkout explicitly; host MU plugins must
+// not override synthetic HTTP responses or mutate the disposable test state.
+define('WPMU_PLUGIN_DIR', $temporary . '/isolated-mu-plugins');
 tests_reset__SERVER();
 $GLOBALS['base'] = '/';
 $GLOBALS['PHP_SELF'] = '/index.php';

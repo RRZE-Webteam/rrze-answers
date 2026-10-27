@@ -1,5 +1,9 @@
 # Local rollout comparison against main
 
+The result tables below preserve the pre-fix audit baseline. See the
+[2.0 validation follow-up](../RELEASE-2.0-VALIDATION.md) for the corrected
+candidate and the consumer-first rollout requirement.
+
 These tests use the guarded, separate WordPress test database described in
 `tests/README.md`. They recreate the `wptests_` tables. Run the commands
 sequentially and never concurrently with another PHPUnit run on that database.

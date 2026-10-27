@@ -9,7 +9,7 @@ declare(strict_types=1);
  * It creates synthetic public content and never reads the ordinary site's data.
  */
 global $wpdb;
-if (DB_NAME !== 'rrze_answers_tests' || $wpdb->prefix !== 'rrze_rollout_browser_') {
+if (DB_NAME !== 'rrze_answers_tests' || !in_array($wpdb->prefix, ['rrze_rollout_browser_', 'rrze_rollout_browser70_'], true)) {
     throw new RuntimeException('Refusing to seed outside the isolated rollout browser fixture.');
 }
 
@@ -34,13 +34,17 @@ foreach ([
     if (in_array($type, ['faq', 'glossary'], true)) {
         wp_set_object_terms($ids[$type], ['Admissions'], 'rrze_' . $type . '_category');
         wp_set_object_terms($ids[$type], ['Campus life'], 'rrze_' . $type . '_tag');
-        wp_insert_post([
+        $unselectedId = wp_insert_post([
             'post_type' => 'rrze_' . $type,
             'post_status' => 'publish',
             'post_title' => 'Unselected ' . $type,
             'post_content' => '<p>Must not appear in explicit selection.</p>',
-            'meta_input' => ['source' => 'website', 'lang' => 'de'],
-        ]);
+            'meta_input' => ['source' => 'website', 'lang' => 'de', 'anchorfield' => 'rollout-unselected-' . $type],
+        ], true);
+        if (is_wp_error($unselectedId)) {
+            throw new RuntimeException($unselectedId->get_error_message());
+        }
+        wp_set_object_terms($unselectedId, ['Other'], 'rrze_' . $type . '_category');
     }
 }
 update_post_meta($ids['synonym'], 'synonym', 'Regional Computing Centre');
@@ -61,6 +65,7 @@ $pages = [
     'Shortcodes closed' => '[faq id="' . $ids['faq'] . '" search="1"] [glossary id="' . $ids['glossary'] . '"]',
     'Shortcodes open' => '[faq id="' . $ids['faq'] . '" load_open="1" search="1"]',
     'Navigation and tabs' => '[faq glossarystyle="a-z"] [faq glossary="category" glossarystyle="tabs"] [glossary registerstyle="a-z"]',
+    'Legacy links with load open' => '[faq glossarystyle="a-z" load_open="1"]',
 ];
 $pageIds = [];
 foreach ($pages as $title => $content) {

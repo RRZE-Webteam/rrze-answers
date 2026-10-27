@@ -7,6 +7,9 @@ the declared PHP minimum is not evidence of a completed minimum-runtime test.
 Older saved plugin content remains an upgrade fixture; older WordPress runtimes
 and code-only downgrades to 1.x are outside the 2.x release contract.
 
+See the [2.0 validation results](RELEASE-2.0-VALIDATION.md) for the completed
+local matrix, separate implementation commits and remaining rollout conditions.
+
 The suite uses the real WordPress PHPUnit bootstrap. This matters for list-table
 behaviour because `WP_Query`, taxonomies, admin screens and multisite hooks
 cannot be tested reliably with isolated stubs.
