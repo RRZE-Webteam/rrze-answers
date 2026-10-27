@@ -1,5 +1,6 @@
+import { initializeElementsAccordionKeyboard } from './elements-accordion-keyboard';
 
-
+initializeElementsAccordionKeyboard();
 
 // fix for theme RRZE-2019 which has an overlay with the menue
 function setHeaderVar() {

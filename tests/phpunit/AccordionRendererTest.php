@@ -117,6 +117,9 @@ final class AccordionRendererTest extends WP_UnitTestCase
         self::assertFalse($renderedItems[1]['openByDefault']);
     }
 
+    /**
+     * Elements retains its mapped state and loads the Answers keyboard adapter.
+     */
     public function testElementsBackendHasPriorityAndReceivesMappedAttributes(): void
     {
         $renderedItems = [];
@@ -172,8 +175,10 @@ final class AccordionRendererTest extends WP_UnitTestCase
             false,
             3
         );
+        wp_dequeue_script('rrze-answers-accordion');
         $output = AccordionRenderer::renderCollections('glossary', $content, 3, true, true);
 
+        self::assertTrue(wp_script_is('rrze-answers-accordion', 'enqueued'));
         self::assertStringContainsString('elements-collapsibles', $output);
         self::assertCount(1, $renderedCollections);
         self::assertTrue($renderedCollections[0]['expandAllLink']);

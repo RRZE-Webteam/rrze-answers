@@ -247,6 +247,16 @@ final class AccordionRenderer
         return serialize_block($itemBlock);
     }
 
+    /**
+     * Render one collection with its backend's initial state and required assets.
+     *
+     * @param string $backend Selected block accordion backend.
+     * @param string $serializedItems Serialized accordion item blocks.
+     * @param int $headingLevel Heading level for the collection.
+     * @param bool $expandAll Whether to show the expand-all control.
+     * @param bool $loadOpen Whether to open the first item initially.
+     * @return string Rendered collection markup.
+     */
     private static function renderBlockCollection(
         string $backend,
         string $serializedItems,
@@ -255,6 +265,7 @@ final class AccordionRenderer
         bool $loadOpen
     ): string {
         if ($backend === self::BACKEND_ELEMENTS) {
+            wp_enqueue_script('rrze-answers-accordion');
             $attributes = [
                 'expandAllLink' => $expandAll,
                 'expandLabel' => __('Expand All', 'rrze-elements-blocks'),
