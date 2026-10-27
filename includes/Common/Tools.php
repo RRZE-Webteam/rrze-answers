@@ -438,13 +438,24 @@ class Tools
         return null;
     }
 
+    /**
+     * Check for published imports on the current site during this request.
+     *
+     * WordPress updates the posts cache generation after post and metadata
+     * changes, so an earlier result cannot survive a sync or source change.
+     *
+     * @param string $post_type Post type whose synchronized entries are checked.
+     * @return bool Whether the current site contains a published import.
+     */
     public function hasSync($post_type): bool
     {
         static $cache = [];
 
         $post_type = sanitize_key((string) $post_type);
-        if (array_key_exists($post_type, $cache)) {
-            return $cache[$post_type];
+        $key = get_current_blog_id() . ':' . $post_type;
+        $generation = wp_cache_get_last_changed('posts');
+        if (isset($cache[$key]) && $cache[$key]['generation'] === $generation) {
+            return $cache[$key]['has_sync'];
         }
 
         $query = new WP_Query([
@@ -462,9 +473,12 @@ class Tools
             'no_found_rows' => true,
         ]);
 
-        $cache[$post_type] = $query->have_posts();
+        $cache[$key] = [
+            'generation' => $generation,
+            'has_sync' => $query->have_posts(),
+        ];
 
-        return $cache[$post_type];
+        return $cache[$key]['has_sync'];
     }
 
     public static function getPageList(): array

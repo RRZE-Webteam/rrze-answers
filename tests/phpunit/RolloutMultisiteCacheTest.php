@@ -49,6 +49,43 @@ final class RolloutMultisiteCacheTest extends WP_UnitTestCase
             restore_current_blog();
             unregister_post_type($postType);
         }
+        self::assertSame($firstHasSync, $tools->hasSync($postType));
+    }
+
+    /** Verify metadata edits and post lifecycle changes invalidate cached state. */
+    public function testHasSyncTracksChangesWithinTheSameRequest(): void
+    {
+        $postType = 'rrze_rollout_changes';
+        register_post_type($postType, ['public' => true]);
+        $tools = new Tools();
+
+        try {
+            self::assertFalse($tools->hasSync($postType));
+            $postId = self::factory()->post->create([
+                'post_type' => $postType,
+                'post_status' => 'publish',
+                'meta_input' => ['source' => 'website'],
+            ]);
+            self::assertFalse($tools->hasSync($postType));
+            update_post_meta($postId, 'source', 'remote');
+            self::assertTrue($tools->hasSync($postType));
+            update_post_meta($postId, 'source', 'website');
+            self::assertFalse($tools->hasSync($postType));
+            update_post_meta($postId, 'source', 'remote');
+            self::assertTrue($tools->hasSync($postType));
+            wp_trash_post($postId);
+            self::assertFalse($tools->hasSync($postType));
+            wp_update_post(['ID' => $postId, 'post_status' => 'publish']);
+            self::assertTrue($tools->hasSync($postType));
+            delete_post_meta($postId, 'source');
+            self::assertFalse($tools->hasSync($postType));
+            add_post_meta($postId, 'source', 'remote');
+            self::assertTrue($tools->hasSync($postType));
+            wp_delete_post($postId, true);
+            self::assertFalse($tools->hasSync($postType));
+        } finally {
+            unregister_post_type($postType);
+        }
     }
 
     /**
