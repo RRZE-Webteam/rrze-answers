@@ -4,8 +4,16 @@ declare(strict_types=1);
 
 /** Check real HTTP archive responses in the disposable loopback fixture. */
 global $wpdb;
-if (DB_NAME !== 'rrze_answers_tests' || $wpdb->prefix !== 'rrze_rollout_browser_') {
+$fixtureUrls = [
+    'rrze_rollout_browser_' => 'http://127.0.0.1:8876',
+    'rrze_rollout_browser70_' => 'http://127.0.0.1:8877',
+];
+if (DB_NAME !== 'rrze_answers_tests' || !isset($fixtureUrls[$wpdb->prefix]) || home_url() !== $fixtureUrls[$wpdb->prefix]) {
     throw new RuntimeException('Refusing to change settings outside the rollout browser fixture.');
+}
+$redirectPage = get_page_by_path('legacy-blocks-and-inline-formats');
+if (!$redirectPage instanceof WP_Post || $redirectPage->post_status !== 'publish') {
+    throw new RuntimeException('The synthetic redirect target must exist before running HTTP checks.');
 }
 
 /**
@@ -16,7 +24,7 @@ if (DB_NAME !== 'rrze_answers_tests' || $wpdb->prefix !== 'rrze_rollout_browser_
  */
 function rolloutLocalResponse(string $path): array
 {
-    $request = curl_init('http://127.0.0.1:8876/' . ltrim($path, '/'));
+    $request = curl_init(home_url('/' . ltrim($path, '/')));
     curl_setopt_array($request, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER => true,
@@ -45,7 +53,7 @@ try {
             $slug = $custom ? 'rollout-' . $type . '-archive' : $type;
             $options['custom_' . $type . '_slug'] = $custom ? $slug : '';
             $options['redirect_archivpage_uri_' . $type] = match ($case) {
-                'redirect', 'custom-redirect' => 10,
+                'redirect', 'custom-redirect' => $redirectPage->ID,
                 'missing-redirect' => 9999999,
                 default => 0,
             };
@@ -63,7 +71,7 @@ try {
                     default => 200,
                 },
                 'location' => in_array($case, ['redirect', 'custom-redirect'], true)
-                    ? 'http://127.0.0.1:8876/legacy-blocks-and-inline-formats/' : '',
+                    ? get_permalink($redirectPage) : '',
             ];
             $actual = rolloutLocalResponse($path);
             $passed = $actual === $expected;
