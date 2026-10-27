@@ -33,7 +33,7 @@ const root = path.resolve( __dirname, '../..' );
 const mainReference =
 	process.env.RRZE_ROLLOUT_MAIN_REF ||
 	'3b458c812ba61c1f9b8beac22022cfd7b159ba58';
-const minimumCoreAsset = process.env.RRZE_ROLLOUT_WP68_SSR;
+const minimumCoreAsset = process.env.RRZE_ROLLOUT_WP70_SSR;
 const originalCategories = getCategories();
 const deprecations = {
 	faq: faqDeprecations,
@@ -68,13 +68,13 @@ function legacyMetadata( slug ) {
 }
 
 /**
- * Open and save a block under the candidate, then reopen under main's schema.
+ * Upgrade a block serialized by main, then save and reopen with the 2.x schema.
  *
  * @param {string} slug Block directory name.
  * @param {Object} attributes Main-compatible stored attributes.
- * @return {Object} Parsed legacy and candidate blocks plus serialized content.
+ * @return {Object} Parsed candidate and reopened blocks plus serialized content.
  */
-function roundTripThroughRollback( slug, attributes ) {
+function roundTripThroughUpgrade( slug, attributes ) {
 	const current = JSON.parse(
 		fs.readFileSync(
 			path.join( root, 'src/blocks', slug, 'block.json' ),
@@ -87,42 +87,44 @@ function roundTripThroughRollback( slug, attributes ) {
 	) } /-->`;
 	let candidate;
 	let saved;
+	let legacyContent;
+	registerBlockType( legacy.name, { ...legacy, save: () => null } );
+	try {
+		legacyContent = serialize( parse( content ) );
+	} finally {
+		unregisterBlockType( legacy.name );
+	}
 	registerBlockType( current.name, {
 		...current,
 		save: () => null,
 		deprecated: deprecations[ slug ],
 	} );
 	try {
-		[ candidate ] = parse( content );
+		[ candidate ] = parse( legacyContent );
 		saved = serialize( [ candidate ] );
+		return { candidate, saved, reopened: parse( saved )[ 0 ] };
 	} finally {
 		unregisterBlockType( current.name );
 	}
-	registerBlockType( legacy.name, { ...legacy, save: () => null } );
-	try {
-		return { candidate, saved, reopened: parse( saved )[ 0 ] };
-	} finally {
-		unregisterBlockType( legacy.name );
-	}
 }
 
-describe( 'release criterion: rollback after editor saves', () => {
+describe( 'release criterion: upgrade from main to 2.x', () => {
 	it.each( [ 'faq', 'glossary', 'synonym', 'placeholder' ] )(
-		'%s retains the selected IDs on main',
+		'%s retains selected IDs and their order after upgrading',
 		( slug ) => {
-			const { candidate, reopened } = roundTripThroughRollback( slug, {
-				id: '12,34',
+			const { candidate, reopened } = roundTripThroughUpgrade( slug, {
+				id: '34,12',
 			} );
-			expect( candidate.attributes.id ).toEqual( [ 12, 34 ] );
+			expect( candidate.attributes.id ).toEqual( [ 34, 12 ] );
 			expect( normalizeIntegerList( reopened.attributes.id ) ).toEqual( [
-				12, 34,
+				34, 12,
 			] );
 		}
 	);
 	it.each( [ 'faq', 'glossary', 'synonym' ] )(
-		'%s retains taxonomy restrictions on main',
+		'%s retains taxonomy restrictions after upgrading',
 		( slug ) => {
-			const { reopened } = roundTripThroughRollback( slug, {
+			const { reopened } = roundTripThroughUpgrade( slug, {
 				category: 'one,two',
 				tag: 'selected',
 			} );
@@ -134,8 +136,8 @@ describe( 'release criterion: rollback after editor saves', () => {
 			] );
 		}
 	);
-	it( 'the FAQ widget retains its hidden title on main', () => {
-		const { candidate, reopened } = roundTripThroughRollback(
+	it( 'the FAQ widget retains its hidden title after upgrading', () => {
+		const { candidate, reopened } = roundTripThroughUpgrade(
 			'faq-widget',
 			{
 				id: 12,
@@ -195,7 +197,7 @@ function createEditorContext() {
 					isResolving: () => false,
 					getCurrentPostId: () => 0,
 				} ) ),
-			// Core 6.8 wraps its component with this HOC at module evaluation.
+			// Retain support for older official assets used by diagnostic runs.
 			withSelect: () => ( component ) => component,
 		},
 		element,
@@ -222,13 +224,16 @@ function createEditorContext() {
 		React: { createElement: jsx },
 		ReactJSXRuntime: { jsx, jsxs: jsx, Fragment: 'fragment' },
 	};
+	// Browser globals and window must share identity: Core 7.0 declares var wp.
+	const context = vm.createContext( {
+		...window,
+		console,
+		setTimeout,
+		clearTimeout,
+	} );
+	context.window = context;
 	return {
-		context: vm.createContext( {
-			window,
-			console,
-			setTimeout,
-			clearTimeout,
-		} ),
+		context,
 		registrations,
 		formats,
 	};
@@ -271,7 +276,7 @@ function previewElement( node, name ) {
 }
 
 ( minimumCoreAsset ? describe : describe.skip )(
-	'release criterion: committed editor bundles on WordPress 6.8',
+	'release criterion: committed editor bundles on WordPress 7.0',
 	() => {
 		let runtime;
 		beforeAll( () => {
@@ -283,10 +288,10 @@ function previewElement( node, name ) {
 			);
 			loadCommittedBundles( runtime );
 		} );
-		it( 'loads the official minimum-core default export', () => {
-			expect( typeof runtime.context.window.wp.serverSideRender ).toBe(
-				'function'
-			);
+		it( 'loads the official minimum-core named export', () => {
+			expect(
+				typeof runtime.context.window.wp.serverSideRender.ServerSideRender
+			).toBe( 'function' );
 		} );
 		it.each( Object.keys( deprecations ) )(
 			'%s receives a callable preview component',

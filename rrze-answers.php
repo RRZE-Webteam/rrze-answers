@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Answers
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-answers
-Version:            1.4.7
+Version:            2.0.0
 Description:        Explain your content with FAQ, glossary, synonyms and placeholder.
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
@@ -11,7 +11,7 @@ License:            GNU General Public License Version 3
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 Text Domain:        rrze-answers
 Domain Path:        /languages
-Requires at least:  6.8
+Requires at least:  7.0
 Requires PHP:       8.2
 */
 

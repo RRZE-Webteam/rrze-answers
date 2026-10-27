@@ -1,10 +1,10 @@
 === RRZE Answers ===
 Contributors: rrze-webteam
 Tags: faq, glossary, synonym, placeholder, shortcode, block, widget
-Requires at least: 6.8
-Tested up to: 6.8
+Requires at least: 7.0
+Tested up to: 7.1.3
 Requires PHP: 8.2
-Stable tag: 1.4.7
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,16 @@ Main features:
 * REST API support
 
 == Installation ==
+
+Version 2.0 requires WordPress 7.0 or later and PHP 8.2 or later. Existing
+content remains supported when upgrading. Saving blocks uses the 2.x attribute
+format; replacing only the plugin files with a 1.x version is not supported.
+Recovery to 1.x requires restoring a matching pre-upgrade database backup.
+The completed CMS migration must not be repeated.
+
+Update every consuming site to 2.x before resuming cross-site synchronization.
+The 2.x consumer supports both old and new producers; old consumers can confuse
+source taxonomy IDs with their own local IDs.
 
 1. Download the plugin.
 2. Unzip the ZIP file.

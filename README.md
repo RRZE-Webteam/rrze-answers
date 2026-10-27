@@ -11,6 +11,19 @@
 
 **RRZE Answers** combines the functionalities of the former plugins **RRZE FAQ**, **RRZE Glossary**, and **RRZE Synonym** into a single solution.
 
+## Requirements and upgrading to 2.0
+
+WordPress **7.0 or later** and PHP **8.2 or later** are required. Existing blocks,
+shortcodes and inline formats remain supported when upgrading. Editor saves use
+the 2.x block attribute format. A code-only downgrade to 1.x is not supported;
+returning to 1.x requires a matching pre-upgrade database backup as well as the
+old plugin files. Do not repeat the completed CMS migration.
+
+Update all consuming sites to 2.x before resuming cross-site synchronization.
+New consumers support old and new producers. Old consumers may interpret remote
+taxonomy IDs as local IDs and cannot be made reliable by changing only the new
+producer's response.
+
 It allows you to:
 - Create and display FAQs, glossary entries, synonyms, and placeholders  
 - Synchronize content between websites in the FAU network  

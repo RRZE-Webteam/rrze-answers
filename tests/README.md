@@ -1,5 +1,12 @@
 # RRZE Answers tests
 
+Version 2.0 targets WordPress 7.0+ and declares PHP 8.2+ support. For this rollout,
+WordPress 7.0 and the current local WordPress are tested with the existing
+PHP 8.5.12 runtime. PHP 8.2 testing is explicitly excluded from this review;
+the declared PHP minimum is not evidence of a completed minimum-runtime test.
+Older saved plugin content remains an upgrade fixture; older WordPress runtimes
+and code-only downgrades to 1.x are outside the 2.x release contract.
+
 The suite uses the real WordPress PHPUnit bootstrap. This matters for list-table
 behaviour because `WP_Query`, taxonomies, admin screens and multisite hooks
 cannot be tested reliably with isolated stubs.
@@ -41,6 +48,7 @@ The suite runs WordPress in multisite mode through `phpunit.xml.dist`.
 
 ```sh
 composer test:upgrade
+RRZE_UPGRADE_REFERENCE=main composer test:upgrade
 ```
 
 This requires the Git history containing `v1.4.6`, installed Composer/npm
@@ -87,6 +95,8 @@ remove their temporary checkout. See [fixture provenance and coverage](fixtures/
 
 ```sh
 npm run test:unit -- --runInBand --watch=false
+RRZE_ROLLOUT_WP70_SSR=/path/to/wordpress-7.0/wp-includes/js/dist/server-side-render.js \
+npm run test:unit -- --runInBand --watch=false tests/js/rollout-editor-compatibility.test.js
 npm run typecheck
 npm run build
 ```
