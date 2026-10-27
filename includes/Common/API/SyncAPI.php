@@ -346,14 +346,15 @@ class SyncAPI
      * Synchronize one complete FAQ or glossary collection from one source.
      *
      * The transaction order is intentional: fetch and validate all pages,
-     * reconcile terms and posts, then move obsolete posts to Trash. The journal
-     * compensates completed local writes when a later operation fails.
+     * reconcile terms and posts, then move obsolete posts to Trash. Record new
+     * posts before assigning terms so failed or partial assignments can also be
+     * compensated by the journal, including when cron runs without a user.
      *
      * @return array{iNew: int, iUpdated: int, iDeleted: int, URLhasSlider: string[]}|\WP_Error
      */
     public function setEntries($contentType, $sourceIdentifier, $selectedCategories, $sourceUrl)
     {
-        $operationJournal = new SyncOperationJournal();
+        $operationJournal = new SyncOperationJournal($this->entryStore);
 
         try {
             $newCount = 0;
@@ -438,39 +439,39 @@ class SyncAPI
                 }
 
                 if ($localEntry !== null) {
-                    $updatedPost = $this->entryStore->updatePost(
+                    $writtenPost = $this->entryStore->updatePost(
                         $localEntry['postID'],
                         $remoteEntry,
-                        $sourceIdentifier,
-                        $categoryTaxonomy,
-                        $tagTaxonomy,
-                        $categoryIds,
-                        $tagIds
+                        $sourceIdentifier
                     );
-                    if (is_wp_error($updatedPost)) {
-                        return $this->rollbackAfterFailure($updatedPost, $operationJournal);
+                } else {
+                    $writtenPost = $this->entryStore->insertPost(
+                        $postType,
+                        $remoteEntry,
+                        $sourceIdentifier
+                    );
+                    if (!is_wp_error($writtenPost)) {
+                        $operationJournal->recordInsertedPost($writtenPost);
                     }
+                }
 
+                if (is_wp_error($writtenPost)) {
+                    return $this->rollbackAfterFailure($writtenPost, $operationJournal);
+                }
+
+                foreach ([$categoryTaxonomy => $categoryIds, $tagTaxonomy => $tagIds] as $taxonomy => $termIds) {
+                    $assignmentError = $this->entryStore->replaceTerms($writtenPost, $taxonomy, $termIds);
+                    if (is_wp_error($assignmentError)) {
+                        return $this->rollbackAfterFailure($assignmentError, $operationJournal);
+                    }
+                }
+
+                if ($localEntry !== null) {
                     $updatedCount++;
                     unset($remainingLocalEntries[$remoteId]);
-                    continue;
+                } else {
+                    $newCount++;
                 }
-
-                $insertedPost = $this->entryStore->insertPost(
-                    $postType,
-                    $remoteEntry,
-                    $sourceIdentifier,
-                    $categoryTaxonomy,
-                    $tagTaxonomy,
-                    $categoryIds,
-                    $tagIds
-                );
-                if (is_wp_error($insertedPost)) {
-                    return $this->rollbackAfterFailure($insertedPost, $operationJournal);
-                }
-
-                $operationJournal->recordInsertedPost($insertedPost);
-                $newCount++;
             }
 
             $deletedCount = $this->entryStore->trashObsoleteEntries(

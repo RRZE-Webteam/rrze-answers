@@ -228,21 +228,15 @@ final class SynchronizedEntryStore
     }
 
     /**
-     * Update an existing synchronized post and its terms.
+     * Update an existing synchronized post after its state has been journaled.
      *
      * @param array<string, mixed> $remoteEntry
-     * @param int[]                $categoryIds
-     * @param int[]                $tagIds
      * @return int|\WP_Error
      */
     public function updatePost(
         int $postId,
         array $remoteEntry,
-        string $sourceIdentifier,
-        string $categoryTaxonomy,
-        string $tagTaxonomy,
-        array $categoryIds,
-        array $tagIds
+        string $sourceIdentifier
     ) {
         return wp_update_post([
             'ID' => $postId,
@@ -255,29 +249,19 @@ final class SynchronizedEntryStore
                 'remoteID' => $remoteEntry['remoteID'],
                 'remoteChanged' => $remoteEntry['remoteChanged'],
             ],
-            'tax_input' => [
-                $categoryTaxonomy => $categoryIds,
-                $tagTaxonomy => $tagIds,
-            ],
         ], true);
     }
 
     /**
-     * Insert a new synchronized post and its terms.
+     * Insert a synchronized post so it can be journaled before assigning terms.
      *
      * @param array<string, mixed> $remoteEntry
-     * @param int[]                $categoryIds
-     * @param int[]                $tagIds
      * @return int|\WP_Error
      */
     public function insertPost(
         string $postType,
         array $remoteEntry,
-        string $sourceIdentifier,
-        string $categoryTaxonomy,
-        string $tagTaxonomy,
-        array $categoryIds,
-        array $tagIds
+        string $sourceIdentifier
     ) {
         return wp_insert_post([
             'post_type' => $postType,
@@ -294,11 +278,46 @@ final class SynchronizedEntryStore
                 'remoteChanged' => $remoteEntry['remoteChanged'],
                 'sortfield' => '',
             ],
-            'tax_input' => [
-                $categoryTaxonomy => $categoryIds,
-                $tagTaxonomy => $tagIds,
-            ],
         ], true);
+    }
+
+    /**
+     * Replace and verify one taxonomy's relationships independently of the user.
+     *
+     * Cron cannot use wp_insert_post()'s capability-gated tax_input. Integer IDs
+     * prevent WordPress from interpreting an ID as a new term name, and an empty
+     * list deliberately removes the previous relationships. Read back the IDs
+     * because WordPress does not report every relationship SQL failure.
+     *
+     * @param int[] $termIds Resolved local term IDs, or an empty list to clear.
+     * @return \WP_Error|null Null when exactly the requested relationships exist.
+     */
+    public function replaceTerms(int $postId, string $taxonomy, array $termIds): ?\WP_Error
+    {
+        $termIds = array_values(array_unique(array_map('intval', $termIds)));
+        sort($termIds, SORT_NUMERIC);
+
+        $assignedTerms = wp_set_object_terms($postId, $termIds, $taxonomy, false);
+        if (is_wp_error($assignedTerms)) {
+            return $assignedTerms;
+        }
+
+        $storedTerms = wp_get_object_terms($postId, $taxonomy, ['fields' => 'ids']);
+        if (is_wp_error($storedTerms)) {
+            return $storedTerms;
+        }
+
+        $storedTerms = array_map('intval', $storedTerms);
+        sort($storedTerms, SORT_NUMERIC);
+        if ($storedTerms !== $termIds) {
+            return new \WP_Error(
+                'sync_terms_assignment_failed',
+                __('The synchronized entry taxonomy relationships could not be saved completely.', 'rrze-answers'),
+                ['postId' => $postId, 'taxonomy' => $taxonomy]
+            );
+        }
+
+        return null;
     }
 
     /**

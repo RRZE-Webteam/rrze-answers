@@ -21,7 +21,7 @@ final class RolloutCronSyncTest extends WP_UnitTestCase
     private const SOURCE_URL = 'https://rollout-source.example.org';
 
     /**
-     * Require category and tag relationships after an anonymous sync write.
+     * Require anonymous insert/update, unchanged repeat, and explicit clearing.
      *
      * Calling the write boundary directly avoids cron logging and scheduling
      * side effects while retaining the relevant current-user capability state.
@@ -73,7 +73,7 @@ final class RolloutCronSyncTest extends WP_UnitTestCase
          * @param string $url Requested source URL.
          * @return array<string, mixed>|WP_Error
          */
-        $response = static function ($preempt, array $arguments, string $url) use ($entry, $type) {
+        $response = static function ($preempt, array $arguments, string $url) use (&$entry, $type) {
             if (!str_starts_with($url, self::SOURCE_URL . '/wp-json/wp/v2/' . $type . '?')) {
                 return new WP_Error('unexpected_rollout_http', 'Rollout checks may only use their offline source.');
             }
@@ -87,6 +87,33 @@ final class RolloutCronSyncTest extends WP_UnitTestCase
             ];
         };
         add_filter('pre_http_request', $response, 10, 3);
+        $assignments = [];
+        /**
+         * Observe the exact local term IDs supplied to the WordPress writer.
+         *
+         * @param int $objectId Post receiving the relationships.
+         * @param array<int, int|string> $terms Requested local terms.
+         * @param array<int, int|string> $termTaxonomyIds Assigned taxonomy IDs.
+         * @param string $taxonomy Taxonomy being replaced.
+         * @param bool $append Whether previous relationships are preserved.
+         */
+        $observeAssignment = static function (
+            int $objectId,
+            array $terms,
+            array $termTaxonomyIds,
+            string $taxonomy,
+            bool $append
+        ) use (&$assignments, $categoryTaxonomy, $tagTaxonomy): void {
+            if (!in_array($taxonomy, [$categoryTaxonomy, $tagTaxonomy], true)) {
+                return;
+            }
+            self::assertFalse($append);
+            foreach ($terms as $termId) {
+                self::assertIsInt($termId);
+            }
+            $assignments[] = [$objectId, $taxonomy, $terms];
+        };
+        add_action('set_object_terms', $observeAssignment, 10, 5);
 
         try {
             wp_set_current_user(0);
@@ -118,8 +145,29 @@ final class RolloutCronSyncTest extends WP_UnitTestCase
                 ],
                 'A successful anonymous sync must persist category and tag relationships, not just post content.'
             );
+            self::assertCount(2, $assignments);
+
+            $repeated = (new SyncAPI())->setEntries($type, self::SOURCE, 'all', self::SOURCE_URL);
+            self::assertNotWPError($repeated);
+            self::assertSame(0, $repeated['iNew']);
+            self::assertSame(0, $repeated['iUpdated']);
+            self::assertSame(0, $repeated['iDeleted']);
+            self::assertCount(2, $assignments, 'An unchanged snapshot must not rewrite relationships.');
+
+            $entry['remoteChanged'] = 300;
+            $entry[$categoryTaxonomy] = [];
+            $entry[$tagTaxonomy] = [];
+            $cleared = (new SyncAPI())->setEntries($type, self::SOURCE, 'all', self::SOURCE_URL);
+            self::assertNotWPError($cleared);
+            self::assertSame(0, $cleared['iNew']);
+            self::assertSame(1, $cleared['iUpdated']);
+            self::assertSame([], wp_get_post_terms($posts[0]->ID, $categoryTaxonomy, ['fields' => 'ids']));
+            self::assertSame([], wp_get_post_terms($posts[0]->ID, $tagTaxonomy, ['fields' => 'ids']));
+            self::assertSame('300', (string) get_post_meta($posts[0]->ID, 'remoteChanged', true));
+            self::assertCount(4, $assignments);
         } finally {
             remove_filter('pre_http_request', $response, 10);
+            remove_action('set_object_terms', $observeAssignment, 10);
         }
     }
 

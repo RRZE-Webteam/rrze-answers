@@ -45,6 +45,16 @@ final class SyncOperationJournal
     /** @var array<int, string> Post ID mapped to its status before trashing. */
     private array $trashedPosts = [];
 
+    private SynchronizedEntryStore $entryStore;
+
+    /**
+     * Reuse the same verified term writer for normal writes and compensation.
+     */
+    public function __construct(?SynchronizedEntryStore $entryStore = null)
+    {
+        $this->entryStore = $entryStore ?? new SynchronizedEntryStore();
+    }
+
     /**
      * Capture exactly the post state modified by SyncAPI before an update.
      *
@@ -93,6 +103,9 @@ final class SyncOperationJournal
         return null;
     }
 
+    /**
+     * Record a new post immediately after insertion and before assigning terms.
+     */
     public function recordInsertedPost(int $postId): void
     {
         $this->insertedPostIds[] = $postId;
@@ -163,6 +176,11 @@ final class SyncOperationJournal
         }
     }
 
+    /**
+     * Restore post data and verify restored relationships after partial writes.
+     *
+     * @param WP_Error $rollbackError Collects failures without stopping cleanup.
+     */
     private function restoreUpdatedPosts(WP_Error $rollbackError): void
     {
         foreach (array_reverse($this->updatedPostSnapshots, true) as $postId => $snapshot) {
@@ -194,7 +212,7 @@ final class SyncOperationJournal
             }
 
             foreach ($snapshot['terms'] as $taxonomy => $termIds) {
-                $termRestore = wp_set_object_terms($postId, $termIds, $taxonomy, false);
+                $termRestore = $this->entryStore->replaceTerms($postId, $taxonomy, $termIds);
 
                 if (is_wp_error($termRestore)) {
                     $rollbackError->add(
