@@ -14,6 +14,11 @@ final class IndexNavigationTest extends WP_UnitTestCase
     /** @var string[] */
     private array $temporaryBlocks = [];
 
+    /**
+     * Restore temporary registrations and render filters after each example.
+     *
+     * @return void
+     */
     protected function tearDown(): void
     {
         foreach ($this->temporaryBlocks as $blockName) {
@@ -24,6 +29,7 @@ final class IndexNavigationTest extends WP_UnitTestCase
 
         $this->temporaryBlocks = [];
         remove_all_filters('rrze_answers_accordion_backend');
+        wp_dequeue_script('rrze-answers-index');
         parent::tearDown();
     }
 
@@ -62,7 +68,15 @@ final class IndexNavigationTest extends WP_UnitTestCase
         self::assertStringContainsString('--rrze-answers-tagcloud-size:22px', $output);
     }
 
-    /** @dataProvider explicitShortcodeProvider */
+    /**
+     * Verify explicit selections expose both current and legacy letter targets.
+     *
+     * @dataProvider explicitShortcodeProvider
+     * @param string $postType Registered entry post type.
+     * @param string $shortcode Public shortcode name.
+     * @param string $styleAttribute Shortcode index attribute.
+     * @return void
+     */
     public function testAlphabeticalNavigationAppliesToExplicitEntries(
         string $postType,
         string $shortcode,
@@ -81,7 +95,137 @@ final class IndexNavigationTest extends WP_UnitTestCase
 
         self::assertStringContainsString('class="letters list-icons"', $output);
         self::assertMatchesRegularExpression('/href="#rrze-answers-index-\d+-A"/', $output);
-        self::assertMatchesRegularExpression('/<h2 id="rrze-answers-index-\d+-A">A<\/h2>/', $output);
+        self::assertMatchesRegularExpression(
+            '/<h2 id="rrze-answers-index-\d+-A" data-rrze-answers-legacy-anchor="letter-A">A<\/h2>/',
+            $output
+        );
+        self::assertTrue(wp_script_is('rrze-answers-index', 'enqueued'));
+    }
+
+    /**
+     * Keep repeated lists addressable without claiming an old global ID.
+     *
+     * @dataProvider explicitShortcodeProvider
+     * @param string $postType Registered entry post type.
+     * @param string $shortcode Public shortcode name.
+     * @param string $styleAttribute Shortcode index attribute.
+     * @return void
+     */
+    public function testRepeatedListsRetainUniqueIdsAndSharedLegacyMappings(
+        string $postType,
+        string $shortcode,
+        string $styleAttribute
+    ): void {
+        $postId = self::factory()->post->create([
+            'post_type' => $postType,
+            'post_status' => 'publish',
+            'post_title' => 'Alpha entry',
+            'post_content' => 'Definition',
+        ]);
+        $list = sprintf('[%s id="%d" %s="a-z" hide="accordion"]', $shortcode, $postId, $styleAttribute);
+
+        $output = do_shortcode($list . $list);
+        preg_match_all('/<h2 id="([^"]+)" data-rrze-answers-legacy-anchor="letter-A">/', $output, $targets);
+
+        self::assertCount(2, $targets[1]);
+        self::assertCount(2, array_unique($targets[1]));
+        self::assertStringNotContainsString('id="letter-A"', $output);
+        foreach ($targets[1] as $id) {
+            self::assertStringContainsString('href="#' . $id . '"', $output);
+        }
+    }
+
+    /**
+     * Keep query order while assigning only one target to a repeated letter.
+     *
+     * @dataProvider explicitShortcodeProvider
+     * @param string $postType Registered entry post type.
+     * @param string $shortcode Public shortcode name.
+     * @param string $styleAttribute Shortcode index attribute.
+     * @return void
+     */
+    public function testRepeatedLettersDoNotDuplicateTargetsInQueryOrder(
+        string $postType,
+        string $shortcode,
+        string $styleAttribute
+    ): void {
+        $taxonomy = $postType . '_category';
+        $term = wp_insert_term('Index order', $taxonomy, ['slug' => 'index-order']);
+        self::assertIsArray($term);
+        foreach (['Alpha entry', 'Beta entry', 'Another entry'] as $position => $title) {
+            $postId = self::factory()->post->create([
+                'post_type' => $postType,
+                'post_status' => 'publish',
+                'post_title' => $title,
+                'post_content' => 'Definition',
+            ]);
+            update_post_meta($postId, 'sortfield', (string) $position);
+            wp_set_object_terms($postId, [(int) $term['term_id']], $taxonomy);
+        }
+
+        $output = do_shortcode(sprintf(
+            '[%s category="index-order" sort="sortfield" order="asc" %s="a-z" hide="accordion"]',
+            $shortcode,
+            $styleAttribute
+        ));
+        preg_match_all('/<h2[^>]*>([AB])<\/h2>/', $output, $headings);
+
+        self::assertSame(['A', 'B', 'A'], $headings[1]);
+        self::assertSame(1, substr_count($output, 'data-rrze-answers-legacy-anchor="letter-A"'));
+        self::assertSame(1, substr_count($output, 'data-rrze-answers-legacy-anchor="letter-B"'));
+        self::assertStringContainsString('<h2>A</h2>', $output);
+        self::assertLessThan(strpos($output, 'Beta entry'), strpos($output, 'Alpha entry'));
+        self::assertLessThan(strpos($output, 'Another entry'), strpos($output, 'Beta entry'));
+    }
+
+    /**
+     * Preserve custom entry IDs beside group mappings, including tabs fallback.
+     *
+     * @dataProvider explicitShortcodeProvider
+     * @param string $postType Registered entry post type.
+     * @param string $shortcode Public shortcode name.
+     * @param string $styleAttribute Shortcode index attribute.
+     * @return void
+     */
+    public function testGroupMappingsDoNotClaimCustomEntryAnchors(
+        string $postType,
+        string $shortcode,
+        string $styleAttribute
+    ): void {
+        add_filter('rrze_answers_accordion_backend', [$this, 'nativeAccordion']);
+        $taxonomy = $postType . '_category';
+        $term = wp_insert_term('Alpha group', $taxonomy, ['slug' => 'alpha-group']);
+        self::assertIsArray($term);
+        $termId = (int) $term['term_id'];
+        $postId = self::factory()->post->create([
+            'post_type' => $postType,
+            'post_status' => 'publish',
+            'post_title' => 'Entry',
+            'post_content' => 'Definition',
+        ]);
+        wp_set_object_terms($postId, [$termId], $taxonomy);
+
+        foreach (['tagcloud' => 'ID-' . $termId, 'a-z' => 'letter-A', 'tabs' => 'ID-' . $termId] as $style => $anchor) {
+            update_post_meta($postId, 'anchorfield', $anchor);
+            $output = do_shortcode(sprintf('[%s %s="category %s"]', $shortcode, $styleAttribute, $style));
+
+            self::assertSame(1, substr_count($output, 'id="' . $anchor . '"'));
+            self::assertStringContainsString('data-rrze-answers-legacy-anchor="ID-' . $termId . '"', $output);
+            self::assertMatchesRegularExpression('/<section id="rrze-answers-index-\d+-term-' . $termId . '"/', $output);
+            if ($style === 'a-z') {
+                self::assertStringContainsString('data-rrze-answers-legacy-anchor="letter-A"', $output);
+            }
+        }
+    }
+
+    /**
+     * Select native details so the test can inspect actual entry IDs.
+     *
+     * @return string Native accordion backend identifier.
+     */
+    public function nativeAccordion(): string
+    {
+        return 'native';
     }
 
     /** @return array<string, array{string, string, string}> */
@@ -93,7 +237,16 @@ final class IndexNavigationTest extends WP_UnitTestCase
         ];
     }
 
-    /** @dataProvider groupedShortcodeProvider */
+    /**
+     * Keep legacy group targets inside their corresponding Elements tab panels.
+     *
+     * @dataProvider groupedShortcodeProvider
+     * @param string $postType Registered entry post type.
+     * @param string $taxonomy Grouping taxonomy.
+     * @param string $shortcode Public shortcode name.
+     * @param string $groupAttribute Shortcode grouping attribute.
+     * @return void
+     */
     public function testGroupedTabsUseElementsBlocks(
         string $postType,
         string $taxonomy,
@@ -143,6 +296,15 @@ final class IndexNavigationTest extends WP_UnitTestCase
         self::assertSame($renderedTabs[0]['blockId'], $renderedTabItems[0]['tabsUid']);
         self::assertStringContainsString('First definition', $output);
         self::assertStringContainsString('Second definition', $output);
+        foreach ([$firstTerm['term_id'], $secondTerm['term_id']] as $termId) {
+            self::assertMatchesRegularExpression(
+                '/<div role="tabpanel"[^>]*><div id="rrze-answers-index-\d+-term-' . $termId
+                . '" data-rrze-answers-legacy-anchor="ID-' . $termId . '" class="answers-term-content">/',
+                $output
+            );
+            self::assertStringNotContainsString('id="ID-' . $termId . '"', $output);
+        }
+        self::assertTrue(wp_script_is('rrze-answers-index', 'enqueued'));
     }
 
     /** @return array<string, array{string, string, string, string}> */

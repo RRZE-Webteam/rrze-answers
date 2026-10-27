@@ -10,6 +10,11 @@ const defaultEntry = defaultConfig.entry;
  */
 module.exports = {
 	...defaultConfig,
+	/**
+	 * Combine discovered block entries with independently enqueued front-end assets.
+	 *
+	 * @return {Promise<Object>} Named entry points for this compilation.
+	 */
 	entry: async () => ( {
 		...( typeof defaultEntry === 'function'
 			? await defaultEntry()
@@ -25,6 +30,10 @@ module.exports = {
 		'rrze-answers-search': path.resolve(
 			process.cwd(),
 			'src/js/rrze-answers-search.js'
+		),
+		'rrze-answers-index': path.resolve(
+			process.cwd(),
+			'src/js/rrze-answers-index.js'
 		),
 		'rrze-answers-guided-tour': path.resolve(
 			process.cwd(),

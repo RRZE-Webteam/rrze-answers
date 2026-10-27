@@ -119,6 +119,11 @@ function register_assets(): void
             'file' => 'build/rrze-answers-search.js',
             'dependencies' => [],
         ],
+        'rrze-answers-index' => [
+            'type' => 'script',
+            'file' => 'build/rrze-answers-index.js',
+            'dependencies' => [],
+        ],
     ];
 
     foreach ($assets as $handle => $asset) {

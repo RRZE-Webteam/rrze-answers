@@ -15,6 +15,13 @@ use RRZE\Answers\Common\Tools;
  */
 final class QuestionListRenderer
 {
+    /**
+     * Render a question list and enqueue the assets needed by its generated markup.
+     *
+     * @param string $type FAQ or glossary entry type.
+     * @param array<string, mixed> $attributes Normalized shortcode or block attributes.
+     * @return string Complete public list markup.
+     */
     public static function render(string $type, array $attributes): string
     {
         $posts = QuestionListQuery::select($type, $attributes);
@@ -30,6 +37,9 @@ final class QuestionListRenderer
         wp_enqueue_style('rrze-answers-css');
         if ($attributes['search']) {
             wp_enqueue_script('rrze-answers-search');
+        }
+        if (str_contains($content, 'data-rrze-answers-legacy-anchor=')) {
+            wp_enqueue_script('rrze-answers-index');
         }
 
         $postId = (int) get_the_ID();
@@ -50,7 +60,16 @@ final class QuestionListRenderer
         );
     }
 
-    /** @param \WP_Post[] $posts */
+    /**
+     * Render flat entries while retaining the first unique target for each letter.
+     *
+     * @param string $type FAQ or glossary entry type.
+     * @param \WP_Post[] $posts Selected entries in query order.
+     * @param array<string, mixed> $attributes Normalized display attributes.
+     * @param bool $explicit Whether entries were selected by ID.
+     * @param bool $hasSchema Receives whether any rendered entry includes schema data.
+     * @return string Entry markup and optional alphabetical navigation.
+     */
     private static function renderFlat(string $type, array $posts, array $attributes, bool $explicit, bool &$hasSchema): string
     {
         $entries = [];
@@ -65,15 +84,27 @@ final class QuestionListRenderer
         $alphabetical = $attributes['index_style'] === 'a-z';
         // Filtered lists retain their requested query order; explicit A–Z lists sort by title.
         if ($explicit && $alphabetical) {
-            usort($entries, static fn (array $a, array $b): int => strnatcasecmp(remove_accents($a['title']), remove_accents($b['title'])));
+            usort(
+                $entries,
+                /**
+                 * Compare selected titles using their accent-insensitive natural order.
+                 *
+                 * @param array{id: int, title: string, letter: string} $a First entry.
+                 * @param array{id: int, title: string, letter: string} $b Second entry.
+                 * @return int Relative title order.
+                 */
+                static fn (array $a, array $b): int => strnatcasecmp(remove_accents($a['title']), remove_accents($b['title']))
+            );
         }
 
         $indexPrefix = wp_unique_id('rrze-answers-index-');
         $content = $alphabetical && ($explicit || $letters) ? Tools::createAZ($letters, $indexPrefix) : '';
         $lastLetter = '';
+        $linkedLetters = [];
         foreach ($entries as $entry) {
             if ($alphabetical && $lastLetter !== $entry['letter']) {
-                $content .= self::letterHeading($indexPrefix, $entry['letter']);
+                $content .= self::letterHeading($indexPrefix, $entry['letter'], !isset($linkedLetters[$entry['letter']]));
+                $linkedLetters[$entry['letter']] = true;
             }
             $content .= self::renderEntry($type, $entry['id'], $entry['title'], $attributes, false, $hasSchema);
             $lastLetter = $entry['letter'];
@@ -81,7 +112,15 @@ final class QuestionListRenderer
         return $content;
     }
 
-    /** @param \WP_Post[] $posts */
+    /**
+     * Render taxonomy groups with legacy-link mappings inside their actual targets.
+     *
+     * @param string $type FAQ or glossary entry type.
+     * @param \WP_Post[] $posts Selected entries in query order.
+     * @param array<string, mixed> $attributes Normalized display attributes.
+     * @param bool $hasSchema Receives whether any rendered entry includes schema data.
+     * @return string Group sections or deferred Elements tabs.
+     */
     private static function renderGrouped(string $type, array $posts, array $attributes, bool &$hasSchema): string
     {
         if (!$posts) {
@@ -125,14 +164,17 @@ final class QuestionListRenderer
         }
 
         $lastLetter = '';
+        $linkedLetters = [];
         $tabItems = [];
         foreach ($usedTerms as $name => $term) {
             if ($attributes['index_style'] === 'a-z' && $lastLetter !== $term['letter']) {
-                $content .= self::letterHeading($indexPrefix, $term['letter']);
+                $content .= self::letterHeading($indexPrefix, $term['letter'], !isset($linkedLetters[$term['letter']]));
+                $linkedLetters[$term['letter']] = true;
             }
+            $targetAttributes = self::indexTargetAttributes($termPrefix . '-' . $term['ID'], 'ID-' . $term['ID']);
             $termContent = $useTabs
-                ? '<div class="answers-term-content">'
-                : '<section id="' . esc_attr($termPrefix . '-' . $term['ID']) . '" class="' . esc_attr('rrze-answers-item is-' . $attributes['color']) . '">'
+                ? '<div' . $targetAttributes . ' class="answers-term-content">'
+                : '<section' . $targetAttributes . ' class="' . esc_attr('rrze-answers-item is-' . $attributes['color']) . '">'
                     . '<h3>' . esc_html($name) . '</h3><div class="answers-term-content">';
 
             foreach ($postIds[$term['ID']] as $id) {
@@ -166,9 +208,33 @@ final class QuestionListRenderer
         return $ids;
     }
 
-    private static function letterHeading(string $prefix, string $letter): string
+    /**
+     * Render a letter heading without duplicating targets when query order repeats it.
+     *
+     * @param string $prefix Unique identifier for this list.
+     * @param string $letter Displayed initial character.
+     * @param bool $hasTarget Whether this is the first occurrence of the letter.
+     * @return string Heading markup with an optional legacy-link mapping.
+     */
+    private static function letterHeading(string $prefix, string $letter, bool $hasTarget = true): string
     {
-        return '<h2 id="' . esc_attr($prefix . '-' . $letter) . '">' . esc_html($letter) . '</h2>';
+        $attributes = $hasTarget ? self::indexTargetAttributes($prefix . '-' . $letter, 'letter-' . $letter) : '';
+        return '<h2' . $attributes . '>' . esc_html($letter) . '</h2>';
+    }
+
+    /**
+     * Map an old fragment to a unique target without claiming a potentially used ID.
+     *
+     * The browser resolves mappings after all lists and individual entry anchors
+     * exist, giving actual IDs priority and choosing the first matching DOM target.
+     *
+     * @param string $id Unique target used by current index links.
+     * @param string $legacyAnchor Fragment emitted by the previous plugin version.
+     * @return string Escaped HTML attributes, including their leading space.
+     */
+    private static function indexTargetAttributes(string $id, string $legacyAnchor): string
+    {
+        return ' id="' . esc_attr($id) . '" data-rrze-answers-legacy-anchor="' . esc_attr($legacyAnchor) . '"';
     }
 
     private static function renderEntry(string $type, int $id, string $title, array $attributes, bool $grouped, bool &$hasSchema): string
