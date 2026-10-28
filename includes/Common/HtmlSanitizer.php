@@ -67,6 +67,7 @@ final class HtmlSanitizer
         'class' => true,
         'value' => true,
         'synonym' => true,
+        'placeholder' => true,
         'checked' => true,
         'disabled' => true,
         'readonly' => true,

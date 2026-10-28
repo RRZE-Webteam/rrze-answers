@@ -1,3 +1,4 @@
+/** Initialize live question filters for existing and dynamically inserted lists. */
 ( function () {
 	'use strict';
 
@@ -121,6 +122,11 @@
 			};
 		} );
 
+		/**
+		 * Filter this list's questions and synchronize their taxonomy sections.
+		 *
+		 * @param {string} value Current search value.
+		 */
 		function applyFilter( value ) {
 			const query = normalize( value );
 			if ( query.length < minLen ) {
@@ -138,7 +144,15 @@
 		}
 
 		input.addEventListener( 'input', () => applyFilter( input.value ) );
+		const button = input
+			.closest( '.rrze-answers-search' )
+			?.querySelector( '.rrze-answers-search__button' );
+		button?.addEventListener( 'click', () => applyFilter( input.value ) );
 		input.addEventListener( 'keydown', ( e ) => {
+			if ( e.key === 'Enter' ) {
+				e.preventDefault();
+				applyFilter( input.value );
+			}
 			if ( e.key === 'Escape' ) {
 				input.value = '';
 				applyFilter( '' );
@@ -148,6 +162,11 @@
 		wrapper.dataset.rrzeFaqSearchInit = '1';
 	}
 
+	/**
+	 * Initialize all question lists within a document or inserted subtree.
+	 *
+	 * @param {Document|HTMLElement} root Container to inspect.
+	 */
 	function initAll( root = document ) {
 		root.querySelectorAll( '.rrze-answers' ).forEach( initFAQSearch );
 	}

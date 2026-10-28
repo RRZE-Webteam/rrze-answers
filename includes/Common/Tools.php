@@ -153,6 +153,23 @@ class Tools
     }
 
 
+    /**
+     * Render the shared FAQ/glossary region, optional search and accordion content.
+     *
+     * @param string $type Entry type: FAQ or glossary.
+     * @param string $content Rendered entries; block collections are resolved in place.
+     * @param string $headerID Unique heading ID used to label the region and search.
+     * @param bool $masonry Whether to use a masonry layout.
+     * @param string $color Legacy color option retained for caller compatibility.
+     * @param string $additional_class Additional wrapper classes.
+     * @param bool $bSchema Whether to include Schema.org metadata.
+     * @param int|null $postID Post supplying the accessible region title.
+     * @param bool $search Whether to include the client-side question filter.
+     * @param bool $load_open Whether to open the first accordion item initially.
+     * @param int $hstart Heading level used by block accordions.
+     * @param bool $expand_all Whether to offer expand/collapse controls.
+     * @return string Complete region markup.
+     */
     public static function renderWrapper(
         string $type,
         string &$content,
@@ -219,18 +236,25 @@ class Tools
         $searchMarkup = '';
         if ($search) {
             $searchId = $headerID . '-search';
+            $searchLabel = $isGlossary
+                ? __('Search glossary', 'rrze-answers')
+                : __('Search FAQ', 'rrze-answers');
             $searchMarkup =
                 '<div class="rrze-answers-search">'
                 . '<label class="screen-reader-text" for="' . esc_attr($searchId) . '">'
-                . esc_html__('Search FAQ', 'rrze-answers')
+                . esc_html($searchLabel)
                 . '</label>'
                 . '<input type="search"'
                 . ' id="' . esc_attr($searchId) . '"'
                 . ' class="rrze-answers-search__input"'
-                . ' synonym="' . esc_attr__('Search…', 'rrze-answers') . '"'
+                . ' placeholder="' . esc_attr__('Search…', 'rrze-answers') . '"'
                 . ' data-minlen="3"'
                 . ' autocomplete="off"'
                 . ' />'
+                . '<button type="button" class="rrze-answers-search__button"'
+                . ' aria-label="' . esc_attr($searchLabel) . '">'
+                . '<span class="screen-reader-text">' . esc_html($searchLabel) . '</span>'
+                . '</button>'
                 . '</div>';
         }
 
