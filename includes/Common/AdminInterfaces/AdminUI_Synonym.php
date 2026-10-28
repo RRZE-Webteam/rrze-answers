@@ -18,7 +18,7 @@ class AdminUI_Synonym extends AdminUI
             'has_taxonomies' => false,
             'default_orderby' => 'title',
             'default_order' => 'ASC',
-            'sortable_meta_keys' => [],
+            'sortable_meta_keys' => ['synonym', 'titleLang', 'source'],
             'sync_readonly' => true,
             'show_shortcode_box' => true,
         ]);
@@ -165,27 +165,41 @@ class AdminUI_Synonym extends AdminUI
 
     protected function listTableColumns(array $cols): array
     {
-        $cols['title'] = __('Synonym', 'rrze-answers');
+        $columns = [];
+        foreach ($cols as $key => $label) {
+            $columns[$key] = $key === 'title' ? __('Synonym', 'rrze-answers') : $label;
+            if ($key !== 'title') {
+                continue;
+            }
 
-        if ((new Tools())->hasSync('rrze_synonym')) {
-            $cols['source'] = __('Source', 'rrze-answers');
+            $columns['synonym'] = __('Full form', 'rrze-answers');
+            $columns['titleLang'] = __('Pronunciation language', 'rrze-answers');
+            if ((new Tools())->hasSync('rrze_synonym')) {
+                $columns['source'] = __('Source', 'rrze-answers');
+            }
         }
 
-        return $cols;
+        return $columns;
     }
 
     protected function listTableSortableColumns(array $cols): array
     {
-        $cols['source'] = __('Source', 'rrze-answers');
+        $cols['synonym'] = 'synonym';
+        $cols['titleLang'] = 'titleLang';
+        if ((new Tools())->hasSync('rrze_synonym')) {
+            $cols['source'] = 'source';
+        }
         return $cols;
     }
 
     protected function renderListTableColumn(string $col, int $post_id): void
     {
-        if ($col === 'id') {
-            echo (int) $post_id;
+        if ($col === 'synonym') {
+            echo esc_html((string) get_post_meta($post_id, 'synonym', true));
+        } elseif ($col === 'titleLang') {
+            echo esc_html($this->getPostLanguage($post_id, 'titleLang'));
         } elseif ($col === 'source') {
-            echo esc_html((string) get_post_meta($post_id, 'source', true));
+            echo esc_html($this->getPostSourceLabel($post_id));
         }
     }
 

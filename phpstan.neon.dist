@@ -1,0 +1,19 @@
+parameters:
+  # Start with a green, baseline-free gate for the legacy codebase. Raise this
+  # one level at a time as the affected modules are refactored.
+  level: 0
+
+  paths:
+    - includes
+    - rrze-answers.php
+    - tests/upgrade
+
+  scanFiles:
+    - vendor/wp-phpunit/wp-phpunit/includes/functions.php
+
+  scanDirectories:
+    - tests/phpunit
+
+  excludePaths:
+    analyse:
+      - vendor

@@ -19,7 +19,7 @@ class CPTGlossary extends CPT
     ];
 
     protected $rest_base = 'glossary';
-    protected $menu_icon = 'dashicons-book-alt';
+    protected $menu_icon = 'assets/svg/glossary.svg';
     protected $slug_options = [
         'slug_option_key' => 'custom_glossary_slug',
         'default_slug' => 'glossary',
@@ -97,7 +97,7 @@ class CPTGlossary extends CPT
 
         $slug = !empty($options['custom_glossary_slug'])
             ? sanitize_title($options['custom_glossary_slug'])
-            : 'faq';
+            : $this->slug_options['default_slug'];
 
         // CPT Single 404
         if (

@@ -2,6 +2,8 @@
 
 namespace RRZE\Answers\Common\API;
 
+use RRZE\Answers\Common\API\REST\EntryTaxonomyFields;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -9,14 +11,19 @@ defined('ABSPATH') || exit;
  */
 class RESTAPI
 {
+    private EntryTaxonomyFields $entryTaxonomyFields;
+
     /**
-     * Constructor
+     * Register REST hooks while preserving the historic no-argument API.
      */
-    public function __construct()
+    public function __construct(?EntryTaxonomyFields $entryTaxonomyFields = null)
     {
+        $this->entryTaxonomyFields = $entryTaxonomyFields ?? new EntryTaxonomyFields();
+
         add_action('rest_api_init', [$this, 'registerPostMetaRestFields']);
         add_action('rest_api_init', [$this, 'registerTaxRestFields']);
         add_action('rest_api_init', [$this, 'registerTaxChildrenRestField']);
+        add_action('rest_api_init', [$this, 'registerEntryTaxonomyFields']);
         add_action('rest_api_init', [$this, 'addRestQueryFilters']);
 
         add_action('rest_api_init', [$this, 'createPostMeta']);
@@ -24,6 +31,14 @@ class RESTAPI
 
         // allow or forbid API for others to import 
         add_filter('rest_authentication_errors', [$this, 'activateAPI'], 10, 1);
+    }
+
+    /**
+     * Register collision-free category and tag name fields for entry sync.
+     */
+    public function registerEntryTaxonomyFields(): void
+    {
+        $this->entryTaxonomyFields->register();
     }
 
 
@@ -233,17 +248,7 @@ class RESTAPI
      */
     public function getCategories($object)
     {
-        // Object type is available in the REST object array
-        $post_type = isset($object['type']) ? $object['type'] : '';
-
-        // Fallback to FAQ tax if type is unknown
-        $taxonomy = 'rrze_faq_category';
-        if ($post_type === 'rrze_glossary') {
-            $taxonomy = 'rrze_glossary_category';
-        }
-
-        $cats = wp_get_post_terms($object['id'], $taxonomy, array('fields' => 'names'));
-        return $cats;
+        return $this->entryTaxonomyFields->getCategoryNames((array) $object);
     }
 
     /**
@@ -278,14 +283,7 @@ class RESTAPI
      */
     public function getTags($object)
     {
-        $post_type = isset($object['type']) ? $object['type'] : '';
-
-        $taxonomy = 'rrze_faq_tag';
-        if ($post_type === 'rrze_glossary') {
-            $taxonomy = 'rrze_glossary_tag';
-        }
-
-        return wp_get_post_terms($object['id'], $taxonomy, array('fields' => 'names'));
+        return $this->entryTaxonomyFields->getTagNames((array) $object);
     }
 
     /**

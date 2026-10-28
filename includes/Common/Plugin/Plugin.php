@@ -179,7 +179,9 @@ class Plugin
      */
     public function setData(): object
     {
-        $this->data = get_plugin_data($this->pluginFile, false);
+        // This metadata is used internally for compatibility checks and does
+        // not need translated plugin headers during plugins_loaded.
+        $this->data = get_plugin_data($this->pluginFile, false, false);
         return $this;
     }
 

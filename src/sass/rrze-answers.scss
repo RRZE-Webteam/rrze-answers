@@ -60,14 +60,88 @@ abbr.rrze-syn {
   margin-left: 1em;
 }
 
-/* search field */
+/* Match FAU-Elemental's global search; fallbacks also support other themes. */
 .rrze-answers-search {
-  margin: 0 0 1rem;
-}
-
-.rrze-answers-search__input {
+  display: flex;
+  align-items: center;
   width: 100%;
-  max-width: 32rem;
+  margin: 0 0 1rem;
+
+  .rrze-answers-search__input,
+  .rrze-answers-search__button {
+    box-sizing: border-box;
+    height: var(--Spacing-12x, 3rem);
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    font-family: inherit;
+
+    &:focus-visible {
+      position: relative;
+      z-index: 1;
+      outline: 0.125rem solid var(--FAU-Col-FAU-Blau-100, #04316a);
+      outline-offset: 0.125rem;
+    }
+  }
+
+  .rrze-answers-search__input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    padding: 0 var(--Spacing-4x, 1rem) 0 var(--Spacing-12x, 3rem);
+    border: 0.0625rem solid var(--FAU-Col-FAU-Schwarz-37_5, #9e9e9e);
+    border-right: 0;
+    background-color: var(--FAU-Col-FAU-Weiss-100, #fff);
+    background-image: var(--icon-search-schwarz, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath fill='%239e9e9e' d='M12.94,14l-4.98-4.98c-.42.31-.87.55-1.37.72-.5.17-1.03.26-1.59.26-1.39,0-2.57-.49-3.54-1.46-.97-.97-1.46-2.15-1.46-3.54S.49,2.43,1.46,1.46c.97-.97,2.15-1.46,3.54-1.46s2.57.49,3.54,1.46c.97,.97,1.46,2.15,1.46,3.54,0,.56-.09,1.09-.26,1.59-.17,.5-.41,.95-.72,1.37l4.98,4.98-1.06,1.06ZM5,8.5c.97,0,1.8-.34,2.48-1.02.68-.68,1.02-1.51,1.02-2.48s-.34-1.8-1.02-2.48c-.68-.68-1.51-1.02-2.48-1.02s-1.8,.34-2.48,1.02c-.68,.68-1.02,1.51-1.02,2.48s.34,1.8,1.02,2.48c.68,.68,1.51,1.02,2.48,1.02Z'/%3E%3C/svg%3E"));
+    background-repeat: no-repeat;
+    background-position: var(--Spacing-4x, 1rem) center;
+    background-size: 1.2rem;
+    color: var(--FAU-Col-FAU-Schwarz-100, #000);
+    font-size: var(--P-Body-Text-Small, 1rem);
+    font-weight: 400;
+
+    &::placeholder {
+      color: var(--FAU-Col-FAU-Schwarz-62_5, #5e5e5e);
+      opacity: 1;
+    }
+  }
+
+  .rrze-answers-search__button {
+    display: flex;
+    flex: 0 0 var(--Spacing-12x, 3rem);
+    align-items: center;
+    justify-content: center;
+    width: var(--Spacing-12x, 3rem);
+    min-width: 0;
+    padding: 0;
+    border: 0.0625rem solid var(--FAU-Col-FAU-Dunkelblau-100, #041e42);
+    background: var(--FAU-Col-FAU-Dunkelblau-100, #041e42);
+    color: var(--FAU-Col-FAU-Weiss-100, #fff);
+    cursor: pointer;
+
+    &::before {
+      content: "";
+      display: block;
+      width: var(--Spacing-4x, 1rem);
+      height: var(--Spacing-4x, 1rem);
+      background-image: var(--icon-arrow-weiss, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 11'%3E%3Cpath fill='%23fff' d='M10.5,11l-1.06-1.06,3.69-3.69H0v-1.5h13.12l-3.69-3.69,1.06-1.06,5.5,5.5-5.5,5.5Z'/%3E%3C/svg%3E"));
+      background-repeat: no-repeat;
+      background-position: center;
+      transition: var(--basic-animation, transform 0.2s ease-in-out);
+    }
+
+    &:hover::before,
+    &:focus-visible::before {
+      transform: translateX(0.25rem);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &::before {
+        transition: none;
+      }
+    }
+  }
 }
 
 /* Masonry columns for tiles */
@@ -215,8 +289,17 @@ details.rrze-answers-item summary {
   }
 
   /* Tagcloud */
-  .letters a.rrze-answers-tagcloud-item {
+  .rrze-answers-tagcloud {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 0.875rem;
+    margin: 1.25rem 0;
+  }
+
+  a.rrze-answers-tagcloud-item {
     font-size: var(--rrze-answers-tagcloud-size, 1rem);
+    line-height: 1.25;
   }
 
   /* A–Z letters / pagination bar */
@@ -414,9 +497,6 @@ details.rrze-answers-item summary {
       // color: var(--FAU-Col-FAU-Blau-100, #{$default-fau}) !important;
     }
   }
-
-
-  border-top: 1px solid var(--FAU-Col-FAU-Blau-100, #e9edf2); // between elements
 
   details.rrze-answers-item {
     border: none;

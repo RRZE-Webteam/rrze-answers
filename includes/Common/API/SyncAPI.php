@@ -2,54 +2,88 @@
 
 namespace RRZE\Answers\Common\API;
 
-use RRZE\Answers\Common\CustomException;
+use RRZE\Answers\Common\Sync\RemoteEntryFetcher;
+use RRZE\Answers\Common\Sync\SynchronizedEntryStore;
+use RRZE\Answers\Common\Sync\SyncOperationJournal;
 
 defined('ABSPATH') || exit;
 
-
+/**
+ * Coordinates remote Answers synchronization and exposes its legacy API.
+ *
+ * Remote entry retrieval and validation belong to RemoteEntryFetcher. Local
+ * WordPress persistence belongs to SynchronizedEntryStore. This facade keeps
+ * the public methods used by cron, settings, and existing integrations stable
+ * while enforcing the order of the synchronization transaction.
+ */
 class SyncAPI
 {
-    private $aAllCats = [];
+    /** @var array<int, array<string, mixed>> Legacy category hierarchy state. */
+    private array $allCategories = [];
 
+    private RemoteEntryFetcher $entryFetcher;
 
-    public function __construct()
-    {
+    private SynchronizedEntryStore $entryStore;
+
+    /**
+     * Create the synchronization facade.
+     *
+     * Optional collaborators make the boundary independently testable without
+     * changing the historic no-argument construction used by the plugin.
+     */
+    public function __construct(
+        ?RemoteEntryFetcher $entryFetcher = null,
+        ?SynchronizedEntryStore $entryStore = null
+    ) {
+        $this->entryFetcher = $entryFetcher ?? new RemoteEntryFetcher();
+        $this->entryStore = $entryStore ?? new SynchronizedEntryStore();
     }
 
+    /**
+     * Fetch the remotely available taxonomy terms as a slug-to-name map.
+     *
+     * @param mixed $url    Source site URL.
+     * @param mixed $field  REST taxonomy endpoint name.
+     * @param mixed $filter Optional taxonomy slug filter, passed by reference
+     *                      for backwards compatibility.
+     * @return array<string, string>|\WP_Error
+     */
     public function getTaxonomies($url, $field, &$filter)
     {
         $cacheKey = 'rrze_answers_tax_v2_' . md5($url . '|' . $field . '|' . (string) $filter);
-        $cached = get_transient($cacheKey);
+        $cachedTaxonomies = get_transient($cacheKey);
 
-        if (!empty($cached)) {
-            return $cached;
+        if ($cachedTaxonomies !== false) {
+            return $cachedTaxonomies;
         }
 
-        // Return flat map: slug => name
-        $aRet = [];
-        $slug = ($filter ? '&slug=' . $filter : '');
-        $page = 1;
+        $taxonomies = [];
+        $slugFilter = $filter ? '&slug=' . $filter : '';
+        $currentPage = 1;
 
         try {
             do {
-                $request = $this->remoteGet($url . '/' . ENDPOINT . $field . '?page=' . $page . $slug);
+                $response = $this->remoteGet(
+                    $url . '/' . ENDPOINT . $field . '?page=' . $currentPage . $slugFilter
+                );
 
-                if (is_wp_error($request)) {
+                if (is_wp_error($response)) {
                     break;
                 }
 
-                $status_code = wp_remote_retrieve_response_code($request);
-
-                if ($status_code === 403) {
-                    return new \WP_Error('remote_forbidden', __('Import not allowed by source site.', 'rrze-answers'));
+                $statusCode = (int) wp_remote_retrieve_response_code($response);
+                if ($statusCode === 403) {
+                    return new \WP_Error(
+                        'remote_forbidden',
+                        __('Import not allowed by source site.', 'rrze-answers')
+                    );
                 }
 
-                if ($status_code !== 200) {
+                if ($statusCode !== 200) {
                     break;
                 }
 
-                $entries = json_decode(wp_remote_retrieve_body($request), true);
-
+                $entries = json_decode(wp_remote_retrieve_body($response), true);
                 if (empty($entries)) {
                     break;
                 }
@@ -60,610 +94,538 @@ class SyncAPI
                     }
 
                     $name = $entry['name'] ?? null;
-                    $term_slug = $entry['slug'] ?? null;
-                    if (!$name || !$term_slug) {
+                    $slug = $entry['slug'] ?? null;
+                    if (!$name || !$slug) {
                         continue;
                     }
 
-                    $aRet[$term_slug] = $name;
+                    $taxonomies[$slug] = $name;
                 }
 
-                $page++;
+                $currentPage++;
             } while (true);
 
-            // Cache the result for 1 hour
-            set_transient($cacheKey, $aRet, HOUR_IN_SECONDS);
+            set_transient($cacheKey, $taxonomies, HOUR_IN_SECONDS);
 
-            return $aRet;
-        } catch (CustomException $e) {
-            return new \WP_Error('getTaxonomies_error', __('Error in getTaxonomies().', 'rrze-answers'));
+            return $taxonomies;
+        } catch (\Throwable $exception) {
+            return new \WP_Error(
+                'getTaxonomies_error',
+                __('Error in getTaxonomies().', 'rrze-answers')
+            );
         }
     }
 
+    /**
+     * Delete terms belonging to an explicitly removed source.
+     *
+     * @return void|\WP_Error
+     */
     public function deleteTaxonomies($identifier, $field)
     {
-        try {
-            $args = array(
-                'hide_empty' => false,
-                'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-                    array(
-                        'key' => 'source',
-                        'value' => $identifier,
-                        'compare' => '=',
-                    ),
-                ),
-                'taxonomy' => $field,
-                'fields' => 'ids',
-            );
-            $terms = get_terms($args);
-            foreach ($terms as $ID) {
-                wp_delete_term($ID, $field);
-            }
-        } catch (CustomException $e) {
-            return new \WP_Error('deleteTaxonomies_error', __('Error in deleteTaxonomies().', 'rrze-answers'));
-        }
+        return $this->entryStore->deleteTaxonomies((string) $identifier, (string) $field);
     }
 
+    /**
+     * Delete category terms belonging to an explicitly removed source.
+     *
+     * @return void|\WP_Error
+     */
     public function deleteCategories($identifier, $type)
     {
-        $this->deleteTaxonomies($identifier, 'rrze_' . $type . '_category');
+        return $this->deleteTaxonomies($identifier, 'rrze_' . $type . '_category');
     }
 
+    /**
+     * Delete tag terms belonging to an explicitly removed source.
+     *
+     * @return void|\WP_Error
+     */
     public function deleteTags($identifier, $type)
     {
-        $this->deleteTaxonomies($identifier, 'rrze_' . $type . '_tag');
+        return $this->deleteTaxonomies($identifier, 'rrze_' . $type . '_tag');
     }
 
-    protected function setCategories(&$aCategories, &$identifier, $type)
+    /**
+     * Resolve remote category names to local term IDs.
+     *
+     * @param string[] $categoryNames
+     * @return int[]|\WP_Error
+     */
+    protected function setCategories(
+        array $categoryNames,
+        string $sourceIdentifier,
+        string $contentType,
+        ?SyncOperationJournal $operationJournal = null
+    ) {
+        return $this->entryStore->resolveCategoryIds(
+            $categoryNames,
+            $sourceIdentifier,
+            $contentType,
+            $operationJournal
+        );
+    }
+
+    /**
+     * Flatten legacy category data into the provided hierarchy.
+     *
+     * @param array<mixed> $categories Legacy mutable category data.
+     * @param array<mixed> $hierarchy  Legacy mutable hierarchy output.
+     */
+    public function sortAllCats(&$categories, &$hierarchy)
     {
-        // Array that will collect all term IDs
-        $termIds = [];
+        foreach ($categories as $termId => $details) {
+            $hierarchy[$termId]['slug'] = $details['slug'];
+            $hierarchy[$termId]['name'] = $details['name'];
 
-        try {
-            $field = 'rrze_' . $type . '_category';
-            // $aTmp = $aCategories;
-
-            // foreach ($aTmp as $name => $aDetails) {
-            foreach ($aCategories as $name) {
-
-                // Try to get or create parent term
-                $term = term_exists($name, $field);
-                if (!$term) {
-                    $term = wp_insert_term($name, $field);
-                }
-
-                // Add parent term ID to result array
-                if (!is_wp_error($term) && isset($term['term_id'])) {
-                    $termIds[] = $term['term_id'];
-                    update_term_meta($term['term_id'], 'source', $identifier);
-                }
-
-                // // Process child terms
-                // foreach ($aDetails as $childname => $tmp) {
-                //     $childterm = term_exists($childname, $field);
-                //     if (!$childterm) {
-                //         $childterm = wp_insert_term($childname, $field, [
-                //             'parent' => $term['term_id']
-                //         ]);
-                //     }
-
-                //     // Add child term ID to result array
-                //     if (!is_wp_error($childterm) && isset($childterm['term_id'])) {
-                //         $termIds[] = $childterm['term_id'];
-                //         update_term_meta($childterm['term_id'], 'source', $identifier);
-                //     }
-                // }
-
-                // if ($aDetails) {
-                //     $aTmp = $aDetails;
-                // }
+            if ($details['parentID']) {
+                $parentId = $details['parentID'];
+                $hierarchy[$parentId][$termId]['slug'] = $details['slug'];
+                $hierarchy[$parentId][$termId]['name'] = $details['name'];
+                unset($categories[$parentId]);
             }
+        }
 
-            // Return all collected term IDs
-            return $termIds;
-
-        } catch (CustomException $e) {
-            return new \WP_Error('setCategories_error', __('Error in setCategories().', 'rrze-answers'));
+        if ($categories !== []) {
+            $this->sortAllCats($categories, $hierarchy);
         }
     }
 
-    public function sortAllCats(&$cats, &$into)
-    {
-        foreach ($cats as $ID => $aDetails) {
-            $into[$ID]['slug'] = $aDetails['slug'];
-            $into[$ID]['name'] = $aDetails['name'];
-            if ($aDetails['parentID']) {
-                $parentID = $aDetails['parentID'];
-                $into[$parentID][$ID]['slug'] = $aDetails['slug'];
-                $into[$parentID][$ID]['name'] = $aDetails['name'];
-            }
-            unset($cats[$parentID]);
-        }
-        $this->sortAllCats($cats, $into);
-    }
-
-    public function sortCats(array &$cats, array &$into, $parentID = 0, $prefix = '')
+    /**
+     * Build the historic nested category object structure.
+     *
+     * @param array<int, \WP_Term> $categories Remaining categories to place.
+     * @param array<mixed>         $hierarchy  Mutable legacy hierarchy output.
+     * @return void|\WP_Error
+     */
+    public function sortCats(array &$categories, array &$hierarchy, $parentID = 0, $prefix = '')
     {
         try {
-            $prefix .= ($parentID ? '-' : '');
-            foreach ($cats as $i => $cat) {
-                if ($cat->parent == $parentID) {
-                    $into[$cat->term_id] = $cat;
-                    unset($cats[$i]);
+            $prefix .= $parentID ? '-' : '';
+
+            foreach ($categories as $index => $category) {
+                if ($category->parent == $parentID) {
+                    $hierarchy[$category->term_id] = $category;
+                    unset($categories[$index]);
                 }
-                $this->aAllCats[$cat->term_id]['parentID'] = $cat->parent;
-                $this->aAllCats[$cat->term_id]['slug'] = $cat->slug;
-                $this->aAllCats[$cat->term_id]['name'] = str_replace('~', '&nbsp;', str_pad(ltrim($prefix . ' ' . $cat->name), 100, '~'));
+
+                $this->allCategories[$category->term_id]['parentID'] = $category->parent;
+                $this->allCategories[$category->term_id]['slug'] = $category->slug;
+                $this->allCategories[$category->term_id]['name'] = str_replace(
+                    '~',
+                    '&nbsp;',
+                    str_pad(ltrim($prefix . ' ' . $category->name), 100, '~')
+                );
             }
-            foreach ($into as $topCat) {
-                $topCat->children = [];
-                $this->sortCats($cats, $topCat->children, $topCat->term_id, $prefix);
+
+            foreach ($hierarchy as $topCategory) {
+                $topCategory->children = [];
+                $this->sortCats(
+                    $categories,
+                    $topCategory->children,
+                    $topCategory->term_id,
+                    $prefix
+                );
             }
-            if (!$cats) {
-                foreach ($this->aAllCats as $ID => $aDetails) {
-                    if ($aDetails['parentID']) {
-                        $this->aAllCats[$aDetails['parentID']]['children'][$ID] = $this->aAllCats[$ID];
+
+            if (!$categories) {
+                foreach ($this->allCategories as $termId => $details) {
+                    if ($details['parentID']) {
+                        $this->allCategories[$details['parentID']]['children'][$termId]
+                            = $this->allCategories[$termId];
                     }
                 }
             }
-        } catch (CustomException $e) {
+        } catch (\Throwable $exception) {
             return new \WP_Error('sortCats_error', __('Error in sortCats().', 'rrze-answers'));
         }
     }
 
-    public function cleanCats()
-    {
-        foreach ($this->aAllCats as $ID => $aDetails) {
-            if ($aDetails['parentID']) {
-                unset($this->aAllCats[$ID]);
-            }
-        }
-    }
-
-    public function getSlugNameCats(&$cats, &$into)
-    {
-        foreach ($cats as $i => $cat) {
-            $into[$cat['slug']] = $cat['name'];
-            if (isset($cat['children'])) {
-                $this->getSlugNameCats($cat['children'], $into);
-            }
-            unset($cats[$i]);
-        }
-    }
-
-    // public function getCategories($identifier, $url, $type, $categories = '')
-    // {
-    //     $aRet = [];
-    //     $field = 'rrze_' . $type . '_category';
-    //     $aCategories = $this->getTaxonomies($url, $field, $categories);
-    //     $this->setCategories($aCategories, $identifier, $type);
-
-    //     $categories = get_terms(array(
-    //         'taxonomy' => $field,
-    //         'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-    //             array(
-    //                 'key' => 'source',
-    //                 'value' => $identifier,
-    //             )
-    //         ),
-    //         'hide_empty' => false,
-    //     ));
-    //     $categoryHierarchy = [];
-    //     $this->sortCats($categories, $categoryHierarchy);
-    //     $this->cleanCats();
-    //     $this->getSlugNameCats($this->aAllCats, $aRet);
-    //     return $aRet;
-    // }
-
-    public function deleteEntries($identifier, $type)
-    {
-        // deletes all Entries by url
-        $iDel = 0;
-        $allEntries = get_posts(array('post_type' => 'rrze_' . $type, 'meta_key' => 'source', 'meta_value' => $identifier, 'numberposts' => -1)); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-
-        foreach ($allEntries as $entry) {
-            wp_delete_post($entry->ID, true);
-            $iDel++;
-        }
-        return $iDel;
-    }
-
-    protected function absoluteUrl($txt, $baseUrl)
-    {
-        try {
-            // converts relative URLs to absolute ones
-            $needles = array('href="', 'src="', 'background="');
-            $newTxt = '';
-            if (substr($baseUrl, -1) != '/') {
-                $baseUrl .= '/';
-            }
-            $newBaseUrl = $baseUrl;
-            $baseUrlParts = wp_parse_url($baseUrl);
-            foreach ($needles as $needle) {
-                while ($pos = strpos($txt, $needle)) {
-                    $pos += strlen($needle);
-                    if (substr($txt, $pos, 7) != 'http://' && substr($txt, $pos, 8) != 'https://' && substr($txt, $pos, 6) != 'ftp://' && substr($txt, $pos, 7) != 'mailto:') {
-                        if (substr($txt, $pos, 1) == '/') {
-                            $newBaseUrl = $baseUrlParts['scheme'] . '://' . $baseUrlParts['host'];
-                        }
-                        $newTxt .= substr($txt, 0, $pos) . $newBaseUrl;
-                    } else {
-                        $newTxt .= substr($txt, 0, $pos);
-                    }
-                    $txt = substr($txt, $pos);
-                }
-                $txt = $newTxt . $txt;
-                $newTxt = '';
-            }
-            // convert all elements of srcset, too
-            $needle = 'srcset="';
-            while ($pos = strpos($txt, $needle, $pos)) {
-                $pos += strlen($needle);
-                $len = strpos($txt, '"', $pos) - $pos;
-                $srcset = substr($txt, $pos, $len);
-                $aSrcset = explode(',', $srcset);
-                $aNewSrcset = [];
-                foreach ($aSrcset as $src) {
-                    $src = trim($src);
-                    if (substr($src, 0, 1) == '/') {
-                        $aNewSrcset[] = $newBaseUrl . $src;
-                    }
-                }
-                $newSrcset = implode(', ', $aNewSrcset);
-                $txt = str_replace($srcset, $newSrcset, $txt);
-            }
-            return $txt;
-        } catch (CustomException $e) {
-            return new \WP_Error('absoluteUrl_error', __('Error in absoluteUrl().', 'rrze-answers'));
-        }
-    }
-
-    protected function getEntries(&$url, &$categories, $type)
-    {
-        try {
-            $ret = [];
-            $field_cat = 'rrze_' . $type . '_category';
-            $field_tag = 'rrze_' . $type . '_tag';
-            $filter = '&filter[rrze_' . $type . '_category]=' . $categories;
-            $page = 1;
-
-            do {
-                $request = $this->remoteGet($url . '/' . ENDPOINT . $type . '?page=' . $page . $filter);
-                if (is_wp_error($request)) {
-                    return $request;
-                }
-
-                $status_code = wp_remote_retrieve_response_code($request);
-
-                if ($status_code === 403) {
-                    return new \WP_Error('remote_forbidden', __('Import not allowed by source site.', 'rrze-answers'));
-                }
-
-                if ($status_code == 200) {
-                    $entries = json_decode(wp_remote_retrieve_body($request), true);
-                    if (!empty($entries)) {
-                        if (!isset($entries[0])) {
-                            $entries = array($entries);
-                        }
-                        foreach ($entries as $entry) {
-                            if ($entry['source'] == 'website') {
-                                $content = $entry['content']['rendered'];
-                                $content = $this->absoluteUrl($content, $url);
-
-                                $remote_id = $entry['remoteID'] ?? $entry['id'];
-                                $category_names = $this->restTermsToNames($entry[$field_cat] ?? [], $field_cat);
-                                $tag_names = $this->restTermsToNames($entry[$field_tag] ?? [], $field_tag);
-
-                                $ret[$entry['id']] = array(
-                                    'id' => $entry['id'],
-                                    'title' => $entry['title']['rendered'],
-                                    'content' => $content,
-                                    'lang' => $entry['lang'],
-                                    $field_cat => $category_names,
-                                    'remoteID' => $remote_id,
-                                    'remoteChanged' => $entry['remoteChanged'],
-                                );
-                                $ret[$entry['id']][$field_tag] = implode(',', $tag_names);
-                                $ret[$entry['id']]['URLhasSlider'] = ((strpos($content, 'slider') !== false) ? $entry['link'] : false); // we cannot handle sliders, see note in Shortcode.php shortcodeOutput()
-                            }
-                        }
-                    }
-                }
-                $page++;
-            } while (($status_code == 200) && (!empty($entries)));
-
-            return $ret;
-        } catch (CustomException $e) {
-            return new \WP_Error('getEntry_error', __('Error in getEntry().', 'rrze-answers'));
-        }
-    }
-
-    public function setTags($terms, $identifier, $type)
-    {
-        $termIds = [];
-
-        try {
-            if ($terms) {
-                $aTerms = explode(',', $terms);
-
-                foreach ($aTerms as $name) {
-
-                    $name = trim($name);
-
-                    if (!$name) {
-                        continue;
-                    }
-
-                    $taxonomy = 'rrze_' . $type . '_tag';
-                    $term = term_exists($name, $taxonomy);
-
-                    if (!$term) {
-
-                        $term = wp_insert_term($name, $taxonomy);
-
-                        if (is_wp_error($term)) {
-                            continue;
-                        }
-
-                        update_term_meta($term['term_id'], 'source', $identifier);
-                    }
-
-                    if (!is_array($term) && !is_wp_error($term)) {
-                        $term = ['term_id' => (int) $term];
-                    }
-
-                    if (!is_wp_error($term) && isset($term['term_id'])) {
-                        $termIds[] = (int) $term['term_id'];
-                    }
-                }
-            }
-
-            return $termIds;
-        } catch (CustomException $e) {
-            return new \WP_Error('setTags_error', __('Error in setTags().', 'rrze-answers'));
-        }
-    }
-
-    public function getEntriesRemoteIDs($identifier, $type)
-    {
-        try {
-            $aRet = [];
-            $allEntries = get_posts(array('post_type' => 'rrze_' . $type, 'meta_key' => 'source', 'meta_value' => $identifier, 'fields' => 'ids', 'numberposts' => -1));// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-            foreach ($allEntries as $postID) {
-                $remoteID = get_post_meta($postID, 'remoteID', true);
-                $remoteChanged = get_post_meta($postID, 'remoteChanged', true);
-                if ($remoteID !== '') {
-                    $aRet[$remoteID] = array(
-                        'postID' => $postID,
-                        'remoteChanged' => $remoteChanged,
-                    );
-                }
-            }
-            return $aRet;
-        } catch (CustomException $e) {
-            return new \WP_Error('getEntriesRemoteIDs_error', __('Error in getEntriesRemoteIDs().', 'rrze-answers'));
-        }
-    }
-
-    public function setEntries($type, $identifier, $categories, $url)
-    {
-
-        try {
-            $iNew = 0;
-            $iUpdated = 0;
-            $iDeleted = 0;
-            $aURLhasSlider = [];
-            $field_cpt = 'rrze_' . $type;
-
-            $field_tag = 'rrze_' . $type . '_tag';
-            $field_cat = 'rrze_' . $type . '_category';
-
-            // get all remoteIDs of stored FAQ to this source ( key = remoteID, value = postID )
-            $aRemoteIDs = $this->getEntriesRemoteIDs($identifier, $type);
-
-            $this->deleteTags($identifier, $type);
-            $this->deleteCategories($identifier, $type);
-            $aEntries = $this->getEntries($url, $categories, $type);
-            if (is_wp_error($aEntries)) {
-                return $aEntries;
-            }
-
-            // set FAQ
-            foreach ($aEntries as $entry) {
-
-                $tagIDs = $this->setTags($entry[$field_tag], $identifier, $type);
-                $categoryIDs = $this->setCategories($entry[$field_cat], $identifier, $type);
-
-                if ($entry['URLhasSlider']) {
-                    $aURLhasSlider[] = $entry['URLhasSlider'];
-                } else {
-                    if (isset($aRemoteIDs[$entry['remoteID']])) {
-                        if ($aRemoteIDs[$entry['remoteID']]['remoteChanged'] < $entry['remoteChanged']) {
-                            // update FAQ
-                            $post_id = wp_update_post(array(
-                                'ID' => $aRemoteIDs[$entry['remoteID']]['postID'],
-                                'post_name' => sanitize_title($entry['title']),
-                                'post_title' => $entry['title'],
-                                'post_content' => $entry['content'],
-                                'meta_input' => array(
-                                    'source' => $identifier,
-                                    'lang' => $entry['lang'],
-                                    'remoteID' => $entry['remoteID'],
-                                    'remoteChanged' => $entry['remoteChanged'],
-                                ),
-                                'tax_input' => array(
-                                    $field_cat => $categoryIDs,
-                                    $field_tag => $tagIDs,
-                                ),
-                            ));
-                            $iUpdated++;
-                        }
-                        unset($aRemoteIDs[$entry['remoteID']]);
-                    } else {
-                        // insert FAQ
-                        $post_id = wp_insert_post(array(
-                            'post_type' => $field_cpt,
-                            'post_name' => sanitize_title($entry['title']),
-                            'post_title' => $entry['title'],
-                            'post_content' => $entry['content'],
-                            'comment_status' => 'closed',
-                            'ping_status' => 'closed',
-                            'post_status' => 'publish',
-                            'meta_input' => array(
-                                'source' => $identifier,
-                                'lang' => $entry['lang'],
-                                'remoteID' => $entry['remoteID'] ?? $entry['id'],
-                                'remoteChanged' => $entry['remoteChanged'],
-                                'sortfield' => '',
-                            ),
-                            'tax_input' => array(
-                                $field_cat => $categoryIDs,
-                                $field_tag => $tagIDs,
-                            ),
-                        ));
-                        $iNew++;
-                    }
-                }
-            }
-
-            // delete all other FAQ to this source
-            foreach ($aRemoteIDs as $remoteID => $aDetails) {
-                wp_delete_post($aDetails['postID'], true);
-                $iDeleted++;
-            }
-
-            return array(
-                'iNew' => $iNew,
-                'iUpdated' => $iUpdated,
-                'iDeleted' => $iDeleted,
-                'URLhasSlider' => $aURLhasSlider,
-            );
-        } catch (CustomException $e) {
-            return new \WP_Error('setFAQ_error', __('Error in setEntries().', 'rrze-answers'));
-        }
-    }
-
     /**
-     * Get remote content
-     * 
-     * @param string $url
-     * @param array $args
-     * @param bool $safe
-     * @return mixed
+     * Remove child categories from the legacy category hierarchy root.
      */
+    public function cleanCats(): void
+    {
+        foreach ($this->allCategories as $termId => $details) {
+            if ($details['parentID']) {
+                unset($this->allCategories[$termId]);
+            }
+        }
+    }
+
     /**
-     * Normalize REST taxonomy values (term IDs or legacy names) to term names.
+     * Convert a legacy category hierarchy to a slug-to-name map.
      *
-     * @param mixed  $terms
-     * @param string $taxonomy
-     * @return string[]
+     * @param array<mixed> $categories Mutable legacy hierarchy input.
+     * @param array<mixed> $slugNameMap Mutable slug-to-name output.
      */
-    private function restTermsToNames($terms, string $taxonomy): array
+    public function getSlugNameCats(&$categories, &$slugNameMap): void
     {
-        if (!is_array($terms)) {
-            return [];
-        }
+        foreach ($categories as $index => $category) {
+            $slugNameMap[$category['slug']] = $category['name'];
 
-        $names = [];
-
-        foreach ($terms as $term) {
-            if (is_numeric($term)) {
-                $term_object = get_term((int) $term, $taxonomy);
-                if ($term_object && !is_wp_error($term_object)) {
-                    $names[] = $term_object->name;
-                }
-                continue;
+            if (isset($category['children'])) {
+                $this->getSlugNameCats($category['children'], $slugNameMap);
             }
 
-            if (is_string($term) && $term !== '') {
-                $names[] = $term;
-            }
+            unset($categories[$index]);
         }
-
-        return $names;
     }
 
-    private function remoteGet(string $url, array $args = [], bool $safe = true)
+    /**
+     * Permanently delete entries after their source was explicitly removed.
+     */
+    public function deleteEntries($identifier, $type): int
     {
-        $cache_key = 'rrze_remote_' . md5($url);
-        $cached = get_transient($cache_key);
+        return $this->entryStore->deleteEntries((string) $identifier, (string) $type);
+    }
 
-        if (false !== $cached) {
-            return $cached;
+    /**
+     * Convert relative URLs in synchronized HTML to absolute source URLs.
+     *
+     * @return string|\WP_Error
+     */
+    protected function absoluteUrl($content, $sourceUrl)
+    {
+        return $this->entryFetcher->normalizeContentUrls(
+            (string) $content,
+            (string) $sourceUrl
+        );
+    }
+
+    /**
+     * Fetch and validate the complete remote collection before local writes.
+     *
+     * @return array<int|string, array<string, mixed>>|\WP_Error
+     */
+    protected function getEntries(
+        string $sourceUrl,
+        string $selectedCategories,
+        string $contentType
+    ) {
+        return $this->entryFetcher->fetch($sourceUrl, $selectedCategories, $contentType);
+    }
+
+    /**
+     * Resolve a comma-separated list of remote tag names to local term IDs.
+     *
+     * @param mixed $terms
+     * @return int[]|\WP_Error
+     */
+    public function setTags(
+        $terms,
+        $sourceIdentifier,
+        $contentType,
+        ?SyncOperationJournal $operationJournal = null
+    ) {
+        return $this->entryStore->resolveTagIds(
+            $terms,
+            (string) $sourceIdentifier,
+            (string) $contentType,
+            $operationJournal
+        );
+    }
+
+    /**
+     * Return locally stored entries indexed by their remote ID.
+     *
+     * The method name and historic array keys remain stable for backwards
+     * compatibility with existing integrations.
+     *
+     * @return array<int|string, array{postID: int, remoteChanged: mixed}>|\WP_Error
+     */
+    public function getEntriesRemoteIDs($sourceIdentifier, $contentType)
+    {
+        return $this->entryStore->getEntriesByRemoteId(
+            (string) $sourceIdentifier,
+            (string) $contentType
+        );
+    }
+
+    /**
+     * Synchronize one complete FAQ or glossary collection from one source.
+     *
+     * The transaction order is intentional: fetch and validate all pages,
+     * reconcile terms and posts, then move obsolete posts to Trash. Record new
+     * posts before assigning terms so failed or partial assignments can also be
+     * compensated by the journal, including when cron runs without a user.
+     *
+     * @return array{iNew: int, iUpdated: int, iDeleted: int, URLhasSlider: string[]}|\WP_Error
+     */
+    public function setEntries($contentType, $sourceIdentifier, $selectedCategories, $sourceUrl)
+    {
+        $operationJournal = new SyncOperationJournal($this->entryStore);
+
+        try {
+            $newCount = 0;
+            $updatedCount = 0;
+            $sliderUrls = [];
+            $contentType = (string) $contentType;
+            $sourceIdentifier = (string) $sourceIdentifier;
+            $postType = 'rrze_' . $contentType;
+            $tagTaxonomy = $postType . '_tag';
+            $categoryTaxonomy = $postType . '_category';
+
+            $remainingLocalEntries = $this->getEntriesRemoteIDs(
+                $sourceIdentifier,
+                $contentType
+            );
+            if (is_wp_error($remainingLocalEntries)) {
+                return $remainingLocalEntries;
+            }
+
+            $remoteEntries = $this->getEntries(
+                (string) $sourceUrl,
+                (string) $selectedCategories,
+                $contentType
+            );
+            if (is_wp_error($remoteEntries)) {
+                return $remoteEntries;
+            }
+
+            if ($remoteEntries === [] && $remainingLocalEntries !== []) {
+                return new \WP_Error(
+                    'remote_empty_response',
+                    __('The source site returned no entries. Existing synchronized entries were preserved.', 'rrze-answers')
+                );
+            }
+
+            foreach ($remoteEntries as $remoteEntry) {
+                $remoteId = $remoteEntry['remoteID'];
+
+                if ($remoteEntry['URLhasSlider']) {
+                    $sliderUrls[] = $remoteEntry['URLhasSlider'];
+                    unset($remainingLocalEntries[$remoteId]);
+                    continue;
+                }
+
+                $localEntry = $remainingLocalEntries[$remoteId] ?? null;
+                if (
+                    $localEntry !== null
+                    && $localEntry['remoteChanged'] >= $remoteEntry['remoteChanged']
+                ) {
+                    unset($remainingLocalEntries[$remoteId]);
+                    continue;
+                }
+
+                if ($localEntry !== null) {
+                    $snapshotError = $operationJournal->capturePostBeforeUpdate(
+                        $localEntry['postID'],
+                        [$categoryTaxonomy, $tagTaxonomy]
+                    );
+                    if (is_wp_error($snapshotError)) {
+                        return $this->rollbackAfterFailure($snapshotError, $operationJournal);
+                    }
+                }
+
+                $tagIds = $this->setTags(
+                    $remoteEntry[$tagTaxonomy],
+                    $sourceIdentifier,
+                    $contentType,
+                    $operationJournal
+                );
+                if (is_wp_error($tagIds)) {
+                    return $this->rollbackAfterFailure($tagIds, $operationJournal);
+                }
+
+                $categoryIds = $this->setCategories(
+                    $remoteEntry[$categoryTaxonomy],
+                    $sourceIdentifier,
+                    $contentType,
+                    $operationJournal
+                );
+                if (is_wp_error($categoryIds)) {
+                    return $this->rollbackAfterFailure($categoryIds, $operationJournal);
+                }
+
+                if ($localEntry !== null) {
+                    $writtenPost = $this->entryStore->updatePost(
+                        $localEntry['postID'],
+                        $remoteEntry,
+                        $sourceIdentifier
+                    );
+                } else {
+                    $writtenPost = $this->entryStore->insertPost(
+                        $postType,
+                        $remoteEntry,
+                        $sourceIdentifier
+                    );
+                    if (!is_wp_error($writtenPost)) {
+                        $operationJournal->recordInsertedPost($writtenPost);
+                    }
+                }
+
+                if (is_wp_error($writtenPost)) {
+                    return $this->rollbackAfterFailure($writtenPost, $operationJournal);
+                }
+
+                foreach ([$categoryTaxonomy => $categoryIds, $tagTaxonomy => $tagIds] as $taxonomy => $termIds) {
+                    $assignmentError = $this->entryStore->replaceTerms($writtenPost, $taxonomy, $termIds);
+                    if (is_wp_error($assignmentError)) {
+                        return $this->rollbackAfterFailure($assignmentError, $operationJournal);
+                    }
+                }
+
+                if ($localEntry !== null) {
+                    $updatedCount++;
+                    unset($remainingLocalEntries[$remoteId]);
+                } else {
+                    $newCount++;
+                }
+            }
+
+            $deletedCount = $this->entryStore->trashObsoleteEntries(
+                $remainingLocalEntries,
+                $operationJournal
+            );
+            if (is_wp_error($deletedCount)) {
+                return $this->rollbackAfterFailure($deletedCount, $operationJournal);
+            }
+
+            return [
+                'iNew' => $newCount,
+                'iUpdated' => $updatedCount,
+                'iDeleted' => $deletedCount,
+                'URLhasSlider' => $sliderUrls,
+            ];
+        } catch (\Throwable $exception) {
+            return $this->rollbackAfterFailure(
+                new \WP_Error('setFAQ_error', __('Error in setEntries().', 'rrze-answers')),
+                $operationJournal
+            );
+        }
+    }
+
+    /**
+     * Roll back recorded writes and retain the original synchronization error.
+     */
+    private function rollbackAfterFailure(
+        \WP_Error $syncError,
+        SyncOperationJournal $operationJournal
+    ): \WP_Error {
+        $rollbackError = $operationJournal->rollback();
+
+        if ($rollbackError !== null) {
+            $syncError->add(
+                'sync_rollback_failed',
+                __('Synchronization failed and some local changes could not be rolled back.', 'rrze-answers'),
+                ['rollbackErrors' => $rollbackError->get_error_messages()]
+            );
+        }
+
+        return $syncError;
+    }
+
+    /**
+     * Perform an optionally cached WordPress HTTP request.
+     *
+     * This helper remains for taxonomy discovery. Entry synchronization uses
+     * the uncached RemoteEntryFetcher because deletion requires a fresh view.
+     *
+     * @param array<string, mixed> $arguments
+     * @return array<string, mixed>|\WP_Error
+     */
+    private function remoteGet(
+        string $url,
+        array $arguments = [],
+        bool $safe = true,
+        bool $useCache = true
+    ) {
+        $cacheKey = 'rrze_remote_' . md5($url);
+        $cachedResponse = $useCache ? get_transient($cacheKey) : false;
+
+        if ($cachedResponse !== false) {
+            return $cachedResponse;
         }
 
         try {
-            if (empty($args)) {
-                $args = [
-                    'sslverify' => defined('WP_DEBUG') && WP_DEBUG ? false : true,
+            if ($arguments === []) {
+                $arguments = [
+                    'sslverify' => !(defined('WP_DEBUG') && WP_DEBUG),
                     'timeout' => 5,
                 ];
             }
 
-            if ($safe) {
-                $ret = wp_safe_remote_get($url, $args);
-            } else {
-                $ret = wp_remote_get($url, $args);
+            $response = $safe
+                ? wp_safe_remote_get($url, $arguments)
+                : wp_remote_get($url, $arguments);
+
+            if (
+                $useCache
+                && !is_wp_error($response)
+                && (int) wp_remote_retrieve_response_code($response) === 200
+            ) {
+                set_transient($cacheKey, $response, 10 * MINUTE_IN_SECONDS);
             }
 
-            // Cache only if this is not a WP_Error
-            if (!is_wp_error($ret)) {
-                set_transient($cache_key, $ret, 10 * MINUTE_IN_SECONDS);
-            }
-
-            return $ret;
-        } catch (CustomException $e) {
+            return $response;
+        } catch (\Throwable $exception) {
             return new \WP_Error('remoteGet_error', __('Error in remoteGet().', 'rrze-answers'));
         }
     }
 
-    public function getDomains()
+    /**
+     * Return configured synchronization sources sorted by identifier.
+     *
+     * @return array<string, string>
+     */
+    public function getDomains(): array
     {
         $domains = [];
         $options = get_option('rrze-answers');
+
         if (isset($options['registeredDomains'])) {
             foreach ($options['registeredDomains'] as $identifier => $url) {
                 $domains[$identifier] = $url;
             }
         }
+
         asort($domains);
+
         return $domains;
     }
 
-    public function checkDomain($identifier, $url, $domains)
+    /**
+     * Validate a new source URL and identifier against configured sources.
+     *
+     * @param mixed $identifier
+     * @param mixed $url
+     * @param mixed $domains
+     * @return array<string, mixed>
+     */
+    public function checkDomain($identifier, $url, $domains): array
     {
-        // returns array('status' => TRUE, 'msg' => '')
-        // on error returns array('status' => FALSE, 'ret' => error-message)
-        $aRet = array('status' => FALSE, 'msg' => '');
+        $result = ['status' => false, 'msg' => ''];
 
         if (in_array($url, $domains)) {
-            $aRet['msg'] = $url . ' ' . __('is already in use.', 'rrze-answers');
-            return $aRet;
-        } elseif (array_key_exists($identifier, $domains)) {
-            $aRet['msg'] = $identifier . ' ' . __('is already in use.', 'rrze-answers');
-            return $aRet;
+            $result['msg'] = $url . ' ' . __('is already in use.', 'rrze-answers');
+            return $result;
         }
 
-        $aSubEndpoints = ['faq', 'synonym', 'glossary'];
+        if (array_key_exists($identifier, $domains)) {
+            $result['msg'] = $identifier . ' ' . __('is already in use.', 'rrze-answers');
+            return $result;
+        }
 
-        foreach ($aSubEndpoints as $sub) {
-            $request = wp_remote_get($url . '/' . ENDPOINT . $sub . '?per_page=1');
-            $status_code = wp_remote_retrieve_response_code($request);
+        foreach (['faq', 'synonym', 'glossary'] as $subEndpoint) {
+            $response = wp_remote_get($url . '/' . ENDPOINT . $subEndpoint . '?per_page=1');
+            $statusCode = wp_remote_retrieve_response_code($response);
 
-            if ($status_code != '200') {
-                $aRet['msg'] = $url . ' ' . __('is not valid.', 'rrze-answers');
-            } else {
-                $content = json_decode(wp_remote_retrieve_body($request), TRUE);
-
-                if (!$content) {
-                    $aRet['ret'] = $url . ' ' . __(' does not support this plugin.', 'rrze-answers');
-                } else {
-                    $aRet['status'] = TRUE;
-                    break;
-                }
+            if ($statusCode != '200') {
+                $result['msg'] = $url . ' ' . __('is not valid.', 'rrze-answers');
+                continue;
             }
+
+            $content = json_decode(wp_remote_retrieve_body($response), true);
+            if (!$content) {
+                $result['ret'] = $url . ' ' . __(' does not support this plugin.', 'rrze-answers');
+                continue;
+            }
+
+            $result['status'] = true;
+            break;
         }
 
-        return $aRet;
+        return $result;
     }
 }

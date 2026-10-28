@@ -1,0 +1,131 @@
+[
+  {
+    "name": "faq-selection",
+    "block": "rrze-answers/faq",
+    "content": "<!-- wp:rrze-answers/faq {\"id\":\"2001\",\"color\":\"nat\",\"hstart\":3} /-->",
+    "attributes": {
+      "id": [
+        2001
+      ],
+      "color": "nat",
+      "hstart": 3
+    },
+    "contains": [
+      "Application answer"
+    ]
+  },
+  {
+    "name": "faq-filter",
+    "block": "rrze-answers/faq",
+    "content": "<!-- wp:rrze-answers/faq {\"category\":\"enrollment\",\"tag\":\"admission\",\"lang\":\"de\",\"hide_accordion\":true,\"hide_title\":true,\"search\":true,\"additional_class\":\"existing-faq\"} /-->",
+    "attributes": {
+      "category": [
+        "enrollment"
+      ],
+      "tag": [
+        "admission"
+      ],
+      "lang": "de",
+      "hide_accordion": true,
+      "hide_title": true,
+      "search": true,
+      "additional_class": "existing-faq"
+    },
+    "contains": [
+      "Application answer"
+    ]
+  },
+  {
+    "name": "faq-index",
+    "block": "rrze-answers/faq",
+    "content": "<!-- wp:rrze-answers/faq {\"glossary\":\"category\",\"glossarystyle\":\"a-z\",\"category\":\"enrollment\",\"sort\":\"sortfield\",\"order\":\"DESC\"} /-->",
+    "attributes": {
+      "glossary": "category",
+      "glossarystyle": "a-z",
+      "category": [
+        "enrollment"
+      ],
+      "sort": "sortfield",
+      "order": "DESC"
+    },
+    "contains": [
+      "Application answer"
+    ]
+  },
+  {
+    "name": "glossary-selection",
+    "block": "rrze-answers/glossary",
+    "content": "<!-- wp:rrze-answers/glossary {\"id\":\"2101\",\"load_open\":true,\"expand_all_link\":true,\"color\":\"phil\"} /-->",
+    "attributes": {
+      "id": [
+        2101
+      ],
+      "load_open": true,
+      "expand_all_link": true,
+      "color": "phil"
+    },
+    "contains": [
+      "Campus definition"
+    ]
+  },
+  {
+    "name": "glossary-index",
+    "block": "rrze-answers/glossary",
+    "content": "<!-- wp:rrze-answers/glossary {\"register\":\"category\",\"registerstyle\":\"tagcloud\",\"category\":\"university\",\"tag\":\"studies\",\"masonry\":true} /-->",
+    "attributes": {
+      "register": "category",
+      "registerstyle": "tagcloud",
+      "category": [
+        "university"
+      ],
+      "tag": [
+        "studies"
+      ],
+      "masonry": true
+    },
+    "contains": [
+      "Campus definition"
+    ]
+  },
+  {
+    "name": "synonym-selection",
+    "block": "rrze-answers/synonym",
+    "content": "<!-- wp:rrze-answers/synonym {\"id\":\"2201\",\"lang\":\"de\",\"register\":\"category\"} /-->",
+    "attributes": {
+      "id": [
+        2201
+      ],
+      "lang": "de"
+    },
+    "contains": [
+      "Regional Computing Centre"
+    ]
+  },
+  {
+    "name": "placeholder-selection",
+    "block": "rrze-answers/placeholder",
+    "content": "<!-- wp:rrze-answers/placeholder {\"id\":\"2301\",\"lang\":\"de\"} /-->",
+    "attributes": {
+      "id": [
+        2301
+      ],
+      "lang": "de"
+    },
+    "contains": [
+      "Office hours"
+    ]
+  },
+  {
+    "name": "faq-widget",
+    "block": "rrze-answers/faq-widget",
+    "content": "<!-- wp:rrze-answers/faq-widget {\"id\":2001,\"catID\":0,\"hide_title\":1} /-->",
+    "attributes": {
+      "id": 2001,
+      "catID": 0,
+      "hide_title": true
+    },
+    "contains": [
+      "Application answer"
+    ]
+  }
+]

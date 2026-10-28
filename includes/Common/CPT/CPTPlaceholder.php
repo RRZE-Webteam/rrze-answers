@@ -48,7 +48,9 @@ class CPTPlaceholder extends CPT
     }
 
     /**
-     * Disable canonical redirect if redirect page exists
+     * Let the configured placeholder archive redirect run before canonical URLs.
+     *
+     * @return void
      */
     public function maybe_disable_canonical_redirect(): void
     {
@@ -56,7 +58,7 @@ class CPTPlaceholder extends CPT
 
         $slug = !empty($options['custom_placeholder_slug'])
             ? sanitize_title($options['custom_placeholder_slug'])
-            : 'glossary';
+            : $this->slug_options['default_slug'];
 
         $redirect_id = (int) ($options['redirect_archivpage_uri_placeholder'] ?? 0);
 
@@ -66,7 +68,9 @@ class CPTPlaceholder extends CPT
     }
 
     /**
-     * Handle CPT redirects
+     * Redirect the placeholder archive or render a missing entry's 404 page.
+     *
+     * @return void
      */
     public function custom_cpt_404_message(): void
     {
@@ -76,7 +80,7 @@ class CPTPlaceholder extends CPT
 
         $slug = !empty($options['custom_placeholder_slug'])
             ? sanitize_title($options['custom_placeholder_slug'])
-            : 'faq';
+            : $this->slug_options['default_slug'];
 
         // CPT Single 404
         if (

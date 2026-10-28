@@ -1,10 +1,10 @@
 === RRZE Answers ===
 Contributors: rrze-webteam
 Tags: faq, glossary, synonym, placeholder, shortcode, block, widget
-Requires at least: 6.1
-Tested up to: 6.8
+Requires at least: 7.0
+Tested up to: 7.1.3
 Requires PHP: 8.2
-Stable tag: 1.4.7
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -31,6 +31,16 @@ Main features:
 
 == Installation ==
 
+Version 2.0 requires WordPress 7.0 or later and PHP 8.2 or later. Existing
+content remains supported when upgrading. Saving blocks uses the 2.x attribute
+format; replacing only the plugin files with a 1.x version is not supported.
+Recovery to 1.x requires restoring a matching pre-upgrade database backup.
+The completed CMS migration must not be repeated.
+
+Update every consuming site to 2.x before resuming cross-site synchronization.
+The 2.x consumer supports both old and new producers; old consumers can confuse
+source taxonomy IDs with their own local IDs.
+
 1. Download the plugin.
 2. Unzip the ZIP file.
 3. Upload the `rrze-answers` folder to the `/wp-content/plugins/` directory of your WordPress installation.
@@ -53,6 +63,10 @@ In the classic text editor (TinyMCE), placeholders can be inserted via the short
 
 
 === Shortcodes ===
+
+Embeds only display published entries of the requested content type. Drafts,
+private entries and Trash are omitted, including explicit ID selections.
+Password-protected entries require the visitor to have entered their password.
 
 FAQ:
 
@@ -84,6 +98,8 @@ Synonyms:
     [fau_abbr slug="url"]
 
 `[fau_abbr]` outputs `<abbr>` tags and supports language/pronunciation metadata when present.
+Synonyms and abbreviations support comma-separated IDs and a `lang` filter.
+Their text and HTML attributes are escaped as plain text.
 
 Placeholders:
 
@@ -101,7 +117,9 @@ Placeholder attributes:
 
 Notes:
 * If `slug` is set, it takes precedence over `id`.
-* Output is rendered as placeholder content from the editor.
+* Legacy encoded HTML is decoded and sanitized before WordPress renders blocks and shortcodes.
+* Inline placeholders with an unavailable ID do not display their saved text snapshot.
+  Legacy markers without an ID retain their sanitized text fallback.
 
 === Synchronization Across Domains ===
 

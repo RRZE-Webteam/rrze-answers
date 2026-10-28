@@ -70,6 +70,8 @@ class Sync
         // $allowSettingsError = ($mode == 'manual' ? true : false);
         $allowSettingsError = true;
         $syncRan = false;
+        $syncAttempted = false;
+        $syncFailed = false;
 
         $types = [
             'faq' => 'FAQ',
@@ -85,8 +87,10 @@ class Sync
                 $categories = (!empty($options[$fieldname]) ? implode(',', $options[$fieldname]) : false);
 
                 if ($categories) {
+                    $syncAttempted = true;
                     $aCnt = $this->syncAPI->setEntries($type, $identifier, $categories, $url);
                     if (is_wp_error($aCnt)) {
+                        $syncFailed = true;
                         $error_msg = __('Domain', 'rrze-answers') . ' "' . $url . '": ' . $label . ' - ' . $aCnt->get_error_message();
                         Tools::logIt($error_msg . ' | ' . $mode);
                         if ($allowSettingsError) {
@@ -115,14 +119,22 @@ class Sync
             }
         }
 
-        if ($syncRan) {
+        $finalStatus = 'success';
+
+        if ($syncRan && $syncFailed) {
+            $sync_msg = __('Synchronization completed with errors. Existing entries were preserved for failed sources.', 'rrze-answers') . ' ' . __('Required time:', 'rrze-answers') . ' ' . sprintf('%.1f ', microtime(true) - $tStart) . __('seconds', 'rrze-answers');
+            $finalStatus = 'warning';
+        } elseif ($syncRan) {
             $sync_msg = __('All synchronizations completed', 'rrze-answers') . '. ' . __('Required time:', 'rrze-answers') . ' ' . sprintf('%.1f ', microtime(true) - $tStart) . __('seconds', 'rrze-answers');
+        } elseif ($syncAttempted && $syncFailed) {
+            $sync_msg = __('Synchronization failed. Existing synchronized entries were preserved.', 'rrze-answers');
+            $finalStatus = 'error';
         } else {
             $sync_msg = __('Settings updated', 'rrze-answers');
         }
 
         if ($allowSettingsError) {
-            add_settings_error('RRZE-Answers', 'synccompleted', $sync_msg, 'success');
+            add_settings_error('RRZE-Answers', 'synccompleted', $sync_msg, $finalStatus);
         }
 
         Tools::logIt($sync_msg . ' | ' . $mode);

@@ -1,5 +1,6 @@
+import { initializeElementsAccordionKeyboard } from './elements-accordion-keyboard';
 
-
+initializeElementsAccordionKeyboard();
 
 // fix for theme RRZE-2019 which has an overlay with the menue
 function setHeaderVar() {
@@ -71,11 +72,22 @@ window.addEventListener('load', setHeaderVar);
         });
       }
 
-      function openItem($target, animate) {
+      /**
+       * Open one item and optionally make its anchor the current URL fragment.
+       *
+       * Automatic load-open preserves existing fragments so other navigation
+       * handlers can still resolve their targets after this ready callback.
+       *
+       * @param {jQuery} $target Item to open.
+       * @param {boolean} animate Whether to animate the visibility change.
+       * @param {boolean} updateHash Whether to replace the current URL fragment.
+       * @return {void}
+       */
+      function openItem($target, animate, updateHash = true) {
         setOpen($target, true, animate);
         closeSiblings($target, animate);
 
-        if ($target.attr('id')) {
+        if (updateHash && $target.attr('id')) {
           history.replaceState(null, null, '#' + $target.attr('id'));
         }
       }
@@ -122,7 +134,7 @@ window.addEventListener('load', setHeaderVar);
         if ($group.attr('data-load-open') === 'true') {
           var $first = $items.first();
           if ($first.length) {
-            openItem($first, false);
+            openItem($first, false, !window.location.hash);
           }
         } else {
           $items.each(function () {

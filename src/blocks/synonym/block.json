@@ -1,0 +1,80 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "rrze-answers/synonym",
+	"version": "4.0.0",
+	"title": "RRZE Synonym",
+	"category": "rrze",
+	"description": "Display synonyms",
+	"icon": "translation",
+	"example": {},
+	"attributes": {
+		"category": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"default": []
+		},
+		"tag": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"default": []
+		},
+		"id": {
+			"type": "array",
+			"items": {
+				"type": "integer"
+			},
+			"default": []
+		},
+		"hide_accordion": {
+			"type": "boolean",
+			"default": false
+		},
+		"hide_title": {
+			"type": "boolean",
+			"default": false
+		},
+		"expand_all_link": {
+			"type": "boolean",
+			"default": false
+		},
+		"load_open": {
+			"type": "boolean",
+			"default": false
+		},
+		"color": {
+			"type": "string",
+			"default": ""
+		},
+		"additional_class": {
+			"type": "string",
+			"default": ""
+		},
+		"lang": {
+			"type": "string",
+			"default": ""
+		},
+		"sort": {
+			"type": "string",
+			"default": "title"
+		},
+		"order": {
+			"type": "string",
+			"default": "ASC"
+		},
+		"hstart": {
+			"type": "number",
+			"default": 2
+		}
+	},	
+	"supports": {
+		"html": false
+	},
+	"textdomain": "rrze-answers",
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

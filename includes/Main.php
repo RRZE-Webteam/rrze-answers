@@ -7,22 +7,22 @@ use function RRZE\Answers\plugin;
 use RRZE\Answers\Defaults;
 
 use RRZE\Answers\Common\{
+    HtmlSanitizer,
+    Content\PlaceholderRenderer,
+    TabsRenderer,
     Tools,
     API\RESTAPI,
     API\SyncAPI,
     AdminInterfaces\AdminUI_QA,
     AdminInterfaces\AdminUI_Synonym,
     AdminInterfaces\AdminUI_Placeholder,
-    // AdminInterfaces\AdminMenu,
-    // AdminInterfaces\AdminInterfaces,
-    // AdminInterfaces\AdminInterfacessynonym,
     Settings\Settings,
     CPT\CPTFAQ,
     CPT\CPTGlossary,
     CPT\CPTSynonym,
     CPT\CPTPlaceholder,
     Sync\Sync,
-    Blocks\Blocks,
+    Sync\SynchronizedSourceRemovalService,
     Shortcode\ShortcodeFAQ,
     Shortcode\ShortcodeGlossary,
     Shortcode\ShortcodeSynonym,
@@ -32,424 +32,311 @@ use RRZE\Answers\Common\{
 defined('ABSPATH') || exit;
 
 /**
- * Main class
- * 
- * This class serves as the entry point for the plugin.
- * It can be extended to include additional functionality or components as needed.
- * 
- * @package RRZE\Answers\Common
- * @since 1.0.0
+ * Composes the plugin's WordPress hooks and top-level feature objects.
  */
 class Main
 {
+    private const SETTINGS_OPTION = 'rrze-answers';
+
+    private const SETTINGS_NONCE_ACTION = 'rrze-answers_settings_save_rrze-answers';
+
+    private const TEMPORARY_OPTION_FIELDS = [
+        'new_name',
+        'new_url',
+        'faqsync_shortname',
+        'faqsync_url',
+        'faqsync_categories',
+        'faqsync_donotsync',
+        'faqsync_hr',
+    ];
+
+    /** @var Defaults */
     public $defaults;
+
+    /** @var RESTAPI */
     public $restapi;
+
+    /** @var Settings */
     public $settings;
-    // public $settingsFAQ;
 
-    // public $blocks;
-    public $shortcodeFAQ;
-    private $adminMenu;
-    // private $adminInterface;
-    private $adminUI;
-    private $sync;
+    private ?Sync $sync = null;
 
+    /**
+     * Register hooks that must exist before WordPress initialization.
+     */
     public function __construct()
     {
-        $this->cpt();
+        // Construct translated CPT definitions on init. Their registration
+        // callbacks are added at priority 0 and therefore still run during the
+        // same init cycle, after the textdomain has loaded at priority -2.
+        add_action('init', [$this, 'cpt'], -1);
         add_action('init', [$this, 'onInit']);
-        add_filter('wp_kses_allowed_html', [$this, 'my_custom_allowed_html'], 10, 2);
+        add_filter('wp_kses_allowed_html', [HtmlSanitizer::class, 'allowLegacyPlaceholder'], 10, 2);
         add_filter('the_content', [$this, 'renderInlinePlaceholders'], 9);
     }
 
-    public function onInit()
+    /**
+     * Compose features whose labels and settings require initialized WordPress.
+     */
+    public function onInit(): void
     {
         $this->defaults = new Defaults();
         $this->settings();
         $this->restapi = new RESTAPI();
 
-        // $this->adminInterface = new AdminInterfaces('rrze_faq');
-        // $this->adminInterface = new AdminInterfaces('rrze_glossary');
-        // $this->adminInterface = new AdminInterfacessynonym();
-        $this->adminUI = new AdminUI_QA('rrze_faq');
-        $this->adminUI = new AdminUI_QA('rrze_glossary');
-        $this->adminUI = new AdminUI_Synonym();
-        $this->adminUI = new AdminUI_Placeholder();
+        new AdminUI_QA('rrze_faq');
+        new AdminUI_QA('rrze_glossary');
+        new AdminUI_Synonym();
+        new AdminUI_Placeholder();
 
         $this->sync = new Sync();
 
-        // $this->adminMenue = new AdminMenu(); // in admin menu there is a maximum of 2 levels. Deactivated this workaround because it wouldn't be best practice.
         add_action('wp_enqueue_scripts', [$this, 'enqueueAssets']);
         add_action('admin_enqueue_scripts', [$this, 'enqueueAdminAssets']);
         add_action('enqueue_block_editor_assets', [$this, 'enqueueBlockEditorStyles']);
-        // add_action('wp_ajax_rrze_answers_get_categories', [$this, 'rrze_answers_get_categories_cb']);
 
-        add_action('pre_update_option_rrze-answers', [$this, 'switchTask'], 10, 1);
-        add_action('update_option_rrze-answers', [$this, 'maybeSync'], 10, 2);
+        add_filter('pre_update_option_' . self::SETTINGS_OPTION, [$this, 'switchTask'], 10, 1);
+        add_action('update_option_' . self::SETTINGS_OPTION, [$this, 'maybeSync'], 10, 2);
 
         $this->shortcode();
-        $this->blocks();
     }
 
 
-    public function maybeSync($oldOptions, $newOptions)
+    /**
+     * Run synchronization after import settings actually changed.
+     *
+     * @param mixed $oldOptions
+     * @param mixed $newOptions
+     */
+    public function maybeSync($oldOptions, $newOptions): void
     {
-        if ($oldOptions == $newOptions) {
+        if (
+            $oldOptions == $newOptions
+            || $this->getCurrentSettingsTab() !== 'import'
+            || !$this->sync instanceof Sync
+        ) {
             return;
         }
 
-        $tab = (!empty($_GET['tab']) ? $_GET['tab'] : '');
+        $newOptions = is_array($newOptions) ? $newOptions : [];
+        $frequency = !empty($newOptions['frequency'])
+            ? (string) $newOptions['frequency']
+            : '';
+        $mode = $frequency !== '' ? 'automatic' : 'manual';
 
-        if ($tab == 'import') {
-            $frequency = (!empty($newOptions['frequency']) ? $newOptions['frequency'] : '');
-            $mode = ($frequency ? 'automatic' : 'manual');
-            $this->sync->doSync($mode);
-            $this->sync->setCronjob($frequency);
-            // settings_errors();
-        }
+        $this->sync->doSync($mode);
+        $this->sync->setCronjob($frequency);
     }
 
-    public function switchTask($options)
+    /**
+     * Apply settings-page side effects before the option is persisted.
+     *
+     * @param mixed $submittedOptions
+     * @return array<string, mixed>
+     */
+    public function switchTask($submittedOptions): array
     {
-        // get stored options because they are generated and not defined in config.php
-        $storedOptions = get_option('rrze-answers');
+        $options = is_array($submittedOptions) ? $submittedOptions : [];
+        $storedOptions = get_option(self::SETTINGS_OPTION);
 
-        if (is_array($storedOptions) && is_array($options)) {
+        if (is_array($storedOptions)) {
             $options = array_merge($storedOptions, $options);
         }
 
         $syncAPI = new SyncAPI();
         $domains = $syncAPI->getDomains();
 
-        $tab = (!empty($_GET['tab']) ? $_GET['tab'] : '');
+        $settingsTab = $this->getCurrentSettingsTab();
 
-        switch ($tab) {
-            case 'domains':
-                if ($options['new_url'] && ($options['new_url'] != 'https://')) {
-                    // add new domain
-                    $identifier = Tools::getIdentifier($options['new_url']);
-                    $url = 'https://' . Tools::getHost($options['new_url']);
-                    $aRet = $syncAPI->checkDomain($identifier, $url, $domains);
-
-                    if ($aRet['status']) {
-                        // url is correct, rrze-answers at given url is in use and identifier is new (generated if not unique)
-                        $domains[$identifier] = $url;
-                    } else {
-                        add_settings_error('new_url', 'domains_new_error', $aRet['msg'], 'error');
-                    }
-                } else {
-                    // delete domain(s)
-                    $types = ['faq', 'glossary'];
-
-                    foreach ($_POST as $key => $identifier) {
-                        if (substr($key, 0, 11) === "del_domain_") {
-                            if ((array_search($identifier, array_keys($domains))) !== false) {
-                                unset($domains[$identifier]);
-                                foreach ($types as $type) {
-                                    $syncAPI->deleteEntries($identifier, $type);
-                                    $syncAPI->deleteCategories($identifier, $type);
-                                    $syncAPI->deleteTags($identifier, $type);
-                                    unset($options[$type . '_categories_' . $identifier]);
-                                }
-                            }
-                        }
-                    }
-                }
-                break;
-            case 'import':
-                // nothing to do here, see after update options (hook: update_option_rrze-answers)
-                break;
-            case 'del':
-                Tools::deleteLogfile();
-                break;
+        if ($settingsTab === 'domains') {
+            $this->updateDomainSettings($options, $domains, $syncAPI);
+        } elseif ($settingsTab === 'del') {
+            Tools::deleteLogfile();
         }
 
-
-        if (!$domains) {
-            // unset this option because $api->getDomains() checks isset(..) because of asort(..)
+        if ($domains === []) {
             unset($options['registeredDomains']);
         } else {
             $options['registeredDomains'] = $domains;
         }
 
-        // we don't need these temporary fields to be stored in database table options
-        // domains are stored as shortname and url in registeredDomains
-        // categories and donotsync are stored in faqsync_categories_<SHORTNAME> and faqsync_donotsync_<SHORTNAME>
-        unset($options['new_name']);
-        unset($options['new_url']);
-        unset($options['faqsync_shortname']);
-        unset($options['faqsync_url']);
-        unset($options['faqsync_categories']);
-        unset($options['faqsync_donotsync']);
-        unset($options['faqsync_hr']);
-
-        // settings_errors();
+        foreach (self::TEMPORARY_OPTION_FIELDS as $fieldName) {
+            unset($options[$fieldName]);
+        }
 
         return $options;
     }
 
+    /**
+     * Add a source or remove the selected registered sources.
+     *
+     * @param array<string, mixed>  $options
+     * @param array<string, string> $domains
+     */
+    private function updateDomainSettings(
+        array &$options,
+        array &$domains,
+        SyncAPI $syncAPI
+    ): void {
+        $newUrl = isset($options['new_url']) ? (string) $options['new_url'] : '';
 
-    // public function rrze_answers_get_categories_cb()
-    // {
-    //     check_ajax_referer('rrze_answers_sync', '_ajax_nonce');
+        if ($newUrl !== '' && $newUrl !== 'https://') {
+            $this->registerDomain($newUrl, $domains, $syncAPI);
+            return;
+        }
 
-    //     if (!current_user_can('manage_options')) {
-    //         wp_send_json_error(['message' => 'Unauthorized'], 403);
-    //     }
-
-    //     $site_url = isset($_POST['site_url']) ? trim(wp_unslash($_POST['site_url'])) : '';
-    //     if ($site_url === '') {
-    //         wp_send_json_error(['message' => 'Missing parameter: site_url'], 400);
-    //     }
-
-    //     // Fetch remote categories
-    //     $endpoint = esc_url_raw($site_url) . '/wp-json/wp/v2/rrze_faq_category';
-    //     $res = wp_remote_get($endpoint, ['timeout' => 10, 'headers' => ['Accept' => 'application/json']]);
-
-    //     if (is_wp_error($res)) {
-    //         wp_send_json_error(['message' => $res->get_error_message()], 500);
-    //     }
-
-    //     $code = wp_remote_retrieve_response_code($res);
-    //     $body = wp_remote_retrieve_body($res);
-    //     if ($code !== 200) {
-    //         wp_send_json_error(['message' => "Remote $code", 'body' => $body], $code);
-    //     }
-
-    //     $items = json_decode($body, true);
-    //     if (!is_array($items)) {
-    //         wp_send_json_error(['message' => 'Invalid JSON from remote'], 500);
-    //     }
-
-    //     // Load plugin options safely
-    //     $options = get_option('rrze-answers');
-    //     if (!is_array($options)) {
-    //         $options = [];
-    //     }
-
-    //     $cats = [];
-    //     $selected = [];
-    //     $remote_cats_all = isset($options['remote_categories_faq']) && is_array($options['remote_categories_faq'])
-    //         ? $options['remote_categories_faq']
-    //         : [];
-
-    //     // Selected categories for the current site_url (if previously stored)
-    //     $remote_cats_for_site = [];
-    //     if (isset($remote_cats_all[$site_url]) && is_array($remote_cats_all[$site_url])) {
-    //         $remote_cats_for_site = $remote_cats_all[$site_url];
-    //     }
-
-    //     foreach ($items as $item) {
-    //         if (!empty($item['slug']) && isset($item['name'])) {
-    //             $cats[$item['slug']] = $item['name'];
-    //             if (in_array($item['slug'], $remote_cats_for_site, true)) {
-    //                 $selected[] = $item['slug'];
-    //             }
-    //         }
-    //     }
-
-    //     // Build remaining site URLs for the secondary dropdown
-    //     // Expect all configured site URLs in option 'remote_url_faq' (array of strings)
-    //     $all_urls = [];
-    //     if (isset($options['remote_url_faq'])) {
-    //         if (is_array($options['remote_url_faq'])) {
-    //             $all_urls = $options['remote_url_faq'];
-    //         } elseif (is_string($options['remote_url_faq']) && $options['remote_url_faq'] !== '') {
-    //             // Accept single string for backward compatibility
-    //             $all_urls = [$options['remote_url_faq']];
-    //         }
-    //     }
-
-    //     // Remove current site_url and duplicates
-    //     $remaining_urls = array_values(array_unique(array_filter($all_urls, function ($u) use ($site_url) {
-    //         return is_string($u) && $u !== '' && $u !== $site_url;
-    //     })));
-
-    //     wp_send_json_success([
-    //         'categories' => $cats,
-    //         'selected' => $selected,
-    //         'remaining_urls' => $remaining_urls,
-    //         'current_url' => $site_url,
-    //     ]);
-    // }
-
+        $this->removeRequestedDomains($options, $domains);
+    }
 
     /**
-     * Allow needed HTML on post content sanitized by wp_kses_post().
+     * Validate and add one synchronization source.
      *
-     * @param array  $allowed_tags The current allowed tags/attributes for the given context.
-     * @param string $context      KSES context; wp_kses_post() uses 'post'.
-     * @return array               Modified allowed tags/attributes.
+     * @param array<string, string> $domains
      */
-    function my_custom_allowed_html($allowed_tags, $context)
+    private function registerDomain(
+        string $submittedUrl,
+        array &$domains,
+        SyncAPI $syncAPI
+    ): void {
+        $identifier = (string) Tools::getIdentifier($submittedUrl);
+        $url = 'https://' . (string) Tools::getHost($submittedUrl);
+        $domainCheck = $syncAPI->checkDomain($identifier, $url, $domains);
+
+        if ($domainCheck['status']) {
+            $domains[$identifier] = $url;
+            return;
+        }
+
+        add_settings_error(
+            'new_url',
+            'domains_new_error',
+            $domainCheck['msg'],
+            'error'
+        );
+    }
+
+    /**
+     * Remove selected sources only after their posts were safely trashed.
+     *
+     * @param array<string, mixed>  $options
+     * @param array<string, string> $domains
+     */
+    private function removeRequestedDomains(array &$options, array &$domains): void
     {
-        // Only alter the 'post' context used by wp_kses_post()
-        if ($context !== 'post') {
-            return $allowed_tags;
+        $sourceIdentifiers = $this->getRequestedSourceIdentifiers();
+        if ($sourceIdentifiers === []) {
+            return;
         }
 
-        // 1) Schema.org microdata attributes we want to allow on various elements
-        $schema_attrs = [
-            'itemscope' => true, // boolean attribute (no value needed)
-            'itemtype' => true, // URL to schema type, e.g. https://schema.org/FAQPage
-            'itemprop' => true, // property name within the item
-            'itemid' => true, // global identifier
-            'itemref' => true, // references other elements by ID
-        ];
-
-        // 2) HTML5 elements that may carry microdata in templates/shortcodes
-        $tags_to_extend = [
-            'div',
-            'span',
-            'p',
-            'a',
-            'h1',
-            'h2',
-            'h3',
-            'h4',
-            'h5',
-            'h6',
-            'ul',
-            'ol',
-            'li',
-            'section',
-            'article',
-            'header',
-            'footer',
-            'main',
-            'nav',
-            'details',
-            'summary'
-        ];
-
-        // Ensure details/summary exist with common attributes for accordion UI
-        if (!isset($allowed_tags['details'])) {
-            $allowed_tags['details'] = [];
+        if (!$this->isAuthorizedSourceRemovalRequest()) {
+            add_settings_error(
+                self::SETTINGS_OPTION,
+                'source_removal_error',
+                __('The synchronization sources could not be removed because the settings request was not authorized.', 'rrze-answers'),
+                'error'
+            );
+            return;
         }
-        $allowed_tags['details'] = array_merge($allowed_tags['details'], [
-            'id' => true,
-            'class' => true,
-            'open' => true, 
-        ]);
 
-        if (!isset($allowed_tags['summary'])) {
-            $allowed_tags['summary'] = [];
+        $removalResult = (new SynchronizedSourceRemovalService())->remove(
+            $sourceIdentifiers,
+            $domains
+        );
+
+        if (is_wp_error($removalResult)) {
+            add_settings_error(
+                self::SETTINGS_OPTION,
+                'source_removal_error',
+                $removalResult->get_error_message(),
+                'error'
+            );
+            return;
         }
-        $allowed_tags['summary'] = array_merge($allowed_tags['summary'], [
-            'id' => true,
-            'class' => true,
-        ]);
 
-        // 3) Add Schema.org attributes to the listed tags without removing existing ones
-        foreach ($tags_to_extend as $tag) {
-            if (!isset($allowed_tags[$tag])) {
-                $allowed_tags[$tag] = [];
+        foreach ($removalResult['removedSourceIdentifiers'] as $identifier) {
+            unset($domains[$identifier]);
+            unset($options['faq_categories_' . $identifier]);
+            unset($options['glossary_categories_' . $identifier]);
+        }
+    }
+
+    /**
+     * Return the sanitized settings tab selected by the current request.
+     */
+    private function getCurrentSettingsTab(): string
+    {
+        $submittedTab = $_GET['tab'] ?? null;
+
+        if (!is_scalar($submittedTab)) {
+            return '';
+        }
+
+        return sanitize_key((string) wp_unslash($submittedTab));
+    }
+
+    /**
+     * Read selected source identifiers from the verified settings request.
+     *
+     * Non-scalar values are ignored and every scalar identifier is sanitized.
+     * The removal service performs the authoritative registered-source check
+     * before any synchronized post is changed.
+     *
+     * @return string[]
+     */
+    private function getRequestedSourceIdentifiers(): array
+    {
+        $sourceIdentifiers = [];
+
+        foreach ($_POST as $fieldName => $submittedValue) {
+            if (
+                !str_starts_with((string) $fieldName, 'del_domain_')
+                || !is_scalar($submittedValue)
+            ) {
+                continue;
             }
-            $allowed_tags[$tag] = array_merge($allowed_tags[$tag], $schema_attrs);
+
+            $sourceIdentifier = sanitize_text_field(
+                (string) wp_unslash($submittedValue)
+            );
+
+            if ($sourceIdentifier !== '') {
+                $sourceIdentifiers[] = $sourceIdentifier;
+            }
         }
 
-        // 4) keep form elements
-        $allowed_tags['select'] = array_merge($allowed_tags['select'] ?? [], [
-            'name' => true,
-            'id' => true,
-            'class' => true,
-            'multiple' => true,
-            'size' => true,
-        ]);
-
-        $allowed_tags['option'] = array_merge($allowed_tags['option'] ?? [], [
-            'value' => true,
-            'selected' => true,
-        ]);
-
-        $allowed_tags['input'] = array_merge($allowed_tags['input'] ?? [], [
-            'type' => true,
-            'name' => true,
-            'id' => true,
-            'class' => true,
-            'value' => true,
-            'synonym' => true,
-            'checked' => true,
-            'disabled' => true,
-            'readonly' => true,
-            'maxlength' => true,
-            'size' => true,
-            'min' => true,
-            'max' => true,
-            'step' => true,
-        ]);
-
-        // Allow minimal SVG markup for rrze-elements icons
-        $allowed_tags['svg'] = array_merge($allowed_tags['svg'] ?? [], [
-            'class'       => true,
-            'aria-hidden' => true,
-            'aria-label'  => true,
-            'role'        => true,
-            'focusable'   => true,
-            'xmlns'       => true,
-            'viewbox'     => true,
-            'width'       => true,
-            'height'      => true,
-            'style'       => true,
-        ]);
-
-        $allowed_tags['path'] = array_merge($allowed_tags['path'] ?? [], [
-            'fill' => true,
-            'd'    => true,
-        ]);
-
-        $allowed_tags['use'] = array_merge($allowed_tags['use'] ?? [], [
-            'href'       => true,
-            'xlink:href' => true,
-        ]);
-
-        // Allow inline placeholder format tag stored by the block editor.
-        $allowed_tags['placeholder'] = array_merge($allowed_tags['placeholder'] ?? [], [
-            'class' => true,
-            'title' => true,
-            'lang' => true,
-            'data-placeholder-id' => true,
-            'data-placeholder-title' => true,
-        ]);
-
-
-        return $allowed_tags;
+        return array_values(array_unique($sourceIdentifiers));
     }
 
     /**
-     * Inline placeholders are replaced inside paragraphs; wpautop / paragraph blocks emit a
-     * single wrapping <p> which breaks flow and nests invalidly. Strip exactly one outer <p>.
-     *
-     * @param string $html Rendered placeholder body.
+     * Verify the capability and nonce before interpreting deletion checkboxes.
      */
-    private static function unwrapOuterSingleParagraphForInline(string $html): string
+    private function isAuthorizedSourceRemovalRequest(): bool
     {
-        $html = trim($html);
-        if ($html === '' || stripos($html, '<p') !== 0) {
-            return $html;
+        if (!current_user_can('manage_options')) {
+            return false;
         }
 
-        if (!preg_match('/^<p\b[^>]*>(.*)<\/p>$/is', $html, $m)) {
-            return $html;
+        $submittedNonce = $_POST['rrze-answers_settings_save'] ?? null;
+        if (!is_scalar($submittedNonce)) {
+            return false;
         }
 
-        $inner = trim($m[1]);
-        if ($inner !== '' && preg_match('/<\/(?:p|div|h[1-6]|blockquote|figure)\s*>/i', $inner)) {
-            return $html;
-        }
-
-        return $inner;
+        return wp_verify_nonce(
+            sanitize_text_field((string) wp_unslash($submittedNonce)),
+            self::SETTINGS_NONCE_ACTION
+        ) !== false;
     }
 
+
     /**
-     * Replace inline <placeholder> markers with their actual content on frontend output.
+     * Replace legacy inline markers using the same renderer as placeholder blocks.
      *
-     * @param string $content The post content.
-     * @return string
+     * @param mixed $content
+     * @return mixed
      */
     public function renderInlinePlaceholders($content)
     {
-        if (!is_string($content) || strpos($content, '<placeholder') === false) {
+        if (!is_string($content) || stripos($content, '<placeholder') === false) {
             return $content;
         }
 
@@ -457,120 +344,35 @@ class Main
             return $content;
         }
 
-        return preg_replace_callback(
-            '/<placeholder\b([^>]*)>.*?<\/placeholder>/is',
-            static function ($matches) {
-                if (empty($matches[1])) {
-                    return '';
-                }
-
-                if (preg_match('/\bdata-placeholder-id=(["\'])(\d+)\1/is', $matches[1], $idMatch)) {
-                    $placeholderId = (int) $idMatch[2];
-                    $placeholderPost = get_post($placeholderId);
-
-                    if (
-                        $placeholderPost instanceof \WP_Post
-                        && $placeholderPost->post_type === 'rrze_placeholder'
-                        && $placeholderPost->post_status === 'publish'
-                    ) {
-                        static $renderStack = [];
-                        if (in_array($placeholderId, $renderStack, true)) {
-                            return '';
-                        }
-
-                        $renderStack[] = $placeholderId;
-                        $dynamicContent = html_entity_decode($placeholderPost->post_content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                        try {
-                            // Render placeholder content like normal post content, including blocks.
-                            return self::unwrapOuterSingleParagraphForInline(
-                                (string) apply_filters('the_content', $dynamicContent)
-                            );
-                        } finally {
-                            array_pop($renderStack);
-                        }
-                    }
-                }
-
-                if (!preg_match('/\btitle=(["\'])(.*?)\1/is', $matches[1], $titleMatch)) {
-                    return '';
-                }
-
-                $decoded = html_entity_decode($titleMatch[2], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                return self::unwrapOuterSingleParagraphForInline(
-                    (string) wp_kses_post(wpautop($decoded))
-                );
-            },
-            $content
-        );
-    }
-
-    // public function settingsAll()
-    // {
-    //     $this->settingsFAQ = new SettingsFAQ(plugin()->getFile());
-    // }
-
-    public function cpt()
-    {
-        $cpt = new CPTFAQ();
-        $cpt = new CPTGlossary();
-        $cpt = new CPTSynonym();
-        $cpt = new CPTPlaceholder();
-    }
-
-
-    /**
-     * Shortcode method
-     * 
-     * This method registers a shortcode using the Shortcode class.
-     * It can be extended or modified to register additional shortcode as needed.
-     * 
-     * @return void
-     */
-    public function shortcode()
-    {
-        $shortcode = new ShortcodeFAQ();
-        $shortcode = new ShortcodeGlossary();
-        $shortcode = new ShortcodeSynonym();
-        $shortcode = new ShortcodePlaceholder();
+        return PlaceholderRenderer::replaceInline($content);
     }
 
     /**
-     * Blocks method
-     * 
-     * This method registers custom blocks using the Blocks class.
-     * It can be extended or modified to register additional blocks as needed.
-     * 
-     * @return void
+     * Construct custom post types early enough to register during `init`.
      */
-    public function blocks()
+    public function cpt(): void
     {
-
-        $blocks = new Blocks(
-            [                                  // Array of block names
-                'faq',
-                'faq-widget',
-                'glossary',
-                'synonym',
-                'placeholder'
-            ],
-            plugin()->getPath('build/blocks'), // Blocks directory path
-            plugin()->getPath()                // Plugin directory path
-        );
+        new CPTFAQ();
+        new CPTGlossary();
+        new CPTSynonym();
+        new CPTPlaceholder();
     }
 
+    /**
+     * Register all classic shortcode handlers.
+     */
+    public function shortcode(): void
+    {
+        new ShortcodeFAQ();
+        new ShortcodeGlossary();
+        new ShortcodeSynonym();
+        new ShortcodePlaceholder();
+    }
 
     /**
-     * Settings method
-     * 
-     * This method sets up the plugin settings using the Settings class.
-     * It defines the settings sections and options that will be available in the WordPress admin area
-     * and provides validation and sanitization for the settings.
-     * 
-     * @return void
+     * Build the plugin settings page from Defaults configuration.
      */
-
-
-    public function settings()
+    public function settings(): void
     {
         $this->settings = new Settings($this->defaults->get('settings')['page_title']);
 
@@ -581,11 +383,17 @@ class Main
             ->setMenuParentSlug('options-general.php');
 
         foreach ($this->defaults->get('sections') as $section) {
-            $tab = $this->settings->addTab(__($section['title'], 'rrze-answers'), $section['id']);
-            $sec = $tab->addSection(__($section['title'], 'rrze-answers'), $section['id']);
+            $settingsTab = $this->settings->addTab(
+                __($section['title'], 'rrze-answers'),
+                $section['id']
+            );
+            $settingsSection = $settingsTab->addSection(
+                __($section['title'], 'rrze-answers'),
+                $section['id']
+            );
 
             foreach ($this->defaults->get('fields')[$section['id']] as $field) {
-                $sec->addOption($field['type'], array_intersect_key(
+                $settingsSection->addOption($field['type'], array_intersect_key(
                     $field,
                     array_flip(['name', 'label', 'description', 'options', 'default', 'sanitize', 'validate', 'synonym'])
                 ));
@@ -596,40 +404,10 @@ class Main
     }
 
     /**
-     * Enqueue der globale Skripte.
+     * Register shared front-end assets and enqueue those needed immediately.
      */
-    public function enqueueAssets()
+    public function enqueueAssets(): void
     {
-        wp_register_style(
-            'rrze-answers-css',
-            plugins_url('build/css/rrze-answers.css', plugin()->getBasename()),
-            [],
-            filemtime(plugin()->getPath() . 'build/css/rrze-answers.css')
-        );
-
-        // wp_register_style(
-        //     'rrze-synonym-css',
-        //     plugins_url('build/css/rrze-synonym.css', plugin()->getBasename()),
-        //     [],
-        //     filemtime(plugin()->getPath() . 'build/css/rrze-synonym.css')
-        // );
-
-        wp_register_script(
-            'rrze-answers-accordion',
-            plugins_url('build/rrze-answers-accordion.js', plugin()->getBasename()),
-            array('jquery'),
-            filemtime(plugin()->getPath() . 'build/rrze-answers-accordion.js'),
-            true
-        );
-
-        wp_register_script(
-            'rrze-answers-search',
-            plugins_url('build/rrze-answers-search.js', plugin()->getBasename()),
-            [],
-            filemtime(plugin()->getPath() . 'build/rrze-answers-search.js'),
-            true
-        );
-
         if (is_admin()) {
             wp_enqueue_script('rrze-answers-accordion');
             wp_enqueue_script('rrze-answers-search');
@@ -639,77 +417,66 @@ class Main
                 wp_enqueue_style('rrze-answers-css');
             }
         }
-
     }
 
     public function enqueueBlockEditorStyles(): void
     {
         wp_enqueue_style('rrze-answers-css');
+
+        $settings = 'window.rrzeAnswersBlockSettings = '
+            . wp_json_encode([
+                'elementsTabsAvailable' => TabsRenderer::isAvailable(),
+            ])
+            . ';';
+
+        foreach (['faq', 'glossary'] as $blockName) {
+            wp_add_inline_script(
+                generate_block_asset_handle(
+                    'rrze-answers/' . $blockName,
+                    'editorScript'
+                ),
+                $settings,
+                'before'
+            );
+        }
     }
 
-    public function enqueueAdminAssets()
+    /**
+     * Load admin assets only on Answers post, taxonomy, and settings screens.
+     */
+    public function enqueueAdminAssets(): void
     {
         $screen = get_current_screen();
-        $relevant_post_types = ['rrze_faq', 'rrze_glossary', 'rrze_synonym', 'rrze_placeholder'];
-        $relevant_taxonomies = ['rrze_faq_category', 'rrze_faq_tag', 'rrze_glossary_category', 'rrze_glossary_tag', 'rrze_synonym_group', 'rrze_synonym_tag'];
-        $relevant_pages = ['rrze-answers', 'rrze-answers_faq', 'rrze-answers_glossary', 'rrze-answers_synonym', 'rrze-answers_placeholder'];
-
-        $is_relevant = $screen && (
-            in_array($screen->post_type ?? '', $relevant_post_types, true) ||
-            in_array($screen->taxonomy ?? '', $relevant_taxonomies, true) ||
-            in_array($screen->id ?? '', $relevant_pages, true) ||
-            ($screen->base === 'post' && in_array($screen->post_type ?? '', $relevant_post_types, true))
-        );
-
-        if (!$is_relevant) {
+        if (!$screen) {
             return;
         }
-        wp_register_style(
-            'rrze-answers-admin-css',
-            plugins_url('build/css/rrze-answers-admin.css', plugin()->getBasename()),
-            [],
-            filemtime(plugin()->getPath() . 'build/css/rrze-answers-admin.css')
-        );
 
-        wp_register_script(
-            'rrze-answers-search',
-            plugins_url('build/rrze-answers-search.js', plugin()->getBasename()),
-            [],
-            filemtime(plugin()->getPath() . 'build/rrze-answers-search.js'),
-            true
-        );
+        $relevantPostTypes = ['rrze_faq', 'rrze_glossary', 'rrze_synonym', 'rrze_placeholder'];
+        $relevantTaxonomies = [
+            'rrze_faq_category',
+            'rrze_faq_tag',
+            'rrze_glossary_category',
+            'rrze_glossary_tag',
+            'rrze_synonym_group',
+            'rrze_synonym_tag',
+        ];
+        $relevantPages = [
+            'rrze-answers',
+            'rrze-answers_faq',
+            'rrze-answers_glossary',
+            'rrze-answers_synonym',
+            'rrze-answers_placeholder',
+        ];
+        $isRelevantScreen = in_array($screen->post_type, $relevantPostTypes, true)
+            || in_array($screen->taxonomy, $relevantTaxonomies, true)
+            || in_array($screen->id, $relevantPages, true);
+
+        if (!$isRelevantScreen) {
+            return;
+        }
 
         wp_enqueue_style('rrze-answers-admin-css');
         wp_enqueue_script('rrze-answers-accordion');
         wp_enqueue_script('rrze-answers-search');
     }
-
-
-    // public function enqueueImportAssets(string $hook): void
-    // {
-    //     wp_register_script(
-    //         'rrze-answers-import-ui',
-    //         plugins_url('build/rrze-import-ui.js', plugin()->getBasename()),
-    //         ['jquery'],
-    //         '1.0.0',
-    //         true
-    //     );
-
-    //     wp_localize_script('rrze-answers-import-ui', 'RRZEAnswersSync', [
-    //         'ajaxUrl' => admin_url('admin-ajax.php'),
-    //         'nonce' => wp_create_nonce('rrze_answers_sync'),
-    //         'optionName' => 'rrze-answers_remote_api_url',
-    //         'i18n' => [
-    //             'loading' => __('Loading categories…', 'rrze-answers'),
-    //             'none' => __('No categories found.', 'rrze-answers'),
-    //             'error' => __('Error while loading categories.', 'rrze-answers'),
-    //             'selectCategories' => __('Hold Ctrl/Cmd to select multiple categories.', 'rrze-answers'),
-    //         ],
-    //     ]);
-
-    //     wp_enqueue_script('rrze-answers-import-ui');
-    // }
-
 }
-
-

@@ -11,6 +11,19 @@
 
 **RRZE Answers** combines the functionalities of the former plugins **RRZE FAQ**, **RRZE Glossary**, and **RRZE Synonym** into a single solution.
 
+## Requirements and upgrading to 2.0
+
+WordPress **7.0 or later** and PHP **8.2 or later** are required. Existing blocks,
+shortcodes and inline formats remain supported when upgrading. Editor saves use
+the 2.x block attribute format. A code-only downgrade to 1.x is not supported;
+returning to 1.x requires a matching pre-upgrade database backup as well as the
+old plugin files. Do not repeat the completed CMS migration.
+
+Update all consuming sites to 2.x before resuming cross-site synchronization.
+New consumers support old and new producers. Old consumers may interpret remote
+taxonomy IDs as local IDs and cannot be made reliable by changing only the new
+producer's response.
+
 It allows you to:
 - Create and display FAQs, glossary entries, synonyms, and placeholders  
 - Synchronize content between websites in the FAU network  
@@ -24,7 +37,7 @@ It allows you to:
 ## Features
 
 - **Unified content management:** FAQs, Glossary entries, synonyms, and placeholders are managed in one place.  
-- **Flexible display options:** Accordion view, A–Z index, tabs, tag cloud or grid.
+- **Flexible display options:** Accordion view, A–Z index, RRZE Elements tabs, tag cloud or grid.
 - **Cross-domain synchronization:** Share and import entries from other FAU sites.  
 - **REST API support:** Access entries programmatically.  
 - **Multilingual and SEO-friendly:** Uses [`schema.org/FAQPage`](https://schema.org/FAQPage) for faq entries, [`schema.org/DefinedTerm`](https://schema.org/DefinedTerm) for glossary entries and `<abbr>` tags for synonyms.  
@@ -57,6 +70,10 @@ The text editor provides a dedicated menu entry for inserting synonyms. From the
 
 ## Shortcodes
 
+Embeds only display published entries of the requested content type. Drafts,
+private entries, and entries in Trash are omitted even when selected by ID.
+Password-protected entries require the visitor to have entered their password.
+
 ### FAQ Shortcode
 
 ```html
@@ -67,7 +84,7 @@ The text editor provides a dedicated menu entry for inserting synonyms. From the
 ```
 
 **Attributes:**
-- `glossary` – Grouping type (`category`, `tag`, or display style: `a-z`, `tabs`, `tagcloud`)
+- `glossary` – Index configuration. `a-z` works with a flat list; `tabs` and `tagcloud` require category or tag grouping, for example `glossary="category tabs"`. Tabs are available only when RRZE Elements Blocks registers its Tabs and Tab blocks.
 - `category` – One or more category slugs  
 - `tag` – One or more tag slugs  
 - `domain` – Filter by domain(s)  
@@ -92,7 +109,7 @@ The text editor provides a dedicated menu entry for inserting synonyms. From the
 ```
 
 **Attributes:**
-- `register` – Grouping type (`category`, `tag`) and style (`a-z`, `tabs`, `tagcloud`)
+- `register` – Index configuration. `a-z` works with a flat list; `tabs` and `tagcloud` require category or tag grouping, for example `register="category tabs"`. Tabs are available only when RRZE Elements Blocks registers its Tabs and Tab blocks.
 - `category` – One or more categories  
 - `tag` – One or more tags  
 - `id` – Specific entries by ID  
@@ -114,9 +131,13 @@ The text editor provides a dedicated menu entry for inserting synonyms. From the
 ```
 
 **Attributes:**
-- `id` – Display a specific synonym or abbreviation  
+- `id` – One or more synonym or abbreviation IDs (comma-separated, in display order)
 - `slug` – Use the entry’s slug  
-- No attributes → list all synonyms  
+- `lang` – Filter entries by their language metadata
+- No attributes → list all published synonyms
+
+If `slug` is set, it takes precedence over `id`. Synonym text and abbreviation
+attributes are escaped as plain text.
 
 The `[fau_abbr]` shortcode outputs abbreviations as `<abbr>` HTML tags, including language and pronunciation details if specified.
 
@@ -145,7 +166,10 @@ Example:
 
 Notes:
 - If `slug` is set, it takes precedence over `id`.
-- Output is rendered as placeholder content from the editor (decoded HTML).
+- Legacy encoded HTML is decoded and sanitized before WordPress renders blocks and shortcodes.
+- Inline placeholders with an ID follow the current entry. If it is unavailable,
+  its previously saved text is not displayed. Legacy markers without an ID keep
+  their sanitized text fallback.
 
 ---
 

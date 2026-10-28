@@ -70,62 +70,18 @@ class Tools
         string $answer,
         string $color,
         string $load_open,
-        bool $useSchema
+        bool $useSchema,
+        int $hstart = 2
     ): string {
-        // Normalize type
-        $type = strtolower($type);
-        $isFaq = ($type === 'faq');
-        $isGlossary = ($type === 'glossary');
-
-        $out = '';
-
-        // Wrapper with schema depending on type
-        if ($useSchema) {
-            if ($isFaq) {
-                $out .= '<div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">';
-            } elseif ($isGlossary) {
-                $out .= '<div itemscope itemtype="https://schema.org/DefinedTerm">';
-            } else {
-                // Fallback: behave like FAQ
-                $out .= '<div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">';
-            }
-        }
-
-        $out .= '<details'
-            . ' id="' . esc_attr($anchor) . '"'
-            . ' class="rrze-answers-item is-' . esc_attr($color) . '">';
-
-        if ($useSchema) {
-            if ($isFaq) {
-                // FAQ schema: Question + acceptedAnswer/Answer/text
-                $out .= '<summary itemprop="name">' . esc_html($question) . '</summary>';
-                $out .= '<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">';
-                $out .= '<div class="rrze-answers-content" itemprop="text">' . $answer . '</div>';
-                $out .= '</div>';
-            } elseif ($isGlossary) {
-                // Glossary schema: DefinedTerm / name / description / text
-                // Based on the structure of the former constants, but visible (no display:none)
-                $out .= '<summary itemscope itemprop="name" itemtype="https://schema.org/name">'
-                    . '<span itemprop="name">' . esc_html($question) . '</span>'
-                    . '</summary>';
-
-                $out .= '<div itemscope itemprop="description" itemtype="https://schema.org/description">';
-                $out .= '<div class="rrze-answers-content" itemprop="text">' . $answer . '</div>';
-                $out .= '</div>';
-            }
-        } else {
-            // No schema at all
-            $out .= '<summary>' . esc_html($question) . '</summary>';
-            $out .= '<div class="answers-content">' . $answer . '</div>';
-        }
-
-        $out .= '</details>';
-
-        if ($useSchema) {
-            $out .= '</div>'; // close Question or DefinedTerm wrapper
-        }
-
-        return $out;
+        return AccordionRenderer::renderItem(
+            $type,
+            $anchor,
+            $question,
+            $answer,
+            $color,
+            $useSchema,
+            $hstart
+        );
     }
 
     /**
@@ -150,8 +106,9 @@ class Tools
     ): string {
 
         $type = strtolower($type);
-        $isFaq = ($type === 'faq');
         $isGlossary = ($type === 'glossary');
+        // Keep the same unknown-type fallback as renderItemAccordion().
+        $isFaq = !$isGlossary;
 
         // No schema
         if (!$useSchema) {
@@ -196,6 +153,23 @@ class Tools
     }
 
 
+    /**
+     * Render the shared FAQ/glossary region, optional search and accordion content.
+     *
+     * @param string $type Entry type: FAQ or glossary.
+     * @param string $content Rendered entries; block collections are resolved in place.
+     * @param string $headerID Unique heading ID used to label the region and search.
+     * @param bool $masonry Whether to use a masonry layout.
+     * @param string $color Legacy color option retained for caller compatibility.
+     * @param string $additional_class Additional wrapper classes.
+     * @param bool $bSchema Whether to include Schema.org metadata.
+     * @param int|null $postID Post supplying the accessible region title.
+     * @param bool $search Whether to include the client-side question filter.
+     * @param bool $load_open Whether to open the first accordion item initially.
+     * @param int $hstart Heading level used by block accordions.
+     * @param bool $expand_all Whether to offer expand/collapse controls.
+     * @return string Complete region markup.
+     */
     public static function renderWrapper(
         string $type,
         string &$content,
@@ -206,10 +180,27 @@ class Tools
         bool &$bSchema,
         ?int $postID = null,
         bool $search = false,
-        bool $load_open = false
+        bool $load_open = false,
+        int $hstart = 2,
+        bool $expand_all = false
     ): string {
         $isFaq = ($type === 'faq');
         $isGlossary = ($type === 'glossary');
+        $usesBlockAccordion = AccordionRenderer::hasBlockItems($content);
+
+        if ($usesBlockAccordion) {
+            $content = AccordionRenderer::renderCollections(
+                $type,
+                $content,
+                $hstart,
+                $expand_all,
+                $load_open
+            );
+        }
+
+        if (TabsRenderer::hasCollections($content)) {
+            $content = TabsRenderer::renderCollections($content);
+        }
 
         $classes = 'rrze-answers';
         if ($masonry) {
@@ -220,7 +211,7 @@ class Tools
         }
 
         $schemaAttr = '';
-        if ($bSchema) {
+        if ($bSchema && !$usesBlockAccordion) {
             if ($isFaq) {
                 static $faqPageRendered = false;
                 if (!$faqPageRendered) {
@@ -245,26 +236,33 @@ class Tools
         $searchMarkup = '';
         if ($search) {
             $searchId = $headerID . '-search';
+            $searchLabel = $isGlossary
+                ? __('Search glossary', 'rrze-answers')
+                : __('Search FAQ', 'rrze-answers');
             $searchMarkup =
                 '<div class="rrze-answers-search">'
                 . '<label class="screen-reader-text" for="' . esc_attr($searchId) . '">'
-                . esc_html__('Search FAQ', 'rrze-answers')
+                . esc_html($searchLabel)
                 . '</label>'
                 . '<input type="search"'
                 . ' id="' . esc_attr($searchId) . '"'
                 . ' class="rrze-answers-search__input"'
-                . ' synonym="' . esc_attr__('Search…', 'rrze-answers') . '"'
+                . ' placeholder="' . esc_attr__('Search…', 'rrze-answers') . '"'
                 . ' data-minlen="3"'
                 . ' autocomplete="off"'
                 . ' />'
+                . '<button type="button" class="rrze-answers-search__button"'
+                . ' aria-label="' . esc_attr($searchLabel) . '">'
+                . '<span class="screen-reader-text">' . esc_html($searchLabel) . '</span>'
+                . '</button>'
                 . '</div>';
         }
 
         return '<div' . $schemaAttr
             . ' class="' . esc_attr($classes) . '" role="region" aria-labelledby="' . esc_attr($headerID) . '"'
-            . ' data-accordion="single"'
+            . (!$usesBlockAccordion ? ' data-accordion="single"' : '')
             . ' data-scroll-offset="96"'
-            . ($load_open ? ' data-load-open="true"' : '')
+            . ($load_open && !$usesBlockAccordion ? ' data-load-open="true"' : '')
             . '>'
             . '<h2 id="' . esc_attr($headerID) . '" class="screen-reader-text">' . esc_html($title) . '</h2>'
             . $searchMarkup
@@ -291,58 +289,57 @@ class Tools
         return mb_strtoupper(mb_substr($normalized, 0, 1), "UTF-8");
     }
 
-    public static function createAZ(&$aSearch)
+    public static function createAZ(array $aSearch, string $anchorPrefix = 'letter'): string
     {
-        if (count($aSearch) == 1) {
+        if (!$aSearch) {
             return '';
         }
+
         $ret = '<ul class="letters list-icons">';
 
         foreach (range('A', 'Z') as $a) {
             if (array_key_exists($a, $aSearch)) {
-                $ret .= '<li class="filled"><a href="#letter-' . $a . '">' . $a . '</a></li>';
+                $ret .= '<li class="filled"><a href="#' . esc_attr($anchorPrefix . '-' . $a) . '">' . esc_html($a) . '</a></li>';
             } else {
-                $ret .= '<li aria-hidden="true" role="presentation"><span>' . $a . '</span></li>';
+                $ret .= '<li aria-hidden="true" role="presentation"><span>' . esc_html($a) . '</span></li>';
             }
         }
+
         return $ret . '</ul>';
     }
 
-    public static function createTabs(&$aTerms, $aPostIDs)
+    public static function createTagcloud(array $aTerms, array $aPostIDs, string $anchorPrefix = 'ID'): string
     {
-        if (count($aTerms) == 1) {
+        if (!$aTerms) {
             return '';
         }
-        $ret = '';
-        foreach ($aTerms as $name => $aDetails) {
-            $ret .= '<a href="#ID-' . $aDetails['ID'] . '">' . $name . '</a> | ';
-        }
-        return rtrim($ret, ' | ');
-    }
 
-    public static function createTagcloud(&$aTerms, $aPostIDs)
-    {
-        if (count($aTerms) == 1) {
-            return '';
-        }
-        $ret = '';
         $smallest = 12;
         $largest = 22;
         $aCounts = [];
         foreach ($aTerms as $name => $aDetails) {
-            $aCounts[$aDetails['ID']] = count($aPostIDs[$aDetails['ID']]);
+            $termId = (int) ($aDetails['ID'] ?? 0);
+            $aCounts[$termId] = count($aPostIDs[$termId] ?? []);
         }
-        $iMax = max($aCounts);
+
+        $iMax = max(1, max($aCounts));
         $aSizes = [];
         foreach ($aCounts as $ID => $cnt) {
             $aSizes[$ID] = round(($cnt / $iMax) * $largest, 0);
             $aSizes[$ID] = ($aSizes[$ID] < $smallest ? $smallest : $aSizes[$ID]);
         }
+
+        $ret = '<nav class="rrze-answers-tagcloud" aria-label="' . esc_attr__('Index navigation', 'rrze-answers') . '">';
         foreach ($aTerms as $name => $aDetails) {
-            $ret .= '<a href="#ID-' . $aDetails['ID'] . '" class="rrze-answers-tagcloud-item" style="--rrze-answers-tagcloud-size:' . $aSizes[$aDetails['ID']] . 'px">' . $name .
-                '</a> | ';
+            $termId = (int) ($aDetails['ID'] ?? 0);
+            $ret .= '<a href="#' . esc_attr($anchorPrefix . '-' . $termId) . '"'
+                . ' class="rrze-answers-tagcloud-item"'
+                . ' style="--rrze-answers-tagcloud-size:' . esc_attr((string) $aSizes[$termId]) . 'px">'
+                . esc_html($name)
+                . '</a>';
         }
-        return rtrim($ret, ' | ');
+
+        return $ret . '</nav>';
     }
 
     public static function getTaxQuery(&$aTax)
@@ -465,8 +462,26 @@ class Tools
         return null;
     }
 
+    /**
+     * Check for published imports on the current site during this request.
+     *
+     * WordPress updates the posts cache generation after post and metadata
+     * changes, so an earlier result cannot survive a sync or source change.
+     *
+     * @param string $post_type Post type whose synchronized entries are checked.
+     * @return bool Whether the current site contains a published import.
+     */
     public function hasSync($post_type): bool
     {
+        static $cache = [];
+
+        $post_type = sanitize_key((string) $post_type);
+        $key = get_current_blog_id() . ':' . $post_type;
+        $generation = wp_cache_get_last_changed('posts');
+        if (isset($cache[$key]) && $cache[$key]['generation'] === $generation) {
+            return $cache[$key]['has_sync'];
+        }
+
         $query = new WP_Query([
             'post_type' => $post_type,
             'post_status' => 'publish',
@@ -482,7 +497,12 @@ class Tools
             'no_found_rows' => true,
         ]);
 
-        return $query->have_posts();
+        $cache[$key] = [
+            'generation' => $generation,
+            'has_sync' => $query->have_posts(),
+        ];
+
+        return $cache[$key]['has_sync'];
     }
 
     public static function getPageList(): array
@@ -693,8 +713,8 @@ class Tools
             $shortcode_attr
         );
 
-        // Return rendered shortcode.
-        echo do_shortcode($shortcode);
+        // Dynamic block render callbacks return their markup to WordPress.
+        return do_shortcode($shortcode);
     }
 
     /**
