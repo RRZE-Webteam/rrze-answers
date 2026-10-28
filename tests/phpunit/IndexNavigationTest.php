@@ -206,6 +206,8 @@ final class IndexNavigationTest extends WP_UnitTestCase
         wp_set_object_terms($postId, [$termId], $taxonomy);
 
         foreach (['tagcloud' => 'ID-' . $termId, 'a-z' => 'letter-A', 'tabs' => 'ID-' . $termId] as $style => $anchor) {
+            // Each style is an independent page, not an additional list on one page.
+            (new \ReflectionProperty(\RRZE\Answers\Common\Content\QuestionListRenderer::class, 'usedAnchorIds'))->setValue(null, []);
             update_post_meta($postId, 'anchorfield', $anchor);
             $output = do_shortcode(sprintf('[%s %s="category %s"]', $shortcode, $styleAttribute, $style));
 

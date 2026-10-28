@@ -15,6 +15,9 @@ use RRZE\Answers\Common\Tools;
  */
 final class QuestionListRenderer
 {
+    /** @var array<string, true> Entry and control IDs reserved during this request. */
+    private static array $usedAnchorIds = [];
+
     /**
      * Render a question list and enqueue the assets needed by its generated markup.
      *
@@ -178,7 +181,7 @@ final class QuestionListRenderer
                     . '<h3>' . esc_html($name) . '</h3><div class="answers-term-content">';
 
             foreach ($postIds[$term['ID']] as $id) {
-                $termContent .= self::renderEntry($type, $id, (string) get_the_title($id), $attributes, true, $hasSchema);
+                $termContent .= self::renderEntry($type, $id, (string) get_the_title($id), $attributes, true, $hasSchema, $term['ID']);
             }
             $termContent .= $useTabs ? '</div>' : '</div></section>';
             if ($useTabs) {
@@ -237,19 +240,44 @@ final class QuestionListRenderer
         return ' id="' . esc_attr($id) . '" data-rrze-answers-legacy-anchor="' . esc_attr($legacyAnchor) . '"';
     }
 
-    private static function renderEntry(string $type, int $id, string $title, array $attributes, bool $grouped, bool &$hasSchema): string
-    {
+    /**
+     * Render one occurrence, reserving its anchor before rendering nested content.
+     *
+     * @param string $type FAQ or glossary entry type.
+     * @param int $id Entry post ID, shared by all its occurrences.
+     * @param string $title Display title.
+     * @param array<string, mixed> $attributes Normalized display attributes.
+     * @param bool $grouped Whether this occurrence belongs to a taxonomy group.
+     * @param bool $hasSchema Receives whether any entry includes schema data.
+     * @param int $termId Current category or tag ID, or zero for flat lists.
+     * @return string Entry markup with a request-wide unique accordion anchor.
+     */
+    private static function renderEntry(
+        string $type,
+        int $id,
+        string $title,
+        array $attributes,
+        bool $grouped,
+        bool &$hasSchema,
+        int $termId = 0
+    ): string {
         $useSchema = get_post_meta($id, 'source', true) === 'website';
         $hasSchema = $hasSchema || $useSchema;
-        $answer = str_replace(']]>', ']]&gt;', apply_filters('the_content', get_post_field('post_content', $id)));
 
         // Grouped lists historically always render accordion entries.
-        if (!$grouped && $attributes['hide_accordion']) {
-            return Tools::renderItem($type, $title, $answer, $attributes['hstart'], $useSchema, $attributes['hide_title']);
+        $useAccordion = $grouped || !$attributes['hide_accordion'];
+        $anchor = '';
+        if ($useAccordion) {
+            $fallback = ($grouped ? 'innerID-' : 'ID-') . $id;
+            $anchor = self::reserveEntryAnchor(
+                (string) (get_post_meta($id, 'anchorfield', true) ?: $fallback),
+                $grouped ? $attributes['grouping'] . '-' . $termId : ''
+            );
         }
-        $anchor = get_post_meta($id, 'anchorfield', true);
-        if (empty($anchor)) {
-            $anchor = ($grouped ? 'innerID-' : 'ID-') . $id;
+        $answer = str_replace(']]>', ']]&gt;', apply_filters('the_content', get_post_field('post_content', $id)));
+
+        if (!$useAccordion) {
+            return Tools::renderItem($type, $title, $answer, $attributes['hstart'], $useSchema, $attributes['hide_title']);
         }
         return Tools::renderItemAccordion(
             $type,
@@ -261,5 +289,35 @@ final class QuestionListRenderer
             $useSchema,
             $attributes['hstart']
         );
+    }
+
+    /**
+     * Keep the first anchor and disambiguate later occurrences across all lists.
+     *
+     * Preserve the existing anchor spelling and reserve Elements Collapse's
+     * derived panel ID too. Context uses term IDs so renaming a term
+     * does not change the suffix. Repeated contexts receive a numeric suffix;
+     * these identifiers are deterministic for the same request render order.
+     *
+     * @param string $anchor Requested custom or historical default anchor.
+     * @param string $context Category/tag and term ID, or empty for flat entries.
+     * @return string Available anchor, reserved until the PHP request ends.
+     */
+    private static function reserveEntryAnchor(string $anchor, string $context): string
+    {
+        $elements = AccordionRenderer::getBackend() === AccordionRenderer::BACKEND_ELEMENTS;
+        $candidate = $anchor;
+        $stem = $anchor . ($context !== '' ? '-' . $context : '');
+        $suffix = $context !== '' ? 1 : 2;
+        while (isset(self::$usedAnchorIds[$candidate]) || ($elements && isset(self::$usedAnchorIds[$candidate . '-section']))) {
+            $candidate = $stem . ($suffix === 1 ? '' : '-' . $suffix);
+            $suffix++;
+        }
+
+        self::$usedAnchorIds[$candidate] = true;
+        if ($elements) {
+            self::$usedAnchorIds[$candidate . '-section'] = true;
+        }
+        return $candidate;
     }
 }

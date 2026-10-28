@@ -11,9 +11,15 @@ use WP_UnitTestCase;
  */
 class QuestionListRenderingTest extends WP_UnitTestCase
 {
+    /**
+     * Start each example as an independent page with native accordion markup.
+     *
+     * @return void
+     */
     protected function setUp(): void
     {
         parent::setUp();
+        (new \ReflectionProperty(\RRZE\Answers\Common\Content\QuestionListRenderer::class, 'usedAnchorIds'))->setValue(null, []);
         add_filter('rrze_answers_accordion_backend', [$this, 'nativeAccordion']);
     }
 
