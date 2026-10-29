@@ -38,10 +38,11 @@ function resolveLegacyTarget( root, hash ) {
  * dependency continues to own selection, accessibility state and panel styles.
  *
  * @param {HTMLElement} target Mapped heading or group target.
- * @return {void}
+ * @return {boolean} Whether at least one containing tab was activated.
  */
 function revealContainingTabs( target ) {
 	const panels = [];
+	let revealed = false;
 	let panel = target.closest( '[role="tabpanel"]' );
 	while ( panel ) {
 		panels.unshift( panel );
@@ -57,15 +58,18 @@ function revealContainingTabs( target ) {
 			if ( tab.getAttribute( 'aria-controls' ) === currentPanel.id ) {
 				if ( tab.getAttribute( 'aria-selected' ) !== 'true' ) {
 					tab.click();
+					revealed =
+						tab.getAttribute( 'aria-selected' ) === 'true' || revealed;
 				}
 				break;
 			}
 		}
 	}
+	return revealed;
 }
 
 /**
- * Restore legacy group and letter links without replacing current native IDs.
+ * Restore legacy index links and reveal category tabs for current entry links.
  *
  * Initial navigation waits until the load handlers of the tab dependency have
  * run. Hash changes and same-page clicks also work, including a second click on
@@ -80,6 +84,36 @@ export function initializeLegacyIndexLinks( root = document ) {
 	}
 	const view = root.defaultView;
 	let pendingNavigation;
+
+	/**
+	 * Reveal an entry's category tab before its accordion handles the fragment.
+	 *
+	 * Only entries inside Answers-generated tabs participate. The accordion
+	 * dependency still owns opening, focus, scrolling and accessibility state.
+	 *
+	 * @param {string} hash Requested URL fragment.
+	 * @return {boolean} Whether a containing tab changed selection.
+	 */
+	function revealEntryTabs( hash ) {
+		let fragment;
+		try {
+			fragment = decodeURIComponent( hash.slice( 1 ) );
+		} catch {
+			return false;
+		}
+		const target =
+			root.getElementById( hash.slice( 1 ) ) ||
+			root.getElementById( fragment );
+		if (
+			! target?.closest( '.rrze-answers-elements-tabs' ) ||
+			! target.closest(
+				'.rrze-answers-block-item, details.rrze-answers-item, .wp-block-accordion-item'
+			)
+		) {
+			return false;
+		}
+		return revealContainingTabs( target );
+	}
 
 	/**
 	 * Activate and scroll to a mapped target using its wrapper's header offset.
@@ -102,14 +136,31 @@ export function initializeLegacyIndexLinks( root = document ) {
 	}
 
 	/**
-	 * Follow the current URL only when it resolves to a legacy mapping.
+	 * Reveal current entry tabs before accordion handlers, or follow a legacy mapping.
 	 *
 	 * @return {void}
 	 */
 	function navigateToHash() {
+		revealEntryTabs( view.location.hash );
 		const target = resolveLegacyTarget( root, view.location.hash );
 		if ( target ) {
 			navigateToTarget( target );
+		}
+	}
+
+	/**
+	 * Restore entry navigation after Elements has selected its initial tab.
+	 *
+	 * Replaying the fragment only after revealing a hidden entry lets the existing
+	 * accordion finish its normal focus/scroll path with a visible target.
+	 *
+	 * @return {void}
+	 */
+	function navigateAfterLoad() {
+		if ( revealEntryTabs( view.location.hash ) ) {
+			view.dispatchEvent( new view.HashChangeEvent( 'hashchange' ) );
+		} else {
+			navigateToHash();
 		}
 	}
 
@@ -120,13 +171,13 @@ export function initializeLegacyIndexLinks( root = document ) {
 	 */
 	function scheduleInitialNavigation() {
 		view.clearTimeout( pendingNavigation );
-		pendingNavigation = view.setTimeout( navigateToHash, 0 );
+		pendingNavigation = view.setTimeout( navigateAfterLoad, 0 );
 	}
 
 	/**
-	 * Follow ordinary same-document legacy links while retaining their URLs.
+	 * Reveal entry tabs or follow ordinary legacy links while retaining their URLs.
 	 *
-	 * @param {MouseEvent} event Bubbled document click.
+	 * @param {MouseEvent} event Captured document click before accordion handlers.
 	 * @return {void}
 	 */
 	function handleClick( event ) {
@@ -161,6 +212,7 @@ export function initializeLegacyIndexLinks( root = document ) {
 		) {
 			return;
 		}
+		revealEntryTabs( url.hash );
 		const target = resolveLegacyTarget( root, url.hash );
 		if ( ! target ) {
 			return;
@@ -178,15 +230,15 @@ export function initializeLegacyIndexLinks( root = document ) {
 	 * @return {void}
 	 */
 	function cleanup() {
-		root.removeEventListener( 'click', handleClick );
-		view.removeEventListener( 'hashchange', navigateToHash );
+		root.removeEventListener( 'click', handleClick, true );
+		view.removeEventListener( 'hashchange', navigateToHash, true );
 		view.removeEventListener( 'load', scheduleInitialNavigation );
 		view.clearTimeout( pendingNavigation );
 		initializedDocuments.delete( root );
 	}
 
-	root.addEventListener( 'click', handleClick );
-	view.addEventListener( 'hashchange', navigateToHash );
+	root.addEventListener( 'click', handleClick, true );
+	view.addEventListener( 'hashchange', navigateToHash, true );
 	if ( root.readyState === 'complete' ) {
 		scheduleInitialNavigation();
 	} else {

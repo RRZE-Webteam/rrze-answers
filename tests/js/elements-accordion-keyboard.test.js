@@ -2,14 +2,15 @@ import fs from 'fs';
 import path from 'path';
 import vm from 'vm';
 import { initializeElementsAccordionKeyboard } from '../../src/js/elements-accordion-keyboard';
+import { initializeLegacyIndexLinks } from '../../src/js/legacy-index-links';
 
 let cleanup;
 
 /**
  * Create the same wrapper, button and panel structure rendered by Elements.
  *
- * @param {string} id Stable entry anchor.
- * @param {boolean} open Initial load-open setting.
+ * @param {string}  id    Stable entry anchor.
+ * @param {boolean} open  Initial load-open setting.
  * @param {boolean} owned Whether Answers generated this Collapse item.
  * @return {string} One accordion item fixture.
  */
@@ -30,14 +31,14 @@ function itemMarkup( id = 'entry', open = false, owned = true ) {
 /**
  * Dispatch an actual DOM keyboard event with legacy keyCode for Elements 1.0.5.
  *
- * @param {Element} target Focused accordion control.
- * @param {string} type Keyboard event type.
- * @param {string} key Key name.
- * @param {Object} options Additional event properties.
+ * @param {Element} target  Focused accordion control.
+ * @param {string}  type    Keyboard event type.
+ * @param {string}  key     Key name.
+ * @param {Object}  options Additional event properties.
  * @return {KeyboardEvent} Event for cancellation assertions.
  */
 function keyEvent( target, type, key = 'Enter', options = {} ) {
-	const event = new KeyboardEvent( type, {
+	const event = new window.KeyboardEvent( type, {
 		bubbles: true,
 		cancelable: true,
 		key,
@@ -241,6 +242,8 @@ const hasLocalDependency =
 		let documentListeners;
 		let previousJquery;
 		let previousDollar;
+		let windowListeners;
+		let cleanupIndex;
 
 		/**
 		 * Evaluate the installed jQuery and Elements scripts against the test DOM.
@@ -250,10 +253,12 @@ const hasLocalDependency =
 		 * Captured native listeners are removed after each isolated fixture.
 		 * The global alias follows window.jQuery for WordPress's noConflict call.
 		 *
+		 * @param {boolean} withTabs Whether to also load the installed tab controller.
 		 * @return {Promise<void>} Resolves after the dependency's ready callback.
 		 */
-		async function loadInstalledDependency() {
+		async function loadInstalledDependency( withTabs = false ) {
 			documentListeners = jest.spyOn( document, 'addEventListener' );
+			windowListeners = jest.spyOn( window, 'addEventListener' );
 			previousJquery = window.jQuery;
 			previousDollar = window.$;
 			vm.runInNewContext( fs.readFileSync( jqueryAsset, 'utf8' ), {
@@ -275,20 +280,146 @@ const hasLocalDependency =
 				jQuery: jquery,
 				wp: { i18n: { __: ( value ) => value } },
 			} );
+			if ( withTabs ) {
+				vm.runInNewContext(
+					fs.readFileSync(
+						path.resolve( path.dirname( dependencyAsset ), '../tabs/rrze-tabs.js' ),
+						'utf8'
+					),
+					{ window, document }
+				);
+			}
+			document.dispatchEvent( new Event( 'DOMContentLoaded' ) );
 			await new Promise( ( resolve ) => jquery( resolve ) );
 		}
 
 		afterEach( () => {
+			cleanupIndex?.();
+			cleanupIndex = undefined;
 			jquery?.( window ).off();
 			jquery?.( document ).off();
-			for ( const [ type, listener, options ] of documentListeners?.mock
-				.calls || [] ) {
+			for ( const [ type, listener, options ] of documentListeners?.mock.calls ||
+				[] ) {
 				document.removeEventListener( type, listener, options );
 			}
 			documentListeners?.mockRestore();
+			for ( const [ type, listener, options ] of windowListeners?.mock.calls ||
+				[] ) {
+				window.removeEventListener( type, listener, options );
+			}
+			windowListeners?.mockRestore();
 			window.jQuery = previousJquery;
 			window.$ = previousDollar;
 		} );
+
+		/**
+		 * Reproduce one FAQ appearing in two category tabs with unique entry IDs.
+		 *
+		 * @return {void}
+		 */
+		function createCategoryTabs() {
+			document.body.innerHTML = `<div class="rrze-answers"><div class="rrze-answers-elements-tabs">
+				<div role="tablist" class="manual">
+					<button role="tab" aria-controls="category-one" aria-selected="true">First category</button>
+					<button role="tab" aria-controls="category-two" aria-selected="false">Second category</button>
+				</div>
+				<div role="tabpanel" id="category-one"><div class="accordion">${itemMarkup(
+					'entry'
+				)}</div></div>
+				<div role="tabpanel" id="category-two"><div class="accordion">${itemMarkup(
+					'entry-category-42'
+				)}</div></div>
+			</div></div>`;
+		}
+
+		/**
+		 * Initial entry navigation must survive the tab dependency's load-time reset.
+		 *
+		 * @return {Promise<void>} Resolves after deferred tab/anchor navigation.
+		 */
+		async function opensDuplicateInHiddenTabOnLoad() {
+			createCategoryTabs();
+			window.history.replaceState( null, '', '#entry-category-42' );
+			const readyState = jest
+				.spyOn( document, 'readyState', 'get' )
+				.mockReturnValue( 'loading' );
+			try {
+				cleanupIndex = initializeLegacyIndexLinks();
+				await loadInstalledDependency( true );
+				window.dispatchEvent( new Event( 'load' ) );
+				await new Promise( ( resolve ) => window.setTimeout( resolve, 0 ) );
+				expect(
+					document
+						.getElementById( 'category-two' )
+						.classList.contains( 'is-hidden' )
+				).toBe( false );
+				expect(
+					document
+						.querySelector( '[aria-controls="category-two"]' )
+						.getAttribute( 'aria-selected' )
+				).toBe( 'true' );
+				expect(
+					document
+						.getElementById( 'entry-category-42' )
+						.getAttribute( 'aria-expanded' )
+				).toBe( 'true' );
+				expect(
+					document.getElementById( 'entry-category-42-section' ).style.display
+				).not.toBe( 'none' );
+				expect(
+					document.getElementById( 'entry' ).getAttribute( 'aria-expanded' )
+				).toBe( 'false' );
+				expect( window.location.hash ).toBe( '#entry-category-42' );
+			} finally {
+				readyState.mockRestore();
+			}
+		}
+		// eslint-disable-next-line jest/expect-expect -- Assertions are in the named test callback.
+		it(
+			'opens the duplicate in its hidden category tab on initial load',
+			opensDuplicateInHiddenTabOnLoad
+		);
+
+		/**
+		 * Reveal the selected category before hash handlers and unchanged-link clicks.
+		 *
+		 * @return {Promise<void>} Resolves after loading the installed dependency scripts.
+		 */
+		async function revealsTabBeforeEntryNavigation() {
+			createCategoryTabs();
+			await loadInstalledDependency( true );
+			window.dispatchEvent( new Event( 'load' ) );
+			cleanupIndex = initializeLegacyIndexLinks();
+			window.history.replaceState( null, '', '#entry-category-42' );
+			window.dispatchEvent( new window.HashChangeEvent( 'hashchange' ) );
+			expect(
+				document.getElementById( 'category-two' ).classList.contains( 'is-hidden' )
+			).toBe( false );
+			expect(
+				document
+					.getElementById( 'entry-category-42' )
+					.getAttribute( 'aria-expanded' )
+			).toBe( 'true' );
+			document.querySelector( '[aria-controls="category-one"]' ).click();
+			expect(
+				document.getElementById( 'category-two' ).classList.contains( 'is-hidden' )
+			).toBe( true );
+			const link = document.createElement( 'a' );
+			link.href = '#entry-category-42';
+			document.body.append( link );
+			link.click();
+			expect(
+				document.getElementById( 'category-two' ).classList.contains( 'is-hidden' )
+			).toBe( false );
+			expect(
+				document.getElementById( 'entry' ).getAttribute( 'aria-expanded' )
+			).toBe( 'false' );
+		}
+		// eslint-disable-next-line jest/expect-expect -- Assertions are in the named test callback.
+		it(
+			'reveals the duplicate category on hash changes and repeated links',
+			revealsTabBeforeEntryNavigation
+		);
 
 		it( 'opens and closes once with Enter and Space using the real dependency', async () => {
 			await loadInstalledDependency();
