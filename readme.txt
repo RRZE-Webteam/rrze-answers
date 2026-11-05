@@ -4,7 +4,7 @@ Tags: faq, glossary, synonym, placeholder, shortcode, block, widget
 Requires at least: 7.0
 Tested up to: 7.1.4
 Requires PHP: 8.2
-Stable tag: 2.0.2
+Stable tag: 2.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -151,10 +151,16 @@ https://developer.wordpress.org/rest-api/using-the-rest-api/pagination/
 
 == Changelog ==
 
+= 2.0.3 =
+* Repair required legacy FAQ parents even when their slug collides with an existing FAQ category. Keep the existing category's slug and give only the migrating legacy parent a unique slug based on <old-slug>-legacy-<term-id>, with a further suffix if needed.
+* Preserve category identities, parent links, metadata and FAQ assignments without merging categories. The reported 24-category structure reaches 26 categories after resolving the parent slug collision; 36 unrelated legacy categories remain unchanged.
+* Retain completed repair states and existing 24-hour retry deadlines. No network-wide rerun, external requests or import-configuration changes are introduced.
+
 = 2.0.2 =
 * Restore required legacy FAQ parent categories omitted by the former FAQ migration, preserving category IDs and content assignments.
 * Run the repair once per visited site, with concurrency protection, interruption recovery and site-local cache invalidation; no network-wide migration or external requests.
 * Report unresolved conflicts only to super administrators in the affected site's dashboard. Import configuration, FAQ content and other taxonomies remain unchanged.
+* Stop before category changes when a required legacy parent's slug collides with another FAQ category; automatic slug disambiguation is added in 2.0.3.
 
 == License ==
 

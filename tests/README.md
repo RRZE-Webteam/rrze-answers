@@ -51,21 +51,33 @@ Unmocked external WordPress HTTP requests are blocked by the test bootstrap.
 Earlier HTTP fixtures and loopback/localhost requests remain available. The
 category repair itself performs no HTTP requests.
 
-## FAQ category hierarchy repair (2.0.2)
+## FAQ category hierarchy repair (2.0.3)
 
 `FaqCategoryHierarchyRepairTest` reconstructs the reported category structure
 using synthetic data: 24 current categories, two legacy parents, three deeper
-descendants and 36 unrelated legacy categories. WordPress's real hierarchical
-term list table shows only the independent root before repair and all 26 current
-categories afterwards. Raw before/after snapshots verify that only the two
-parent taxonomy names change; the 67 FAQ posts, source metadata, relationships,
-term metadata and import settings are preserved.
+descendants and 36 unrelated legacy categories. The 2.0.3 fixture includes the
+confirmed `faq-it` slug collision between a legacy parent and an existing FAQ
+category. The real WordPress hierarchical term list shows only
+the independent root before repair and all 26 categories after the collision
+is resolved and the two parents are migrated.
+
+Raw before/after snapshots allow only the two parent taxonomy changes and the
+colliding legacy parent's new unique slug. The existing category keeps its
+`faq-it` slug. The replacement starts with `<old-slug>-legacy-<term-id>` and
+receives a further suffix if needed. IDs, names, descriptions, parent links,
+the 67 FAQ posts, source metadata, relationships, term metadata and import
+settings are preserved; categories are not merged or recreated.
+
+The original 2.0.2 fixture used distinct slugs. Its successful 26-category
+result did not cover the subsequently confirmed collision: version 2.0.2
+correctly stopped that case before changing any categories. The historical
+results below therefore do not establish that 2.0.3's collision handling passes.
 
 The regression cases cover required ancestor chains, prefilled caches, direct
 FAQ counts, absent legacy taxonomy registration, existing migration flags,
-healthy sites, malformed hierarchies and incompatible relationships. Fault
-injection exercises failed SQL, failed journal reads/writes, failed finalization,
-interrupted repairs, changed snapshots and failed completion markers.
+healthy sites, slug disambiguation, malformed hierarchies and incompatible
+relationships. Fault injection exercises failed SQL, failed journal reads/writes,
+failed finalization, interrupted repairs, changed snapshots and failed completion markers.
 Installation and suspended cache invalidation bypass the repair entirely.
 
 `FaqCategoryRepairStateTest` checks the cached completion gate, retry deadlines,
@@ -75,6 +87,9 @@ transactions, because MySQL temporary tables cannot be self-joined in the
 guarded statements. The category test deliberately reuses identical numeric
 IDs on different sites and verifies that a site switch alone starts no repair.
 No network traversal or 1,100-site fixture is needed to check that isolation.
+Completed repair gates and existing 24-hour retry deadlines remain valid across
+the 2.0.3 update; installing it does not trigger a network-wide rerun or bypass
+the previous waiting period.
 
 Run only these regressions with:
 
@@ -82,8 +97,35 @@ Run only these regressions with:
 vendor/bin/phpunit --filter 'FaqCategory(HierarchyRepair|RepairState)Test'
 ```
 
-Local validation on **2026-11-05**, with **WordPress 7.1.4 / PHP 8.5.12** in
-multisite mode against the isolated `rrze_answers_tests` database:
+### Version 2.0.3 validation
+
+Local validation of **2.0.3** on **2026-11-05**, with **WordPress 7.1.4 / PHP 8.5.12**
+in multisite mode against the isolated `rrze_answers_tests` database:
+
+| Check | Result |
+| --- | --- |
+| Targeted category/state suite | Passed: **58 tests, 952 assertions** |
+| Complete PHP suite (`vendor/bin/phpunit`) | Passed: **255 tests, 2,349 assertions** |
+| PHPStan, configured project scope | Passed: **no errors** |
+| Diff whitespace and package-version consistency | Passed |
+
+The new cases include the confirmed production slug collision, preservation of
+the existing category's URL and 35 direct FAQ assignments, globally occupied
+replacement slugs, duplicate legacy ancestor slugs, a competing slug claim just
+before SQL, old/new pending journal states and inconsistent partial states.
+Non-InnoDB term-table metadata is simulated without changing actual storage
+engines: it must stop the combined taxonomy/slug update before any category write.
+The common update is verified using stored row values rather than the affected-row
+count, so `MYSQL_CLIENT_FOUND_ROWS` cannot misclassify a successful update.
+
+PHPStan ran serially with `--debug --memory-limit=2G --no-progress`. The existing
+external HTTP guard remained active. No production access, publication or
+deployment was performed; the production rows were supplied by the user.
+
+### Historical version 2.0.2 validation
+
+Local validation of **2.0.2** on **2026-11-05**, with **WordPress 7.1.4 / PHP 8.5.12**
+in multisite mode against the isolated `rrze_answers_tests` database:
 
 | Check | Result |
 | --- | --- |
