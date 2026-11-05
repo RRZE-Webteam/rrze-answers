@@ -1321,3 +1321,7 @@ msgstr "Tour überspringen"
 #: src/js/setup-tour-step.js
 msgid "Finish"
 msgstr "Fertig"
+
+#: includes/Common/Migrations/FaqCategoryHierarchyRepair.php
+msgid "RRZE Answers could not complete the automatic FAQ category repair. Please inspect the category hierarchy. A new attempt will be made after the retry interval."
+msgstr "RRZE Answers konnte die automatische Reparatur der FAQ-Kategorien nicht abschließen. Bitte prüfen Sie die Kategoriehierarchie. Nach Ablauf der Wartefrist wird ein neuer Versuch unternommen."

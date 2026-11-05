@@ -47,6 +47,57 @@ composer test
 
 The suite runs WordPress in multisite mode through `phpunit.xml.dist`.
 
+Unmocked external WordPress HTTP requests are blocked by the test bootstrap.
+Earlier HTTP fixtures and loopback/localhost requests remain available. The
+category repair itself performs no HTTP requests.
+
+## FAQ category hierarchy repair (2.0.2)
+
+`FaqCategoryHierarchyRepairTest` reconstructs the reported category structure
+using synthetic data: 24 current categories, two legacy parents, three deeper
+descendants and 36 unrelated legacy categories. WordPress's real hierarchical
+term list table shows only the independent root before repair and all 26 current
+categories afterwards. Raw before/after snapshots verify that only the two
+parent taxonomy names change; the 67 FAQ posts, source metadata, relationships,
+term metadata and import settings are preserved.
+
+The regression cases cover required ancestor chains, prefilled caches, direct
+FAQ counts, absent legacy taxonomy registration, existing migration flags,
+healthy sites, malformed hierarchies and incompatible relationships. Fault
+injection exercises failed SQL, failed journal reads/writes, failed finalization,
+interrupted repairs, changed snapshots and failed completion markers.
+Installation and suspended cache invalidation bypass the repair entirely.
+
+`FaqCategoryRepairStateTest` checks the cached completion gate, retry deadlines,
+busy/expired leases, stale owners and writes fenced by an ownership token.
+The multisite cases use real secondary-site tables created before test
+transactions, because MySQL temporary tables cannot be self-joined in the
+guarded statements. The category test deliberately reuses identical numeric
+IDs on different sites and verifies that a site switch alone starts no repair.
+No network traversal or 1,100-site fixture is needed to check that isolation.
+
+Run only these regressions with:
+
+```sh
+vendor/bin/phpunit --filter 'FaqCategory(HierarchyRepair|RepairState)Test'
+```
+
+Local validation on **2026-11-05**, with **WordPress 7.1.4 / PHP 8.5.12** in
+multisite mode against the isolated `rrze_answers_tests` database:
+
+| Check | Result |
+| --- | --- |
+| Complete PHP suite (`vendor/bin/phpunit`) | Passed: **246 tests, 2,163 assertions** |
+| PHPStan, configured project scope | Passed: **no errors** |
+| PHP syntax and diff whitespace checks | Passed |
+| German notice catalogs | Format and MO/PHP round-trip checks passed; previous translations retained |
+
+PHPStan ran serially with `--debug --memory-limit=2G --no-progress`, avoiding the
+sandbox's local worker-port restriction. The test evidence uses synthetic
+records shaped like the supplied production observations. No live REST requests,
+production database access, publication or deployment were performed. The
+editor's JSON error remains outside this release's repair scope.
+
 ## Upgrade from v1.4.6
 
 ```sh

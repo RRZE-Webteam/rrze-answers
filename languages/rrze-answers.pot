@@ -1082,3 +1082,7 @@ msgstr ""
 #: includes/Common/Settings/Settings.php:562
 msgid "You do not have enough permissions to do that."
 msgstr ""
+
+#: includes/Common/Migrations/FaqCategoryHierarchyRepair.php
+msgid "RRZE Answers could not complete the automatic FAQ category repair. Please inspect the category hierarchy. A new attempt will be made after the retry interval."
+msgstr ""

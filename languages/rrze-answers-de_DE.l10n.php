@@ -260,5 +260,6 @@ return array (
     'Previous' => 'Zurück',
     'Skip tour' => 'Tour überspringen',
     'Finish' => 'Fertig',
+    'RRZE Answers could not complete the automatic FAQ category repair. Please inspect the category hierarchy. A new attempt will be made after the retry interval.' => 'RRZE Answers konnte die automatische Reparatur der FAQ-Kategorien nicht abschließen. Bitte prüfe die Kategoriehierarchie. Nach Ablauf der Wartefrist wird ein neuer Versuch unternommen.',
   ),
 );

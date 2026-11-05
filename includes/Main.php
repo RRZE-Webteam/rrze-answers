@@ -9,6 +9,7 @@ use RRZE\Answers\Defaults;
 use RRZE\Answers\Common\{
     HtmlSanitizer,
     Content\PlaceholderRenderer,
+    Migrations\FaqCategoryHierarchyRepair,
     TabsRenderer,
     Tools,
     API\RESTAPI,
@@ -71,6 +72,9 @@ class Main
         // same init cycle, after the textdomain has loaded at priority -2.
         add_action('init', [$this, 'cpt'], -1);
         add_action('init', [$this, 'onInit']);
+        $faqCategoryRepair = new FaqCategoryHierarchyRepair();
+        add_action('init', [$faqCategoryRepair, 'run'], 20);
+        add_action('admin_notices', [$faqCategoryRepair, 'renderNotice']);
         add_filter('wp_kses_allowed_html', [HtmlSanitizer::class, 'allowLegacyPlaceholder'], 10, 2);
         add_filter('the_content', [$this, 'renderInlinePlaceholders'], 9);
     }
