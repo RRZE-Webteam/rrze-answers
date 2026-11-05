@@ -173,6 +173,42 @@ Notes:
 
 ---
 
+## FAQ category hierarchy repair in 2.0.2
+
+The former FAQ migration renamed only categories directly assigned to FAQ posts.
+Empty parent categories could remain in `faq_category` while their children were
+already in `rrze_faq_category`. Such children were counted but disappeared from
+WordPress's hierarchical category list.
+
+Answers now repairs only the legacy ancestors required by existing FAQ categories.
+Their IDs, names, slugs, parent values, metadata and post relationships are retained.
+For the diagnosed structure, 24 current categories plus two recovered parents
+produce 26 visible categories; 36 unrelated legacy categories remain untouched.
+The repair does not alter FAQ posts, imported-source settings, tags or glossary.
+
+Each site is checked on its next WordPress request, after taxonomy registration.
+There is no network-wide loop, extra cron job, remote request or global cache flush.
+Completed sites use a small autoloaded status value and perform no further repair
+queries. A ten-minute site-local lease protects concurrent requests. A durable
+pending record allows cache/count work to resume after an interrupted SQL change.
+Detected failures retry on the first request after 24 hours; no success flag is
+written while work remains unfinished.
+
+Conflicting slugs, broken/cyclic parent chains, shared term identities, remaining
+legacy children or unexpected post relationships stop the repair. Only super
+administrators see a diagnostic notice in the affected site's dashboard. The
+legacy migration flags are not reset or replayed. Diagnostic state is separate
+from the `rrze-answers` settings option:
+
+- `rrze_answers_faq_category_repair`: version, status and retry time (autoloaded).
+- `rrze_answers_faq_category_repair_details`: pending rows/object IDs or error details.
+- `rrze_answers_faq_category_repair_lock`: temporary lease, normally removed after an attempt.
+  If saving the retry status fails, the lease is retained until its ten-minute expiry.
+
+Inspect an unresolved site's state and preserve its pending record before any
+manual correction. The editor JSON issue is outside this category repair.
+Coverage and local results are documented in [the test guide](tests/README.md#faq-category-hierarchy-repair-202).
+
 ## Synchronization Across Domains
 
 External domains can be added and synchronized via:

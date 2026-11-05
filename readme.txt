@@ -2,9 +2,9 @@
 Contributors: rrze-webteam
 Tags: faq, glossary, synonym, placeholder, shortcode, block, widget
 Requires at least: 7.0
-Tested up to: 7.1.3
+Tested up to: 7.1.4
 Requires PHP: 8.2
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -148,6 +148,13 @@ Glossary:
 
 Pagination:
 https://developer.wordpress.org/rest-api/using-the-rest-api/pagination/
+
+== Changelog ==
+
+= 2.0.2 =
+* Restore required legacy FAQ parent categories omitted by the former FAQ migration, preserving category IDs and content assignments.
+* Run the repair once per visited site, with concurrency protection, interruption recovery and site-local cache invalidation; no network-wide migration or external requests.
+* Report unresolved conflicts only to super administrators in the affected site's dashboard. Import configuration, FAQ content and other taxonomies remain unchanged.
 
 == License ==
 
