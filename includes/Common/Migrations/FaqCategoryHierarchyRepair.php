@@ -194,25 +194,119 @@ final class FaqCategoryHierarchyRepair
             throw new RuntimeException('FAQ parent ' . $conflicts[0]['term_id'] . ' has an ambiguous shared term identity.');
         }
         $conflicts = $this->queryRows($wpdb->prepare(
-            "SELECT candidate.term_id, other.term_id AS other_id
+            "SELECT candidate.term_id, other.term_id AS other_id, tt.taxonomy
              FROM {$wpdb->terms} candidate
              INNER JOIN {$wpdb->terms} other ON other.slug = candidate.slug AND other.term_id <> candidate.term_id
              INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_id = other.term_id
              WHERE candidate.term_id IN ($ids)
-               AND (tt.taxonomy = %s OR (tt.taxonomy = %s AND tt.term_id IN ($ids))) LIMIT 1",
+               AND (tt.taxonomy = %s OR (tt.taxonomy = %s AND tt.term_id IN ($ids)))",
             self::TARGET,
             self::LEGACY
         ));
-        if ($conflicts !== []) {
-            throw new RuntimeException('FAQ parent ' . $conflicts[0]['term_id'] . ' has a slug collision with term ' . $conflicts[0]['other_id'] . '.');
-        }
-
         $candidates = array_values($candidates);
+        if ($conflicts !== []) {
+            $candidates = $this->assignTargetSlugs($candidates, $conflicts);
+        }
         return ['rows' => $candidates, 'object_ids' => $this->linkedObjects($candidates)];
     }
 
     /**
+     * Preserve existing target slugs and rename only conflicting legacy ancestors.
+     *
+     * Among colliding candidates, the first taxonomy row keeps the old slug unless
+     * a current FAQ category already owns it. New slugs are checked globally and
+     * against this plan using the terms column's actual database collation.
+     *
+     * @param array<int, array<string, mixed>> $rows Ordered legacy candidates.
+     * @param array<int, array<string, mixed>> $conflicts Colliding term pairs.
+     * @return array<int, array<string, mixed>> Original snapshots with optional target_slug.
+     */
+    private function assignTargetSlugs(array $rows, array $conflicts): array
+    {
+        global $wpdb;
+
+        $this->requireTransactionalTermTables();
+        $positions = array_flip(array_column($rows, 'term_id'));
+        $rename = [];
+        foreach ($conflicts as $conflict) {
+            if ($conflict['taxonomy'] === self::TARGET
+                || $positions[(int) $conflict['other_id']] < $positions[(int) $conflict['term_id']]) {
+                $rename[(int) $conflict['term_id']] = true;
+            }
+        }
+        $metadata = $this->queryRows($wpdb->prepare(
+            "SELECT COLLATION(slug) AS collation_name, CHARSET(slug) AS charset_name
+             FROM {$wpdb->terms} WHERE term_id = %d", $rows[0]['term_id']
+        ));
+        $collation = $metadata[0]['collation_name'] ?? '';
+        $charset = $metadata[0]['charset_name'] ?? '';
+        if (!preg_match('/^[a-z0-9_]+$/D', $collation) || !preg_match('/^[a-z0-9_]+$/D', $charset)) {
+            throw new RuntimeException('The FAQ slug database collation could not be determined.');
+        }
+        $reserved = [];
+        foreach ($rows as &$row) {
+            if (!isset($rename[$row['term_id']])) {
+                continue;
+            }
+            for ($attempt = 0; $attempt < 100; $attempt++) {
+                $suffix = '-legacy-' . $row['term_id'] . ($attempt === 0 ? '' : '-' . ($attempt + 1));
+                $slug = _truncate_post_slug($row['slug'], 200 - strlen($suffix)) . $suffix;
+                $occupied = $this->queryRows($wpdb->prepare(
+                    "SELECT term_id FROM {$wpdb->terms} WHERE slug = %s AND term_id <> %d LIMIT 1",
+                    $slug, $row['term_id']
+                ));
+                if ($occupied !== []) {
+                    continue;
+                }
+                if ($reserved !== []) {
+                    $matches = $this->queryRows($wpdb->prepare(
+                        "SELECT 1 AS collision WHERE CONVERT(%s USING $charset) COLLATE $collation IN ("
+                        . implode(', ', array_fill(0, count($reserved), '%s')) . ')',
+                        $slug, ...$reserved
+                    ));
+                    if ($matches !== []) {
+                        continue;
+                    }
+                }
+                $row['target_slug'] = $slug;
+                $reserved[] = $slug;
+                break;
+            }
+            if (!isset($row['target_slug'])) {
+                throw new RuntimeException('No available replacement slug was found for FAQ parent ' . $row['term_id'] . '.');
+            }
+        }
+        return $rows;
+    }
+
+    /**
+     * Require atomic storage before a statement modifies both terms and taxonomy.
+     *
+     * @return void
+     * @throws RuntimeException If either term table is not an InnoDB table.
+     */
+    private function requireTransactionalTermTables(): void
+    {
+        global $wpdb;
+
+        $tables = $this->queryRows($wpdb->prepare(
+            'SHOW TABLE STATUS WHERE Name IN (%s, %s)', $wpdb->terms, $wpdb->term_taxonomy
+        ));
+        if (count($tables) !== 2) {
+            throw new RuntimeException('The FAQ term table engines could not be verified.');
+        }
+        foreach ($tables as $table) {
+            if (strtolower((string) ($table['Engine'] ?? '')) !== 'innodb') {
+                throw new RuntimeException('Renaming conflicting FAQ parent slugs requires InnoDB term tables.');
+            }
+        }
+    }
+
+    /**
      * Move all validated parents in one statement, fenced by lease and snapshot.
+     *
+     * Conflicting legacy slugs change in that same atomic statement. Existing
+     * target categories are never part of the update's destination selection.
      *
      * @param array<int, array<string, mixed>> $rows Expected legacy rows.
      * @param FaqCategoryRepairState $state Current lease owner.
@@ -223,6 +317,9 @@ final class FaqCategoryHierarchyRepair
         global $wpdb;
 
         $conditions = [];
+        $slugCases = [];
+        $slugConflicts = [];
+        $targetConflicts = [];
         foreach ($rows as $row) {
             $conditions[] = $wpdb->prepare(
                 '(original.term_taxonomy_id = %d AND original.term_id = %d AND original.parent = %d
@@ -233,25 +330,54 @@ final class FaqCategoryHierarchyRepair
                 $row['term_taxonomy_id'], $row['term_id'], $row['parent'], self::LEGACY,
                 $row['description'], $row['name'], $row['slug']
             );
+            if (isset($row['target_slug']) && $row['target_slug'] !== $row['slug']) {
+                $slugCases[] = $wpdb->prepare('WHEN %d THEN %s', $row['term_id'], $row['target_slug']);
+                $slugConflicts[] = $wpdb->prepare('(slug = %s AND term_id <> %d)', $row['target_slug'], $row['term_id']);
+            }
+            $targetConflicts[] = $wpdb->prepare(
+                '(existing_term.slug = %s AND existing_term.term_id <> %d)',
+                $row['target_slug'] ?? $row['slug'], $row['term_id']
+            );
         }
         $ids = $this->idList($this->taxonomyIds($rows));
         // The aggregate materializes the snapshot, so a changed candidate makes
         // the whole UPDATE a no-op rather than leaving a partially moved set.
         $snapshot = implode(' OR ', $conditions);
-        $changed = $this->execute($wpdb->prepare(
+        $targetGuard = $wpdb->prepare(
+            "INNER JOIN (SELECT COUNT(*) AS conflicts FROM {$wpdb->terms} existing_term
+             INNER JOIN {$wpdb->term_taxonomy} existing_taxonomy ON existing_taxonomy.term_id = existing_term.term_id
+             WHERE existing_taxonomy.taxonomy = %s AND (" . implode(' OR ', $targetConflicts)
+            . ')) AS target_guard ON target_guard.conflicts = 0', self::TARGET
+        );
+        $termJoin = '';
+        $slugGuard = '';
+        $slugAssignment = '';
+        if ($slugCases !== []) {
+            $termJoin = "INNER JOIN {$wpdb->terms} destination_term ON destination_term.term_id = destination.term_id";
+            $slugGuard = "INNER JOIN (SELECT COUNT(*) AS conflicts FROM {$wpdb->terms} WHERE "
+                . implode(' OR ', $slugConflicts) . ') AS slug_guard ON slug_guard.conflicts = 0';
+            $slugAssignment = ', destination_term.slug = CASE destination.term_id '
+                . implode(' ', $slugCases) . ' ELSE destination_term.slug END';
+        }
+        $this->execute($wpdb->prepare(
             "UPDATE {$wpdb->term_taxonomy} AS destination
+             $termJoin
              INNER JOIN (
                  SELECT COUNT(*) AS matches FROM {$wpdb->term_taxonomy} original
                  INNER JOIN {$wpdb->terms} term ON term.term_id = original.term_id
                  WHERE $snapshot
              ) AS validated ON validated.matches = %d
+             $slugGuard
+             $targetGuard
              INNER JOIN {$wpdb->options} AS repair_lock ON " . $state->lockCondition() . "
-             SET destination.taxonomy = %s
+             SET destination.taxonomy = %s $slugAssignment
              WHERE destination.taxonomy = %s AND destination.term_taxonomy_id IN ($ids)",
             count($rows), self::TARGET, self::LEGACY
         ));
         $state->assertOwned();
-        if ($changed !== count($rows)) {
+        // Verify actual state rather than affected rows: MYSQL_CLIENT_FOUND_ROWS
+        // can count unchanged joined terms differently from the default client.
+        if ($this->journalTaxonomy(['rows' => $rows]) !== self::TARGET) {
             throw new RuntimeException('The FAQ parent snapshot changed before it could be migrated.');
         }
     }
@@ -270,6 +396,7 @@ final class FaqCategoryHierarchyRepair
         if ($this->journalTaxonomy($details) !== self::TARGET) {
             throw new RuntimeException('The FAQ parents have not all reached the target taxonomy.');
         }
+        $this->assertTargetSlugs($details['rows']);
         $remaining = $this->inspect();
         if ($remaining['rows'] !== []) {
             throw new RuntimeException('The FAQ hierarchy changed during repair; additional legacy ancestors remain.');
@@ -328,6 +455,7 @@ final class FaqCategoryHierarchyRepair
         if ($this->journalTaxonomy($details) !== self::TARGET) {
             throw new RuntimeException('The FAQ parent taxonomy changed during final verification.');
         }
+        $this->assertTargetSlugs($details['rows']);
         $state->clearDetails();
         $state->setStatus('done');
     }
@@ -395,6 +523,39 @@ final class FaqCategoryHierarchyRepair
     }
 
     /**
+     * Verify final slug uniqueness before and after repeatable cache/count work.
+     *
+     * Replacement slugs remain globally unique; unchanged slugs only need to be
+     * unique within the FAQ taxonomy, preserving unrelated historical terms.
+     *
+     * @param array<int, array<string, mixed>> $rows Migrated row snapshots.
+     * @return void
+     * @throws RuntimeException If another term now occupies a migrated slug.
+     */
+    private function assertTargetSlugs(array $rows): void
+    {
+        global $wpdb;
+
+        $conditions = [];
+        foreach ($rows as $row) {
+            $condition = $wpdb->prepare(
+                '(t.slug = %s AND t.term_id <> %d', $row['target_slug'] ?? $row['slug'], $row['term_id']
+            );
+            if (!isset($row['target_slug'])) {
+                $condition .= $wpdb->prepare(' AND tt.taxonomy = %s', self::TARGET);
+            }
+            $conditions[] = $condition . ')';
+        }
+        $conflicts = $this->queryRows(
+            "SELECT t.term_id FROM {$wpdb->terms} t LEFT JOIN {$wpdb->term_taxonomy} tt ON tt.term_id = t.term_id
+             WHERE " . implode(' OR ', $conditions) . ' LIMIT 1'
+        );
+        if ($conflicts !== []) {
+            throw new RuntimeException('A migrated FAQ parent slug is now occupied by another term.');
+        }
+    }
+
+    /**
      * Validate durable row identities and determine whether SQL already committed.
      *
      * @param array<string, mixed> $details Durable pending snapshot.
@@ -414,9 +575,17 @@ final class FaqCategoryHierarchyRepair
         $byId = array_column($actual, null, 'term_taxonomy_id');
         $taxonomies = [];
         foreach ($expected as $row) {
+            if (array_key_exists('target_slug', $row)
+                && (!is_string($row['target_slug']) || $row['target_slug'] === '' || strlen($row['target_slug']) > 200)) {
+                throw new RuntimeException('The pending FAQ parent target slug is invalid.');
+            }
             $found = $byId[$row['term_taxonomy_id']] ?? [];
             foreach (['term_taxonomy_id', 'term_id', 'parent', 'name', 'slug', 'description'] as $field) {
-                if (!array_key_exists($field, $row) || !array_key_exists($field, $found) || $found[$field] !== $row[$field]) {
+                $value = $row[$field] ?? null;
+                if ($field === 'slug' && ($found['taxonomy'] ?? '') === self::TARGET) {
+                    $value = $row['target_slug'] ?? $value;
+                }
+                if (!array_key_exists($field, $row) || !array_key_exists($field, $found) || $found[$field] !== $value) {
                     throw new RuntimeException('Pending FAQ parent ' . ($row['term_id'] ?? '?') . ' changed unexpectedly.');
                 }
             }

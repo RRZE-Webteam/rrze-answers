@@ -173,18 +173,35 @@ Notes:
 
 ---
 
-## FAQ category hierarchy repair in 2.0.2
+## FAQ category hierarchy repair in 2.0.3
 
 The former FAQ migration renamed only categories directly assigned to FAQ posts.
 Empty parent categories could remain in `faq_category` while their children were
 already in `rrze_faq_category`. Such children were counted but disappeared from
 WordPress's hierarchical category list.
 
-Answers now repairs only the legacy ancestors required by existing FAQ categories.
-Their IDs, names, slugs, parent values, metadata and post relationships are retained.
-For the diagnosed structure, 24 current categories plus two recovered parents
-produce 26 visible categories; 36 unrelated legacy categories remain untouched.
-The repair does not alter FAQ posts, imported-source settings, tags or glossary.
+Version 2.0.2 introduced a repair for only the legacy ancestors required by
+existing FAQ categories. It stopped before changing categories when a required
+legacy parent's slug collided with an existing FAQ category. The subsequently
+confirmed `faq-it` collision therefore prevented that site's repair in 2.0.2.
+
+Version 2.0.3 keeps the existing FAQ category's slug and assigns a unique slug
+only to the migrating legacy parent that has a collision. The replacement uses
+`<old-slug>-legacy-<term-id>`, with a further suffix if that value is already
+taken. Categories are not merged or recreated. IDs, names, descriptions, parent
+values, metadata and post relationships remain intact; categories without a
+slug collision retain their slugs. Existing shortcodes such as
+`[faq category="faq-it"]` continue selecting the existing category.
+
+The combined taxonomy/slug update requires InnoDB for the current site's
+`terms` and `term_taxonomy` tables. Other storage engines cause a diagnostic
+stop before category changes; the repair does not convert database engines.
+
+For the diagnosed structure, resolving the parent slug collision and recovering
+the two parents makes all 26 FAQ categories reachable instead of the 24 current
+categories with missing parents. The 36 unrelated legacy categories remain
+untouched. The repair does not alter FAQ posts, imported-source settings, tags
+or glossary.
 
 Each site is checked on its next WordPress request, after taxonomy registration.
 There is no network-wide loop, extra cron job, remote request or global cache flush.
@@ -192,13 +209,15 @@ Completed sites use a small autoloaded status value and perform no further repai
 queries. A ten-minute site-local lease protects concurrent requests. A durable
 pending record allows cache/count work to resume after an interrupted SQL change.
 Detected failures retry on the first request after 24 hours; no success flag is
-written while work remains unfinished.
+written while work remains unfinished. Updating to 2.0.3 retains existing
+completed states and retry deadlines: completed sites are not scanned again,
+and a site blocked by 2.0.2 retries after its existing waiting period.
 
-Conflicting slugs, broken/cyclic parent chains, shared term identities, remaining
-legacy children or unexpected post relationships stop the repair. Only super
-administrators see a diagnostic notice in the affected site's dashboard. The
-legacy migration flags are not reset or replayed. Diagnostic state is separate
-from the `rrze-answers` settings option:
+Broken/cyclic parent chains, shared term identities, remaining legacy children,
+unexpected post relationships or inconsistent pending records stop the repair.
+Only super administrators see a diagnostic notice in the affected site's
+dashboard. The legacy migration flags are not reset or replayed. Diagnostic
+state is separate from the `rrze-answers` settings option:
 
 - `rrze_answers_faq_category_repair`: version, status and retry time (autoloaded).
 - `rrze_answers_faq_category_repair_details`: pending rows/object IDs or error details.
@@ -207,7 +226,7 @@ from the `rrze-answers` settings option:
 
 Inspect an unresolved site's state and preserve its pending record before any
 manual correction. The editor JSON issue is outside this category repair.
-Coverage and local results are documented in [the test guide](tests/README.md#faq-category-hierarchy-repair-202).
+Coverage and local results are documented in [the test guide](tests/README.md#faq-category-hierarchy-repair-203).
 
 ## Synchronization Across Domains
 

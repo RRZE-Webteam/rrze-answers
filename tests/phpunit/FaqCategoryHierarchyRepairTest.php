@@ -117,6 +117,18 @@ final class FaqCategoryHierarchyRepairTest extends WP_UnitTestCase
 
         self::assertCount(24, get_terms(['taxonomy' => self::CURRENT, 'hide_empty' => false]));
         self::assertSame([$fixture['visible_root']['term_id']], $this->visibleCategoryIds());
+        $existingLink = get_term_link($fixture['visible_root']['term_id'], self::CURRENT);
+        self::assertNotWPError($existingLink);
+        $existingSelection = get_posts([
+            'post_type' => 'rrze_faq',
+            'post_status' => 'publish',
+            'numberposts' => -1,
+            'fields' => 'ids',
+            'orderby' => 'ID',
+            'order' => 'ASC',
+            'tax_query' => [['taxonomy' => self::CURRENT, 'field' => 'slug', 'terms' => ['faq-it'], 'include_children' => false]],
+        ]);
+        self::assertCount(35, $existingSelection);
         $before = $this->snapshotTables();
         $expected = $before;
         foreach ($expected['term_taxonomy'] as &$row) {
@@ -125,11 +137,17 @@ final class FaqCategoryHierarchyRepairTest extends WP_UnitTestCase
             }
         }
         unset($row);
+        foreach ($expected['terms'] as &$row) {
+            if ((int) $row['term_id'] === $fixture['renamed_parent']['term_id']) {
+                $row['slug'] = 'faq-it-legacy-' . $fixture['renamed_parent']['term_id'];
+            }
+        }
+        unset($row);
 
         (new FaqCategoryHierarchyRepair())->run();
 
         $this->assertCompleted();
-        self::assertSame($expected, $this->snapshotTables(), 'Only the two parent taxonomy names may change.');
+        self::assertSame($expected, $this->snapshotTables(), 'Only the two parent taxonomies and the colliding legacy slug may change.');
         self::assertCount(26, $this->visibleCategoryIds());
         self::assertCount(36, $this->taxonomyRows(self::LEGACY));
         self::assertSame($settings, get_option('rrze-answers'));
@@ -139,6 +157,19 @@ final class FaqCategoryHierarchyRepairTest extends WP_UnitTestCase
         foreach ($fixture['post_ids'] as $postId) {
             self::assertSame('website', get_post_meta($postId, 'source', true));
         }
+        self::assertSame($existingLink, get_term_link($fixture['visible_root']['term_id'], self::CURRENT));
+        $existingCategory = get_term_by('slug', 'faq-it', self::CURRENT);
+        self::assertInstanceOf(\WP_Term::class, $existingCategory);
+        self::assertSame($fixture['visible_root']['term_id'], $existingCategory->term_id);
+        self::assertSame($existingSelection, get_posts([
+            'post_type' => 'rrze_faq',
+            'post_status' => 'publish',
+            'numberposts' => -1,
+            'fields' => 'ids',
+            'orderby' => 'ID',
+            'order' => 'ASC',
+            'tax_query' => [['taxonomy' => self::CURRENT, 'field' => 'slug', 'terms' => ['faq-it'], 'include_children' => false]],
+        ]));
     }
 
     /**
@@ -166,6 +197,204 @@ final class FaqCategoryHierarchyRepairTest extends WP_UnitTestCase
     }
 
     /**
+     * Avoid replacement slugs already used by another taxonomy or unrelated legacy term.
+     *
+     * @return void
+     */
+    public function testCollidingAncestorSlugUsesAGloballyUnusedFallback(): void
+    {
+        $pair = $this->createPair('Slug fallback branch');
+        $target = $this->createTerm('Existing FAQ IT', self::CURRENT);
+        $this->forceSlug($target, 'faq-it', self::CURRENT);
+        $this->forceSlug($pair['parent'], 'faq-it', self::LEGACY);
+        $base = 'faq-it-legacy-' . $pair['parent']['term_id'];
+        $tag = $this->createTerm('Reserved replacement tag', 'rrze_faq_tag');
+        $this->forceSlug($tag, $base, 'rrze_faq_tag');
+        $unrelated = $this->createTerm('Reserved replacement legacy category', self::LEGACY);
+        $this->forceSlug($unrelated, $base . '-2', self::LEGACY);
+        $targetLink = get_term_link($target['term_id'], self::CURRENT);
+        self::assertNotWPError($targetLink);
+        unregister_taxonomy(self::LEGACY);
+        $expected = $this->snapshotTables();
+        foreach ($expected['term_taxonomy'] as &$row) {
+            if ((int) $row['term_taxonomy_id'] === $pair['parent']['term_taxonomy_id']) {
+                $row['taxonomy'] = self::CURRENT;
+            }
+        }
+        unset($row);
+        foreach ($expected['terms'] as &$row) {
+            if ((int) $row['term_id'] === $pair['parent']['term_id']) {
+                $row['slug'] = $base . '-3';
+            }
+        }
+        unset($row);
+
+        (new FaqCategoryHierarchyRepair())->run();
+
+        $this->assertCompleted();
+        self::assertSame($expected, $this->snapshotTables());
+        self::assertSame($base . '-3', get_term($pair['parent']['term_id'], self::CURRENT)->slug);
+        self::assertSame('faq-it', get_term($target['term_id'], self::CURRENT)->slug);
+        self::assertSame($targetLink, get_term_link($target['term_id'], self::CURRENT));
+        self::assertSame(self::LEGACY, $this->rowFor($unrelated['term_taxonomy_id'])['taxonomy']);
+    }
+
+    /**
+     * Preserve the earliest candidate slug and rename only subsequent duplicate ancestors.
+     *
+     * @return void
+     */
+    public function testDuplicateAncestorSlugsAreResolvedWithoutMergingTheirTrees(): void
+    {
+        $first = $this->createPair('First duplicate ancestor');
+        $second = $this->createPair('Second duplicate ancestor');
+        $this->forceSlug($first['parent'], 'shared-ancestor', self::LEGACY);
+        $this->forceSlug($second['parent'], 'shared-ancestor', self::LEGACY);
+        self::assertLessThan($second['parent']['term_taxonomy_id'], $first['parent']['term_taxonomy_id']);
+        unregister_taxonomy(self::LEGACY);
+        $expected = $this->snapshotTables();
+        foreach ($expected['term_taxonomy'] as &$row) {
+            if (in_array((int) $row['term_taxonomy_id'], [
+                $first['parent']['term_taxonomy_id'],
+                $second['parent']['term_taxonomy_id'],
+            ], true)) {
+                $row['taxonomy'] = self::CURRENT;
+            }
+        }
+        unset($row);
+        foreach ($expected['terms'] as &$row) {
+            if ((int) $row['term_id'] === $second['parent']['term_id']) {
+                $row['slug'] = 'shared-ancestor-legacy-' . $second['parent']['term_id'];
+            }
+        }
+        unset($row);
+
+        (new FaqCategoryHierarchyRepair())->run();
+
+        $this->assertCompleted();
+        self::assertSame($expected, $this->snapshotTables());
+        self::assertSame('shared-ancestor', get_term($first['parent']['term_id'], self::CURRENT)->slug);
+        self::assertSame('shared-ancestor-legacy-' . $second['parent']['term_id'], get_term($second['parent']['term_id'], self::CURRENT)->slug);
+        self::assertSame($first['parent']['term_id'], (int) $this->rowFor($first['child']['term_taxonomy_id'])['parent']);
+        self::assertSame($second['parent']['term_id'], (int) $this->rowFor($second['child']['term_taxonomy_id'])['parent']);
+        self::assertCount(4, $this->visibleCategoryIds());
+    }
+
+    /**
+     * Abort the whole move when another term claims a planned replacement slug.
+     *
+     * @return void
+     */
+    public function testConcurrentForeignSlugClaimStopsEveryCandidateBeforeMutation(): void
+    {
+        $first = $this->createPair('Unaffected slug-race branch');
+        $second = $this->createPair('Renamed slug-race branch');
+        $this->createTerm('FAQ: IT', self::CURRENT);
+        $this->forceSlug($second['parent'], 'faq-it', self::LEGACY);
+        $foreign = $this->createTerm('Concurrent foreign tag', 'rrze_faq_tag');
+        $replacement = 'faq-it-legacy-' . $second['parent']['term_id'];
+        unregister_taxonomy(self::LEGACY);
+        $expected = $this->snapshotTables();
+        foreach ($expected['terms'] as &$row) {
+            if ((int) $row['term_id'] === $foreign['term_id']) {
+                $row['slug'] = $replacement;
+            }
+        }
+        unset($row);
+        $evidence = (object) ['injected' => 0];
+        $this->trackFilter(
+            'query',
+            /**
+             * Claim the reserved slug after planning and before the one guarded UPDATE.
+             *
+             * @param string $query SQL about to execute.
+             * @return string Unchanged migration SQL after the concurrent fixture edit.
+             */
+            static function (string $query) use ($foreign, $replacement, $evidence): string {
+                $db = $GLOBALS['wpdb'];
+                if ($evidence->injected === 0 && preg_match('/^\s*UPDATE\b/i', $query)
+                    && str_contains($query, $db->term_taxonomy) && preg_match('/SET\s+destination\.taxonomy\s*=/i', $query)) {
+                    $evidence->injected++;
+                    self::assertSame(1, $db->update($db->terms, ['slug' => $replacement], ['term_id' => $foreign['term_id']]));
+                }
+                return $query;
+            }
+        );
+
+        (new FaqCategoryHierarchyRepair())->run();
+
+        self::assertSame(1, $evidence->injected);
+        $this->assertRetryScheduled();
+        self::assertSame($expected, $this->snapshotTables(), 'Only the external slug claim may persist.');
+        foreach ([$first, $second] as $pair) {
+            self::assertSame(self::LEGACY, $this->rowFor($pair['parent']['term_taxonomy_id'])['taxonomy']);
+        }
+        self::assertSame('faq-it', $this->pendingRow($second['parent']['term_taxonomy_id'])['slug']);
+    }
+
+    /**
+     * Refuse cross-table slug repair when either affected table lacks atomic storage.
+     *
+     * @dataProvider unsupportedTermTableEngines
+     * @param string $nonTransactionalTable WordPress table property reported as MyISAM.
+     * @return void
+     */
+    public function testNonTransactionalTermStorageStopsBeforeAnyCategoryWrite(string $nonTransactionalTable): void
+    {
+        $pair = $this->createPair('Nontransactional slug branch');
+        $this->createTerm('FAQ: IT', self::CURRENT);
+        $this->forceSlug($pair['parent'], 'faq-it', self::LEGACY);
+        unregister_taxonomy(self::LEGACY);
+        $before = $this->snapshotTables();
+        $evidence = (object) ['injected' => 0, 'writes' => []];
+        $this->trackFilter(
+            'query',
+            /**
+             * Substitute metadata rows while leaving the physical test tables untouched.
+             *
+             * @param string $query SQL about to execute.
+             * @return string Equivalent metadata SELECT or unchanged SQL.
+             */
+            static function (string $query) use ($nonTransactionalTable, $evidence): string {
+                $db = $GLOBALS['wpdb'];
+                if (preg_match('/^\s*SHOW\s+TABLE\s+STATUS\b/i', $query)
+                    && str_contains($query, $db->terms) && str_contains($query, $db->term_taxonomy)) {
+                    $evidence->injected++;
+                    return $db->prepare(
+                        'SELECT %s AS Name, %s AS Engine UNION ALL SELECT %s AS Name, %s AS Engine',
+                        $db->terms,
+                        $nonTransactionalTable === 'terms' ? 'MyISAM' : 'InnoDB',
+                        $db->term_taxonomy,
+                        $nonTransactionalTable === 'term_taxonomy' ? 'MyISAM' : 'InnoDB'
+                    );
+                }
+                if (preg_match('/^\s*(?:INSERT|UPDATE|DELETE|REPLACE)\b/i', $query)
+                    && (str_contains($query, $db->terms) || str_contains($query, $db->term_taxonomy))) {
+                    $evidence->writes[] = $query;
+                }
+                return $query;
+            }
+        );
+
+        (new FaqCategoryHierarchyRepair())->run();
+
+        self::assertSame(1, $evidence->injected);
+        self::assertSame([], $evidence->writes);
+        self::assertSame($before, $this->snapshotTables());
+        $this->assertRetryScheduled();
+    }
+
+    /**
+     * Check both tables participating in the atomic category-and-slug change.
+     *
+     * @return array<string, array{string}>
+     */
+    public static function unsupportedTermTableEngines(): array
+    {
+        return ['terms table is MyISAM' => ['terms'], 'taxonomy table is MyISAM' => ['term_taxonomy']];
+    }
+
+    /**
      * Leave every category untouched when any ancestor chain is ambiguous or unsafe.
      *
      * @dataProvider conflictCases
@@ -186,10 +415,6 @@ final class FaqCategoryHierarchyRepairTest extends WP_UnitTestCase
             $db->update($db->term_taxonomy, ['parent' => $pair['child']['term_id']], ['term_taxonomy_id' => $pair['parent']['term_taxonomy_id']]);
         } elseif ($scenario === 'self_parent') {
             $db->update($db->term_taxonomy, ['parent' => $pair['parent']['term_id']], ['term_taxonomy_id' => $pair['parent']['term_taxonomy_id']]);
-        } elseif ($scenario === 'slug_collision') {
-            $target = $this->createTerm('Existing target root', self::CURRENT);
-            $slug = $db->get_var($db->prepare("SELECT slug FROM {$db->terms} WHERE term_id = %d", $target['term_id']));
-            $db->update($db->terms, ['slug' => $slug], ['term_id' => $pair['parent']['term_id']]);
         } elseif ($scenario === 'shared_identity') {
             register_taxonomy('repair_other_category', ['post']);
             $db->insert($db->term_taxonomy, [
@@ -237,7 +462,6 @@ final class FaqCategoryHierarchyRepairTest extends WP_UnitTestCase
             'missing term row' => ['missing_term_row'],
             'mixed taxonomy cycle' => ['cycle'],
             'self-referencing parent' => ['self_parent'],
-            'existing target slug' => ['slug_collision'],
             'shared term identity' => ['shared_identity'],
             'unmigrated sibling' => ['unselected_legacy_child'],
             'another parent taxonomy' => ['foreign_parent_taxonomy'],
@@ -435,7 +659,9 @@ final class FaqCategoryHierarchyRepairTest extends WP_UnitTestCase
     public function testFailedTaxonomyWriteDoesNotPartiallyConvertTheTree(): void
     {
         $this->createPair('First SQL branch');
-        $this->createPair('Second SQL branch');
+        $renamed = $this->createPair('Second SQL branch');
+        $target = $this->createTerm('Occupied target slug', self::CURRENT);
+        $this->forceSlug($renamed['parent'], 'occupied-target-slug', self::LEGACY);
         unregister_taxonomy(self::LEGACY);
         $before = $this->snapshotTables();
         $evidence = (object) ['injected' => 0, 'pending' => null];
@@ -463,6 +689,9 @@ final class FaqCategoryHierarchyRepairTest extends WP_UnitTestCase
         self::assertSame(1, $evidence->injected);
         self::assertIsArray($evidence->pending);
         self::assertCount(2, $evidence->pending['rows']);
+        $journal = array_column($evidence->pending['rows'], null, 'term_taxonomy_id');
+        self::assertSame('occupied-target-slug', $journal[$renamed['parent']['term_taxonomy_id']]['slug']);
+        self::assertSame('occupied-target-slug-legacy-' . $renamed['parent']['term_id'], $journal[$renamed['parent']['term_taxonomy_id']]['target_slug']);
         self::assertSame($before, $this->snapshotTables());
         $this->assertRetryScheduled();
         remove_filter('query', $filter, 10);
@@ -471,8 +700,10 @@ final class FaqCategoryHierarchyRepairTest extends WP_UnitTestCase
         (new FaqCategoryHierarchyRepair())->run();
 
         $this->assertCompleted();
-        self::assertCount(4, $this->taxonomyRows(self::CURRENT));
+        self::assertCount(5, $this->taxonomyRows(self::CURRENT));
         self::assertSame([], $this->taxonomyRows(self::LEGACY));
+        self::assertSame('occupied-target-slug', get_term($target['term_id'], self::CURRENT)->slug);
+        self::assertSame('occupied-target-slug-legacy-' . $renamed['parent']['term_id'], get_term($renamed['parent']['term_id'], self::CURRENT)->slug);
     }
 
     /**
@@ -530,6 +761,135 @@ final class FaqCategoryHierarchyRepairTest extends WP_UnitTestCase
         $this->assertCompleted();
         self::assertSame([], $this->taxonomyRows(self::LEGACY));
         self::assertCount(4, $this->visibleCategoryIds());
+    }
+
+    /**
+     * Resume either side of the atomic taxonomy-and-slug update from its durable journal.
+     *
+     * @dataProvider pendingRenameStages
+     * @param bool $committed Whether both stored fields were updated before interruption.
+     * @return void
+     */
+    public function testPendingSlugRenameRecoversBeforeOrAfterTheAtomicWrite(bool $committed): void
+    {
+        $pair = $this->createPair('Interrupted renamed branch');
+        $target = $this->createTerm('FAQ: IT', self::CURRENT);
+        $this->forceSlug($pair['parent'], 'faq-it', self::LEGACY);
+        $postId = $this->createFaq('Interrupted renamed parent FAQ');
+        wp_set_object_terms($postId, [$pair['parent']['term_id']], self::LEGACY);
+        update_term_meta($pair['parent']['term_id'], 'linked_page', 700003);
+        self::assertFalse(get_the_terms($postId, self::CURRENT));
+        get_term($pair['parent']['term_id'], self::LEGACY);
+        get_terms(['taxonomy' => self::CURRENT, 'hide_empty' => false]);
+        update_option(self::LEGACY . '_children', [$pair['parent']['term_id'] => [$pair['child']['term_id']]]);
+        $pending = $this->pendingRow($pair['parent']['term_taxonomy_id']);
+        $pending['target_slug'] = 'faq-it-legacy-' . $pair['parent']['term_id'];
+        $expected = $this->snapshotTables();
+        foreach ($expected['term_taxonomy'] as &$row) {
+            if ((int) $row['term_taxonomy_id'] === $pair['parent']['term_taxonomy_id']) {
+                $row['taxonomy'] = self::CURRENT;
+            }
+        }
+        unset($row);
+        foreach ($expected['terms'] as &$row) {
+            if ((int) $row['term_id'] === $pair['parent']['term_id']) {
+                $row['slug'] = $pending['target_slug'];
+            }
+        }
+        unset($row);
+        unregister_taxonomy(self::LEGACY);
+        if ($committed) {
+            $db = $GLOBALS['wpdb'];
+            self::assertSame(2, $db->query($db->prepare(
+                "UPDATE {$db->term_taxonomy} tt INNER JOIN {$db->terms} t ON t.term_id = tt.term_id
+                 SET tt.taxonomy = %s, t.slug = %s WHERE tt.term_taxonomy_id = %d",
+                self::CURRENT,
+                $pending['target_slug'],
+                $pair['parent']['term_taxonomy_id']
+            )));
+        }
+        add_option(self::STATE, ['version' => 1, 'status' => 'running', 'next_retry' => 0], '', false);
+        add_option(self::DETAILS, ['rows' => [$pending], 'object_ids' => [$postId]], '', false);
+
+        (new FaqCategoryHierarchyRepair())->run();
+
+        $this->assertCompleted();
+        self::assertSame($expected, $this->snapshotTables());
+        self::assertSame($pending['target_slug'], get_term($pair['parent']['term_id'], self::CURRENT)->slug);
+        self::assertSame('faq-it', get_term($target['term_id'], self::CURRENT)->slug);
+        self::assertFalse(get_option(self::LEGACY . '_children'));
+        $terms = get_the_terms($postId, self::CURRENT);
+        self::assertIsArray($terms);
+        self::assertSame([$pair['parent']['term_id']], array_column($terms, 'term_id'));
+        self::assertCount(3, $this->visibleCategoryIds());
+    }
+
+    /**
+     * Exercise recovery immediately before and immediately after the one atomic write.
+     *
+     * @return array<string, array{bool}>
+     */
+    public static function pendingRenameStages(): array
+    {
+        return ['journal saved before SQL' => [false], 'SQL committed before cache cleanup' => [true]];
+    }
+
+    /**
+     * Reject impossible partial field pairs or a partially committed ancestor set.
+     *
+     * @dataProvider contradictoryRenameStages
+     * @param string $stage Partial database state to inject outside the migration.
+     * @return void
+     */
+    public function testPendingSlugRenameRejectsContradictoryStoredState(string $stage): void
+    {
+        $first = $this->createPair('First contradictory renamed branch');
+        $second = $this->createPair('Second contradictory renamed branch');
+        $this->createTerm('FAQ: IT', self::CURRENT);
+        $rows = [];
+        foreach ([$first, $second] as $pair) {
+            $this->forceSlug($pair['parent'], 'faq-it', self::LEGACY);
+            $row = $this->pendingRow($pair['parent']['term_taxonomy_id']);
+            $row['target_slug'] = 'faq-it-legacy-' . $pair['parent']['term_id'];
+            $rows[] = $row;
+        }
+        unregister_taxonomy(self::LEGACY);
+        $db = $GLOBALS['wpdb'];
+        if ($stage !== 'slug_only') {
+            self::assertSame(1, $db->update($db->term_taxonomy, ['taxonomy' => self::CURRENT], [
+                'term_taxonomy_id' => $first['parent']['term_taxonomy_id'],
+            ]));
+        }
+        if ($stage !== 'taxonomy_only') {
+            self::assertSame(1, $db->update($db->terms, ['slug' => $rows[0]['target_slug']], [
+                'term_id' => $first['parent']['term_id'],
+            ]));
+        }
+        add_option(self::STATE, ['version' => 1, 'status' => 'running', 'next_retry' => 0], '', false);
+        add_option(self::DETAILS, ['rows' => $rows, 'object_ids' => []], '', false);
+        $before = $this->snapshotTables();
+
+        (new FaqCategoryHierarchyRepair())->run();
+
+        $this->assertRetryScheduled();
+        self::assertSame($before, $this->snapshotTables());
+        $details = get_option(self::DETAILS);
+        self::assertIsArray($details);
+        self::assertSame($rows, $details['rows']);
+    }
+
+    /**
+     * Cover mismatched fields and a mixture of fully old and fully new candidates.
+     *
+     * @return array<string, array{string}>
+     */
+    public static function contradictoryRenameStages(): array
+    {
+        return [
+            'new taxonomy with original slug' => ['taxonomy_only'],
+            'legacy taxonomy with new slug' => ['slug_only'],
+            'only one candidate fully converted' => ['one_complete'],
+        ];
     }
 
     /**
@@ -1038,13 +1398,14 @@ final class FaqCategoryHierarchyRepairTest extends WP_UnitTestCase
     /**
      * Create the observed category shape with synthetic text and the same counts.
      *
-     * @return array{parent_ids: int[], visible_root: array{term_id: int, term_taxonomy_id: int}, post_ids: int[]}
+     * @return array{parent_ids: int[], renamed_parent: array{term_id: int, term_taxonomy_id: int}, visible_root: array{term_id: int, term_taxonomy_id: int}, post_ids: int[]}
      */
     private function createProductionShape(): array
     {
         $studyRoot = $this->createTerm('Legacy studies root', self::LEGACY);
-        $itRoot = $this->createTerm('Legacy IT root', self::LEGACY);
+        $itRoot = $this->createTerm('_IT-Anleitungen für Beschäftigte', self::LEGACY);
         $visible = $this->createTerm('FAQ: IT', self::CURRENT);
+        $this->forceSlug($itRoot, 'faq-it', self::LEGACY);
         $postIds = [];
         foreach (['Pruefungen' => 4, 'Bachelorarbeit' => 5, 'Studium' => 11, 'Praktikum' => 12] as $name => $count) {
             $term = $this->createTerm('FAQ: ' . $name, self::CURRENT, $studyRoot['term_id']);
@@ -1085,7 +1446,12 @@ final class FaqCategoryHierarchyRepairTest extends WP_UnitTestCase
         update_term_meta($itRoot['term_id'], 'source', 'website');
         update_term_meta($itRoot['term_id'], 'lang', 'de');
 
-        return ['parent_ids' => [$studyRoot['term_id'], $itRoot['term_id']], 'visible_root' => $visible, 'post_ids' => $postIds];
+        return [
+            'parent_ids' => [$studyRoot['term_id'], $itRoot['term_id']],
+            'renamed_parent' => $itRoot,
+            'visible_root' => $visible,
+            'post_ids' => $postIds,
+        ];
     }
 
     /**
@@ -1121,6 +1487,21 @@ final class FaqCategoryHierarchyRepairTest extends WP_UnitTestCase
             clean_term_cache($identity['term_id'], $taxonomy);
         }
         return $identity;
+    }
+
+    /**
+     * Reproduce historical duplicate slugs without WordPress uniquifying the fixture.
+     *
+     * @param array{term_id: int, term_taxonomy_id: int} $identity Existing term identity.
+     * @param string $slug Exact stored slug.
+     * @param string $taxonomy Taxonomy whose caches must reflect the fixture edit.
+     * @return void
+     */
+    private function forceSlug(array $identity, string $slug, string $taxonomy): void
+    {
+        $db = $GLOBALS['wpdb'];
+        self::assertNotFalse($db->update($db->terms, ['slug' => $slug], ['term_id' => $identity['term_id']]));
+        clean_term_cache($identity['term_id'], $taxonomy);
     }
 
     /**
